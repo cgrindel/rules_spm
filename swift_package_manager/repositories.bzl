@@ -1,5 +1,11 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load(
+    "//swift_package_manager/internal:spm_repository.bzl",
+    _spm_repository = "spm_repository",
+)
+
+spm_repository = _spm_repository
 
 def rules_swift_package_manager_dependencies():
     maybe(

@@ -19,3 +19,11 @@ bzl_library(
         ":bazel_tools_bzl",
     ],
 )
+
+bzl_library(
+    name = "swift_package_manager",
+    srcs = ["swift_package_manager.bzl"],
+    deps = [
+        "//swift_package_manager/internal:spm_package",
+    ],
+)

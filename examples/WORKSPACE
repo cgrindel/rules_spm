@@ -1,0 +1,39 @@
+workspace(name = "rules_swift_package_manager_examples")
+
+local_repository(
+    name = "rules_swift_package_manager",
+    path = "..",
+)
+
+load(
+    "@rules_swift_package_manager//swift_package_manager:repositories.bzl",
+    "rules_swift_package_manager_dependencies",
+    "spm_repository",
+)
+
+rules_swift_package_manager_dependencies()
+
+# load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+#
+# _ALL_CONTENT_BUILD_FILE = """
+# filegroup(
+#     name = "all_srcs",
+#     srcs = glob(["**"]),
+#     visibility = ["//visibility:public"],
+# )
+# """
+#
+# http_archive(
+#     name = "apple_swift_log",
+#     build_file_content = _ALL_CONTENT_BUILD_FILE,
+#     sha256 = "de51662b35f47764b6e12e9f1d43e7de28f6dd64f05bc30a318cf978cf3bc473",
+#     strip_prefix = "swift-log-1.4.2",
+#     urls = ["https://github.com/apple/swift-log/archive/1.4.2.tar.gz"],
+# )
+
+spm_repository(
+    name = "apple_swift_log",
+    sha256 = "de51662b35f47764b6e12e9f1d43e7de28f6dd64f05bc30a318cf978cf3bc473",
+    strip_prefix = "swift-log-1.4.2",
+    urls = ["https://github.com/apple/swift-log/archive/1.4.2.tar.gz"],
+)

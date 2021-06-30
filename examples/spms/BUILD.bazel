@@ -1,0 +1,8 @@
+# load("@rules_swift_package_manager//swift_package_manager:swift_package_manager.bzl", "spm_package")
+#
+# spm_package(
+#     name = "apple_swift_log",
+#     deps = [
+#         "@apple_swift_log//:all_srcs",
+#     ],
+# )
