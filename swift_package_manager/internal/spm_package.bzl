@@ -8,30 +8,16 @@ def _spm_package_impl(ctx):
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
         outputs = [build_output_dir],
-        arguments = [ctx.attr.configuration, build_output_dir.path],
+        arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
         command = """
-        # DEBUG BEGIN
-        echo "pwd: $(pwd)"
-        echo "configuration: $1"
-        echo "build_output_dir: $2"
-        set -x
-        # DEBUG END
-        # pushd external/apple_swift_log
         swift build \
-            --verbose \
-            --manifest-cache=none \
-            --disable-sandbox \
-            --package-path external/apple_swift_log \
-            --configuration $1 \
-            --build-path "$2"
-        # popd
-        tree -la "$2"
-        echo "Find Swift  files"
-        find -L . -name "*.swift"
-        echo "Find Mach-O files"
-        find -L . -name "*.o"
+          --manifest-cache none \
+          --disable-sandbox \
+          --configuration $1 \
+          --package-path $2 \
+          --build-path "$3"
         """,
-        progress_message = "Building the Swift package using SPM.",
+        progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.name),
     )
 
     return [DefaultInfo(files = depset([build_output_dir]))]
@@ -45,6 +31,9 @@ _attrs = {
         default = "release",
         values = ["release", "debug"],
         doc = "The configuration to use when executing swift build (e.g. debug, release).",
+    ),
+    "package_path": attr.string(
+        doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",
     ),
 }
 

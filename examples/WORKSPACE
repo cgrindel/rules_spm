@@ -8,10 +8,14 @@ local_repository(
 load(
     "@rules_swift_package_manager//swift_package_manager:repositories.bzl",
     "rules_swift_package_manager_dependencies",
-    "spm_repository",
 )
 
 rules_swift_package_manager_dependencies()
+
+load(
+    "@rules_swift_package_manager//swift_package_manager:swift_package_manager.bzl",
+    "spm_repository",
+)
 
 spm_repository(
     name = "apple_swift_log",
