@@ -4,10 +4,10 @@
 def _spm_package_impl(ctx):
     build_output_dir = ctx.actions.declare_directory("spm_build_output")
     outputs = []
-    for in_file in ctx.files.srcs:
-        if in_file.extension == "swift":
-            o_path = "%s.o" % (in_file.short_path)
-            outputs.append(ctx.actions.declare_file(o_path))
+    # for in_file in ctx.files.srcs:
+    #     if in_file.extension == "swift":
+    #         o_path = "%s.o" % (in_file.short_path)
+    #         outputs.append(ctx.actions.declare_file(o_path))
 
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
@@ -23,7 +23,7 @@ def _spm_package_impl(ctx):
           --package-path $2 \
           --build-path "$3"
         """,
-        progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.name),
+        progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
     return [DefaultInfo(files = depset([build_output_dir]))]
