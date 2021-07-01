@@ -3,11 +3,17 @@
 
 def _spm_package_impl(ctx):
     build_output_dir = ctx.actions.declare_directory("spm_build_output")
+    outputs = []
+    for in_file in ctx.files.srcs:
+        if in_file.extension == "swift":
+            o_path = "%s.o" % (in_file.short_path)
+            outputs.append(ctx.actions.declare_file(o_path))
 
-    # outputs = jj
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
-        outputs = [build_output_dir],
+        # outputs = [build_output_dir, outputs],
+        # outputs = [build_output_dir],
+        outputs = [build_output_dir] + outputs,
         arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
         command = """
         swift build \

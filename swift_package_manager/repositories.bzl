@@ -11,3 +11,10 @@ def rules_swift_package_manager_dependencies():
             "https://github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
         ],
     )
+
+    maybe(
+        http_archive,
+        name = "build_bazel_rules_apple",
+        sha256 = "c84962b64d9ae4472adfb01ec2cf1aa73cb2ee8308242add55fa7cc38602d882",
+        urls = ["https://github.com/bazelbuild/rules_apple/releases/download/0.31.2/rules_apple.0.31.2.tar.gz"],
+    )
