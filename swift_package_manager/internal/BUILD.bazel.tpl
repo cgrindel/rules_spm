@@ -1,5 +1,5 @@
-# This is a part of the BUILD file that is generated for SPM repositories. Additional attributes
-# are appended to the end.
+# This is a template for generating an spm_repository BUILD.bazel file.
+
 load("@rules_swift_package_manager//swift_package_manager:swift_package_manager.bzl", "spm_package")
 
 filegroup(
@@ -13,8 +13,3 @@ spm_package(
     srcs = [":all_srcs"],
     package_path = "external/{spm_repos_name}",
 )
-
-# The following are parameters added to the end of this template during spm_repository macro
-# expansion.
-#
-# SPM_REPOS_NAME = ""
