@@ -11,7 +11,7 @@ filegroup(
 spm_package(
     name = "build",
     srcs = [":all_srcs"],
-    package_path = "external/%s" % (SPM_REPOS_NAME),
+    package_path = "external/{spm_repos_name}",
 )
 
 # The following are parameters added to the end of this template during spm_repository macro
