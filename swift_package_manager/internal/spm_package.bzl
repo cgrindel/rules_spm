@@ -1,4 +1,4 @@
-# load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
+load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
 
 # TODO: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
@@ -10,6 +10,8 @@ def _spm_package_impl(ctx):
     #     if in_file.extension == "swift":
     #         o_path = "%s.o" % (in_file.short_path)
     #         outputs.append(ctx.actions.declare_file(o_path))
+
+    pkg_desc = json_parse(ctx.attr.package_description_json)
 
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
@@ -33,14 +35,14 @@ _attrs = {
         allow_files = True,
         mandatory = True,
     ),
-    # "package_description": attr.label(
-    #     allow_single_file = True,
-    #     doc = "Points to the JSON file that was generated from the spm_repository repository rule.",
-    # ),
     "configuration": attr.string(
         default = "release",
         values = ["release", "debug"],
         doc = "The configuration to use when executing swift build (e.g. debug, release).",
+    ),
+    "package_description_json": attr.string(
+        mandatory = True,
+        doc = "JSON string which describes the package (i.e. swift package describe --type json).",
     ),
     "package_path": attr.string(
         doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",

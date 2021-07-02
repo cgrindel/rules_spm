@@ -1,3 +1,5 @@
+# load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
+
 def _spm_repository_impl(ctx):
     # Download the archive
     ctx.download_and_extract(
@@ -6,9 +8,22 @@ def _spm_repository_impl(ctx):
         stripPrefix = ctx.attr.strip_prefix,
     )
 
+    # Generate description for the package.
+    describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
+    # pkg_desc = json_parse(describe_result.stdout)
+
+    # DEBUG BEGIN
+    ctx.file(
+        "package_description.json",
+        content = describe_result.stdout,
+        executable = False,
+    )
+    # DEBUG END
+
     # Template Substitutions
     substitutions = {
         "{spm_repos_name}": ctx.attr.name,
+        "{pkg_desc_json}": describe_result.stdout,
     }
 
     # Write BUILD.bazel file.
@@ -16,14 +31,6 @@ def _spm_repository_impl(ctx):
         "BUILD.bazel",
         ctx.attr._build_tpl,
         substitutions = substitutions,
-        executable = False,
-    )
-
-    # Generate description for the package.
-    describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
-    ctx.file(
-        "package_description.json",
-        content = describe_result.stdout,
         executable = False,
     )
 
