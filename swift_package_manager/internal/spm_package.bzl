@@ -33,10 +33,10 @@ _attrs = {
         allow_files = True,
         mandatory = True,
     ),
-    "package_description": attr.label(
-        allow_single_file = True,
-        doc = "Points to the JSON file that was generated from the spm_repository repository rule.",
-    ),
+    # "package_description": attr.label(
+    #     allow_single_file = True,
+    #     doc = "Points to the JSON file that was generated from the spm_repository repository rule.",
+    # ),
     "configuration": attr.string(
         default = "release",
         values = ["release", "debug"],

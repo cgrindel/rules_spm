@@ -4,18 +4,19 @@ load("@rules_swift_package_manager//swift_package_manager:swift_package_manager.
 
 filegroup(
     name = "all_srcs",
-    srcs = glob(
-        ["**"],
-        exclude = ["package_description.json"],
-    ),
+    srcs = glob(["**"]),
+    # srcs = glob(
+    #     ["**"],
+    #     exclude = ["package_description.json"],
+    # ),
     visibility = ["//visibility:public"],
 )
 
 spm_package(
     name = "build",
     srcs = [":all_srcs"],
-    package_description = "package_description.json",
     package_path = "external/{spm_repos_name}",
+    # package_description = "package_description.json",
 )
 
 # filegroup(
