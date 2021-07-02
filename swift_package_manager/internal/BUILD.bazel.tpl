@@ -14,6 +14,7 @@ filegroup(
 spm_package(
     name = "build",
     srcs = [":all_srcs"],
+    package_description = "package_description.json",
     package_path = "external/{spm_repos_name}",
 )
 

@@ -34,7 +34,6 @@ _attrs = {
         mandatory = True,
     ),
     "package_description": attr.label(
-        default = "package_description.json",
         allow_single_file = True,
         doc = "Points to the JSON file that was generated from the spm_repository repository rule.",
     ),
