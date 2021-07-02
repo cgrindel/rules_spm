@@ -1,5 +1,3 @@
-# load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
-
 def _spm_repository_impl(ctx):
     # Download the archive
     ctx.download_and_extract(
@@ -10,7 +8,6 @@ def _spm_repository_impl(ctx):
 
     # Generate description for the package.
     describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
-    # pkg_desc = json_parse(describe_result.stdout)
 
     # DEBUG BEGIN
     ctx.file(

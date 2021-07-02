@@ -12,12 +12,14 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
+PACKAGE_DESCRIPTION_JSON = """
+{pkg_desc_json}
+"""
+
 spm_package(
     name = "build",
     srcs = [":all_srcs"],
-    package_description_json = """
-{pkg_desc_json}
-    """,
+    package_description_json = PACKAGE_DESCRIPTION_JSON,
     package_path = "external/{spm_repos_name}",
     # package_description = "package_description.json",
 )
