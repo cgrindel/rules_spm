@@ -36,6 +36,8 @@ def _spm_package_impl(ctx):
 
     # TODO: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
+    outputs.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
+
     target_names = []
     for product in pkg_desc["products"]:
         for target_name in product["targets"]:
