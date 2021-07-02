@@ -28,10 +28,6 @@ def _spm_package_impl(ctx):
     build_output_dirname = "spm_build_output"
     build_output_dir = ctx.actions.declare_directory(build_output_dirname)
     outputs = []
-    # for in_file in ctx.files.srcs:
-    #     if in_file.extension == "swift":
-    #         o_path = "%s.o" % (in_file.short_path)
-    #         outputs.append(ctx.actions.declare_file(o_path))
 
     # Parse the package description JSON.
     pkg_desc = json_parse(ctx.attr.package_description_json)
@@ -65,7 +61,7 @@ def _spm_package_impl(ctx):
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
-    return [DefaultInfo(files = depset([build_output_dir]))]
+    return [DefaultInfo(files = depset(outputs))]
 
 _attrs = {
     "srcs": attr.label_list(
