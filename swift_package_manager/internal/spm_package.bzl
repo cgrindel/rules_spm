@@ -4,14 +4,35 @@ load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
 # https://docs.bazel.build/versions/main/toolchains.html
 
 def _spm_package_impl(ctx):
-    build_output_dir = ctx.actions.declare_directory("spm_build_output")
+    build_output_dirname = "spm_build_output"
+    build_output_dir = ctx.actions.declare_directory(build_output_dirname)
     outputs = []
     # for in_file in ctx.files.srcs:
     #     if in_file.extension == "swift":
     #         o_path = "%s.o" % (in_file.short_path)
     #         outputs.append(ctx.actions.declare_file(o_path))
 
+    # Parse the package description JSON.
     pkg_desc = json_parse(ctx.attr.package_description_json)
+
+    targets_dict = dict([(p["name"], p) for p in pkg_desc["targets"]])
+
+    build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
+    target_names = []
+    for product in pkg_desc["products"]:
+        for target_name in product["targets"]:
+            if target_name not in target_names:
+                target_names.append(target_name)
+
+    targets = [targets_dict[target_name] for target_name in target_names]
+    for target in targets:
+        target_name = target["name"]
+        outputs.extend([
+            ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_dirname, target_name)),
+            ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_dirname, target_name)),
+            ctx.actions.declare_file("%s/%s.swiftsourceinfo" % (build_config_dirname, target_name)),
+        ])
+        # target_build_dir = "%s/%s" % (build_config_dirname, target_name)
 
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
