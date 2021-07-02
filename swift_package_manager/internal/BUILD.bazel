@@ -4,5 +4,14 @@ bzl_library(
     name = "spm_package",
     srcs = ["spm_package.bzl"],
     visibility = ["//swift_package_manager:__subpackages__"],
-    deps = [],
+    deps = [
+        "@erickj_bazel_json//lib:json_parser.bzl",
+    ],
+)
+
+bzl_library(
+    name = "spm_repository",
+    srcs = ["spm_repository.bzl"],
+    visibility = ["//swift_package_manager:__subpackages__"],
+    # deps = [],
 )

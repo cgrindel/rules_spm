@@ -4,7 +4,10 @@ load("@rules_swift_package_manager//swift_package_manager:swift_package_manager.
 
 filegroup(
     name = "all_srcs",
-    srcs = glob(["**"]),
+    srcs = glob(
+        ["**"],
+        exclude = ["package_description.json"],
+    ),
     visibility = ["//visibility:public"],
 )
 
