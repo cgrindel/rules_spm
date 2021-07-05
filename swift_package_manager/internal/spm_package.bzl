@@ -4,15 +4,16 @@ load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
 # https://docs.bazel.build/versions/main/toolchains.html
 
 def _declare_target_files(ctx, target, build_config_dirname):
-    outputs = []
+    other_files = []
+    o_files = []
     target_name = target["name"]
-    outputs.extend([
+    other_files.extend([
         ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_dirname, target_name)),
         ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_dirname, target_name)),
         ctx.actions.declare_file("%s/%s.swiftsourceinfo" % (build_config_dirname, target_name)),
     ])
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
-    outputs.extend([
+    other_files.extend([
         ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name)),
         # For Swift modules, there is one .d file per module. For C modules, there appears to be one per .c file.
         ctx.actions.declare_file("%s/%s.d" % (target_build_dirname, target_name)),
@@ -21,13 +22,14 @@ def _declare_target_files(ctx, target, build_config_dirname):
         ctx.actions.declare_file("%s/output-file-map.json" % (target_build_dirname)),
     ])
     for src in target["sources"]:
-        outputs.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
-    return outputs
+        o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
+    return struct(o_files = o_files, other_files = other_files)
 
 def _spm_package_impl(ctx):
     build_output_dirname = "spm_build_output"
     build_output_dir = ctx.actions.declare_directory(build_output_dirname)
-    outputs = []
+    other_files = []
+    o_files = []
 
     # Parse the package description JSON.
     pkg_desc = json_parse(ctx.attr.package_description_json)
@@ -36,7 +38,7 @@ def _spm_package_impl(ctx):
 
     # TODO: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
-    outputs.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
+    other_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
     target_names = []
     for product in pkg_desc["products"]:
@@ -46,11 +48,14 @@ def _spm_package_impl(ctx):
 
     targets = [targets_dict[target_name] for target_name in target_names]
     for target in targets:
-        outputs.extend(_declare_target_files(ctx, target, build_config_dirname))
+        target_files = _declare_target_files(ctx, target, build_config_dirname)
+        other_files.extend(target_files.other_files)
+        o_files.extend(target_files.o_files)
 
+    all_files = o_files + other_files
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
-        outputs = [build_output_dir] + outputs,
+        outputs = [build_output_dir] + all_files,
         arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
         command = """
         swift build \
@@ -63,7 +68,13 @@ def _spm_package_impl(ctx):
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
-    return [DefaultInfo(files = depset(outputs))]
+    return [
+        DefaultInfo(files = depset(all_files)),
+        OutputGroupInfo(
+            o_files = depset(o_files),
+            all_files = depset(all_files),
+        ),
+    ]
 
 _attrs = {
     "srcs": attr.label_list(

@@ -19,18 +19,15 @@ spm_package(
     package_path = "external/{spm_repos_name}",
 )
 
-# filegroup(
-#     name = "o_files",
-#     # srcs = glob(["**/*.o"]),
-#     srcs = glob(["**/spm_build_output/**/*"]),
-#     data = [
-#         ":build",
-#     ],
-# )
+filegroup(
+    name = "o_files",
+    srcs = [":build"],
+    output_group = "o_files",
+)
 
-# objc_library(
-#     name = "static_library",
-#     srcs = [
-
-#     ],
-# )
+objc_library(
+    name = "static_library",
+    srcs = [
+        ":o_files",
+    ],
+)
