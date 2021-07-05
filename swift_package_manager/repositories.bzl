@@ -1,4 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# TODO: Find out if we can go back to the loaded maybe
 # load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
 def _maybe(repo_rule, name, **kwargs):
@@ -44,9 +46,16 @@ def rules_swift_package_manager_dependencies():
         urls = ["https://github.com/cgrindel/bazel_json/archive/916ead87b0c19ef6b8ff2763ff2a8e8a1072fa52.tar.gz"],  # 2021-07-02
     )
 
-    # maybe(
+    # _maybe(
     #     http_archive,
     #     name = "build_bazel_rules_apple",
     #     sha256 = "c84962b64d9ae4472adfb01ec2cf1aa73cb2ee8308242add55fa7cc38602d882",
     #     urls = ["https://github.com/bazelbuild/rules_apple/releases/download/0.31.2/rules_apple.0.31.2.tar.gz"],
     # )
+
+    _maybe(
+        http_archive,
+        name = "build_bazel_rules_swift",
+        sha256 = "f872c0388808c3f8de67e0c6d39b0beac4a65d7e07eff3ced123d0b102046fb6",
+        url = "https://github.com/bazelbuild/rules_swift/releases/download/0.23.0/rules_swift.0.23.0.tar.gz",
+    )
