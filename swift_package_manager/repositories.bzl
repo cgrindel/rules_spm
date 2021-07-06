@@ -27,14 +27,8 @@ def rules_swift_package_manager_dependencies():
     # _maybe(
     #     http_archive,
     #     name = "erickj_bazel_json",
-    #     # name = "bazel_json",
     #     sha256 = "a57a6f794943548fde6da8ec3edad88af89436e8102f33d8f6135202699847f4",
     #     urls = ["https://github.com/erickj/bazel_json/archive/e954ef2c28cd92d97304810e8999e1141e2b5cc8.tar.gz"],  # 2019-01-02
-    # )
-    # _maybe(
-    #     native.local_repository,
-    #     name = "erickj_bazel_json",
-    #     path = "../bazel_json",
     # )
 
     # Forked version with updates making it compatible with Bazel 4.1.0 and bazel-skylib 1.0.3.
@@ -45,13 +39,6 @@ def rules_swift_package_manager_dependencies():
         strip_prefix = "bazel_json-916ead87b0c19ef6b8ff2763ff2a8e8a1072fa52",
         urls = ["https://github.com/cgrindel/bazel_json/archive/916ead87b0c19ef6b8ff2763ff2a8e8a1072fa52.tar.gz"],  # 2021-07-02
     )
-
-    # _maybe(
-    #     http_archive,
-    #     name = "build_bazel_rules_apple",
-    #     sha256 = "c84962b64d9ae4472adfb01ec2cf1aa73cb2ee8308242add55fa7cc38602d882",
-    #     urls = ["https://github.com/bazelbuild/rules_apple/releases/download/0.31.2/rules_apple.0.31.2.tar.gz"],
-    # )
 
     _maybe(
         http_archive,

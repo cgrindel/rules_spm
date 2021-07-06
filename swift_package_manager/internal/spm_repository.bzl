@@ -22,19 +22,9 @@ def _spm_repository_impl(ctx):
     # Generate description for the package.
     describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
 
-    # TODO: Generate the spm_module(...) calls and add it to the BUILD.bazel that is generated.
-
     pkg_desc = parse_package_descrition_json(describe_result.stdout)
     targets = exported_targets(pkg_desc)
 
-    # modules = []
-    # for target in targets:
-    #     modules.append("""
-    #     spm_module(
-    #         name = "%s",
-    #         package = ":build",
-    #     )
-    #     """ % (target["c99name"]))
     modules = [SPM_MODULE_TPL % (target["c99name"]) for target in targets]
 
     # Template Substitutions

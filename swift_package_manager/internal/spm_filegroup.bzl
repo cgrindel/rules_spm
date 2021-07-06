@@ -58,8 +58,3 @@ spm_filegroup = rule(
     spm_package).
     """,
 )
-# o_files = o_files,
-# swiftdoc = swiftdoc,
-# swiftmodule = swiftmodule,
-# swiftsourceinfo = swiftsourceinfo,
-# all_files = all_files,
