@@ -1,5 +1,9 @@
-load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
 load("//swift_package_manager/internal:providers.bzl", "SPMPackageInfo", "create_module")
+load(
+    "//swift_package_manager/internal:package_description.bzl",
+    "exported_targets",
+    "parse_package_descrition_json",
+)
 
 # TODO: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
@@ -26,6 +30,7 @@ def _declare_target_files(ctx, target, build_config_dirname):
         ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname)),
         ctx.actions.declare_file("%s/output-file-map.json" % (target_build_dirname)),
     ])
+
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_files.extend(o_files)
@@ -45,26 +50,18 @@ def _spm_package_impl(ctx):
     all_files = []
 
     # Parse the package description JSON.
-    pkg_desc = json_parse(ctx.attr.package_description_json)
-
-    targets_dict = dict([(p["name"], p) for p in pkg_desc["targets"]])
+    pkg_desc = parse_package_descrition_json(ctx.attr.package_description_json)
 
     # TODO: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
     all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
-    target_names = []
-    for product in pkg_desc["products"]:
-        for target_name in product["targets"]:
-            if target_name not in target_names:
-                target_names.append(target_name)
-
-    targets = [targets_dict[target_name] for target_name in target_names]
+    targets = exported_targets(pkg_desc)
     module_infos = []
     for target in targets:
         module_info = _declare_target_files(ctx, target, build_config_dirname)
         module_infos.append(module_info)
-        all_files.extend([module_info.swiftdoc, module_info.swiftmodule, module_info.swiftsourceinfo] + module_info.o_files)
+        all_files.extend(module_info.all_files)
 
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
@@ -83,10 +80,6 @@ def _spm_package_impl(ctx):
 
     return [
         DefaultInfo(files = depset(all_files)),
-        # OutputGroupInfo(
-        #     o_files = depset(o_files),
-        #     all_files = depset(all_files),
-        # ),
         SPMPackageInfo(name = pkg_desc["name"], modules = module_infos),
     ]
 

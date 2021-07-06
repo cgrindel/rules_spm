@@ -1,3 +1,16 @@
+load(
+    "//swift_package_manager/internal:package_description.bzl",
+    "exported_targets",
+    "parse_package_descrition_json",
+)
+
+SPM_MODULE_TPL = """
+spm_module(
+    name = "%s",
+    package = ":build",
+)
+"""
+
 def _spm_repository_impl(ctx):
     # Download the archive
     ctx.download_and_extract(
@@ -9,20 +22,26 @@ def _spm_repository_impl(ctx):
     # Generate description for the package.
     describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
 
-    # DEBUG BEGIN
-    ctx.file(
-        "package_description.json",
-        content = describe_result.stdout,
-        executable = False,
-    )
-    # DEBUG END
-
     # TODO: Generate the spm_module(...) calls and add it to the BUILD.bazel that is generated.
+
+    pkg_desc = parse_package_descrition_json(describe_result.stdout)
+    targets = exported_targets(pkg_desc)
+
+    # modules = []
+    # for target in targets:
+    #     modules.append("""
+    #     spm_module(
+    #         name = "%s",
+    #         package = ":build",
+    #     )
+    #     """ % (target["c99name"]))
+    modules = [SPM_MODULE_TPL % (target["c99name"]) for target in targets]
 
     # Template Substitutions
     substitutions = {
         "{spm_repos_name}": ctx.attr.name,
         "{pkg_desc_json}": describe_result.stdout,
+        "{spm_modules}": "\n".join(modules),
     }
 
     # Write BUILD.bazel file.
