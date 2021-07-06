@@ -1,4 +1,3 @@
-# TODO: Rename workspace to cgrindel_rules_spm.
 workspace(name = "cgrindel_rules_spm")
 
 load("//spm:repositories.bzl", "rules_spm_dependencies")

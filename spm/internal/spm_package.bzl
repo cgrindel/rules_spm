@@ -5,7 +5,7 @@ load(
     "parse_package_descrition_json",
 )
 
-# TODO: Update this to use a toolchain to execute "swift build".
+# GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
 def _declare_target_files(ctx, target, build_config_dirname):
@@ -52,7 +52,7 @@ def _spm_package_impl(ctx):
     # Parse the package description JSON.
     pkg_desc = parse_package_descrition_json(ctx.attr.package_description_json)
 
-    # TODO: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
+    # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
     all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 

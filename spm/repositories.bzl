@@ -1,6 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# TODO: Find out if we can go back to the loaded maybe
+# GH006: Find out if we can go back to the loaded maybe
 # load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
 def _maybe(repo_rule, name, **kwargs):
