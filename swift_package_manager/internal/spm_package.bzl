@@ -1,21 +1,26 @@
 load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
+load("//swift_package_manager/internal:providers.bzl", "SPMPackageInfo", "create_module")
 
 # TODO: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
 def _declare_target_files(ctx, target, build_config_dirname):
-    other_files = []
+    all_files = []
     o_files = []
+
     target_name = target["name"]
-    other_files.extend([
-        ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_dirname, target_name)),
-        ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_dirname, target_name)),
-        ctx.actions.declare_file("%s/%s.swiftsourceinfo" % (build_config_dirname, target_name)),
-    ])
+    module_name = target["c99name"]
+
+    swiftdoc = ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_dirname, target_name))
+    swiftmodule = ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_dirname, target_name))
+    swiftsourceinfo = ctx.actions.declare_file("%s/%s.swiftsourceinfo" % (build_config_dirname, target_name))
+    all_files.extend([swiftdoc, swiftmodule, swiftsourceinfo])
+
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
-    other_files.extend([
+    all_files.extend([
         ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name)),
-        # For Swift modules, there is one .d file per module. For C modules, there appears to be one per .c file.
+        # For Swift modules, there is one .d file per module. For C modules, there appears to be
+        # one per .c file.
         ctx.actions.declare_file("%s/%s.d" % (target_build_dirname, target_name)),
         ctx.actions.declare_file("%s/master.swiftdeps" % (target_build_dirname)),
         ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname)),
@@ -23,13 +28,21 @@ def _declare_target_files(ctx, target, build_config_dirname):
     ])
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
-    return struct(o_files = o_files, other_files = other_files)
+    all_files.extend(o_files)
+
+    return create_module(
+        module_name = module_name,
+        o_files = o_files,
+        swiftdoc = swiftdoc,
+        swiftmodule = swiftmodule,
+        swiftsourceinfo = swiftsourceinfo,
+        all_files = all_files,
+    )
 
 def _spm_package_impl(ctx):
     build_output_dirname = "spm_build_output"
     build_output_dir = ctx.actions.declare_directory(build_output_dirname)
-    other_files = []
-    o_files = []
+    all_files = []
 
     # Parse the package description JSON.
     pkg_desc = json_parse(ctx.attr.package_description_json)
@@ -38,7 +51,7 @@ def _spm_package_impl(ctx):
 
     # TODO: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
-    other_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
+    all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
     target_names = []
     for product in pkg_desc["products"]:
@@ -47,12 +60,12 @@ def _spm_package_impl(ctx):
                 target_names.append(target_name)
 
     targets = [targets_dict[target_name] for target_name in target_names]
+    module_infos = []
     for target in targets:
-        target_files = _declare_target_files(ctx, target, build_config_dirname)
-        other_files.extend(target_files.other_files)
-        o_files.extend(target_files.o_files)
+        module_info = _declare_target_files(ctx, target, build_config_dirname)
+        module_infos.append(module_info)
+        all_files.extend([module_info.swiftdoc, module_info.swiftmodule, module_info.swiftsourceinfo] + module_info.o_files)
 
-    all_files = o_files + other_files
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
         outputs = [build_output_dir] + all_files,
@@ -70,10 +83,11 @@ def _spm_package_impl(ctx):
 
     return [
         DefaultInfo(files = depset(all_files)),
-        OutputGroupInfo(
-            o_files = depset(o_files),
-            all_files = depset(all_files),
-        ),
+        # OutputGroupInfo(
+        #     o_files = depset(o_files),
+        #     all_files = depset(all_files),
+        # ),
+        SPMPackageInfo(name = pkg_desc["name"], modules = module_infos),
     ]
 
 _attrs = {

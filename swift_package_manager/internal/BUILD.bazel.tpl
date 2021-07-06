@@ -19,15 +19,31 @@ spm_package(
     package_path = "external/{spm_repos_name}",
 )
 
-filegroup(
-    name = "o_files",
-    srcs = [":build"],
-    output_group = "o_files",
-)
+# filegroup(
+#     name = "o_files",
+#     srcs = [":build"],
+#     output_group = "o_files",
+# )
+# 
+# objc_library(
+#     name = "static_library",
+#     srcs = [
+#         ":o_files",
+#     ],
+# )
+# 
+# load("@build_bazel_rules_swift//swift:swift.bzl", "swift_import")
+# 
+# swift_import(
+#     name = "module",
+#     archives = [":static_library"],
+#     # FIXME: Generate this!
+#     module_name = "Logging",
+#    
+# )
 
-objc_library(
-    name = "static_library",
-    srcs = [
-        ":o_files",
-    ],
-)
+# spm_module(
+#     name = "XXX_module",
+#     package = ":build",
+#     module_name = "XXXX",
+# )

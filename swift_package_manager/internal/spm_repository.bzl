@@ -17,6 +17,8 @@ def _spm_repository_impl(ctx):
     )
     # DEBUG END
 
+    # TODO: Generate the spm_module(...) calls and add it to the BUILD.bazel that is generated.
+
     # Template Substitutions
     substitutions = {
         "{spm_repos_name}": ctx.attr.name,
