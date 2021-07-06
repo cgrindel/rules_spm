@@ -3,10 +3,6 @@ load(
     _spm_package = "spm_package",
 )
 load(
-    "//swift_package_manager/internal:spm_repository_info.bzl",
-    _spm_repository_info = "spm_repository_info",
-)
-load(
     "//swift_package_manager/internal:spm_repository.bzl",
     _spm_repository = "spm_repository",
 )
@@ -15,8 +11,9 @@ load(
     _spm_module = "spm_module",
 )
 
+# Repository Rules
 spm_repository = _spm_repository
-spm_repository_info = _spm_repository_info
 
+# Regular Rules and Macros
 spm_package = _spm_package
 spm_module = _spm_module
