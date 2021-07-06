@@ -1,9 +1,9 @@
 # TODO: Rename workspace to cgrindel_rules_spm.
-workspace(name = "rules_swift_package_manager")
+workspace(name = "cgrindel_rules_spm")
 
-load("//swift_package_manager:repositories.bzl", "rules_swift_package_manager_dependencies")
+load("//spm:repositories.bzl", "rules_spm_dependencies")
 
-rules_swift_package_manager_dependencies()
+rules_spm_dependencies()
 
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 

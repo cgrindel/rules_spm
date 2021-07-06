@@ -1,4 +1,4 @@
-workspace(name = "rules_swift_package_manager_examples")
+workspace(name = "rules_spm_examples")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -23,19 +23,19 @@ load(
 swift_rules_extra_dependencies()
 
 local_repository(
-    name = "rules_swift_package_manager",
+    name = "cgrindel_rules_spm",
     path = "..",
 )
 
 load(
-    "@rules_swift_package_manager//swift_package_manager:repositories.bzl",
-    "rules_swift_package_manager_dependencies",
+    "@cgrindel_rules_spm//spm:repositories.bzl",
+    "rules_spm_dependencies",
 )
 
-rules_swift_package_manager_dependencies()
+rules_spm_dependencies()
 
 load(
-    "@rules_swift_package_manager//swift_package_manager:swift_package_manager.bzl",
+    "@cgrindel_rules_spm//spm:spm.bzl",
     "spm_repository",
 )
 

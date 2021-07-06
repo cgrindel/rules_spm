@@ -1,5 +1,5 @@
 load(
-    "//swift_package_manager/internal:package_description.bzl",
+    "//spm/internal:package_description.bzl",
     "exported_targets",
     "parse_package_descrition_json",
 )
@@ -53,8 +53,8 @@ spm_repository = repository_rule(
             doc = "The URLs to use to download the repository.",
         ),
         "_build_tpl": attr.label(
-            # TODO: Can we replace this with Label("//swift_package_manager/internal:BUILD.bazel.tpl")?
-            default = "@rules_swift_package_manager//swift_package_manager/internal:BUILD.bazel.tpl",
+            # TODO: Can we replace this with Label("//spm/internal:BUILD.bazel.tpl")?
+            default = "@cgrindel_rules_spm//spm/internal:BUILD.bazel.tpl",
         ),
     },
 )

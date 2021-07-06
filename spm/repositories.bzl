@@ -13,7 +13,7 @@ def _maybe(repo_rule, name, **kwargs):
     if not native.existing_rule(name):
         repo_rule(name = name, **kwargs)
 
-def rules_swift_package_manager_dependencies():
+def rules_spm_dependencies():
     _maybe(
         http_archive,
         name = "bazel_skylib",
