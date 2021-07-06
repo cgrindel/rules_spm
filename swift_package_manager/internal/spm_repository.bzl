@@ -54,7 +54,7 @@ spm_repository = repository_rule(
         ),
         "_build_tpl": attr.label(
             # TODO: Can we replace this with Label("//swift_package_manager/internal:BUILD.bazel.tpl")?
-            default = "@rules_swift_package_manager//swift_package_manager/internal:BUILD.bazel.tpl",
+            default = "@cgrindel_rules_spm//swift_package_manager/internal:BUILD.bazel.tpl",
         ),
     },
 )
