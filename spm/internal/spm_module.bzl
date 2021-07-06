@@ -2,7 +2,7 @@ load(
     "@build_bazel_rules_swift//swift:swift.bzl",
     "swift_import",
 )
-load("//swift_package_manager/internal:spm_filegroup.bzl", "spm_filegroup")
+load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 
 def spm_module(name, package):
     module_name = name

@@ -1,7 +1,7 @@
 # TODO: Rename workspace to cgrindel_rules_spm.
 workspace(name = "cgrindel_rules_spm")
 
-load("//swift_package_manager:repositories.bzl", "rules_spm_dependencies")
+load("//spm:repositories.bzl", "rules_spm_dependencies")
 
 rules_spm_dependencies()
 

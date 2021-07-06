@@ -28,14 +28,14 @@ local_repository(
 )
 
 load(
-    "@cgrindel_rules_spm//swift_package_manager:repositories.bzl",
+    "@cgrindel_rules_spm//spm:repositories.bzl",
     "rules_spm_dependencies",
 )
 
 rules_spm_dependencies()
 
 load(
-    "@cgrindel_rules_spm//swift_package_manager:swift_package_manager.bzl",
+    "@cgrindel_rules_spm//spm:spm.bzl",
     "spm_repository",
 )
 

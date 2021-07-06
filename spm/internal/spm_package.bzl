@@ -1,6 +1,6 @@
-load("//swift_package_manager/internal:providers.bzl", "SPMPackageInfo", "create_module")
+load("//spm/internal:providers.bzl", "SPMPackageInfo", "create_module")
 load(
-    "//swift_package_manager/internal:package_description.bzl",
+    "//spm/internal:package_description.bzl",
     "exported_targets",
     "parse_package_descrition_json",
 )

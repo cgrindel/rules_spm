@@ -1,4 +1,4 @@
-load("//swift_package_manager/internal:providers.bzl", "SPMPackageInfo")
+load("//spm/internal:providers.bzl", "SPMPackageInfo")
 
 def _get_module_info(pkg_info, module_name):
     for module in pkg_info.modules:
