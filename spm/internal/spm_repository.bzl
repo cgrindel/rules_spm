@@ -53,8 +53,7 @@ spm_repository = repository_rule(
             doc = "The URLs to use to download the repository.",
         ),
         "_build_tpl": attr.label(
-            # GH003: Can we replace this with Label("//spm/internal:BUILD.bazel.tpl")?
-            default = "@cgrindel_rules_spm//spm/internal:BUILD.bazel.tpl",
+            default = "//spm/internal:BUILD.bazel.tpl",
         ),
     },
 )
