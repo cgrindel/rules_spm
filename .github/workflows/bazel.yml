@@ -1,0 +1,29 @@
+name: Bazel
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: macos-11.0
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Output the Bazel Info
+      shell: bash
+      run: |
+        bazelisk info
+
+    - name: Build Anything Not Tested
+      shell: bash
+      run: |
+        bazelisk build //... 
+
+    - name: Build Examples
+      shell: bash
+      run: |
+        cd examples
+        bazelisk build //... 
