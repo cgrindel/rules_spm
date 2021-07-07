@@ -1,6 +1,6 @@
 load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
 
-def parse_package_descrition_json(json):
+def parse_package_description_json(json):
     """Parses the JSON string and returns a dict representing the JSON structure.
 
     Args:
