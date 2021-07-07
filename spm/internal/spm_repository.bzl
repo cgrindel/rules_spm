@@ -1,6 +1,6 @@
 load(
     "//spm/internal:package_description.bzl",
-    "exported_targets",
+    "exported_library_targets",
     "parse_package_description_json",
 )
 
@@ -23,7 +23,7 @@ def _spm_repository_impl(ctx):
     describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
 
     pkg_desc = parse_package_description_json(describe_result.stdout)
-    targets = exported_targets(pkg_desc)
+    targets = exported_library_targets(pkg_desc)
 
     modules = [SPM_MODULE_TPL % (target["c99name"]) for target in targets]
 

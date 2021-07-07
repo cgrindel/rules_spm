@@ -1,7 +1,7 @@
 load("//spm/internal:providers.bzl", "SPMPackageInfo", "create_clang_module", "create_swift_module")
 load(
     "//spm/internal:package_description.bzl",
-    "exported_targets",
+    "exported_library_targets",
     "parse_package_description_json",
 )
 
@@ -78,7 +78,13 @@ def _spm_package_impl(ctx):
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
     all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
-    targets = exported_targets(pkg_desc)
+    targets = exported_library_targets(pkg_desc)
+
+    # DEBUG BEGIN
+    debug_target_names = [t["name"] for t in targets]
+    print("*** CHUCK debug_target_names: ", debug_target_names)
+    # DEBUG END
+
     swift_module_infos = []
     clang_module_infos = []
     for target in targets:
