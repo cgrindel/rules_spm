@@ -17,6 +17,11 @@ jobs:
       run: |
         bazelisk info
 
+    - name: Execute Tests
+      shell: bash
+      run: |
+        bazelisk test //... 
+
     - name: Build Anything Not Tested
       shell: bash
       run: |
