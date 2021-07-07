@@ -24,7 +24,7 @@ swift_rules_extra_dependencies()
 
 local_repository(
     name = "cgrindel_rules_spm",
-    path = "..",
+    path = "../..",
 )
 
 load(
