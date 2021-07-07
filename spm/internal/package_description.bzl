@@ -11,6 +11,12 @@ def parse_package_description_json(json):
     """
     return json_parse(json)
 
+def is_library_product(product):
+    return "library" in product["type"]
+
+def library_products(pkg_desc):
+    return [p for p in pkg_desc["products"] if is_library_product(p)]
+
 def exported_targets(pkg_desc):
     """Returns the exported targets from the SPM pacakge.
 
