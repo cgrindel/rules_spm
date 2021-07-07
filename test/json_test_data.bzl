@@ -1,4 +1,4 @@
-simple_package_description_json = """
+package_description_json = """
 {
   "dependencies" : [
 
@@ -57,6 +57,16 @@ simple_package_description_json = """
         "Locks.swift",
         "LogHandler.swift",
         "Logging.swift"
+      ],
+      "type" : "library"
+    },
+    {
+      "c99name" : "NotVisible",
+      "module_type" : "SwiftTarget",
+      "name" : "NotVisible",
+      "path" : "Sources/NotVisible",
+      "sources" : [
+        "Foo.swift"
       ],
       "type" : "library"
     }
