@@ -25,5 +25,5 @@ jobs:
     - name: Build Examples
       shell: bash
       run: |
-        cd examples
+        cd examples/simple
         bazelisk build //... 
