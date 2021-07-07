@@ -1,0 +1,6 @@
+load(":package_description_tests.bzl", "package_description_test_suite")
+load(":providers_tests.bzl", "providers_test_suite")
+
+package_description_test_suite()
+
+providers_test_suite()
