@@ -1,4 +1,4 @@
-load("//spm/internal:providers.bzl", "SPMPackageInfo", "create_module")
+load("//spm/internal:providers.bzl", "SPMPackageInfo", "create_clang_module", "create_swift_module")
 load(
     "//spm/internal:package_description.bzl",
     "exported_targets",
@@ -8,7 +8,29 @@ load(
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
-def _declare_target_files(ctx, target, build_config_dirname):
+# def _declare_target_files(ctx, target, build_config_dirname):
+#     module_type = target["module_type"]
+#     if module_type == "SwiftTarget":
+#         return _declare_swift_target_files(ctx, target, build_config_dirname)
+#     if module_type == "ClangTarget":
+#         return _declare_clang_target_files(ctx, target, build_config_dirname)
+
+def _declare_clang_target_files(ctx, target, build_config_dirname):
+    all_files = []
+    o_files = []
+
+    target_name = target["name"]
+    module_name = target["c99name"]
+
+    # TODO: IMPLEMENT ME
+
+    return create_clang_module(
+        module_name = module_name,
+        o_files = o_files,
+        all_files = all_files,
+    )
+
+def _declare_swift_target_files(ctx, target, build_config_dirname):
     all_files = []
     o_files = []
 
@@ -35,7 +57,7 @@ def _declare_target_files(ctx, target, build_config_dirname):
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_files.extend(o_files)
 
-    return create_module(
+    return create_swift_module(
         module_name = module_name,
         o_files = o_files,
         swiftdoc = swiftdoc,
@@ -57,11 +79,18 @@ def _spm_package_impl(ctx):
     all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
     targets = exported_targets(pkg_desc)
-    module_infos = []
+    swift_module_infos = []
+    clang_module_infos = []
     for target in targets:
-        module_info = _declare_target_files(ctx, target, build_config_dirname)
-        module_infos.append(module_info)
-        all_files.extend(module_info.all_files)
+        module_type = target["module_type"]
+        if module_type == "SwiftTarget":
+            swift_module_info = _declare_swift_target_files(ctx, target, build_config_dirname)
+            swift_module_infos.append(swift_module_info)
+            all_files.extend(swift_module_info.all_files)
+        if module_type == "ClangTarget":
+            clang_module_info = _declare_clang_target_files(ctx, target, build_config_dirname)
+            clang_module_infos.append(clang_module_info)
+            all_files.extend(clang_module_info.all_files)
 
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
@@ -80,7 +109,11 @@ def _spm_package_impl(ctx):
 
     return [
         DefaultInfo(files = depset(all_files)),
-        SPMPackageInfo(name = pkg_desc["name"], modules = module_infos),
+        SPMPackageInfo(
+            name = pkg_desc["name"],
+            swift_modules = swift_module_infos,
+            clang_modules = clang_module_infos,
+        ),
     ]
 
 _attrs = {
