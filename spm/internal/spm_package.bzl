@@ -2,7 +2,7 @@ load("//spm/internal:providers.bzl", "SPMPackageInfo", "create_module")
 load(
     "//spm/internal:package_description.bzl",
     "exported_targets",
-    "parse_package_descrition_json",
+    "parse_package_description_json",
 )
 
 # GH004: Update this to use a toolchain to execute "swift build".
@@ -50,7 +50,7 @@ def _spm_package_impl(ctx):
     all_files = []
 
     # Parse the package description JSON.
-    pkg_desc = parse_package_descrition_json(ctx.attr.package_description_json)
+    pkg_desc = parse_package_description_json(ctx.attr.package_description_json)
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
