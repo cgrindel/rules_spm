@@ -3,7 +3,7 @@
 load(
     "@cgrindel_rules_spm//spm:spm.bzl", 
     "spm_package", 
-    "spm_module",
+    "spm_swift_module",
 )
 
 package(default_visibility = ["//visibility:public"])

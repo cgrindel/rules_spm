@@ -4,8 +4,8 @@ load(
     "parse_package_description_json",
 )
 
-SPM_MODULE_TPL = """
-spm_module(
+SPM_SWIFT_MODULE_TPL = """
+spm_swift_module(
     name = "%s",
     package = ":build",
 )
@@ -25,7 +25,7 @@ def _spm_repository_impl(ctx):
     pkg_desc = parse_package_description_json(describe_result.stdout)
     targets = exported_library_targets(pkg_desc)
 
-    modules = [SPM_MODULE_TPL % (target["c99name"]) for target in targets]
+    modules = [SPM_SWIFT_MODULE_TPL % (target["c99name"]) for target in targets]
 
     # Template Substitutions
     substitutions = {

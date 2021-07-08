@@ -8,13 +8,6 @@ load(
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
-# def _declare_target_files(ctx, target, build_config_dirname):
-#     module_type = target["module_type"]
-#     if module_type == "SwiftTarget":
-#         return _declare_swift_target_files(ctx, target, build_config_dirname)
-#     if module_type == "ClangTarget":
-#         return _declare_clang_target_files(ctx, target, build_config_dirname)
-
 def _declare_clang_target_files(ctx, target, build_config_dirname):
     all_files = []
     o_files = []
@@ -79,11 +72,6 @@ def _spm_package_impl(ctx):
     all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
     targets = exported_library_targets(pkg_desc)
-
-    # DEBUG BEGIN
-    debug_target_names = [t["name"] for t in targets]
-    print("*** CHUCK debug_target_names: ", debug_target_names)
-    # DEBUG END
 
     swift_module_infos = []
     clang_module_infos = []
