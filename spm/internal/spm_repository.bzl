@@ -11,6 +11,13 @@ spm_swift_module(
 )
 """
 
+SPM_CLANG_MODULE_TPL = """
+spm_clang_module(
+    name = "%s",
+    package = ":build",
+)
+"""
+
 def _spm_repository_impl(ctx):
     # Download the archive
     ctx.download_and_extract(
@@ -25,7 +32,13 @@ def _spm_repository_impl(ctx):
     pkg_desc = parse_package_description_json(describe_result.stdout)
     targets = exported_library_targets(pkg_desc)
 
-    modules = [SPM_SWIFT_MODULE_TPL % (target["c99name"]) for target in targets]
+    modules = []
+    for target in targets:
+        module_type = target["module_type"]
+        if module_type == "SwiftTarget":
+            modules.append(SPM_SWIFT_MODULE_TPL % (target["c99name"]))
+        elif module_type == "ClangTarget":
+            modules.append(SPM_CLANG_MODULE_TPL % (target["c99name"]))
 
     # Template Substitutions
     substitutions = {

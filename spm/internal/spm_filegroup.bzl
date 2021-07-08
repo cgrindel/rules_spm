@@ -25,6 +25,8 @@ def _spm_filegroup_impl(ctx):
         output = [module_info.swiftmodule]
     elif file_type == "swiftsourceinfo":
         output = [module_info.swiftsourceinfo]
+    elif file_type == "hdrs":
+        output = [module_info.hdrs]
     elif file_type == "all":
         output = module_info.all_files
     else:
