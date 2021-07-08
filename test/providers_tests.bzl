@@ -48,7 +48,7 @@ def _create_clang_module_test(ctx):
 create_clang_module_test = unittest.make(_create_clang_module_test)
 
 def providers_test_suite():
-    unittest.suite(
+    return unittest.suite(
         "providers_tests",
         create_swift_module_test,
         create_clang_module_test,

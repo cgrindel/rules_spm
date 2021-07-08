@@ -1,3 +1,4 @@
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//spm/internal:providers.bzl", "SPMPackageInfo", "create_clang_module", "create_swift_module")
 load(
     "//spm/internal:package_description.bzl",
@@ -8,15 +9,34 @@ load(
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
+def is_module_file(target_name, file):
+    if file.is_directory:
+        return False
+    dir_parts = file.short_path.split("/")
+    for dir_part in dir_parts:
+        if dir_part == target_name:
+            return True
+    return False
+
+def is_hdr_file(file):
+    if file.is_directory or file.extension != "h":
+        return False
+    dir_name = paths.basename(file.dirname)
+    return dir_name == "include"
+
 def _declare_clang_target_files(ctx, target, build_config_dirname):
     all_files = []
-    o_files = []
-    hdrs = []
 
     target_name = target["name"]
     module_name = target["c99name"]
 
-    # TODO: IMPLEMENT ME
+    hdrs = [src for src in ctx.files.srcs if is_module_file(target_name, src) and is_hdr_file(src)]
+
+    target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
+    o_files = []
+    for src in target["sources"]:
+        o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
+    all_files.extend(o_files)
 
     return create_clang_module(
         module_name = module_name,
