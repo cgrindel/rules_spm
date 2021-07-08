@@ -11,6 +11,7 @@ load(
 def _declare_clang_target_files(ctx, target, build_config_dirname):
     all_files = []
     o_files = []
+    hdrs = []
 
     target_name = target["name"]
     module_name = target["c99name"]
@@ -20,6 +21,7 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
     return create_clang_module(
         module_name = module_name,
         o_files = o_files,
+        hdrs = hdrs,
         all_files = all_files,
     )
 
