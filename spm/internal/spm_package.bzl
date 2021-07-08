@@ -30,7 +30,15 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
     target_name = target["name"]
     module_name = target["c99name"]
 
-    hdrs = [src for src in ctx.files.srcs if is_module_file(target_name, src) and is_hdr_file(src)]
+    # TODO: I think that I need to copy the hdr files to the output, not just declare them as outputs.
+
+    # hdrs = [src for src in ctx.files.srcs if is_module_file(target_name, src) and is_hdr_file(src)]
+    hdrs = []
+    all_files.extend(hdrs)
+
+    # DEBUG BEGIN
+    print("*** CHUCK target_name: ", target_name, " | ", hdrs)
+    # DEBUG END
 
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
     o_files = []
@@ -93,7 +101,9 @@ def _spm_package_impl(ctx):
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
     all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
-    targets = exported_library_targets(pkg_desc)
+    # targets = exported_library_targets(pkg_desc)
+    # targets = pkg_desc["targets"]
+    targets = [t for t in pkg_desc["targets"] if t["type"] == "library"]
 
     swift_module_infos = []
     clang_module_infos = []
