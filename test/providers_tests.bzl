@@ -1,5 +1,10 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:providers.bzl", "create_clang_module", "create_swift_module")
+load(
+    "//spm/internal:providers.bzl",
+    "create_clang_module",
+    "create_copy_info",
+    "create_swift_module",
+)
 
 def _create_swift_module_test(ctx):
     env = unittest.begin(ctx)
@@ -47,9 +52,21 @@ def _create_clang_module_test(ctx):
 
 create_clang_module_test = unittest.make(_create_clang_module_test)
 
+def _create_copy_test(ctx):
+    env = unittest.begin(ctx)
+
+    result = create_copy_info("src", "dest")
+    expected = struct(src = "src", dest = "dest")
+    asserts.equals(env, expected, result)
+
+    return unittest.end(env)
+
+create_copy_test = unittest.make(_create_copy_test)
+
 def providers_test_suite():
     return unittest.suite(
         "providers_tests",
         create_swift_module_test,
         create_clang_module_test,
+        create_copy_test,
     )
