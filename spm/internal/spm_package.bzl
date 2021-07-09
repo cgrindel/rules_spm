@@ -30,28 +30,55 @@ def is_hdr_file(file):
     dir_name = paths.basename(file.dirname)
     return dir_name == "include"
 
-def _create_clang_module_build_info(module_name, modulemap, o_files, src_hdrs, build_dir, all_build_outs):
+def is_modulemap_file(file):
+    if file.is_directory:
+        return False
+    return file.basename == "module.modulemap"
+
+def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, files_to_copy, build_dir, all_build_outs):
     return struct(
         module_name = module_name,
         modulemap = modulemap,
         o_files = o_files,
-        src_hdrs = src_hdrs,
+        hdrs = hdrs,
         build_dir = build_dir,
+        files_to_copy = files_to_copy,
         all_build_outs = all_build_outs,
     )
 
+def _modulemap_for_target(ctx, target_name):
+    for src in ctx.files.srcs:
+        if is_module_file(target_name, src) and is_modulemap_file(src):
+            return src
+    return None
+
 def _declare_clang_target_files(ctx, target, build_config_dirname):
     all_build_outs = []
+    files_to_copy = []
 
     target_name = target["name"]
     module_name = target["c99name"]
 
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
 
-    modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
-    all_build_outs.append(modulemap)
+    src_modulemap = _modulemap_for_target(ctx, target_name)
+    if src_modulemap:
+        out_modulemap = ctx.actions.declare_file(
+            "%s/include/%s" % (target_build_dirname, src_modulemap.basename),
+        )
+        files_to_copy.append(create_copy_info(src_modulemap, out_modulemap))
+    else:
+        out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
+        all_build_outs.append(out_modulemap)
 
     src_hdrs = [src for src in ctx.files.srcs if is_module_file(target_name, src) and is_hdr_file(src)]
+    out_hdrs = []
+    for src_hdr in src_hdrs:
+        out_hdr = ctx.actions.declare_file(
+            "%s/include/%s" % (target_build_dirname, src_hdr.basename),
+        )
+        out_hdrs.append(out_hdr)
+        files_to_copy.append(create_copy_info(src_hdr, out_hdr))
 
     o_files = []
     for src in target["sources"]:
@@ -60,37 +87,33 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
 
     return _create_clang_module_build_info(
         module_name = module_name,
-        modulemap = modulemap,
+        modulemap = out_modulemap,
         o_files = o_files,
-        src_hdrs = src_hdrs,
+        hdrs = out_hdrs,
+        files_to_copy = files_to_copy,
         build_dir = target_build_dirname,
         all_build_outs = all_build_outs,
     )
 
-def _copy_hdr_files(ctx, clang_module_build_info):
-    copy_infos = []
-    for src_hdr in clang_module_build_info.src_hdrs:
-        out_hdr = ctx.actions.declare_file(
-            "%s/include/%s" % (clang_module_build_info.build_dir, src_hdr.basename),
-        )
-        ctx.actions.run_shell(
-            inputs = [src_hdr],
-            outputs = [out_hdr],
-            arguments = [src_hdr.path, out_hdr.path],
-            command = """
-            cp "$1" "$2"
-            """,
-            progress_message = "Copying header file to output.",
-        )
-        copy_infos.append(create_copy_info(src = src_hdr, dest = out_hdr))
-    return copy_infos
+def _copy_files(ctx, copy_info):
+    ctx.actions.run_shell(
+        inputs = [copy_info.src],
+        outputs = [copy_info.dest],
+        arguments = [copy_info.src.path, copy_info.dest.path],
+        command = """
+        cp "$1" "$2"
+        """,
+        progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
+    )
 
-def _create_clang_module(clang_module_build_info, hdrs):
+def _create_clang_module(clang_module_build_info):
+    copied_files = [copy_info.dest for copy_info in clang_module_build_info.files_to_copy]
     return create_clang_module(
         module_name = clang_module_build_info.module_name,
         o_files = clang_module_build_info.o_files,
-        hdrs = hdrs,
-        all_outputs = clang_module_build_info.all_build_outs + hdrs,
+        hdrs = clang_module_build_info.hdrs,
+        modulemap = clang_module_build_info.modulemap,
+        all_outputs = clang_module_build_info.all_build_outs + copied_files,
     )
 
 def _declare_swift_target_files(ctx, target, build_config_dirname):
@@ -182,20 +205,23 @@ def _spm_package_impl(ctx):
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
-    # Copy the header files to the output.
-    hdr_copy_infos = []
-    clang_module_infos = []
     for clang_module_build_info in clang_module_build_infos:
-        copy_infos = _copy_hdr_files(ctx, clang_module_build_info)
-        hdr_copy_infos.extend(copy_infos)
-        out_hdrs = [ci.dest for ci in copy_infos]
-        clang_module_infos.append(_create_clang_module(clang_module_build_info, out_hdrs))
+        for copy_info in clang_module_build_info.files_to_copy:
+            _copy_files(ctx, copy_info)
+
+    clang_module_infos = [_create_clang_module(cmbi) for cmbi in clang_module_build_infos]
+
+    all_outputs = []
+    for smi in swift_module_infos:
+        all_outputs.extend(smi.all_outputs)
+    for cmi in clang_module_infos:
+        all_outputs.extend(cmi.all_outputs)
 
     # TODO: Update the module.modulemap files generated by the Clang targets to
     # point to the include files that have been output.
 
     return [
-        DefaultInfo(files = depset(all_build_outs + [ci.dest for ci in hdr_copy_infos])),
+        DefaultInfo(files = depset(all_outputs)),
         SPMPackageInfo(
             name = pkg_desc["name"],
             swift_modules = swift_module_infos,

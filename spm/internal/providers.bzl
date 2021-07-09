@@ -27,7 +27,7 @@ def create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsource
         all_outputs = all_outputs,
     )
 
-def create_clang_module(module_name, o_files, hdrs, all_outputs):
+def create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
     """Creates a value representing the Clang module that is built from a package.
 
     Args:
@@ -40,6 +40,7 @@ def create_clang_module(module_name, o_files, hdrs, all_outputs):
         module_name = module_name,
         o_files = o_files,
         hdrs = hdrs,
+        modulemap = modulemap,
         all_outputs = all_outputs,
     )
 

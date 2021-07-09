@@ -38,12 +38,14 @@ def _create_clang_module_test(ctx):
         "MyModule",
         ["first.o", "second.o"],
         ["hdrs"],
+        "modulemap",
         ["all"],
     )
     expected = struct(
         module_name = "MyModule",
         o_files = ["first.o", "second.o"],
         hdrs = ["hdrs"],
+        modulemap = "modulemap",
         all_outputs = ["all"],
     )
     asserts.equals(env, expected, result)

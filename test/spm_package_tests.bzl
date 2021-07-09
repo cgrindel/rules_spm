@@ -1,5 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:spm_package.bzl", "is_hdr_file", "is_module_file")
+load("//spm/internal:spm_package.bzl", "is_hdr_file", "is_module_file", "is_modulemap_file")
 
 def _is_module_file_test(ctx):
     env = unittest.begin(ctx)
@@ -44,9 +44,23 @@ def _is_hdr_file_test(ctx):
 
 is_hdr_file_test = unittest.make(_is_hdr_file_test)
 
+def _is_modulemap_file_test(ctx):
+    env = unittest.begin(ctx)
+
+    file = struct(is_directory = True, basename = "module.modulemap")
+    asserts.false(env, is_modulemap_file(file))
+
+    file = struct(is_directory = False, basename = "module.modulemap")
+    asserts.true(env, is_modulemap_file(file))
+
+    return unittest.end(env)
+
+is_modulemap_file_test = unittest.make(_is_modulemap_file_test)
+
 def spm_package_test_suite():
     return unittest.suite(
         "spm_package_tests",
         is_module_file_test,
         is_hdr_file_test,
+        is_modulemap_file_test,
     )
