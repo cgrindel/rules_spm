@@ -15,7 +15,7 @@ load(
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
-def is_module_file(target_name, file):
+def is_target_file(target_name, file):
     if file.is_directory:
         return False
     dir_parts = file.short_path.split("/")
@@ -48,7 +48,7 @@ def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, files
 
 def _modulemap_for_target(ctx, target_name):
     for src in ctx.files.srcs:
-        if is_module_file(target_name, src) and is_modulemap_file(src):
+        if is_target_file(target_name, src) and is_modulemap_file(src):
             return src
     return None
 
@@ -71,7 +71,7 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
         out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
         all_build_outs.append(out_modulemap)
 
-    src_hdrs = [src for src in ctx.files.srcs if is_module_file(target_name, src) and is_hdr_file(src)]
+    src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
     out_hdrs = []
     for src_hdr in src_hdrs:
         out_hdr = ctx.actions.declare_file(
