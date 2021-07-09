@@ -18,7 +18,7 @@ def _create_swift_module_test(ctx):
         swiftdoc = "MyModule.swiftdoc",
         swiftmodule = "MyModule.swiftmodule",
         swiftsourceinfo = "MyModule.swiftsourceinfo",
-        all_files = ["all"],
+        all_outputs = ["all"],
     )
     asserts.equals(env, expected, result)
 
@@ -39,7 +39,7 @@ def _create_clang_module_test(ctx):
         module_name = "MyModule",
         o_files = ["first.o", "second.o"],
         hdrs = ["hdrs"],
-        all_files = ["all"],
+        all_outputs = ["all"],
     )
     asserts.equals(env, expected, result)
 
