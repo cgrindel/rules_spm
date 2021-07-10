@@ -88,17 +88,17 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_build_outs.extend(o_files)
 
-    if create_include_dir:
-        include_dir = ctx.actions.declare_directory(include_dirname)
-        ctx.actions.run_shell(
-            outputs = [include_dir],
-            arguments = [include_dir.path],
-            command = """
-            mkdir -p "$1"
-            """,
-            mnemonic = "Mkdir",
-            progress_message = "Make include directory (%s)" % (include_dir.path),
-        )
+    # if create_include_dir:
+    #     include_dir = ctx.actions.declare_directory(include_dirname)
+    #     ctx.actions.run_shell(
+    #         outputs = [include_dir],
+    #         arguments = [include_dir.path],
+    #         command = """
+    #         mkdir -p "$1"
+    #         """,
+    #         mnemonic = "Mkdir",
+    #         progress_message = "Make include directory (%s)" % (include_dir.path),
+    #     )
 
     return _create_clang_module_build_info(
         module_name = module_name,
@@ -124,10 +124,20 @@ def _copy_files(ctx, copy_info):
     #     """,
     #     progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
     # )
-    ctx.actions.symlink(
-        output = copy_info.dest,
-        target_file = copy_info.src,
-        progress_message = "Creating symlink (%s)." % (copy_info.dest.path),
+    # ctx.actions.symlink(
+    #     output = copy_info.dest,
+    #     target_file = copy_info.src,
+    #     progress_message = "Creating symlink (%s)." % (copy_info.dest.path),
+    # )
+    ctx.actions.run_shell(
+        inputs = [copy_info.src],
+        outputs = [copy_info.dest],
+        arguments = [copy_info.src.path, copy_info.dest.path],
+        command = """
+        mkdir -p $(dirname "$2")
+        cp "$1" "$2"
+        """,
+        progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
     )
 
 def _create_clang_module(clang_module_build_info):
