@@ -61,10 +61,14 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
 
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
 
+    create_include_dir = False
+    include_dirname = "%s/include" % (target_build_dirname)
+
     src_modulemap = _modulemap_for_target(ctx, target_name)
     if src_modulemap:
+        create_include_dir = True
         out_modulemap = ctx.actions.declare_file(
-            "%s/include/%s" % (target_build_dirname, src_modulemap.basename),
+            "%s/%s" % (include_dirname, src_modulemap.basename),
         )
         files_to_copy.append(create_copy_info(src_modulemap, out_modulemap))
     else:
@@ -74,9 +78,8 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
     src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
     out_hdrs = []
     for src_hdr in src_hdrs:
-        out_hdr = ctx.actions.declare_file(
-            "%s/include/%s" % (target_build_dirname, src_hdr.basename),
-        )
+        create_include_dir = True
+        out_hdr = ctx.actions.declare_file("%s/%s" % (include_dirname, src_hdr.basename))
         out_hdrs.append(out_hdr)
         files_to_copy.append(create_copy_info(src_hdr, out_hdr))
 
@@ -84,6 +87,18 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_build_outs.extend(o_files)
+
+    if create_include_dir:
+        include_dir = ctx.actions.declare_directory(include_dirname)
+        ctx.actions.run_shell(
+            outputs = [include_dir],
+            arguments = [include_dir.path],
+            command = """
+            mkdir -p "$1"
+            """,
+            mnemonic = "Mkdir",
+            progress_message = "Make include directory (%s)" % (include_dir.path),
+        )
 
     return _create_clang_module_build_info(
         module_name = module_name,
@@ -96,14 +111,23 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
     )
 
 def _copy_files(ctx, copy_info):
-    ctx.actions.run_shell(
-        inputs = [copy_info.src],
-        outputs = [copy_info.dest],
-        arguments = [copy_info.src.path, copy_info.dest.path],
-        command = """
-        cp "$1" "$2"
-        """,
-        progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
+    # DEBUG BEGIN
+    print("*** CHUCK _copy_files copy_info: ", copy_info)
+
+    # DEBUG END
+    # ctx.actions.run_shell(
+    #     inputs = [copy_info.src],
+    #     outputs = [copy_info.dest],
+    #     arguments = [copy_info.src.path, copy_info.dest.path],
+    #     command = """
+    #     cp "$1" "$2"
+    #     """,
+    #     progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
+    # )
+    ctx.actions.symlink(
+        output = copy_info.dest,
+        target_file = copy_info.src,
+        progress_message = "Creating symlink (%s)." % (copy_info.dest.path),
     )
 
 def _create_clang_module(clang_module_build_info):
