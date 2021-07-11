@@ -1,4 +1,3 @@
-load("@bazel_skylib//lib:paths.bzl", "paths")
 load(
     "//spm/internal:providers.bzl",
     "SPMPackageInfo",
@@ -11,29 +10,10 @@ load(
     "exported_library_targets",
     "parse_package_description_json",
 )
+load("//spm/internal:files.bzl", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
-
-def is_target_file(target_name, file):
-    if file.is_directory:
-        return False
-    dir_parts = file.short_path.split("/")
-    for dir_part in dir_parts:
-        if dir_part == target_name:
-            return True
-    return False
-
-def is_hdr_file(file):
-    if file.is_directory or file.extension != "h":
-        return False
-    dir_name = paths.basename(file.dirname)
-    return dir_name == "include"
-
-def is_modulemap_file(file):
-    if file.is_directory:
-        return False
-    return file.basename == "module.modulemap"
 
 def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, files_to_copy, build_dir, all_build_outs):
     return struct(

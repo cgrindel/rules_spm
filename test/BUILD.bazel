@@ -1,9 +1,9 @@
 load(":package_description_tests.bzl", "package_description_test_suite")
 load(":providers_tests.bzl", "providers_test_suite")
-load(":spm_package_tests.bzl", "spm_package_test_suite")
+load(":files_tests.bzl", "files_test_suite")
 
 package_description_test_suite()
 
 providers_test_suite()
 
-spm_package_test_suite()
+files_test_suite()
