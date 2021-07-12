@@ -45,10 +45,11 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
 
     src_modulemap = _modulemap_for_target(ctx, target_name)
     if src_modulemap:
-        out_modulemap = ctx.actions.declare_file(
-            "%s/%s" % (include_dirname, src_modulemap.basename),
-        )
-        files_to_copy.append(create_copy_info(src_modulemap, out_modulemap))
+        # out_modulemap = ctx.actions.declare_file(
+        #     "%s/%s" % (include_dirname, src_modulemap.basename),
+        # )
+        # files_to_copy.append(create_copy_info(src_modulemap, out_modulemap))
+        out_modulemap = None
     else:
         out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
         all_build_outs.append(out_modulemap)
