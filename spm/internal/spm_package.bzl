@@ -41,12 +41,10 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
 
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
 
-    create_include_dir = False
     include_dirname = "%s/include" % (target_build_dirname)
 
     src_modulemap = _modulemap_for_target(ctx, target_name)
     if src_modulemap:
-        create_include_dir = True
         out_modulemap = ctx.actions.declare_file(
             "%s/%s" % (include_dirname, src_modulemap.basename),
         )
@@ -56,50 +54,29 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
         all_build_outs.append(out_modulemap)
 
     src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
-    out_hdrs = []
-    for src_hdr in src_hdrs:
-        create_include_dir = True
-        out_hdr = ctx.actions.declare_file("%s/%s" % (include_dirname, src_hdr.basename))
-        out_hdrs.append(out_hdr)
-        files_to_copy.append(create_copy_info(src_hdr, out_hdr))
+    # out_hdrs = []
+    # for src_hdr in src_hdrs:
+    #     out_hdr = ctx.actions.declare_file("%s/%s" % (include_dirname, src_hdr.basename))
+    #     out_hdrs.append(out_hdr)
+    #     files_to_copy.append(create_copy_info(src_hdr, out_hdr))
 
     o_files = []
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_build_outs.extend(o_files)
 
-    # if create_include_dir:
-    #     include_dir = ctx.actions.declare_directory(include_dirname)
-    #     ctx.actions.run_shell(
-    #         outputs = [include_dir],
-    #         arguments = [include_dir.path],
-    #         command = """
-    #         mkdir -p "$1"
-    #         """,
-    #         mnemonic = "Mkdir",
-    #         progress_message = "Make include directory (%s)" % (include_dir.path),
-    #     )
-
     return _create_clang_module_build_info(
         module_name = module_name,
         modulemap = out_modulemap,
         o_files = o_files,
-        hdrs = out_hdrs,
+        # hdrs = out_hdrs,
+        hdrs = src_hdrs,
         files_to_copy = files_to_copy,
         build_dir = target_build_dirname,
         all_build_outs = all_build_outs,
     )
 
 def _copy_files(ctx, copy_info):
-    # ctx.actions.run_shell(
-    #     inputs = [copy_info.src],
-    #     outputs = [copy_info.dest],
-    #     arguments = [copy_info.src.path, copy_info.dest.path],
-    #     command = """
-    #     cp "$1" "$2"
-    #     """,
-    #     progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
-    # )
     # ctx.actions.symlink(
     #     output = copy_info.dest,
     #     target_file = copy_info.src,
@@ -194,15 +171,11 @@ def _spm_package_impl(ctx):
             clang_module_build_infos.append(clang_module_build_info)
             all_build_outs.extend(clang_module_build_info.all_build_outs)
 
-    # DEBUG BEGIN
-    bar_file = ctx.actions.declare_file("%s/CNIOWindows.build/include/bar" % (build_config_dirname))
-    # DEBUG END
-
     build_path = foo_file.dirname
     ctx.actions.run_shell(
         inputs = ctx.files.srcs,
-        outputs = all_build_outs + [bar_file],
-        arguments = [ctx.attr.configuration, ctx.attr.package_path, build_path, bar_file.path],
+        outputs = all_build_outs,
+        arguments = [ctx.attr.configuration, ctx.attr.package_path, build_path],
         command = """
         swift build \
           --manifest-cache none \
@@ -210,35 +183,9 @@ def _spm_package_impl(ctx):
           --configuration $1 \
           --package-path $2 \
           --build-path "$3"
-
-        mkdir -p $(dirname "$4")
-        touch "$4"
         """,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
-    # ctx.actions.run_shell(
-    #     inputs = ctx.files.srcs,
-    #     outputs = all_build_outs,
-    #     arguments = [ctx.attr.configuration, ctx.attr.package_path, build_path],
-    #     command = """
-    #     swift build \
-    #       --manifest-cache none \
-    #       --disable-sandbox \
-    #       --configuration $1 \
-    #       --package-path $2 \
-    #       --build-path "$3"
-    #     """,
-    #     progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
-    # )
-    # ctx.actions.run_shell(
-    #     outputs = [bar_file],
-    #     arguments = [bar_file.path],
-    #     command = """
-    #     mkdir -p $(dirname "$1")
-    #     touch "$1"
-    #     """,
-    #     progress_message = "Create bar file",
-    # )
 
     for clang_module_build_info in clang_module_build_infos:
         for copy_info in clang_module_build_info.files_to_copy:

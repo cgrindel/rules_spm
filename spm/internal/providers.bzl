@@ -7,6 +7,17 @@ SPMPackageInfo = provider(
     },
 )
 
+SPMClangModuleInfo = provider(
+    doc = "Describes the information about a clang .",
+    fields = {
+        "module_name": "Module name",
+        "o_files": "`List` of Mach-O files.",
+        "hdrs": "`List` of header files.",
+        "modulemap": "The original module.modulemap.",
+        "all_outputs": "All outputs",
+    },
+)
+
 def create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, all_outputs):
     """Creates a value representing the Swift module that is built from a package.
 
