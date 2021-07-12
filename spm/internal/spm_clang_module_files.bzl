@@ -1,5 +1,7 @@
 load("//spm/internal:providers.bzl", "SPMPackageInfo")
 
+# TODO: KILL ME!
+
 def _get_module_info(pkg_info, module_name):
     for module in pkg_info.swift_modules:
         if module.module_name == module_name:
