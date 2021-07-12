@@ -2,7 +2,6 @@ load(
     "//spm/internal:providers.bzl",
     "SPMPackageInfo",
     "create_clang_module",
-    "create_copy_info",
     "create_swift_module",
 )
 load(
@@ -15,14 +14,13 @@ load("//spm/internal:files.bzl", "is_hdr_file", "is_modulemap_file", "is_target_
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
-def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, files_to_copy, build_dir, all_build_outs):
+def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs):
     return struct(
         module_name = module_name,
         modulemap = modulemap,
         o_files = o_files,
         hdrs = hdrs,
         build_dir = build_dir,
-        files_to_copy = files_to_copy,
         all_build_outs = all_build_outs,
     )
 
@@ -45,21 +43,12 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
 
     src_modulemap = _modulemap_for_target(ctx, target_name)
     if src_modulemap:
-        # out_modulemap = ctx.actions.declare_file(
-        #     "%s/%s" % (include_dirname, src_modulemap.basename),
-        # )
-        # files_to_copy.append(create_copy_info(src_modulemap, out_modulemap))
         out_modulemap = None
     else:
         out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
         all_build_outs.append(out_modulemap)
 
     src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
-    # out_hdrs = []
-    # for src_hdr in src_hdrs:
-    #     out_hdr = ctx.actions.declare_file("%s/%s" % (include_dirname, src_hdr.basename))
-    #     out_hdrs.append(out_hdr)
-    #     files_to_copy.append(create_copy_info(src_hdr, out_hdr))
 
     o_files = []
     for src in target["sources"]:
@@ -70,38 +59,35 @@ def _declare_clang_target_files(ctx, target, build_config_dirname):
         module_name = module_name,
         modulemap = out_modulemap,
         o_files = o_files,
-        # hdrs = out_hdrs,
         hdrs = src_hdrs,
-        files_to_copy = files_to_copy,
         build_dir = target_build_dirname,
         all_build_outs = all_build_outs,
     )
 
-def _copy_files(ctx, copy_info):
-    # ctx.actions.symlink(
-    #     output = copy_info.dest,
-    #     target_file = copy_info.src,
-    #     progress_message = "Creating symlink (%s)." % (copy_info.dest.path),
-    # )
-    ctx.actions.run_shell(
-        inputs = [copy_info.src],
-        outputs = [copy_info.dest],
-        arguments = [copy_info.src.path, copy_info.dest.path],
-        command = """
-        mkdir -p $(dirname "$2")
-        cp "$1" "$2"
-        """,
-        progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
-    )
+# def _copy_files(ctx, copy_info):
+#     # ctx.actions.symlink(
+#     #     output = copy_info.dest,
+#     #     target_file = copy_info.src,
+#     #     progress_message = "Creating symlink (%s)." % (copy_info.dest.path),
+#     # )
+#     ctx.actions.run_shell(
+#         inputs = [copy_info.src],
+#         outputs = [copy_info.dest],
+#         arguments = [copy_info.src.path, copy_info.dest.path],
+#         command = """
+#         mkdir -p $(dirname "$2")
+#         cp "$1" "$2"
+#         """,
+#         progress_message = "Copying file to output (%s)." % (copy_info.dest.path),
+#     )
 
 def _create_clang_module(clang_module_build_info):
-    copied_files = [copy_info.dest for copy_info in clang_module_build_info.files_to_copy]
     return create_clang_module(
         module_name = clang_module_build_info.module_name,
         o_files = clang_module_build_info.o_files,
         hdrs = clang_module_build_info.hdrs,
         modulemap = clang_module_build_info.modulemap,
-        all_outputs = clang_module_build_info.all_build_outs + copied_files,
+        all_outputs = clang_module_build_info.all_build_outs,
     )
 
 def _declare_swift_target_files(ctx, target, build_config_dirname):
@@ -185,9 +171,9 @@ def _spm_package_impl(ctx):
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
-    for clang_module_build_info in clang_module_build_infos:
-        for copy_info in clang_module_build_info.files_to_copy:
-            _copy_files(ctx, copy_info)
+    # for clang_module_build_info in clang_module_build_infos:
+    #     for copy_info in clang_module_build_info.files_to_copy:
+    #         _copy_files(ctx, copy_info)
 
     clang_module_infos = [_create_clang_module(cmbi) for cmbi in clang_module_build_infos]
 
