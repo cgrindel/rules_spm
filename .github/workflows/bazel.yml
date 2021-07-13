@@ -27,8 +27,14 @@ jobs:
       run: |
         bazelisk build //... 
 
-    - name: Build Examples
+    - name: Build Simple Example
       shell: bash
       run: |
         cd examples/simple
+        bazelisk build //... 
+
+    - name: Build Simple_C Example
+      shell: bash
+      run: |
+        cd examples/simple_c
         bazelisk build //... 
