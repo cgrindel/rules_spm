@@ -4,7 +4,7 @@ load(
 )
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 
-def spm_swift_module(name, package):
+def spm_swift_module(name, package, deps = None):
     module_name = name
 
     swiftdoc_name = "%s_swiftdoc" % (name)
@@ -23,6 +23,14 @@ def spm_swift_module(name, package):
         file_type = "swiftmodule",
     )
 
+    hdrs_name = "%s_hdrs" % (name)
+    spm_filegroup(
+        name = hdrs_name,
+        package = package,
+        module_name = module_name,
+        file_type = "hdrs",
+    )
+
     o_files_name = "%s_o_files" % (name)
     spm_filegroup(
         name = o_files_name,
@@ -38,9 +46,8 @@ def spm_swift_module(name, package):
             ":%s" % (o_files_name),
         ],
         module_name = module_name,
+        deps = deps,
     )
-
-    # TODO: Provide the dependent modules as deps.
 
     swift_import(
         name = name,
@@ -48,4 +55,18 @@ def spm_swift_module(name, package):
         module_name = module_name,
         swiftdoc = ":%s" % (swiftdoc_name),
         swiftmodule = ":%s" % (swiftmodule_name),
+        # deps = deps,
     )
+
+    # # NOTE: Avoid import errors, but fails when trying to leverage stuff from imported modules.
+    # native.objc_library(
+    #     name = name,
+    #     srcs = [
+    #         ":%s" % (o_files_name),
+    #     ],
+    #     hdrs = [
+    #         ":%s" % (hdrs_name),
+    #     ],
+    #     module_name = module_name,
+    #     deps = deps,
+    # )

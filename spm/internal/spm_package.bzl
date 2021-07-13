@@ -61,17 +61,12 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     if src_modulemap:
         out_modulemap = src_modulemap
     else:
+        # TODO: Remove modulemap generation!
         out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
         substitutions = {
             "{spm_module_name}": module_name,
             "{spm_module_header}": module_src_hdr.path,
         }
-
-        # DEBUG BEGIN
-        print("*** CHUCK module_src_hdr.path: ", module_src_hdr.path)
-        print("*** CHUCK out_modulemap: ", out_modulemap)
-
-        # DEBUG END
         ctx.actions.expand_template(
             template = ctx.file._modulemap_tpl,
             output = out_modulemap,
@@ -133,6 +128,10 @@ def _declare_swift_target_files(ctx, target, build_config_dirname):
     all_build_outs.extend([swiftdoc, swiftmodule, swiftsourceinfo])
 
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
+
+    hdr_file = ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name))
+    all_build_outs.append(hdr_file)
+
     # all_build_outs.extend([
     #     ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name)),
     #     # For Swift modules, there is one .d file per module. For C modules, there appears to be
@@ -153,6 +152,7 @@ def _declare_swift_target_files(ctx, target, build_config_dirname):
         swiftdoc = swiftdoc,
         swiftmodule = swiftmodule,
         swiftsourceinfo = swiftsourceinfo,
+        hdrs = [hdr_file],
         all_outputs = all_build_outs,
     )
 

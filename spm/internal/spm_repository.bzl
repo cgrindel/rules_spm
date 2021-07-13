@@ -8,6 +8,9 @@ SPM_SWIFT_MODULE_TPL = """
 spm_swift_module(
     name = "%s",
     package = ":build",
+    deps = [
+%s
+    ],
 )
 """
 
@@ -15,6 +18,9 @@ SPM_CLANG_MODULE_TPL = """
 spm_clang_module(
     name = "%s",
     package = ":build",
+    deps = [
+%s
+    ],
 )
 """
 
@@ -38,9 +44,14 @@ def _spm_repository_impl(ctx):
     for target in targets:
         module_type = target["module_type"]
         if module_type == "SwiftTarget":
-            modules.append(SPM_SWIFT_MODULE_TPL % (target["c99name"]))
+            template = SPM_SWIFT_MODULE_TPL
         elif module_type == "ClangTarget":
-            modules.append(SPM_CLANG_MODULE_TPL % (target["c99name"]))
+            template = SPM_CLANG_MODULE_TPL
+        module_name = target["c99name"]
+        deps = target.get("target_dependencies", default = [])
+        deps = ["        \":%s\"," % (dep) for dep in deps]
+        deps_str = "\n".join(deps)
+        modules.append(template % (module_name, deps_str))
 
     # Template Substitutions
     substitutions = {
