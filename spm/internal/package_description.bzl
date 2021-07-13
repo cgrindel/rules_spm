@@ -36,3 +36,12 @@ def exported_library_targets(pkg_desc):
                 target_names.append(target_name)
 
     return [targets_dict[target_name] for target_name in target_names]
+
+def is_library_target(target):
+    # TODO: Add doc
+    return target["type"] == "library"
+
+def library_targets(pkg_desc):
+    # TODO: Add doc
+    targets = pkg_desc["targets"]
+    return [t for t in targets if is_library_target(t)]

@@ -68,6 +68,24 @@ def _library_products_test(ctx):
 
 library_products_test = unittest.make(_library_products_test)
 
+def _is_library_target_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+is_library_target_test = unittest.make(_is_library_target_test)
+
+def _library_targets_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+library_targets_test = unittest.make(_library_targets_test)
+
 def package_description_test_suite():
     unittest.suite(
         "package_description_tests",
@@ -75,4 +93,6 @@ def package_description_test_suite():
         exported_library_targets_test,
         is_library_product_test,
         library_products_test,
+        is_library_target_test,
+        library_targets_test,
     )

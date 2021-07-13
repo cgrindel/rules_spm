@@ -40,6 +40,8 @@ def spm_swift_module(name, package):
         module_name = module_name,
     )
 
+    # TODO: Provide the dependent modules as deps.
+
     swift_import(
         name = name,
         archives = [":%s" % (objc_lib_name)],

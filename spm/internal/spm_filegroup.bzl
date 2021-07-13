@@ -7,7 +7,7 @@ def _get_module_info(pkg_info, module_name):
     for module in pkg_info.clang_modules:
         if module.module_name == module_name:
             return module
-    fail("Could not find module with module_name ", module_name)
+    fail("Could not find module with module_name", module_name)
 
 def _spm_filegroup_impl(ctx):
     pkg_info = ctx.attr.package[SPMPackageInfo]
@@ -26,7 +26,9 @@ def _spm_filegroup_impl(ctx):
     elif file_type == "swiftsourceinfo":
         output = [module_info.swiftsourceinfo]
     elif file_type == "hdrs":
-        output = [module_info.hdrs]
+        output = module_info.hdrs
+    elif file_type == "modulemap":
+        output = [module_info.modulemap]
     elif file_type == "all":
         output = module_info.all_files
     else:
@@ -52,7 +54,15 @@ spm_filegroup = rule(
         ),
         "file_type": attr.string(
             mandatory = True,
-            values = ["o_files", "swiftdoc", "swiftmodule", "swiftsourceinfo", "all"],
+            values = [
+                "o_files",
+                "swiftdoc",
+                "swiftmodule",
+                "swiftsourceinfo",
+                "hdrs",
+                "modulemap",
+                "all",
+            ],
             doc = """\
             The type of file to expose about the module.
             """,
