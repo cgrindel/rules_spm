@@ -46,7 +46,7 @@ def spm_swift_module(name, package, deps = None):
             ":%s" % (o_files_name),
         ],
         module_name = module_name,
-        deps = deps,
+        # deps = deps,
     )
 
     swift_import(
@@ -55,7 +55,7 @@ def spm_swift_module(name, package, deps = None):
         module_name = module_name,
         swiftdoc = ":%s" % (swiftdoc_name),
         swiftmodule = ":%s" % (swiftmodule_name),
-        # deps = deps,
+        deps = deps,
     )
 
     # # NOTE: Avoid import errors, but fails when trying to leverage stuff from imported modules.
