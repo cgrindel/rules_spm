@@ -15,9 +15,9 @@ swift build \
   --package-path "${package_path}" \
   --build-path "${build_path}"
 
-# DEBUG BEGIN
-tree "${build_path}" >&2
-# DEBUG END
+# # DEBUG BEGIN
+# tree "${build_path}" >&2
+# # DEBUG END
 
 # Replace the specified files with the provided ones
 while (("$#")); do
@@ -26,7 +26,6 @@ while (("$#")); do
   # DEBUG BEGIN
   echo >&2 "*** CHUCK:  src: ${src}" 
   echo >&2 "*** CHUCK:  dest: ${dest}" 
-  ls -la "${dest}" >&2
   # DEBUG END
   cp -f "${src}" "${dest}"
   shift 2

@@ -46,14 +46,17 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
 
     src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
 
-    module_src_hdr_basename = "%s.h" % (module_name)
-    module_src_hdr = None
+    src_module_hdr_basename = "%s.h" % (module_name)
+    src_module_hdr = None
     for src_hdr in src_hdrs:
-        if src_hdr.basename == module_src_hdr_basename:
-            module_src_hdr = src_hdr
+        if src_hdr.basename == src_module_hdr_basename:
+            src_module_hdr = src_hdr
             break
-    if module_src_hdr == None:
-        fail("Expected header file with name ", module_src_hdr_basename, ".")
+    if src_module_hdr == None:
+        fail("Expected header file with name ", src_module_hdr_basename, ".")
+    out_module_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, src_module_hdr.basename))
+    copy_infos.append(create_copy_info(src_module_hdr, out_module_hdr))
+    all_build_outs.append(out_module_hdr)
 
     src_modulemap = _modulemap_for_target(ctx, target_name)
     if src_modulemap:
@@ -65,7 +68,8 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
 
         substitutions = {
             "{spm_module_name}": module_name,
-            "{spm_module_header}": module_src_hdr.path,
+            # "{spm_module_header}": src_module_hdr.path,
+            "{spm_module_header}": src_module_hdr.basename,
         }
         ctx.actions.expand_template(
             template = ctx.file._modulemap_tpl,
