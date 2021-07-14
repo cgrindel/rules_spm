@@ -59,9 +59,9 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     if src_modulemap:
         out_modulemap = src_modulemap
     else:
-        out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+        out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
         all_build_outs.append(out_modulemap)
-        gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_name))
+        gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
 
         substitutions = {
             "{spm_module_name}": module_name,
