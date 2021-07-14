@@ -9,7 +9,7 @@ defer {
 }
 
 let eventLoop = group.next()
-let future = eventLoop.execute {
+let future = eventLoop.submit {
   logger.info("Hello World!")
 }
 

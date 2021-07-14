@@ -19,10 +19,6 @@ swift build \
 while (("$#")); do
   src="${1}"
   dest="${2}"
-  # DEBUG BEGIN
-  echo >&2 "*** CHUCK:  src: ${src}" 
-  echo >&2 "*** CHUCK:  dest: ${dest}" 
-  # DEBUG END
   cp -f "${src}" "${dest}"
   shift 2
 done
