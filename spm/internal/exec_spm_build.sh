@@ -1,22 +1,28 @@
-#! /bin/sh
+#!/usr/bin/env bash
 
-# build_config=$1
-# package_path="$2"
-# build_path="$3"
+set -euo pipefail
 
-build_config=$1
-shift
-package_path="$1"
-shift
-build_path="$1"
-shift
+build_config=${1}
+package_path="${2}"
+build_path="${3}"
+shift 3
 
 # Execute the SPM build
 swift build \
   --manifest-cache none \
   --disable-sandbox \
-  --configuration $build_config \
-  --package-path "$package_path" \
-  --build-path "$build_path"
+  --configuration ${build_config} \
+  --package-path "${package_path}" \
+  --build-path "${build_path}"
 
 # Replace the specified files with the provided ones
+while (("$#")); do
+  src="${1}"
+  dest="${2}"
+  # DEBUG BEGIN
+  echo >&2 "*** CHUCK:  src: ${src}" 
+  echo >&2 "*** CHUCK:  dest: ${dest}" 
+  # DEBUG END
+  cp -f "${src}" "${dest}"
+  shift 2
+done

@@ -2,6 +2,7 @@ load(
     "//spm/internal:providers.bzl",
     "SPMPackageInfo",
     "create_clang_module",
+    "create_copy_info",
     "create_swift_module",
 )
 load(
@@ -14,7 +15,7 @@ load("//spm/internal:files.bzl", "is_hdr_file", "is_modulemap_file", "is_target_
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
-def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs):
+def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
     return struct(
         module_name = module_name,
         modulemap = modulemap,
@@ -23,6 +24,7 @@ def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build
         build_dir = build_dir,
         all_build_outs = all_build_outs,
         other_outs = other_outs,
+        copy_infos = copy_infos,
     )
 
 def _modulemap_for_target(ctx, target_name):
@@ -34,6 +36,7 @@ def _modulemap_for_target(ctx, target_name):
 def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir_path):
     all_build_outs = []
     other_outs = []
+    copy_infos = []
 
     target_name = target["name"]
     module_name = target["c99name"]
@@ -61,11 +64,13 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     if src_modulemap:
         out_modulemap = src_modulemap
     else:
-        # TODO: Remove modulemap generation!
         out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+        all_build_outs.append(out_modulemap)
+        gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_name))
 
         # DEBUG BEGIN
         print("*** CHUCK out_modulemap: ", out_modulemap)
+        print("*** CHUCK gen_modulemap: ", gen_modulemap)
 
         # DEBUG END
         substitutions = {
@@ -74,10 +79,10 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
         }
         ctx.actions.expand_template(
             template = ctx.file._modulemap_tpl,
-            output = out_modulemap,
+            output = gen_modulemap,
             substitutions = substitutions,
         )
-        other_outs.append(out_modulemap)
+        copy_infos.append(create_copy_info(gen_modulemap, out_modulemap))
 
     o_files = []
     for src in target["sources"]:
@@ -92,6 +97,7 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
         build_dir = target_build_dirname,
         all_build_outs = all_build_outs,
         other_outs = other_outs,
+        copy_infos = copy_infos,
     )
 
 # def _copy_files(ctx, copy_info):
@@ -183,6 +189,7 @@ def _spm_package_impl(ctx):
 
     swift_module_infos = []
     clang_module_build_infos = []
+    copy_infos = []
     for target in targets:
         module_type = target["module_type"]
         if module_type == "SwiftTarget":
@@ -198,11 +205,20 @@ def _spm_package_impl(ctx):
             )
             clang_module_build_infos.append(clang_module_build_info)
             all_build_outs.extend(clang_module_build_info.all_build_outs)
+            copy_infos.extend(clang_module_build_info.copy_infos)
+
+    other_run_inputs = []
+    run_args = ctx.actions.args()
+    run_args.add_all([ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path])
+    for ci in copy_infos:
+        run_args.add_all([ci.src, ci.dest])
+        other_run_inputs.append(ci.src)
 
     ctx.actions.run(
-        inputs = ctx.files.srcs,
+        inputs = ctx.files.srcs + other_run_inputs,
         outputs = [build_output_dir] + all_build_outs,
-        arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
+        # arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
+        arguments = [run_args],
         executable = ctx.executable._spm_build_tool,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
