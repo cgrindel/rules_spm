@@ -63,6 +63,11 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     else:
         # TODO: Remove modulemap generation!
         out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+
+        # DEBUG BEGIN
+        print("*** CHUCK out_modulemap: ", out_modulemap)
+
+        # DEBUG END
         substitutions = {
             "{spm_module_name}": module_name,
             "{spm_module_header}": module_src_hdr.path,
@@ -194,20 +199,27 @@ def _spm_package_impl(ctx):
             clang_module_build_infos.append(clang_module_build_info)
             all_build_outs.extend(clang_module_build_info.all_build_outs)
 
-    ctx.actions.run_shell(
+    ctx.actions.run(
         inputs = ctx.files.srcs,
         outputs = [build_output_dir] + all_build_outs,
         arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
-        command = """
-        swift build \
-          --manifest-cache none \
-          --disable-sandbox \
-          --configuration $1 \
-          --package-path $2 \
-          --build-path "$3"
-        """,
+        executable = ctx.executable._spm_build_tool,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
+    # ctx.actions.run_shell(
+    #     inputs = ctx.files.srcs,
+    #     outputs = [build_output_dir] + all_build_outs,
+    #     arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
+    #     command = """
+    #     swift build \
+    #       --manifest-cache none \
+    #       --disable-sandbox \
+    #       --configuration $1 \
+    #       --package-path $2 \
+    #       --build-path "$3"
+    #     """,
+    #     progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
+    # )
 
     # for clang_module_build_info in clang_module_build_infos:
     #     for copy_info in clang_module_build_info.files_to_copy:
@@ -258,6 +270,11 @@ _attrs = {
     "_modulemap_tpl": attr.label(
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
+    ),
+    "_spm_build_tool": attr.label(
+        executable = True,
+        cfg = "exec",
+        default = Label("//spm/internal:exec_spm_build"),
     ),
 }
 

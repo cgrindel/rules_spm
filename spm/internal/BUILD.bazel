@@ -19,3 +19,9 @@ bzl_library(
     srcs = ["spm_repository.bzl"],
     visibility = ["//spm:__subpackages__"],
 )
+
+sh_binary(
+    name = "exec_spm_build",
+    srcs = ["exec_spm_build.sh"],
+    visibility = ["//visibility:public"],
+)
