@@ -36,8 +36,6 @@ def _spm_repository_impl(ctx):
     describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
 
     pkg_desc = parse_package_description_json(describe_result.stdout)
-
-    # targets = pkg_desc["targets"]
     targets = library_targets(pkg_desc)
 
     modules = []
