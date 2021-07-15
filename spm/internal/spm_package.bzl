@@ -1,3 +1,6 @@
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo")
+load("@build_bazel_rules_swift//swift/internal:attrs.bzl", "swift_toolchain_attrs")
 load(
     "//spm/internal:providers.bzl",
     "SPMPackageInfo",
@@ -232,6 +235,9 @@ _attrs = {
 
 spm_package = rule(
     implementation = _spm_package_impl,
-    attrs = _attrs,
+    attrs = dicts.add(
+        _attrs,
+        swift_toolchain_attrs(),
+    ),
     doc = "Builds the specified Swift package.",
 )
