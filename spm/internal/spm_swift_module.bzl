@@ -23,14 +23,6 @@ def spm_swift_module(name, package, deps = None):
         file_type = "swiftmodule",
     )
 
-    hdrs_name = "%s_hdrs" % (name)
-    spm_filegroup(
-        name = hdrs_name,
-        package = package,
-        module_name = module_name,
-        file_type = "hdrs",
-    )
-
     o_files_name = "%s_o_files" % (name)
     spm_filegroup(
         name = o_files_name,
@@ -46,7 +38,6 @@ def spm_swift_module(name, package, deps = None):
             ":%s" % (o_files_name),
         ],
         module_name = module_name,
-        # deps = deps,
     )
 
     swift_import(
@@ -57,16 +48,3 @@ def spm_swift_module(name, package, deps = None):
         swiftmodule = ":%s" % (swiftmodule_name),
         deps = deps,
     )
-
-    # # NOTE: Avoid import errors, but fails when trying to leverage stuff from imported modules.
-    # native.objc_library(
-    #     name = name,
-    #     srcs = [
-    #         ":%s" % (o_files_name),
-    #     ],
-    #     hdrs = [
-    #         ":%s" % (hdrs_name),
-    #     ],
-    #     module_name = module_name,
-    #     deps = deps,
-    # )
