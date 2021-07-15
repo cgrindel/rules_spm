@@ -4,7 +4,7 @@ load(
 )
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 
-def spm_module(name, package):
+def spm_swift_module(name, package, deps = None):
     module_name = name
 
     swiftdoc_name = "%s_swiftdoc" % (name)
@@ -46,4 +46,5 @@ def spm_module(name, package):
         module_name = module_name,
         swiftdoc = ":%s" % (swiftdoc_name),
         swiftmodule = ":%s" % (swiftmodule_name),
+        deps = deps,
     )

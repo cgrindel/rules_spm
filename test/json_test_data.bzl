@@ -19,6 +19,15 @@ package_description_json = """
           "automatic"
         ]
       }
+    },
+    {
+      "name" : "SampleClient",
+      "targets" : [
+        "LoggingTests"
+      ],
+      "type" : {
+        "executable" : null
+      }
     }
   ],
   "targets" : [

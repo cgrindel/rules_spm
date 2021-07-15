@@ -1,15 +1,109 @@
-load("//spm/internal:providers.bzl", "SPMPackageInfo", "create_module")
+load(
+    "//spm/internal:providers.bzl",
+    "SPMPackageInfo",
+    "create_clang_module",
+    "create_copy_info",
+    "create_swift_module",
+)
 load(
     "//spm/internal:package_description.bzl",
-    "exported_targets",
+    "exported_library_targets",
     "parse_package_description_json",
 )
+load("//spm/internal:files.bzl", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
 # GH004: Update this to use a toolchain to execute "swift build".
 # https://docs.bazel.build/versions/main/toolchains.html
 
-def _declare_target_files(ctx, target, build_config_dirname):
-    all_files = []
+def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
+    return struct(
+        module_name = module_name,
+        modulemap = modulemap,
+        o_files = o_files,
+        hdrs = hdrs,
+        build_dir = build_dir,
+        all_build_outs = all_build_outs,
+        other_outs = other_outs,
+        copy_infos = copy_infos,
+    )
+
+def _modulemap_for_target(ctx, target_name):
+    for src in ctx.files.srcs:
+        if is_target_file(target_name, src) and is_modulemap_file(src):
+            return src
+    return None
+
+def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir_path):
+    all_build_outs = []
+    other_outs = []
+    copy_infos = []
+
+    target_name = target["name"]
+    module_name = target["c99name"]
+
+    target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
+    target_modulemap_dirname = "%s/%s.build" % (modulemap_dir_path, target_name)
+
+    src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
+
+    src_module_hdr_basename = "%s.h" % (module_name)
+    src_module_hdr = None
+    for src_hdr in src_hdrs:
+        if src_hdr.basename == src_module_hdr_basename:
+            src_module_hdr = src_hdr
+            break
+    if src_module_hdr == None:
+        fail("Expected header file with name ", src_module_hdr_basename, ".")
+    out_module_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, src_module_hdr.basename))
+    copy_infos.append(create_copy_info(src_module_hdr, out_module_hdr))
+    all_build_outs.append(out_module_hdr)
+
+    src_modulemap = _modulemap_for_target(ctx, target_name)
+    if src_modulemap:
+        out_modulemap = src_modulemap
+    else:
+        out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
+        all_build_outs.append(out_modulemap)
+        gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+
+        substitutions = {
+            "{spm_module_name}": module_name,
+            "{spm_module_header}": src_module_hdr.basename,
+        }
+        ctx.actions.expand_template(
+            template = ctx.file._modulemap_tpl,
+            output = gen_modulemap,
+            substitutions = substitutions,
+        )
+        copy_infos.append(create_copy_info(gen_modulemap, out_modulemap))
+
+    o_files = []
+    for src in target["sources"]:
+        o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
+    all_build_outs.extend(o_files)
+
+    return _create_clang_module_build_info(
+        module_name = module_name,
+        modulemap = out_modulemap,
+        o_files = o_files,
+        hdrs = src_hdrs,
+        build_dir = target_build_dirname,
+        all_build_outs = all_build_outs,
+        other_outs = other_outs,
+        copy_infos = copy_infos,
+    )
+
+def _create_clang_module(clang_module_build_info):
+    return create_clang_module(
+        module_name = clang_module_build_info.module_name,
+        o_files = clang_module_build_info.o_files,
+        hdrs = clang_module_build_info.hdrs,
+        modulemap = clang_module_build_info.modulemap,
+        all_outputs = clang_module_build_info.all_build_outs + clang_module_build_info.other_outs,
+    )
+
+def _declare_swift_target_files(ctx, target, build_config_dirname):
+    all_build_outs = []
     o_files = []
 
     target_name = target["name"]
@@ -18,69 +112,94 @@ def _declare_target_files(ctx, target, build_config_dirname):
     swiftdoc = ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_dirname, target_name))
     swiftmodule = ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_dirname, target_name))
     swiftsourceinfo = ctx.actions.declare_file("%s/%s.swiftsourceinfo" % (build_config_dirname, target_name))
-    all_files.extend([swiftdoc, swiftmodule, swiftsourceinfo])
+    all_build_outs.extend([swiftdoc, swiftmodule, swiftsourceinfo])
 
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
-    all_files.extend([
-        ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name)),
-        # For Swift modules, there is one .d file per module. For C modules, there appears to be
-        # one per .c file.
-        ctx.actions.declare_file("%s/%s.d" % (target_build_dirname, target_name)),
-        ctx.actions.declare_file("%s/master.swiftdeps" % (target_build_dirname)),
-        ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname)),
-        ctx.actions.declare_file("%s/output-file-map.json" % (target_build_dirname)),
-    ])
+
+    hdr_file = ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name))
+    all_build_outs.append(hdr_file)
 
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
-    all_files.extend(o_files)
+    all_build_outs.extend(o_files)
 
-    return create_module(
+    return create_swift_module(
         module_name = module_name,
         o_files = o_files,
         swiftdoc = swiftdoc,
         swiftmodule = swiftmodule,
         swiftsourceinfo = swiftsourceinfo,
-        all_files = all_files,
+        hdrs = [hdr_file],
+        all_outputs = all_build_outs,
     )
 
 def _spm_package_impl(ctx):
-    build_output_dirname = "spm_build_output"
+    build_output_dirname = "spm_build"
     build_output_dir = ctx.actions.declare_directory(build_output_dirname)
-    all_files = []
+    output_dir_path = build_output_dir.dirname
+
+    all_build_outs = []
 
     # Parse the package description JSON.
     pkg_desc = parse_package_description_json(ctx.attr.package_description_json)
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
-    all_files.append(ctx.actions.declare_file("%s/description.json" % (build_config_dirname)))
 
-    targets = exported_targets(pkg_desc)
-    module_infos = []
+    modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
+
+    targets = [t for t in pkg_desc["targets"] if t["type"] == "library"]
+
+    swift_module_infos = []
+    clang_module_build_infos = []
+    copy_infos = []
     for target in targets:
-        module_info = _declare_target_files(ctx, target, build_config_dirname)
-        module_infos.append(module_info)
-        all_files.extend(module_info.all_files)
+        module_type = target["module_type"]
+        if module_type == "SwiftTarget":
+            swift_module_info = _declare_swift_target_files(ctx, target, build_config_dirname)
+            swift_module_infos.append(swift_module_info)
+            all_build_outs.extend(swift_module_info.all_outputs)
+        if module_type == "ClangTarget":
+            clang_module_build_info = _declare_clang_target_files(
+                ctx,
+                target,
+                build_config_dirname,
+                modulemap_dir_path,
+            )
+            clang_module_build_infos.append(clang_module_build_info)
+            all_build_outs.extend(clang_module_build_info.all_build_outs)
+            copy_infos.extend(clang_module_build_info.copy_infos)
 
-    ctx.actions.run_shell(
-        inputs = ctx.files.srcs,
-        outputs = [build_output_dir] + all_files,
-        arguments = [ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path],
-        command = """
-        swift build \
-          --manifest-cache none \
-          --disable-sandbox \
-          --configuration $1 \
-          --package-path $2 \
-          --build-path "$3"
-        """,
+    other_run_inputs = []
+    run_args = ctx.actions.args()
+    run_args.add_all([ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path])
+    for ci in copy_infos:
+        run_args.add_all([ci.src, ci.dest])
+        other_run_inputs.append(ci.src)
+
+    ctx.actions.run(
+        inputs = ctx.files.srcs + other_run_inputs,
+        outputs = [build_output_dir] + all_build_outs,
+        arguments = [run_args],
+        executable = ctx.executable._spm_build_tool,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
+    clang_module_infos = [_create_clang_module(cmbi) for cmbi in clang_module_build_infos]
+
+    all_outputs = []
+    for smi in swift_module_infos:
+        all_outputs.extend(smi.all_outputs)
+    for cmi in clang_module_infos:
+        all_outputs.extend(cmi.all_outputs)
+
     return [
-        DefaultInfo(files = depset(all_files)),
-        SPMPackageInfo(name = pkg_desc["name"], modules = module_infos),
+        DefaultInfo(files = depset(all_outputs)),
+        SPMPackageInfo(
+            name = pkg_desc["name"],
+            swift_modules = swift_module_infos,
+            clang_modules = clang_module_infos,
+        ),
     ]
 
 _attrs = {
@@ -99,6 +218,15 @@ _attrs = {
     ),
     "package_path": attr.string(
         doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",
+    ),
+    "_modulemap_tpl": attr.label(
+        allow_single_file = True,
+        default = "//spm/internal:module.modulemap.tpl",
+    ),
+    "_spm_build_tool": attr.label(
+        executable = True,
+        cfg = "exec",
+        default = Label("//spm/internal:exec_spm_build"),
     ),
 }
 

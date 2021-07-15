@@ -1,13 +1,26 @@
 load(
     "//spm/internal:package_description.bzl",
-    "exported_targets",
+    "library_targets",
     "parse_package_description_json",
 )
 
-SPM_MODULE_TPL = """
-spm_module(
+SPM_SWIFT_MODULE_TPL = """
+spm_swift_module(
     name = "%s",
     package = ":build",
+    deps = [
+%s
+    ],
+)
+"""
+
+SPM_CLANG_MODULE_TPL = """
+spm_clang_module(
+    name = "%s",
+    package = ":build",
+    deps = [
+%s
+    ],
 )
 """
 
@@ -23,9 +36,20 @@ def _spm_repository_impl(ctx):
     describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
 
     pkg_desc = parse_package_description_json(describe_result.stdout)
-    targets = exported_targets(pkg_desc)
+    targets = library_targets(pkg_desc)
 
-    modules = [SPM_MODULE_TPL % (target["c99name"]) for target in targets]
+    modules = []
+    for target in targets:
+        module_type = target["module_type"]
+        if module_type == "SwiftTarget":
+            template = SPM_SWIFT_MODULE_TPL
+        elif module_type == "ClangTarget":
+            template = SPM_CLANG_MODULE_TPL
+        module_name = target["c99name"]
+        deps = target.get("target_dependencies", default = [])
+        deps = ["        \":%s\"," % (dep) for dep in deps]
+        deps_str = "\n".join(deps)
+        modules.append(template % (module_name, deps_str))
 
     # Template Substitutions
     substitutions = {

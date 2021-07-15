@@ -1,5 +1,10 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
+exports_files(
+    ["module.modulemap.tpl"],
+    visibility = ["//visibility:public"],
+)
+
 bzl_library(
     name = "spm_package",
     srcs = ["spm_package.bzl"],
@@ -13,4 +18,10 @@ bzl_library(
     name = "spm_repository",
     srcs = ["spm_repository.bzl"],
     visibility = ["//spm:__subpackages__"],
+)
+
+sh_binary(
+    name = "exec_spm_build",
+    srcs = ["exec_spm_build.sh"],
+    visibility = ["//visibility:public"],
 )
