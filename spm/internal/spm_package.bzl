@@ -1,7 +1,5 @@
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
-
-# load("@build_bazel_rules_swift//swift/internal:attrs.bzl", "swift_toolchain_attrs")
 load(
     "//spm/internal:providers.bzl",
     "SPMPackageInfo",
@@ -142,12 +140,9 @@ def _spm_package_impl(ctx):
     all_build_outs = []
 
     # Toolchain info
+    # The swift_worker is typically xcrun.
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
-
-    # DEBUG BEGIN
-    print("*** CHUCK swift_toolchain.swift_worker: ", swift_toolchain.swift_worker)
-    print("*** CHUCK swift_toolchain.tool_configs: ", swift_toolchain.tool_configs)
-    # DEBUG END
+    swift_worker = swift_toolchain.swift_worker
 
     # Parse the package description JSON.
     pkg_desc = parse_package_description_json(ctx.attr.package_description_json)
@@ -181,13 +176,20 @@ def _spm_package_impl(ctx):
 
     other_run_inputs = []
     run_args = ctx.actions.args()
-    run_args.add_all([ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path])
+    run_args.add_all([
+        swift_worker,
+        ctx.attr.configuration,
+        ctx.attr.package_path,
+        build_output_dir.path,
+    ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
         other_run_inputs.append(ci.src)
 
     ctx.actions.run(
+        # inputs = [swift_worker] + ctx.files.srcs + other_run_inputs,
         inputs = ctx.files.srcs + other_run_inputs,
+        tools = [swift_worker],
         outputs = [build_output_dir] + all_build_outs,
         arguments = [run_args],
         executable = ctx.executable._spm_build_tool,
