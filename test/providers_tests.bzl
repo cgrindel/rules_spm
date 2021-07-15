@@ -15,6 +15,7 @@ def _create_swift_module_test(ctx):
         "MyModule.swiftdoc",
         "MyModule.swiftmodule",
         "MyModule.swiftsourceinfo",
+        ["MyModule.h"],
         ["all"],
     )
     expected = struct(
@@ -23,6 +24,7 @@ def _create_swift_module_test(ctx):
         swiftdoc = "MyModule.swiftdoc",
         swiftmodule = "MyModule.swiftmodule",
         swiftsourceinfo = "MyModule.swiftsourceinfo",
+        hdrs = ["MyModule.h"],
         all_outputs = ["all"],
     )
     asserts.equals(env, expected, result)
