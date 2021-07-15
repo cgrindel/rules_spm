@@ -68,7 +68,6 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
 
         substitutions = {
             "{spm_module_name}": module_name,
-            # "{spm_module_header}": src_module_hdr.path,
             "{spm_module_header}": src_module_hdr.basename,
         }
         ctx.actions.expand_template(
@@ -120,16 +119,6 @@ def _declare_swift_target_files(ctx, target, build_config_dirname):
     hdr_file = ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name))
     all_build_outs.append(hdr_file)
 
-    # all_build_outs.extend([
-    #     ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name)),
-    #     # For Swift modules, there is one .d file per module. For C modules, there appears to be
-    #     # one per .c file.
-    #     ctx.actions.declare_file("%s/%s.d" % (target_build_dirname, target_name)),
-    #     ctx.actions.declare_file("%s/master.swiftdeps" % (target_build_dirname)),
-    #     ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname)),
-    #     ctx.actions.declare_file("%s/output-file-map.json" % (target_build_dirname)),
-    # ])
-
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_build_outs.extend(o_files)
@@ -155,7 +144,6 @@ def _spm_package_impl(ctx):
     pkg_desc = parse_package_description_json(ctx.attr.package_description_json)
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
-    # build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
 
     modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
