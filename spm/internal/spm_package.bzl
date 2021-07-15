@@ -10,6 +10,7 @@ load(
 load(
     "//spm/internal:package_description.bzl",
     "exported_library_targets",
+    "library_targets",
     "parse_package_description_json",
 )
 load("//spm/internal:files.bzl", "is_hdr_file", "is_modulemap_file", "is_target_file")
@@ -152,7 +153,7 @@ def _spm_package_impl(ctx):
 
     modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
 
-    targets = [t for t in pkg_desc["targets"] if t["type"] == "library"]
+    targets = library_targets(pkg_desc)
 
     swift_module_infos = []
     clang_module_build_infos = []
