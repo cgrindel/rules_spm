@@ -1,3 +1,5 @@
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
 load(
     "//spm/internal:providers.bzl",
     "SPMPackageInfo",
@@ -11,9 +13,6 @@ load(
     "parse_package_description_json",
 )
 load("//spm/internal:files.bzl", "is_hdr_file", "is_modulemap_file", "is_target_file")
-
-# GH004: Update this to use a toolchain to execute "swift build".
-# https://docs.bazel.build/versions/main/toolchains.html
 
 def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
     return struct(
@@ -140,6 +139,11 @@ def _spm_package_impl(ctx):
 
     all_build_outs = []
 
+    # Toolchain info
+    # The swift_worker is typically xcrun.
+    swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
+    swift_worker = swift_toolchain.swift_worker
+
     # Parse the package description JSON.
     pkg_desc = parse_package_description_json(ctx.attr.package_description_json)
 
@@ -172,13 +176,19 @@ def _spm_package_impl(ctx):
 
     other_run_inputs = []
     run_args = ctx.actions.args()
-    run_args.add_all([ctx.attr.configuration, ctx.attr.package_path, build_output_dir.path])
+    run_args.add_all([
+        swift_worker,
+        ctx.attr.configuration,
+        ctx.attr.package_path,
+        build_output_dir.path,
+    ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
         other_run_inputs.append(ci.src)
 
     ctx.actions.run(
         inputs = ctx.files.srcs + other_run_inputs,
+        tools = [swift_worker],
         outputs = [build_output_dir] + all_build_outs,
         arguments = [run_args],
         executable = ctx.executable._spm_build_tool,
@@ -232,6 +242,9 @@ _attrs = {
 
 spm_package = rule(
     implementation = _spm_package_impl,
-    attrs = _attrs,
+    attrs = dicts.add(
+        _attrs,
+        swift_common.toolchain_attrs(),
+    ),
     doc = "Builds the specified Swift package.",
 )

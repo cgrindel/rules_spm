@@ -2,13 +2,14 @@
 
 set -euo pipefail
 
-build_config=${1}
-package_path="${2}"
-build_path="${3}"
-shift 3
+swift_worker="${1}"
+build_config=${2}
+package_path="${3}"
+build_path="${4}"
+shift 4
 
 # Execute the SPM build
-swift build \
+"${swift_worker}" swift build \
   --manifest-cache none \
   --disable-sandbox \
   --configuration ${build_config} \
