@@ -38,10 +38,24 @@ def exported_library_targets(pkg_desc):
     return [targets_dict[target_name] for target_name in target_names]
 
 def is_library_target(target):
-    # TODO: Add doc
+    """Returns True if the specified target is a library target. Otherwise False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a library target.
+    """
     return target["type"] == "library"
 
 def library_targets(pkg_desc):
-    # TODO: Add doc
+    """Returns a list of the library targets in the package.
+
+    Args:
+        pkg_desc: The dict returned from the `parse_package_descrition_json`.
+
+    Returns:
+        A list of the library targets in the package.
+    """
     targets = pkg_desc["targets"]
     return [t for t in targets if is_library_target(t)]

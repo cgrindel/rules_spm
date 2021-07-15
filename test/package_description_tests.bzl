@@ -3,7 +3,9 @@ load(
     "//spm/internal:package_description.bzl",
     "exported_library_targets",
     "is_library_product",
+    "is_library_target",
     "library_products",
+    "library_targets",
     "parse_package_description_json",
 )
 load(":json_test_data.bzl", "package_description_json")
@@ -71,7 +73,10 @@ library_products_test = unittest.make(_library_products_test)
 def _is_library_target_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    target = {"type": "library"}
+    asserts.true(env, is_library_target(target))
+    target["type"] = "executable"
+    asserts.false(env, is_library_target(target))
 
     return unittest.end(env)
 
@@ -80,7 +85,18 @@ is_library_target_test = unittest.make(_is_library_target_test)
 def _library_targets_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    pkg_desc = {
+        "targets": [
+            {"name": "Foo", "type": "library"},
+            {"name": "Chicken", "type": "executable"},
+            {"name": "Bar", "type": "library"},
+        ],
+    }
+    result = library_targets(pkg_desc)
+    asserts.equals(env, 2, len(result))
+    target_names = [t["name"] for t in result]
+    asserts.true(env, "Foo" in target_names)
+    asserts.true(env, "Bar" in target_names)
 
     return unittest.end(env)
 
