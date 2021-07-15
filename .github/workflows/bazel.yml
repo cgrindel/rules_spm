@@ -38,3 +38,9 @@ jobs:
       run: |
         cd examples/simple_c
         bazelisk build //... 
+
+    - name: Build Complex Example
+      shell: bash
+      run: |
+        cd examples/complex
+        bazelisk build //... 
