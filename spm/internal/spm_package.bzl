@@ -187,7 +187,6 @@ def _spm_package_impl(ctx):
         other_run_inputs.append(ci.src)
 
     ctx.actions.run(
-        # inputs = [swift_worker] + ctx.files.srcs + other_run_inputs,
         inputs = ctx.files.srcs + other_run_inputs,
         tools = [swift_worker],
         outputs = [build_output_dir] + all_build_outs,
