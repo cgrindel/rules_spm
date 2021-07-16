@@ -33,17 +33,17 @@ def _modulemap_for_target(ctx, target_name):
             return src
     return None
 
-# def _get_src_module_hdr(module_name, src_hdrs):
-#     src_module_hdr_basename = "%s.h" % (module_name)
-#     for src_hdr in src_hdrs:
-#         if src_hdr.basename == src_module_hdr_basename:
-#             return src_hdr
-#     fail("Expected header file with name ", src_module_hdr_basename, ".")
-def _get_src_module_hdr(target_name, src_hdrs):
+def _get_src_module_hdr(target_name, src_hdrs, src_modulemap = None):
+    # TODO: Look for modulemap file. It will point to header(s).
+
+    # If a modulemap exists, get the relative location for the header from the modulemap
+
+    # Else look for the first header file under the include directory.
     include_path = "Sources/%s/include" % (target_name)
     for src_hdr in src_hdrs:
         if is_hdr_file(src_hdr) and contains_path(src_hdr, include_path):
             return src_hdr
+
     fail("Expected header file for %s target." % (target_name))
 
 def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir_path):
@@ -59,20 +59,12 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
 
     src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
 
-    # src_module_hdr_basename = "%s.h" % (module_name)
-    # src_module_hdr = None
-    # for src_hdr in src_hdrs:
-    #     if src_hdr.basename == src_module_hdr_basename:
-    #         src_module_hdr = src_hdr
-    #         break
-    # if src_module_hdr == None:
-    #     fail("Expected header file with name ", src_module_hdr_basename, ".")
-    src_module_hdr = _get_src_module_hdr(module_name, src_hdrs)
+    src_modulemap = _modulemap_for_target(ctx, target_name)
+    src_module_hdr = _get_src_module_hdr(target_name, src_hdrs, src_modulemap)
     out_module_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, src_module_hdr.basename))
     copy_infos.append(create_copy_info(src_module_hdr, out_module_hdr))
     all_build_outs.append(out_module_hdr)
 
-    src_modulemap = _modulemap_for_target(ctx, target_name)
     if src_modulemap:
         out_modulemap = src_modulemap
     else:
