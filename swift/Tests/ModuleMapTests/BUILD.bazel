@@ -1,0 +1,9 @@
+load("//build/swift:swift_test.bzl", "swift_test")
+
+swift_test(
+    name = "ModuleMapTests",
+    deps = [
+        "//swift/Sources/ModuleMap",
+        "//swift/Sources/Truth",
+    ],
+)
