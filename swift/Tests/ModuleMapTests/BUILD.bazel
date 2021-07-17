@@ -4,6 +4,6 @@ swift_test(
     name = "ModuleMapTests",
     deps = [
         "//swift/Sources/ModuleMap",
-        "//swift/Sources/Truth",
+        "@cgrindel_swift_toolbox//Sources/Truth",
     ],
 )
