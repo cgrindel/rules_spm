@@ -9,12 +9,12 @@ public struct Tokenizer: IteratorProtocol {
   }
 
   public mutating func next() -> Token? {
-    guard let c = inputNavigator.current else {
+    guard let char = inputNavigator.current else {
       return nil
     }
 
     // if CharacterSet.decimalDigits.contains(anyOf: c) {
-    if c.isIn(.decimalDigits) {
+    if char.isIn(.decimalDigits) {
       return collectNumberLiteral()
     }
     // else if Character.letters.contains(c) {
@@ -30,8 +30,8 @@ public struct Tokenizer: IteratorProtocol {
     inputNavigator.next()
     while true {
       guard
-        let c = inputNavigator.current,
-        c.isIn(.decimalDigits)
+        let char = inputNavigator.current,
+        char.isIn(.decimalDigits)
       else {
         break
       }
