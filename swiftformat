@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# This file exists to support formatting in vim using vim-ale.
+# This script ensures that the config file is used when formatting.
+
 set -euo pipefail
 
 script_dir="${0:A:h}"
