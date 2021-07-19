@@ -1,7 +1,7 @@
 import Foundation
 
 /// Specification: https://clang.llvm.org/docs/Modules.html#module-map-language
-public struct Tokenizer: IteratorProtocol {
+public struct Tokenizer: Sequence, IteratorProtocol {
   var inputNavigator: StringNavigator
 
   public init(input: String) {
@@ -13,33 +13,47 @@ public struct Tokenizer: IteratorProtocol {
       return nil
     }
 
-    // if CharacterSet.decimalDigits.contains(anyOf: c) {
-    if char.isIn(.decimalDigits) {
-      return collectNumberLiteral()
+    if char.isIn(.c99IdentifierBeginningCharacters) {
+      return collectIdentifier()
     }
-    // else if Character.letters.contains(c) {
-    //   return collectIdentifier()
+    // else if char.isIn(.decimalDigits) {
+    //   return collectNumberLiteral()
     // }
 
-    // TODO: IMPLEMENT ME!
     return nil
   }
 
-  mutating func collectNumberLiteral() -> Token {
+  // mutating func collectNumberLiteral() -> Token {
+  //   inputNavigator.mark()
+  //   inputNavigator.next()
+  //   while true {
+  //     guard
+  //       let char = inputNavigator.current,
+  //       char.isIn(.decimalDigits)
+  //     else {
+  //       break
+  //     }
+  //     inputNavigator.next()
+  //   }
+  //   return .numberLiteral(String(inputNavigator.markToCurrent))
+  // }
+
+  mutating func collectIdentifier() -> Token {
     inputNavigator.mark()
     inputNavigator.next()
     while true {
       guard
         let char = inputNavigator.current,
-        char.isIn(.decimalDigits)
+        char.isIn(.c99IdenfitiferCharacters)
       else {
         break
       }
       inputNavigator.next()
     }
-    return .numberLiteral(String(inputNavigator.markToCurrent))
+    let idStr = String(inputNavigator.markToCurrent)
+    if let reservedWord = ReservedWord(rawValue: idStr) {
+      return .reserved(reservedWord)
+    }
+    return .identifier(idStr)
   }
-
-  // func collectIdentifier() -> Token {
-  // }
 }

@@ -43,7 +43,7 @@ class TokenizerTests: XCTestCase {
   }
   """
 
-  func testSomething() {
+  func test_umbrellaHeaderExample() throws {
     fail("IMPLEMENT ME!")
   }
 }
