@@ -6,6 +6,8 @@ class StringNavigatorTests: XCTestCase {
   let input = "Hello, Chicken!"
   lazy var navigator = { StringNavigator(input) }()
 
+  // TODO: Add current to the tests
+
   func test_navigation_WithNonEmptyString() throws {
     assertThat(navigator)
       .key(\.input) { $0.isEqualTo(input) }
@@ -66,6 +68,16 @@ class StringNavigatorTests: XCTestCase {
   }
 
   func test_WithEmptyString() throws {
-    fail("IMPLEMENT ME!")
+    var navigator = StringNavigator("")
+    assertThat(navigator)
+      .key(\.input) { $0.isEqualTo("") }
+      .key(\.currentIndex) { $0.isEqualTo(input.startIndex) }
+      .key(\.markIndex) { $0.isEqualTo(input.startIndex) }
+      .key(\.markToCurrent) { $0.isEqualTo("") }
+
+    // Making sure that nothing causes a fatal error
+    navigator.next()
+    navigator.previous()
+    navigator.mark()
   }
 }
