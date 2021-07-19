@@ -9,19 +9,44 @@ public struct Tokenizer: Sequence, IteratorProtocol {
   }
 
   public mutating func next() -> Token? {
-    guard let char = inputNavigator.current else {
-      return nil
-    }
+    // // DEBUG BEGIN
+    // var dbgCnt = 0
+    // // DEBUG END
+    while true {
+      guard let char = inputNavigator.current else {
+        return nil
+      }
 
-    if char.isIn(.c99IdentifierBeginningCharacters) {
-      return collectIdentifier()
-    }
-    // else if char.isIn(.decimalDigits) {
-    //   return collectNumberLiteral()
-    // }
+      if char.isIn(.c99IdentifierBeginningCharacters) {
+        return collectIdentifier()
+      }
 
-    return nil
+      // Ignore the character
+      inputNavigator.next()
+
+      // // DEBUG BEGIN
+      // if dbgCnt > 1000 {
+      //   return nil
+      // }
+      // dbgCnt += 1
+      // // DEBUG END
+    }
   }
+
+  // public mutating func next() -> Token? {
+  //   guard let char = inputNavigator.current else {
+  //     return nil
+  //   }
+
+  //   if char.isIn(.c99IdentifierBeginningCharacters) {
+  //     return collectIdentifier()
+  //   }
+  //   // else if char.isIn(.decimalDigits) {
+  //   //   return collectNumberLiteral()
+  //   // }
+
+  //   return nil
+  // }
 
   // mutating func collectNumberLiteral() -> Token {
   //   inputNavigator.mark()

@@ -44,6 +44,13 @@ class TokenizerTests: XCTestCase {
   """
 
   func test_umbrellaHeaderExample() throws {
+    let tokenizer = Tokenizer(input: Self.umbrellaHdrStr)
+    let tokens = Array(tokenizer)
+
+    // DEBUG BEGIN
+    Swift.print("*** CHUCK  tokens: \(String(reflecting: tokens))")
+    // DEBUG END
+
     fail("IMPLEMENT ME!")
   }
 }
