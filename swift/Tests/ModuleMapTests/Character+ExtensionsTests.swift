@@ -5,7 +5,8 @@ import XCTest
 class CharacterExtensionsTests: XCTestCase {
   func test_isIn() throws {
     do_isIn_test(char: "1", charSet: .decimalDigits, expected: true)
-    do_isIn_test(char: "a", charSet: .decimalDigits, expected: true)
+    do_isIn_test(char: "a", charSet: .decimalDigits, expected: false)
+    do_isIn_test(char: "😉", charSet: .decimalDigits, expected: false)
   }
 
   func do_isIn_test(
