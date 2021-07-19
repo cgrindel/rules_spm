@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+script_dir="${0:A:h}"
+config_file="${script_dir}/.swiftlint.yml"
+
+swiftlint --config "${config_file}" "${@}"
+
+
+

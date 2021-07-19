@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+script_dir="${0:A:h}"
+config_file="${script_dir}/.swiftformat"
+
+swiftformat --config "${config_file}" "${@}"
