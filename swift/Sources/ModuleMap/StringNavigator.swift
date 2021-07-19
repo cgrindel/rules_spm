@@ -3,10 +3,15 @@ struct StringNavigator {
   var currentIndex: String.Index
   var markIndex: String.Index
 
-  init(input: String) {
+  init(_ input: String) {
     self.input = input
     currentIndex = input.startIndex
     markIndex = currentIndex
+  }
+
+  mutating func reset() {
+    currentIndex = input.startIndex
+    markIndex = input.startIndex
   }
 
   mutating func mark() {
@@ -15,14 +20,14 @@ struct StringNavigator {
 
   mutating func previous() {
     guard currentIndex != input.startIndex else {
-      return 
+      return
     }
     currentIndex = input.index(before: currentIndex)
   }
 
   mutating func next() {
     guard currentIndex != input.endIndex else {
-      return 
+      return
     }
     currentIndex = input.index(after: currentIndex)
   }
@@ -34,9 +39,7 @@ struct StringNavigator {
     return input[currentIndex]
   }
 
-  var markToCurrent: String {
-    // TODO: IMPLEMENT ME!
-    return ""
+  var markToCurrent: Substring {
+    return input[markIndex ..< currentIndex]
   }
-
 }

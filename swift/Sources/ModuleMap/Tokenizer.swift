@@ -5,7 +5,7 @@ public struct Tokenizer: IteratorProtocol {
   var inputNavigator: StringNavigator
 
   public init(input: String) {
-    inputNavigator = StringNavigator(input: input)
+    inputNavigator = StringNavigator(input)
   }
 
   public mutating func next() -> Token? {
@@ -16,7 +16,7 @@ public struct Tokenizer: IteratorProtocol {
     // if CharacterSet.decimalDigits.contains(anyOf: c) {
     if c.isIn(.decimalDigits) {
       return collectNumberLiteral()
-    } 
+    }
     // else if Character.letters.contains(c) {
     //   return collectIdentifier()
     // }
@@ -29,7 +29,7 @@ public struct Tokenizer: IteratorProtocol {
     inputNavigator.mark()
     inputNavigator.next()
     while true {
-      guard 
+      guard
         let c = inputNavigator.current,
         c.isIn(.decimalDigits)
       else {
@@ -37,7 +37,7 @@ public struct Tokenizer: IteratorProtocol {
       }
       inputNavigator.next()
     }
-    return .numberLiteral(inputNavigator.markToCurrent)
+    return .numberLiteral(String(inputNavigator.markToCurrent))
   }
 
   // func collectIdentifier() -> Token {
