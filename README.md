@@ -146,6 +146,8 @@ logger.info("Hello World!")
 
 ## Future Work
 
-- Ensure that [toolchains are being leveraged properly](https://github.com/cgrindel/rules_spm/pull/18/files). (#4)
-- #4
+- [Ensure that toolchains are being leveraged properly.](https://github.com/cgrindel/rules_spm/issues/4)
+- [Build the correct architecture in SPM](https://github.com/cgrindel/rules_spm/issues/5)
+- [Ensure that the rules work on Linux](https://github.com/cgrindel/rules_spm/issues/24)
+- [Properly handle clang modules with custom module.modulemap files](https://github.com/cgrindel/rules_spm/issues/19)
 
