@@ -6,11 +6,6 @@ public struct Tokenizer: Sequence, IteratorProtocol {
     case unrecognizedCharacter(Character)
   }
 
-  // struct Handler {
-  //   var beginsWithSet: CharacterSet
-  //   var
-  // }
-
   var inputNavigator: StringNavigator
   var errors: [Error] = []
 

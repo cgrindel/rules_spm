@@ -27,46 +27,40 @@ class TokenizerTests: XCTestCase {
       .newLine,
       .curlyBracketClose,
     ]
-    // DEBUG BEGIN
-    Swift.print("*** CHUCK  tokens: ")
-    for token in tokens {
-      Swift.print("*** CHUCK  token: \(String(reflecting: token))")
-    }
-    // DEBUG END
-
     assertThat(tokens).isEqualTo(expected)
+    assertThat(tokenizer.errors).isEmpty()
   }
 
-  static let submoduleStr = """
-  module std [system] [extern_c] {
-    module assert {
-      textual header "assert.h"
-      header "bits/assert-decls.h"
-      export *
-    }
+  // static let submoduleStr = """
+  // module std [system] [extern_c] {
+  //   module assert {
+  //     textual header "assert.h"
+  //     header "bits/assert-decls.h"
+  //     export *
+  //   }
 
-    module complex {
-      header "complex.h"
-      export *
-    }
+  //   module complex {
+  //     header "complex.h"
+  //     export *
+  //   }
 
-    module ctype {
-      header "ctype.h"
-      export *
-    }
+  //   module ctype {
+  //     header "ctype.h"
+  //     export *
+  //   }
 
-    module errno {
-      header "errno.h"
-      header "sys/errno.h"
-      export *
-    }
+  //   module errno {
+  //     header "errno.h"
+  //     header "sys/errno.h"
+  //     export *
+  //   }
 
-    module fenv {
-      header "fenv.h"
-      export *
-    }
+  //   module fenv {
+  //     header "fenv.h"
+  //     export *
+  //   }
 
-    // ...more headers follow...
-  }
-  """
+  //   // ...more headers follow...
+  // }
+  // """
 }
