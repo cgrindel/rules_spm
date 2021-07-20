@@ -36,7 +36,9 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       } else if char == "\"" {
         return collectStringLiteral()
       } else if char.isIn(.newlines) {
-        return collectNewLines()
+        return collectNewline()
+      } else if char.isIn(.c99Operators) {
+        return collectOperator()
       } else if char.isIn(.c99IdentifierBeginningCharacters) {
         return collectIdentifier()
       }
@@ -68,7 +70,7 @@ public struct Tokenizer: Sequence, IteratorProtocol {
     return .identifier(idStr)
   }
 
-  mutating func collectNewLines() -> Token {
+  mutating func collectNewline() -> Token {
     inputNavigator.mark()
     inputNavigator.next()
     while true {
@@ -102,5 +104,11 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       inputNavigator.next()
     }
     return .stringLiteral(parts.joined(separator: ""))
+  }
+
+  mutating func collectOperator() -> Token? {
+    inputNavigator.next()
+    // We only support one operator
+    return .operator(.asterisk)
   }
 }

@@ -26,10 +26,12 @@ class TokenizerTests: XCTestCase {
       .operator(.asterisk),
       .newLine,
       .curlyBracketClose,
-      .newLine,
     ]
     // DEBUG BEGIN
-    Swift.print("*** CHUCK  tokens: \(String(reflecting: tokens))")
+    Swift.print("*** CHUCK  tokens: ")
+    for token in tokens {
+      Swift.print("*** CHUCK  token: \(String(reflecting: token))")
+    }
     // DEBUG END
 
     assertThat(tokens).isEqualTo(expected)

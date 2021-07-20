@@ -15,4 +15,8 @@ public extension CharacterSet {
     charSet.formUnion(.decimalDigits)
     return charSet
   }()
+
+  static let c99Operators: CharacterSet = {
+    CharacterSet(charactersIn: "*")
+  }()
 }
