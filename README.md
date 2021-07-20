@@ -144,4 +144,8 @@ let logger = Logger(label: "com.example.main")
 logger.info("Hello World!")
 ```
 
+## Future Work
+
+- Ensure that [toolchains are being leveraged properly](https://github.com/cgrindel/rules_spm/pull/18/files). (#4)
+- #4
 
