@@ -23,9 +23,10 @@ Add the following to your `WORKSPACE` file to add this repository and its depend
 ```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-local_repository(
+http_archive(
     name = "cgrindel_rules_spm",
-    path = "../..",
+    sha256 = "cc7d756e672d6e48611d2e6681f5e49a9b983f84c4f8ef455df6ab6fd2ea1f9b",
+    urls = ["https://github.com/cgrindel/rules_spm/archive/v0.1.0-alpha.tar.gz"],
 )
 
 load(
@@ -79,9 +80,10 @@ load(
 swift_rules_extra_dependencies()
 
 # Download this repository 
-local_repository(
+http_archive(
     name = "cgrindel_rules_spm",
-    path = "../..",
+    sha256 = "cc7d756e672d6e48611d2e6681f5e49a9b983f84c4f8ef455df6ab6fd2ea1f9b",
+    urls = ["https://github.com/cgrindel/rules_spm/archive/v0.1.0-alpha.tar.gz"],
 )
 
 load(
@@ -142,4 +144,10 @@ let logger = Logger(label: "com.example.main")
 logger.info("Hello World!")
 ```
 
+## Future Work
+
+- [Ensure that toolchains are being leveraged properly.](https://github.com/cgrindel/rules_spm/issues/4)
+- [Build the correct architecture in SPM](https://github.com/cgrindel/rules_spm/issues/5)
+- [Ensure that the rules work on Linux](https://github.com/cgrindel/rules_spm/issues/24)
+- [Properly handle clang modules with custom module.modulemap files](https://github.com/cgrindel/rules_spm/issues/19)
 
