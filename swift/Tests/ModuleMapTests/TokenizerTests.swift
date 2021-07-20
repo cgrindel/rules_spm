@@ -46,11 +46,21 @@ class TokenizerTests: XCTestCase {
   func test_umbrellaHeaderExample() throws {
     let tokenizer = Tokenizer(input: Self.umbrellaHdrStr)
     let tokens = Array(tokenizer)
-
+    let expected: [Token] = [
+      .reserved(.module),
+      .identifier("CNIOAtomics"),
+      .curlyBracketOpen,
+      .reserved(.umbrella),
+      .reserved(.header),
+      .stringLiteral("CNIOAtomics.h"),
+      .reserved(.export),
+      .operator(.asterisk),
+      .curlyBracketClose,
+    ]
     // DEBUG BEGIN
     Swift.print("*** CHUCK  tokens: \(String(reflecting: tokens))")
     // DEBUG END
 
-    fail("IMPLEMENT ME!")
+    assertThat(tokens).isEqualTo(expected)
   }
 }

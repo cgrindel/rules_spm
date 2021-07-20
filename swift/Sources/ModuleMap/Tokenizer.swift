@@ -9,9 +9,6 @@ public struct Tokenizer: Sequence, IteratorProtocol {
   }
 
   public mutating func next() -> Token? {
-    // // DEBUG BEGIN
-    // var dbgCnt = 0
-    // // DEBUG END
     while true {
       guard let char = inputNavigator.current else {
         return nil
@@ -20,16 +17,11 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       if char.isIn(.c99IdentifierBeginningCharacters) {
         return collectIdentifier()
       }
+      // We did not recognize the character. Note it and keep trucking.
+      else {}
 
       // Ignore the character
       inputNavigator.next()
-
-      // // DEBUG BEGIN
-      // if dbgCnt > 1000 {
-      //   return nil
-      // }
-      // dbgCnt += 1
-      // // DEBUG END
     }
   }
 
