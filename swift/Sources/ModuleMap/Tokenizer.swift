@@ -2,7 +2,12 @@ import Foundation
 
 /// Specification: https://clang.llvm.org/docs/Modules.html#module-map-language
 public struct Tokenizer: Sequence, IteratorProtocol {
+  enum TokenizerError: Error {
+    case unrecognizedCharacter(Character)
+  }
+
   var inputNavigator: StringNavigator
+  var errors: [Error] = []
 
   public init(input: String) {
     inputNavigator = StringNavigator(input)
@@ -14,46 +19,22 @@ public struct Tokenizer: Sequence, IteratorProtocol {
         return nil
       }
 
-      if char.isIn(.c99IdentifierBeginningCharacters) {
+      if char.isIn(.whitespaces) {
+        // Ignore the character
+        inputNavigator.next()
+      } else if char.isIn(.newlines) {
+        return collectNewLines()
+      } else if char.isIn(.c99IdentifierBeginningCharacters) {
         return collectIdentifier()
       }
       // We did not recognize the character. Note it and keep trucking.
-      else {}
-
-      // Ignore the character
-      inputNavigator.next()
+      else {
+        errors.append(TokenizerError.unrecognizedCharacter(char))
+        // Ignore the character
+        inputNavigator.next()
+      }
     }
   }
-
-  // public mutating func next() -> Token? {
-  //   guard let char = inputNavigator.current else {
-  //     return nil
-  //   }
-
-  //   if char.isIn(.c99IdentifierBeginningCharacters) {
-  //     return collectIdentifier()
-  //   }
-  //   // else if char.isIn(.decimalDigits) {
-  //   //   return collectNumberLiteral()
-  //   // }
-
-  //   return nil
-  // }
-
-  // mutating func collectNumberLiteral() -> Token {
-  //   inputNavigator.mark()
-  //   inputNavigator.next()
-  //   while true {
-  //     guard
-  //       let char = inputNavigator.current,
-  //       char.isIn(.decimalDigits)
-  //     else {
-  //       break
-  //     }
-  //     inputNavigator.next()
-  //   }
-  //   return .numberLiteral(String(inputNavigator.markToCurrent))
-  // }
 
   mutating func collectIdentifier() -> Token {
     inputNavigator.mark()
@@ -72,5 +53,20 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       return .reserved(reservedWord)
     }
     return .identifier(idStr)
+  }
+
+  mutating func collectNewLines() -> Token {
+    inputNavigator.mark()
+    inputNavigator.next()
+    while true {
+      guard
+        let char = inputNavigator.current,
+        char.isIn(.newlines)
+      else {
+        break
+      }
+      inputNavigator.next()
+    }
+    return .newLine
   }
 }

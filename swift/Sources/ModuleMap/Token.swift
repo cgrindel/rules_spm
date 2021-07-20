@@ -7,4 +7,5 @@ public enum Token: Equatable {
   case curlyBracketOpen
   case curlyBracketClose
   case `operator`(Operator)
+  case newLine
 }

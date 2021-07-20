@@ -50,12 +50,16 @@ class TokenizerTests: XCTestCase {
       .reserved(.module),
       .identifier("CNIOAtomics"),
       .curlyBracketOpen,
+      .newLine,
       .reserved(.umbrella),
       .reserved(.header),
       .stringLiteral("CNIOAtomics.h"),
+      .newLine,
       .reserved(.export),
       .operator(.asterisk),
+      .newLine,
       .curlyBracketClose,
+      .newLine,
     ]
     // DEBUG BEGIN
     Swift.print("*** CHUCK  tokens: \(String(reflecting: tokens))")
