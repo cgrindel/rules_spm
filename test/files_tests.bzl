@@ -60,7 +60,11 @@ is_modulemap_file_test = unittest.make(_is_modulemap_file_test)
 def _contains_path_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    file = struct(path = "/path/to/code/Sources/MyModule/include/MyModule.h")
+    asserts.true(env, contains_path(file, "Sources/MyModule/include"))
+
+    file = struct(path = "/path/to/code/Sources/NotMyModule/include/MyModule.h")
+    asserts.false(env, contains_path(file, "Sources/MyModule/include"))
 
     return unittest.end(env)
 
