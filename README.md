@@ -6,3 +6,17 @@ rules in this repository build the external Swift packages with [Swift Package
 Manager](https://swift.org/package-manager/), then make the outputs available to Bazel rules using
 [objc_library](https://docs.bazel.build/versions/main/be/objective-c.html#objc_library) and
 [swift_import](https://github.com/bazelbuild/rules_swift/blob/master/doc/rules.md#swift_import).
+
+
+## Quick Setup
+
+### 1. Configure your workspace
+
+Add the following to your `WORKSPACE` file to add the external repositories.
+
+```python
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+
+```
+
