@@ -6,6 +6,11 @@ public struct Tokenizer: Sequence, IteratorProtocol {
     case unrecognizedCharacter(Character)
   }
 
+  // struct Handler {
+  //   var beginsWithSet: CharacterSet
+  //   var
+  // }
+
   var inputNavigator: StringNavigator
   var errors: [Error] = []
 
@@ -22,6 +27,14 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       if char.isIn(.whitespaces) {
         // Ignore the character
         inputNavigator.next()
+      } else if char == "{" {
+        inputNavigator.next()
+        return .curlyBracketOpen
+      } else if char == "}" {
+        inputNavigator.next()
+        return .curlyBracketClose
+      } else if char == "\"" {
+        return collectStringLiteral()
       } else if char.isIn(.newlines) {
         return collectNewLines()
       } else if char.isIn(.c99IdentifierBeginningCharacters) {
@@ -68,5 +81,26 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       inputNavigator.next()
     }
     return .newLine
+  }
+
+  mutating func collectStringLiteral() -> Token {
+    // Currently on a string literal delimiter; move forward and mark the start of the string value.
+    inputNavigator.next()
+    inputNavigator.mark()
+    // NOTE: Collecting parts in the event that we implement escape sequence processing.
+    var parts = [String]()
+    while true {
+      guard let char = inputNavigator.current else {
+        break
+      }
+      if char == "\"" {
+        // Found the end of the string; capture the string value and move past the EOS delimiter
+        parts.append(String(inputNavigator.markToCurrent))
+        inputNavigator.next()
+        break
+      }
+      inputNavigator.next()
+    }
+    return .stringLiteral(parts.joined(separator: ""))
   }
 }

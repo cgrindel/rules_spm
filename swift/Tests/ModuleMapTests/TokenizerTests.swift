@@ -10,6 +10,31 @@ class TokenizerTests: XCTestCase {
   }
   """
 
+  func test_umbrellaHeaderExample() throws {
+    let tokenizer = Tokenizer(input: Self.umbrellaHdrStr)
+    let tokens = Array(tokenizer)
+    let expected: [Token] = [
+      .reserved(.module),
+      .identifier("CNIOAtomics"),
+      .curlyBracketOpen,
+      .newLine,
+      .reserved(.umbrella),
+      .reserved(.header),
+      .stringLiteral("CNIOAtomics.h"),
+      .newLine,
+      .reserved(.export),
+      .operator(.asterisk),
+      .newLine,
+      .curlyBracketClose,
+      .newLine,
+    ]
+    // DEBUG BEGIN
+    Swift.print("*** CHUCK  tokens: \(String(reflecting: tokens))")
+    // DEBUG END
+
+    assertThat(tokens).isEqualTo(expected)
+  }
+
   static let submoduleStr = """
   module std [system] [extern_c] {
     module assert {
@@ -42,29 +67,4 @@ class TokenizerTests: XCTestCase {
     // ...more headers follow...
   }
   """
-
-  func test_umbrellaHeaderExample() throws {
-    let tokenizer = Tokenizer(input: Self.umbrellaHdrStr)
-    let tokens = Array(tokenizer)
-    let expected: [Token] = [
-      .reserved(.module),
-      .identifier("CNIOAtomics"),
-      .curlyBracketOpen,
-      .newLine,
-      .reserved(.umbrella),
-      .reserved(.header),
-      .stringLiteral("CNIOAtomics.h"),
-      .newLine,
-      .reserved(.export),
-      .operator(.asterisk),
-      .newLine,
-      .curlyBracketClose,
-      .newLine,
-    ]
-    // DEBUG BEGIN
-    Swift.print("*** CHUCK  tokens: \(String(reflecting: tokens))")
-    // DEBUG END
-
-    assertThat(tokens).isEqualTo(expected)
-  }
 }
