@@ -1,5 +1,7 @@
 # Swift Package Manager Rules for Bazel
 
+![build status](https://github.com/cgrindel/rules_spm/actions/workflows/bazel.yml/badge.svg)
+
 This repository contains rules for [Bazel](https://bazel.build/) that can be used to download, build
 and consume Swift packages with [rules_swift](https://github.com/bazelbuild/rules_swift) rules.  The
 rules in this repository build the external Swift packages with [Swift Package
