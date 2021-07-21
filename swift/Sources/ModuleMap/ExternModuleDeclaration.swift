@@ -1,4 +1,4 @@
 public struct ExternModuleDeclaration: ModuleDeclarationProtocol {
   public var moduleID = ""
-  public var pathToDefinition = ""
+  public var definitionPath = ""
 }
