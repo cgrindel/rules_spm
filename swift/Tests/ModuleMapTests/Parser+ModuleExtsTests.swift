@@ -3,6 +3,20 @@ import Truth
 import XCTest
 
 class ParserModuleExtsTests: XCTestCase {
+  func test_parse_ForModule_WithoutQualifiersAttributesAndMembers_Success() throws {
+    let text = """
+    module MyModule {}
+    """
+    let result = try Parser.parse(text)
+    assertThat(result)
+      .hasCount(1)
+      .firstItem {
+        $0.isA(ModuleDeclaration.self) {
+          $0.key(\.moduleID) { $0.isEqualTo("MyModule") }
+        }
+      }
+  }
+
   func test_parse_ForModule_WithoutQualifiers_Success() throws {
     fail("IMPLEMENT ME!")
   }
