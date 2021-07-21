@@ -110,17 +110,25 @@ public struct Parser {
       case .curlyBracketOpen:
         break
       case .squareBracketOpen:
-        let attribute = try collectModuleAttribute(moduleID: moduleID)
+        let attribute = try parseModuleAttribute(moduleID: moduleID)
         module.attributes.append(attribute)
       default:
         throw ParserError.unexpectedToken(token, "Collecting attributes for \(moduleID) module.")
       }
     }
 
+    // Collect the module members
+    while true {
+      guard let member = try nextModuleMember() else {
+        break
+      }
+      module.members.append(member)
+    }
+
     return module
   }
 
-  mutating func collectModuleAttribute(moduleID: String) throws -> String {
+  mutating func parseModuleAttribute(moduleID: String) throws -> String {
     // Already collected the square bracket open.
     let attribValueToken = try nextToken("Collecting attribute for \(moduleID) module.")
     guard case let .identifier(attribValue) = attribValueToken else {
@@ -130,6 +138,11 @@ public struct Parser {
       )
     }
     return attribValue
+  }
+
+  mutating func nextModuleMember() throws -> ModuleMember? {
+    // TODO: IMPLEMENT ME!
+    return nil
   }
 }
 

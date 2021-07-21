@@ -7,10 +7,7 @@ public struct ModuleDeclaration: ModuleDeclarationProtocol {
 
   // Attributes
   public var attributes = [String]()
-  // public var system = false
-  // public var externC = false
-  // public var noUndeclaredIncludes = false
 
   // Module members
-  // public var members = [ModuleMember]()
+  public var members = [ModuleMember]()
 }
