@@ -40,7 +40,15 @@ class ParserTests: XCTestCase {
   }
 
   func test_parse_ForExternModule_MissingModuleIDToken_Failure() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    extern module "path/to/def/module.modulemap"
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unexpectedToken(
+        .stringLiteral("path/to/def/module.modulemap"),
+        "Expected the module id token while parsing an extern module."
+      )
+    )
   }
 
   func test_parse_ForExternModule_MissingPathToken_Failure() throws {
