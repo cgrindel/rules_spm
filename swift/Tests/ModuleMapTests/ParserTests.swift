@@ -52,11 +52,39 @@ class ParserTests: XCTestCase {
   }
 
   func test_parse_ForExternModule_MissingPathToken_Failure() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    extern module MyModule foo
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unexpectedToken(
+        .identifier("foo"),
+        "Expected a string literal token for the path while parsing an extern module."
+      )
+    )
   }
 
   func test_parse_ForExternModule_PrematureEOT() throws {
-    fail("IMPLEMENT ME!")
+    var text = """
+    extern
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.endOfTokens("Looking for the module token while parsing an extern module.")
+    )
+
+    text = """
+    extern module
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.endOfTokens("Looking for the module id token while parsing an extern module.")
+    )
+
+    text = """
+    extern module MyModule
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError
+        .endOfTokens("Looking for the module definition path token while parsing an extern module.")
+    )
   }
 
   // MARK: Multiple Modules

@@ -58,9 +58,10 @@ public struct Parser {
     guard case let .stringLiteral(definitionPath) = pathToken else {
       throw ParserError.unexpectedToken(
         pathToken,
-        "Expected the module id token while parsing an extern module."
+        "Expected a string literal token for the path while parsing an extern module."
       )
     }
+    // TODO: Consume the newline if it is present
 
     // TODO: Use Withable
     var externModule = ExternModuleDeclaration()
