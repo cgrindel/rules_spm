@@ -4,7 +4,14 @@ public struct Parser {
   public init(tokens: AnySequence<Token>) {
     self.tokens = tokens
   }
+
+  public mutating func parse() throws -> [ModuleDeclaration] {
+    // TODO: IMPLEMENT ME!
+    return []
+  }
 }
+
+// MARK: - Initializers
 
 public extension Parser {
   init<S>(_ sequence: S) where S: Sequence, S.Element == Token {
