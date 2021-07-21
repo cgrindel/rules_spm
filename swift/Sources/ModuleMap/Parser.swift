@@ -26,14 +26,19 @@ public struct Parser {
   }
 
   mutating func nextModule() throws -> ModuleDeclarationProtocol? {
-    guard let token = tokenIterator.next() else {
-      return nil
-    }
+    while true {
+      guard let token = tokenIterator.next() else {
+        return nil
+      }
 
-    if token == .reserved(.extern) {
-      return try parseExternModuleDeclaration()
-    } else {
-      return try parseModuleDeclaration(collectedTokens: [token])
+      switch token {
+      case .newLine:
+        continue
+      case .reserved(.extern):
+        return try parseExternModuleDeclaration()
+      default:
+        return try parseModuleDeclaration(collectedTokens: [token])
+      }
     }
   }
 
@@ -61,7 +66,6 @@ public struct Parser {
         "Expected a string literal token for the path while parsing an extern module."
       )
     }
-    // TODO: Consume the newline if it is present
 
     // TODO: Use Withable
     var externModule = ExternModuleDeclaration()
