@@ -13,7 +13,15 @@ class ParserTests: XCTestCase {
     extern module MyModule "path/to/def/module.modulemap"
     """
     let result = try Parser.parse(text)
-    fail("IMPLEMENT ME!")
+    assertThat(result)
+      .hasCount(1)
+      .firstItem {
+        $0.isA(ExternModuleDeclaration.self) {
+          $0
+            .key(\.moduleID) { $0.isEqualTo("MyModule") }
+            .key(\.definitionPath) { $0.isEqualTo("path/to/def/module.modulemap") }
+        }
+      }
   }
 
   func test_parse_ForExternModule_MissingModuleToken_Failure() throws {
