@@ -1,13 +1,14 @@
 extension Parser {
   mutating func parseModuleDeclaration(currentToken: Token) throws -> ModuleDeclaration {
     var module = ModuleDeclaration()
+    var continueProcessing = true
 
     // Collect the qualififers and the module token
     var token = currentToken
-    while true {
+    while continueProcessing {
       switch token {
       case .reserved(.module):
-        break
+        continueProcessing = false
       case .reserved(.explicit):
         module.explicit = true
       case .reserved(.framework):
@@ -15,7 +16,9 @@ extension Parser {
       default:
         throw ParserError.unexpectedToken(token, "Collecting qualifiers for module declaration.")
       }
-      token = try nextToken("Collecting qualifiers for module declaration.")
+      if continueProcessing {
+        token = try nextToken("Collecting qualifiers for module declaration.")
+      }
     }
 
     // Expect the module id
@@ -29,11 +32,12 @@ extension Parser {
     module.moduleID = moduleID
 
     // Collect any attributes until the beginning of the module members section
-    while true {
+    continueProcessing = true
+    while continueProcessing {
       token = try nextToken("Collecting attributes for \(moduleID) module.")
       switch token {
       case .curlyBracketOpen:
-        break
+        continueProcessing = false
       case .squareBracketOpen:
         let attribute = try parseModuleAttribute(moduleID: moduleID)
         module.attributes.append(attribute)
