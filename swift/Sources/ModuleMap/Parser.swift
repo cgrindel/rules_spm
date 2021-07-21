@@ -1,14 +1,20 @@
 public struct Parser {
   let tokens: AnySequence<Token>
+  // var currentModule: ModuleDeclaration?
 
   public init(tokens: AnySequence<Token>) {
     self.tokens = tokens
   }
 
   public mutating func parse() throws -> [ModuleDeclaration] {
+    // var result = [ModuleDeclaration]()
     // TODO: IMPLEMENT ME!
     return []
   }
+
+  // mutating func nextModule(parent: inout ModuleDeclaration?) throws -> ModuleDeclaration {
+  //   var current = ModuleDeclaration()
+  // }
 }
 
 // MARK: - Initializers
