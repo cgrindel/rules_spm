@@ -85,15 +85,21 @@ public struct Parser {
 // MARK: - Initializers
 
 public extension Parser {
-  // init<S>(_ sequence: S) where S: Sequence, S.Element == Token {
-  //   self.init(tokenIterator: AnySequence(sequence))
-  // }
-
   init<I>(iterator: I) where I: IteratorProtocol, I.Element == Token {
     self.init(AnyIterator(iterator))
   }
 
   init(text: String) {
     self.init(iterator: Tokenizer(text: text))
+  }
+}
+
+// MARK: - Parse Helper Function
+
+public extension Parser {
+  /// Parse the provided string and return the module declarations.
+  static func parse(_ text: String) throws -> [ModuleDeclarationProtocol] {
+    var parser = Parser(text: text)
+    return try parser.parse()
   }
 }

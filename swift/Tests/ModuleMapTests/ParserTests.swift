@@ -3,7 +3,16 @@ import Truth
 import XCTest
 
 class ParserTests: XCTestCase {
+  func test_parse_EmptyString_Success() throws {
+    let result = try Parser.parse("")
+    assertThat(result).isEmpty()
+  }
+
   func test_parse_ForExternModule_Success() throws {
+    let text = """
+    extern module MyModule "path/to/def/module.modulemap"
+    """
+    let result = try Parser.parse(text)
     fail("IMPLEMENT ME!")
   }
 
