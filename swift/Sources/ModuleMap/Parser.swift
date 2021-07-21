@@ -1,11 +1,5 @@
 /// Spec: https://clang.llvm.org/docs/Modules.html#module-map-language
 public struct Parser {
-  enum ParserError: Error {
-    case endOfTokens(String)
-    // The first arg is the actual token. The second arg is a message.
-    case unexpectedToken(Token, String)
-  }
-
   var tokenIterator: AnyIterator<Token>
 
   public init(_ tokenIterator: AnyIterator<Token>) {
@@ -36,7 +30,6 @@ public struct Parser {
       return nil
     }
 
-    // if case let .reserved(resWord) = token, resWord == .extern {
     if token == .reserved(.extern) {
       return try parseExternModuleDeclaration()
     } else {
@@ -50,7 +43,7 @@ public struct Parser {
     guard moduleToken == .reserved(.module) else {
       throw ParserError.unexpectedToken(
         moduleToken,
-        "Expected the module token while parsing an extern module"
+        "Expected the module token while parsing an extern module."
       )
     }
     let idToken = try nextToken("Looking for the module id token while parsing an extern module.")
