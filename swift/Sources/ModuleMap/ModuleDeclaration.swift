@@ -1,15 +1,15 @@
-public struct ModuleDeclaration {
-  var moduleID = ""
+public struct ModuleDeclaration: ModuleDeclarationProtocol {
+  public var moduleID = ""
 
   // Qualifiers
-  var explicit = false
-  var framework = false
+  public var explicit = false
+  public var framework = false
 
   // Attributes
-  var system = false
-  var externC = false
-  var noUndeclaredIncludes = false
+  public var system = false
+  public var externC = false
+  public var noUndeclaredIncludes = false
 
   // Module members
-  // var members = [ModuleMember]()
+  // public var members = [ModuleMember]()
 }

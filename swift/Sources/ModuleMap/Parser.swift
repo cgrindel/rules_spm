@@ -1,30 +1,53 @@
 public struct Parser {
-  let tokens: AnySequence<Token>
-  // var currentModule: ModuleDeclaration?
+  var tokenIterator: AnyIterator<Token>
 
-  public init(tokens: AnySequence<Token>) {
-    self.tokens = tokens
+  public init(_ tokenIterator: AnyIterator<Token>) {
+    self.tokenIterator = tokenIterator
   }
 
-  public mutating func parse() throws -> [ModuleDeclaration] {
+  public mutating func parse() throws -> [ModuleDeclarationProtocol] {
     // var result = [ModuleDeclaration]()
     // TODO: IMPLEMENT ME!
     return []
   }
 
-  // mutating func nextModule(parent: inout ModuleDeclaration?) throws -> ModuleDeclaration {
-  //   var current = ModuleDeclaration()
-  // }
+  mutating func nextModule(
+    // parent _: inout ModuleDeclaration?
+  ) throws -> ModuleDeclarationProtocol? {
+    guard let token = tokenIterator.next() else {
+      return nil
+    }
+
+    if case let .reserved(resWord) = token, resWord == .extern {
+      return try parseExternModuleDeclaration()
+    } else {
+      return try parseModuleDeclaration(collectedTokens: [token])
+    }
+  }
+
+  mutating func parseExternModuleDeclaration() throws -> ExternModuleDeclaration {
+    // TODO: IMPLEMENT ME!
+    return ExternModuleDeclaration()
+  }
+
+  mutating func parseModuleDeclaration(collectedTokens _: [Token]) throws -> ModuleDeclaration {
+    // TODO: IMPLEMENT ME!
+    return ModuleDeclaration()
+  }
 }
 
 // MARK: - Initializers
 
 public extension Parser {
-  init<S>(_ sequence: S) where S: Sequence, S.Element == Token {
-    self.init(tokens: AnySequence(sequence))
+  // init<S>(_ sequence: S) where S: Sequence, S.Element == Token {
+  //   self.init(tokenIterator: AnySequence(sequence))
+  // }
+
+  init<I>(iterator: I) where I: IteratorProtocol, I.Element == Token {
+    self.init(AnyIterator(iterator))
   }
 
   init(text: String) {
-    self.init(Tokenizer(text: text))
+    self.init(iterator: Tokenizer(text: text))
   }
 }
