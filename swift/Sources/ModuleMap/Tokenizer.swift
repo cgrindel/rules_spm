@@ -9,7 +9,7 @@ public struct Tokenizer: Sequence, IteratorProtocol {
   var inputNavigator: StringNavigator
   var errors: [Error] = []
 
-  public init(input: String) {
+  public init(text input: String) {
     inputNavigator = StringNavigator(input)
   }
 

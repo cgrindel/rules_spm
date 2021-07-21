@@ -11,7 +11,7 @@ class TokenizerTests: XCTestCase {
   """
 
   func test_umbrellaHeaderExample() throws {
-    let tokenizer = Tokenizer(input: Self.umbrellaHdrStr)
+    let tokenizer = Tokenizer(text: Self.umbrellaHdrStr)
     let tokens = Array(tokenizer)
     let expected: [Token] = [
       .reserved(.module),

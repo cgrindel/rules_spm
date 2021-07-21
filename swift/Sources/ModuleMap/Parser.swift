@@ -1,12 +1,17 @@
-public class Parser {
-  let tokens: [Token]
-  var index = 0
+public struct Parser {
+  let tokens: AnySequence<Token>
 
-  public init(tokens: [Token]) {
+  public init(tokens: AnySequence<Token>) {
     self.tokens = tokens
   }
+}
 
-  public convenience init<S>(_ sequence: S) where S: Sequence, S.Element == Token {
-    self.init(tokens: Array(sequence))
+public extension Parser {
+  init<S>(_ sequence: S) where S: Sequence, S.Element == Token {
+    self.init(tokens: AnySequence(sequence))
+  }
+
+  init(text: String) {
+    self.init(Tokenizer(text: text))
   }
 }
