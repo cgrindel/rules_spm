@@ -6,9 +6,10 @@ public struct ModuleDeclaration: ModuleDeclarationProtocol {
   public var framework = false
 
   // Attributes
-  public var system = false
-  public var externC = false
-  public var noUndeclaredIncludes = false
+  public var attributes = [String]()
+  // public var system = false
+  // public var externC = false
+  // public var noUndeclaredIncludes = false
 
   // Module members
   // public var members = [ModuleMember]()

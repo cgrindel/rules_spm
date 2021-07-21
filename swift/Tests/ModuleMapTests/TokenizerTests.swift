@@ -4,7 +4,7 @@ import XCTest
 
 class TokenizerTests: XCTestCase {
   static let umbrellaHdrStr = """
-  module CNIOAtomics {
+  module CNIOAtomics [system] {
       umbrella header "CNIOAtomics.h"
       export *
   }
@@ -16,6 +16,9 @@ class TokenizerTests: XCTestCase {
     let expected: [Token] = [
       .reserved(.module),
       .identifier("CNIOAtomics"),
+      .squareBracketOpen,
+      .identifier("system"),
+      .squareBracketClose,
       .curlyBracketOpen,
       .newLine,
       .reserved(.umbrella),

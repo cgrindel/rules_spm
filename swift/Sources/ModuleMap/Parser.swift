@@ -37,7 +37,7 @@ public struct Parser {
       case .reserved(.extern):
         return try parseExternModuleDeclaration()
       default:
-        return try parseModuleDeclaration(collectedTokens: [token])
+        return try parseModuleDeclaration(currentToken: token)
       }
     }
   }
@@ -74,9 +74,62 @@ public struct Parser {
     return externModule
   }
 
-  mutating func parseModuleDeclaration(collectedTokens _: [Token]) throws -> ModuleDeclaration {
-    // TODO: IMPLEMENT ME!
-    return ModuleDeclaration()
+  mutating func parseModuleDeclaration(currentToken: Token) throws -> ModuleDeclaration {
+    var module = ModuleDeclaration()
+
+    // Collect the qualififers and the module token
+    var token = currentToken
+    while true {
+      switch token {
+      case .reserved(.module):
+        break
+      case .reserved(.explicit):
+        module.explicit = true
+      case .reserved(.framework):
+        module.framework = true
+      default:
+        throw ParserError.unexpectedToken(token, "Collecting qualifiers for module declaration.")
+      }
+      token = try nextToken("Collecting qualifiers for module declaration.")
+    }
+
+    // Expect the module id
+    token = try nextToken("Looking for the module id token while parsing a module.")
+    guard case let .identifier(moduleID) = token else {
+      throw ParserError.unexpectedToken(
+        token,
+        "Expected the module id token while parsing a module."
+      )
+    }
+    module.moduleID = moduleID
+
+    // Collect any attributes until the beginning of the module members section
+    while true {
+      token = try nextToken("Collecting attributes for \(moduleID) module.")
+      switch token {
+      case .curlyBracketOpen:
+        break
+      case .squareBracketOpen:
+        let attribute = try collectModuleAttribute(moduleID: moduleID)
+        module.attributes.append(attribute)
+      default:
+        throw ParserError.unexpectedToken(token, "Collecting attributes for \(moduleID) module.")
+      }
+    }
+
+    return module
+  }
+
+  mutating func collectModuleAttribute(moduleID: String) throws -> String {
+    // Already collected the square bracket open.
+    let attribValueToken = try nextToken("Collecting attribute for \(moduleID) module.")
+    guard case let .identifier(attribValue) = attribValueToken else {
+      throw ParserError.unexpectedToken(
+        attribValueToken,
+        "Collecting attribute for \(moduleID) module."
+      )
+    }
+    return attribValue
   }
 }
 

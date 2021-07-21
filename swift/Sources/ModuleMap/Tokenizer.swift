@@ -28,6 +28,12 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       } else if char == "}" {
         inputNavigator.next()
         return .curlyBracketClose
+      } else if char == "[" {
+        inputNavigator.next()
+        return .squareBracketOpen
+      } else if char == "]" {
+        inputNavigator.next()
+        return .squareBracketClose
       } else if char == "\"" {
         return collectStringLiteral()
       } else if char.isIn(.newlines) {
