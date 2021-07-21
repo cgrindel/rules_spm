@@ -6,14 +6,17 @@ public struct Parser {
   }
 
   public mutating func parse() throws -> [ModuleDeclarationProtocol] {
-    // var result = [ModuleDeclaration]()
-    // TODO: IMPLEMENT ME!
-    return []
+    var result = [ModuleDeclarationProtocol]()
+    while true {
+      guard let module = try nextModule() else {
+        break
+      }
+      result.append(module)
+    }
+    return result
   }
 
-  mutating func nextModule(
-    // parent _: inout ModuleDeclaration?
-  ) throws -> ModuleDeclarationProtocol? {
+  mutating func nextModule() throws -> ModuleDeclarationProtocol? {
     guard let token = tokenIterator.next() else {
       return nil
     }
