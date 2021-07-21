@@ -70,7 +70,21 @@ extension Parser {
   }
 
   mutating func nextModuleMember() throws -> ModuleMember? {
-    // TODO: IMPLEMENT ME!
-    return nil
+    while true {
+      guard let token = tokenIterator.next() else {
+        return nil
+      }
+
+      switch token {
+      case .newLine:
+        continue
+      case .curlyBracketClose:
+        // Found the end of the members section
+        return nil
+      default:
+        // TODO: IMPLEMENT ME!
+        return nil
+      }
+    }
   }
 }
