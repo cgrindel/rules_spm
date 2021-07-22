@@ -55,4 +55,22 @@ class ParserModuleExtsTests: XCTestCase {
   func test_parse_ForModule_WithMalformedAttribute_Failure() throws {
     fail("IMPLEMENT ME!")
   }
+
+  // MARK: Submodules
+
+  func test_parse_ForModule_WithSubmodule_Success() throws {
+    fail("IMPLEMENT ME!")
+  }
+
+  func test_parse_ForModule_WithExplicitSubmodule_Success() throws {
+    // let text = """
+    // module foo {
+    //   explicit module complex {
+    //     header "complex.h"
+    //     export *
+    //   }
+    // }
+    // """
+    fail("IMPLEMENT ME!")
+  }
 }

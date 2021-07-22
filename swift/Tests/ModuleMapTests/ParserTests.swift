@@ -33,8 +33,4 @@ class ParserTests: XCTestCase {
         }
       }
   }
-
-  func test_parse_ModulesWithSubmodules_Success() throws {
-    fail("IMPLEMENT ME!")
-  }
 }
