@@ -58,11 +58,27 @@ class ParserModuleExtsTests: XCTestCase {
   }
 
   func test_parse_ForModule_WithUnexpectedQualifier_Failure() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    unexpected module MyModule {}
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unexpectedToken(
+        .identifier("unexpected"),
+        "Collecting qualifiers for module declaration."
+      )
+    )
   }
 
   func test_parse_ForModule_WithMissingModuleID_Failure() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    module {}
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unexpectedToken(
+        .curlyBracketOpen,
+        "Expected the module id token while parsing a module."
+      )
+    )
   }
 
   func test_parse_ForModule_WithMalformedAttribute_Failure() throws {
