@@ -17,7 +17,7 @@ extension Parser {
 
     var continueProcessing = true
     while continueProcessing {
-      let token =
+      var token =
         try nextToken("Collecting features for requires declaration in \(moduleID) module.")
       switch token {
       case .exclamationPoint:
@@ -25,10 +25,21 @@ extension Parser {
       case let .identifier(featureName):
         currentFeature.name = featureName
         decl.features.append(currentFeature)
-      case .comma:
-        currentFeature = RequiresDeclaration.Feature()
-      case .newLine:
-        continueProcessing = false
+        // Need to check for comma or newLine next
+        token = try nextToken(
+          "Looking for the end of the features for requires declaration in \(moduleID) module."
+        )
+        switch token {
+        case .comma:
+          currentFeature = RequiresDeclaration.Feature()
+        case .newLine:
+          continueProcessing = false
+        default:
+          throw ParserError.unexpectedToken(
+            token,
+            "Collecting features for requires declaration in \(moduleID) module."
+          )
+        }
       default:
         throw ParserError.unexpectedToken(
           token,

@@ -7,6 +7,14 @@ struct RequiresDeclaration: Withable, Equatable {
     var compatible = true
 
     public init() {}
+
+    public init(
+      name: String,
+      compatible: Bool = true
+    ) {
+      self.name = name
+      self.compatible = compatible
+    }
   }
 
   var features = [Feature]()
