@@ -24,10 +24,9 @@ extension Parser {
       )
     }
 
-    // TODO: Use Withable
-    var externModule = ExternModuleDeclaration()
-    externModule.moduleID = moduleID
-    externModule.definitionPath = definitionPath
-    return externModule
+    return .with {
+      $0.moduleID = moduleID
+      $0.definitionPath = definitionPath
+    }
   }
 }

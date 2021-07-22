@@ -13,6 +13,10 @@ class ParserModuleExtsTests: XCTestCase {
       .firstItem {
         $0.isA(ModuleDeclaration.self) {
           $0.key(\.moduleID) { $0.isEqualTo("MyModule") }
+            .key(\.framework) { $0.isFalse() }
+            .key(\.explicit) { $0.isFalse() }
+            .key(\.attributes) { $0.isEmpty() }
+            .key(\.members) { $0.isEmpty() }
         }
       }
   }
@@ -28,20 +32,29 @@ class ParserModuleExtsTests: XCTestCase {
         $0.isA(ModuleDeclaration.self) {
           $0.key(\.moduleID) { $0.isEqualTo("MyModule") }
             .key(\.framework) { $0.isTrue() }
+            .key(\.explicit) { $0.isFalse() }
+            .key(\.attributes) { $0.isEmpty() }
+            .key(\.members) { $0.isEmpty() }
         }
       }
   }
 
-  func test_parse_ForModule_WithoutQualifiers_Success() throws {
-    fail("IMPLEMENT ME!")
-  }
-
   func test_parse_ForModule_WithAttributes_Success() throws {
-    fail("IMPLEMENT ME!")
-  }
-
-  func test_parse_ForModule_WithoutAttributes_Success() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    module MyModule [system] [extern_c] {}
+    """
+    let result = try Parser.parse(text)
+    assertThat(result)
+      .hasCount(1)
+      .firstItem {
+        $0.isA(ModuleDeclaration.self) {
+          $0.key(\.moduleID) { $0.isEqualTo("MyModule") }
+            .key(\.framework) { $0.isFalse() }
+            .key(\.explicit) { $0.isFalse() }
+            .key(\.attributes) { $0.isEqualTo(["system", "extern_c"]) }
+            .key(\.members) { $0.isEmpty() }
+        }
+      }
   }
 
   func test_parse_ForModule_WithUnexpectedQualifier_Failure() throws {
