@@ -23,8 +23,10 @@ extension Parser {
       case .exclamationPoint:
         currentFeature.compatible = false
       case let .identifier(featureName):
+        // Add the feature to the list
         currentFeature.name = featureName
         decl.features.append(currentFeature)
+
         // Need to check for comma or newLine next
         token = try nextToken(
           "Looking for the end of the features for requires declaration in \(moduleID) module."
@@ -40,6 +42,8 @@ extension Parser {
             "Collecting features for requires declaration in \(moduleID) module."
           )
         }
+      case .newLine:
+        continueProcessing = false
       default:
         throw ParserError.unexpectedToken(
           token,
@@ -50,7 +54,7 @@ extension Parser {
 
     guard decl.features.count > 0 else {
       throw ParserError.invalidRequiresDeclaration(
-        "No features were found for requires declaration in \(moduleID) module"
+        "No features were found for requires declaration in \(moduleID) module."
       )
     }
     return decl

@@ -56,6 +56,15 @@ class ParserRequiresDeclarationExtsTests: XCTestCase {
   }
 
   func test_parse_ForModule_WithRequiresDeclNoFeatures_Failure() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    module MyModule {
+        requires
+    }
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.invalidRequiresDeclaration(
+        "No features were found for requires declaration in MyModule module."
+      )
+    )
   }
 }
