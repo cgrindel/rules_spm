@@ -1,4 +1,8 @@
 extension Parser {
+  /// Syntax
+  ///
+  /// extern module module-id string-literal
+  ///
   mutating func parseExternModuleDeclaration() throws -> ExternModuleDeclaration {
     // Already found the extern token
     let moduleToken = try nextToken("Looking for the module token while parsing an extern module.")

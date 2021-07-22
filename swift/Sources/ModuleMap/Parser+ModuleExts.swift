@@ -1,4 +1,14 @@
 extension Parser {
+  /// Syntax
+  ///
+  /// explicitopt frameworkopt module module-id attributesopt '{' module-member* '}'
+  ///
+  /// attributes:
+  ///   attribute attributesopt
+  ///
+  /// attribute:
+  ///   '[' identifier ']'
+  ///
   mutating func parseModuleDeclaration(currentToken: Token) throws -> ModuleDeclaration {
     var module = ModuleDeclaration()
     var continueProcessing = true
@@ -48,7 +58,7 @@ extension Parser {
 
     // Collect the module members
     while true {
-      guard let member = try nextModuleMember() else {
+      guard let member = try nextModuleMember(moduleID: moduleID) else {
         break
       }
       module.members.append(member)
@@ -76,7 +86,21 @@ extension Parser {
     return attribValue
   }
 
-  mutating func nextModuleMember() throws -> ModuleMember? {
+  /// Syntax
+  ///
+  /// module-member:
+  ///   requires-declaration
+  ///   header-declaration
+  ///   umbrella-dir-declaration
+  ///   submodule-declaration
+  ///   export-declaration
+  ///   export-as-declaration
+  ///   use-declaration
+  ///   link-declaration
+  ///   config-macros-declaration
+  ///   conflict-declaration
+  ///
+  mutating func nextModuleMember(moduleID: String) throws -> ModuleMember? {
     while true {
       guard let token = tokenIterator.next() else {
         return nil
@@ -88,6 +112,8 @@ extension Parser {
       case .curlyBracketClose:
         // Found the end of the members section
         return nil
+      case .reserved(.requires):
+        return try parseRequiresDeclaration(moduleID: moduleID)
       default:
         // TODO: IMPLEMENT ME!
         return nil

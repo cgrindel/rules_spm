@@ -34,6 +34,12 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       } else if char == "]" {
         inputNavigator.next()
         return .squareBracketClose
+      } else if char == "!" {
+        inputNavigator.next()
+        return .exclamationPoint
+      } else if char == "," {
+        inputNavigator.next()
+        return .comma
       } else if char == "\"" {
         return collectStringLiteral()
       } else if char.isIn(.newlines) {

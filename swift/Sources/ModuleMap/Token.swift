@@ -10,4 +10,6 @@ public enum Token: Equatable {
   case newLine
   case squareBracketOpen
   case squareBracketClose
+  case exclamationPoint
+  case comma
 }
