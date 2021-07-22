@@ -1,4 +1,6 @@
-public struct ModuleDeclaration: ModuleDeclarationProtocol {
+import StructUtils
+
+public struct ModuleDeclaration: Withable {
   public var moduleID = ""
 
   // Qualifiers
@@ -10,4 +12,8 @@ public struct ModuleDeclaration: ModuleDeclarationProtocol {
 
   // Module members
   public var members = [ModuleMember]()
+
+  public init() {}
 }
+
+extension ModuleDeclaration: ModuleDeclarationProtocol {}

@@ -5,4 +5,7 @@ swift_library(
     srcs = glob(["*.swift"]),
     module_name = "ModuleMap",
     visibility = ["//swift:__subpackages__"],
+    deps = [
+        "@cgrindel_swift_toolbox//Sources/StructUtils",
+    ],
 )
