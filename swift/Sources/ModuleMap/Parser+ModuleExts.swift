@@ -66,6 +66,13 @@ extension Parser {
         "Collecting attribute for \(moduleID) module."
       )
     }
+    let closeToken = try nextToken("Collecting closing square bracket (]) for \(moduleID) module.")
+    guard closeToken == .squareBracketClose else {
+      throw ParserError.unexpectedToken(
+        closeToken,
+        "Collecting closing square bracket (]) for \(moduleID) module."
+      )
+    }
     return attribValue
   }
 
