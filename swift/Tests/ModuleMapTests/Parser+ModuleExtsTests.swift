@@ -17,11 +17,22 @@ class ParserModuleExtsTests: XCTestCase {
       }
   }
 
-  func test_parse_ForModule_WithoutQualifiers_Success() throws {
-    fail("IMPLEMENT ME!")
+  func test_parse_ForModule_WithQualifiers_Success() throws {
+    let text = """
+    framework module MyModule {}
+    """
+    let result = try Parser.parse(text)
+    assertThat(result)
+      .hasCount(1)
+      .firstItem {
+        $0.isA(ModuleDeclaration.self) {
+          $0.key(\.moduleID) { $0.isEqualTo("MyModule") }
+            .key(\.framework) { $0.isTrue() }
+        }
+      }
   }
 
-  func test_parse_ForModule_WithQualifiers_Success() throws {
+  func test_parse_ForModule_WithoutQualifiers_Success() throws {
     fail("IMPLEMENT ME!")
   }
 
