@@ -66,7 +66,15 @@ class ParserModuleExtsTests: XCTestCase {
   }
 
   func test_parse_ForModule_WithMalformedAttribute_Failure() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    module MyModule [system {}
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unexpectedToken(
+        .curlyBracketOpen,
+        "Collecting closing square bracket (]) for MyModule module."
+      )
+    )
   }
 
   // MARK: Submodules
