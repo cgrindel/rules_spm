@@ -10,7 +10,7 @@ public enum ReservedWord: String, Equatable {
   case header
   case link
   case module
-  case privateWord = "private"
+  case `private`
   case requires
   case textual
   case umbrella

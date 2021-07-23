@@ -101,6 +101,7 @@ extension Parser {
   ///   conflict-declaration
   ///
   mutating func nextModuleMember(moduleID: String) throws -> ModuleMember? {
+    var prefixTokens = [Token]()
     while true {
       guard let token = tokenIterator.next() else {
         return nil
@@ -108,15 +109,34 @@ extension Parser {
 
       switch token {
       case .newLine:
+        guard prefixTokens.isEmpty else {
+          throw ParserError.unexpectedTokens(
+            prefixTokens,
+            "Prefix tokens found before end of line in \(moduleID) module."
+          )
+        }
         continue
       case .curlyBracketClose:
+        guard prefixTokens.isEmpty else {
+          throw ParserError.unexpectedTokens(
+            prefixTokens,
+            "Prefix tokens found at end of module member block in \(moduleID) module."
+          )
+        }
         // Found the end of the members section
         return nil
       case .reserved(.requires):
+        guard prefixTokens.isEmpty else {
+          throw ParserError.unexpectedTokens(
+            prefixTokens,
+            "Prefix tokens found for requires declaration in \(moduleID) module."
+          )
+        }
         return try parseRequiresDeclaration(moduleID: moduleID)
+      case .reserved(.header):
+        return try parseHeaderDeclaration(moduleID: moduleID, prefixTokens: prefixTokens)
       default:
-        // TODO: IMPLEMENT ME!
-        return nil
+        prefixTokens.append(token)
       }
     }
   }
