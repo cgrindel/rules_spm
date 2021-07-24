@@ -6,4 +6,6 @@ enum ParserError: Error, Equatable {
   case unexpectedTokens([Token], String)
   // The first arg is a message.
   case invalidRequiresDeclaration(String)
+  // The first arg is the string value that could not be converted. The second arg is a message.
+  case invalidInt(String, String)
 }
