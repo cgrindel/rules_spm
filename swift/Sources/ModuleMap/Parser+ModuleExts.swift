@@ -119,6 +119,22 @@ extension Parser {
           )
         }
         return try parseRequiresDeclaration(moduleID: moduleID)
+      case .reserved(.umbrella):
+        // The umbrella word can appear for umbrella headers or umbrella directories.
+        // If the next token is header, then it is an umbrella header. Otherwise, it is an umbrella
+        // directory.
+        let nextToken = try nextToken("Checking if umbrella header or directory.")
+        if nextToken == .reserved(.header) {
+          prefixTokens.append(.reserved(.umbrella))
+          return try parseHeaderDeclaration(moduleID: moduleID, prefixTokens: prefixTokens)
+        }
+        guard prefixTokens.isEmpty else {
+          throw ParserError.unexpectedTokens(
+            prefixTokens,
+            "Prefix tokens found for umbrella directory declaration in \(moduleID) module."
+          )
+        }
+        return try parseUmbrellaDirectoryDeclaration(moduleID: moduleID)
       case .reserved(.header):
         return try parseHeaderDeclaration(moduleID: moduleID, prefixTokens: prefixTokens)
       default:
