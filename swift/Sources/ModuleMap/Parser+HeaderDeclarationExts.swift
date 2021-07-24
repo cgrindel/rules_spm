@@ -55,7 +55,7 @@ extension Parser {
         continueProcessing = false
       case .curlyBracketOpen:
         expectCurlyBracketClose = true
-        try parseHeaderDeclarationAttribute(&decl)
+        try parseHeaderDeclarationAttribute(moduleID: moduleID, path: path, decl: &decl)
       case .curlyBracketClose:
         guard expectCurlyBracketClose else {
           throw ParserError.unexpectedToken(
@@ -76,8 +76,32 @@ extension Parser {
     return decl
   }
 
-  mutating func parseHeaderDeclarationAttribute(_: inout HeaderDeclaration) throws {
-    // TODO: IMPLEMENT ME!
+  mutating func parseHeaderDeclarationAttribute(
+    moduleID: String,
+    path: String,
+    decl _: inout HeaderDeclaration
+  ) throws {
+    var continueProcessing = true
+    while continueProcessing {
+      let token = try nextToken(
+        "Collecting attributes for header declaration for \(path) in \(moduleID) module."
+      )
+      switch token {
+      case .identifier("size"):
+        // TODO: IMPLEMENT ME!
+        break
+      case .identifier("mtime"):
+        // TODO: IMPLEMENT ME!
+        break
+      case .curlyBracketClose:
+        continueProcessing = false
+      default:
+        throw ParserError.unexpectedToken(
+          token,
+          "Collecting header declaration attributes for \(moduleID) module."
+        )
+      }
+    }
   }
 }
 
