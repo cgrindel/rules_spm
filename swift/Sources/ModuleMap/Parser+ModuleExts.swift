@@ -139,6 +139,8 @@ extension Parser {
         return try parseHeaderDeclaration(moduleID: moduleID, prefixTokens: prefixTokens)
       case .reserved(.export):
         return try parseExportDeclaration(moduleID: moduleID)
+      case .reserved(.exportAs):
+        return try parseExportAsDeclaration(moduleID: moduleID)
       default:
         prefixTokens.append(token)
       }
