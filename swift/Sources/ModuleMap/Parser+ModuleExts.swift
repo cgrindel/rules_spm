@@ -134,7 +134,7 @@ extension Parser {
             "Prefix tokens found for umbrella directory declaration in \(moduleID) module."
           )
         }
-        return try parseUmbrellaDirectoryDeclaration(moduleID: moduleID)
+        return try parseUmbrellaDirectoryDeclaration(moduleID: moduleID, pathToken: nextToken)
       case .reserved(.header):
         return try parseHeaderDeclaration(moduleID: moduleID, prefixTokens: prefixTokens)
       default:

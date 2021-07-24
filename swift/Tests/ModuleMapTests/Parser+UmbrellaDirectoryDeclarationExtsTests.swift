@@ -27,6 +27,28 @@ class ParserUmbrellaDirectoryDeclarationExtsTests: XCTestCase {
   }
 
   func test_parse_ForMoudle_WithUmbrellaDirDecl_Success() throws {
-    fail("IMPLEMENT ME!")
+    try do_parse_ForModule_UmbrellaDirectory_test("""
+    module MyModule {
+        umbrella "path/to/header/files"
+    }
+    """) {
+      $0.isEqualTo(.with {
+        $0.path = "path/to/header/files"
+      })
+    }
+  }
+
+  func test_parse_ForModule_WithUmbrellaDirDeclMissingPath_Fail() throws {
+    let text = """
+    module MyModule {
+        umbrella
+    }
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unexpectedToken(
+        .newLine,
+        "Collecting the directory path for the umbrella directory declaration for MyModule module."
+      )
+    )
   }
 }
