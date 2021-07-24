@@ -66,11 +66,8 @@ extension Parser {
 
   mutating func nextIntLiteral(_ errorMsgExp: @autoclosure () -> String) throws -> Int {
     let token = try nextToken(errorMsgExp())
-    guard case let .stringLiteral(value) = token else {
+    guard case let .integerLiteral(intValue) = token else {
       throw ParserError.unexpectedToken(token, errorMsgExp())
-    }
-    guard let intValue = Int(value) else {
-      throw ParserError.invalidInt(value, errorMsgExp())
     }
     return intValue
   }
