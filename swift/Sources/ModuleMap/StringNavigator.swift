@@ -1,3 +1,5 @@
+import Foundation
+
 struct StringNavigator {
   let input: String
   var currentIndex: String.Index
@@ -41,5 +43,18 @@ struct StringNavigator {
 
   var markToCurrent: Substring {
     return input[markIndex ..< currentIndex]
+  }
+}
+
+// MARK: Navigate With CharacterSet
+
+extension StringNavigator {
+  mutating func next(whileIn charSet: CharacterSet) {
+    while true {
+      guard let char = current, char.isIn(charSet) else {
+        break
+      }
+      next()
+    }
   }
 }

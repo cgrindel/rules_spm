@@ -90,4 +90,11 @@ class StringNavigatorTests: XCTestCase {
     navigator.previous()
     navigator.mark()
   }
+
+  func test_nextWhileIn() throws {
+    var navigator = StringNavigator("1234 5678")
+    navigator.mark()
+    navigator.next(whileIn: .decimalDigits)
+    assertThat(navigator.markToCurrent).isEqualTo("1234")
+  }
 }
