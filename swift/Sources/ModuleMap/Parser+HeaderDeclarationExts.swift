@@ -79,17 +79,24 @@ extension Parser {
   mutating func parseHeaderDeclarationAttribute(
     moduleID: String,
     path: String,
-    decl _: inout HeaderDeclaration
+    decl: inout HeaderDeclaration
   ) throws {
     var continueProcessing = true
     while continueProcessing {
-      let token = try nextToken(
+      var token = try nextToken(
         "Collecting attributes for header declaration for \(path) in \(moduleID) module."
       )
       switch token {
       case .identifier("size"):
-        // TODO: IMPLEMENT ME!
-        break
+        token =
+          try nextToken("Collecting the size attribute value for \(path) in \(moduleID) module.")
+        guard case let .numberLiteral(sizeStr) = token else {
+          throw ParserError.unexpectedToken(
+            token,
+            "Collecting the size attribute value for \(path) in \(moduleID) module."
+          )
+        }
+        decl.size = Int(sizeStr)
       case .identifier("mtime"):
         // TODO: IMPLEMENT ME!
         break
