@@ -40,15 +40,27 @@ class TokenizerTests: XCTestCase {
   }
 
   func test_base16Int() throws {
-    fail("IMPLEMENT ME!")
+    let tokens = Array(Tokenizer(text: "0xa2B4 0XAF"))
+    let expected: [Token] = [
+      .integerLiteral(Int("a2B4", radix: 16)!),
+      .integerLiteral(Int("AF", radix: 16)!),
+    ]
+    assertThat(tokens).isEqualTo(expected)
   }
 
   func test_base8Int() throws {
-    fail("IMPLEMENT ME!")
+    let tokens = Array(Tokenizer(text: "0123 0456"))
+    let expected: [Token] = [
+      .integerLiteral(Int("123", radix: 8)!),
+      .integerLiteral(Int("456", radix: 8)!),
+    ]
+    assertThat(tokens).isEqualTo(expected)
   }
 
   func test_float() throws {
-    fail("IMPLEMENT ME!")
+    let tokens = Array(Tokenizer(text: "12.34 56.78"))
+    let expected: [Token] = [.floatLiteral(12.34), .floatLiteral(56.78)]
+    assertThat(tokens).isEqualTo(expected)
   }
 
   // static let submoduleStr = """

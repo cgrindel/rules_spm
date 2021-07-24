@@ -132,12 +132,23 @@ public struct Tokenizer: Sequence, IteratorProtocol {
     if firstChar == "0" {
       inputNavigator.next()
       if let secondChar = inputNavigator.current {
+        // Hex value
         if secondChar.isIn(["x", "X"]) {
-          // Hex value
-
-        } else {
-          // Octal value
+          inputNavigator.next()
+          inputNavigator.mark()
+          inputNavigator.next(whileIn: .c99HexadecimalDigits)
+          guard let hexValue = Int(String(inputNavigator.markToCurrent), radix: 16) else {
+            return nil
+          }
+          return .integerLiteral(hexValue)
         }
+        // Octal value
+        inputNavigator.mark()
+        inputNavigator.next(whileIn: .c99OctalDigits)
+        guard let octalValue = Int(String(inputNavigator.markToCurrent), radix: 8) else {
+          return nil
+        }
+        return .integerLiteral(octalValue)
       }
       // No more characters. So, the value is 0
       return .integerLiteral(0)
