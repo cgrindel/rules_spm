@@ -35,14 +35,8 @@ extension Parser {
       }
     }
 
-    let pathToken =
-      try nextToken("Collecting the path for header declaration in \(moduleID) module.")
-    guard case let .stringLiteral(path) = pathToken else {
-      throw ParserError.unexpectedToken(
-        pathToken,
-        "Collecting the path for header declaration in \(moduleID) module."
-      )
-    }
+    let path =
+      try nextStringLiteral("Collecting the path for header declaration in \(moduleID) module.")
     decl.path = path
 
     var continueProcessing = true
@@ -83,20 +77,14 @@ extension Parser {
   ) throws {
     var continueProcessing = true
     while continueProcessing {
-      var token = try nextToken(
+      let token = try nextToken(
         "Collecting attributes for header declaration for \(path) in \(moduleID) module."
       )
       switch token {
       case .identifier("size"):
-        token =
-          try nextToken("Collecting the size attribute value for \(path) in \(moduleID) module.")
-        guard case let .numberLiteral(sizeStr) = token else {
-          throw ParserError.unexpectedToken(
-            token,
-            "Collecting the size attribute value for \(path) in \(moduleID) module."
-          )
-        }
-        decl.size = Int(sizeStr)
+        decl.size = try nextIntLiteral(
+          "Collecting the size attribute value for \(path) in \(moduleID) module."
+        )
       case .identifier("mtime"):
         // TODO: IMPLEMENT ME!
         break
