@@ -79,10 +79,28 @@ class ParserHeaderDeclarationExtsTests: XCTestCase {
   }
 
   func test_parse_ForModule_WithUmbrellaHeader_Success() throws {
-    fail("IMPLEMENT ME!")
+    try do_parse_ForModule_Header_test("""
+    module MyModule {
+        umbrella header "path/to/header.h"
+    }
+    """) {
+      $0.isEqualTo(.with {
+        $0.type = .umbrella
+        $0.path = "path/to/header.h"
+      })
+    }
   }
 
   func test_parse_ForModule_WithExcludeHeader_Success() throws {
-    fail("IMPLEMENT ME!")
+    try do_parse_ForModule_Header_test("""
+    module MyModule {
+        exclude header "path/to/header.h"
+    }
+    """) {
+      $0.isEqualTo(.with {
+        $0.type = .exclude
+        $0.path = "path/to/header.h"
+      })
+    }
   }
 }
