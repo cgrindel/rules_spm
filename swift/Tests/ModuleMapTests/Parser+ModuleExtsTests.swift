@@ -76,7 +76,7 @@ class ParserModuleExtsTests: XCTestCase {
     assertThat { try Parser.parse(text) }.doesThrow(
       ParserError.unexpectedToken(
         .curlyBracketOpen,
-        "Expected the module id token while parsing a module."
+        "Looking for the module id token while parsing a module."
       )
     )
   }

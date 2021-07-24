@@ -74,6 +74,16 @@ extension Parser {
     }
     return intValue
   }
+
+  mutating func assertNextToken(
+    _ expected: Token,
+    _ errorMsgExp: @autoclosure () -> String
+  ) throws {
+    let token = try nextToken(errorMsgExp())
+    guard token == expected else {
+      throw ParserError.unexpectedToken(token, errorMsgExp())
+    }
+  }
 }
 
 // MARK: - Initializers

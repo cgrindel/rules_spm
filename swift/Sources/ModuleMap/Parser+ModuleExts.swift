@@ -31,34 +31,29 @@ extension Parser {
       }
     }
 
-    // Expect the module id
-    token = try nextToken("Looking for the module id token while parsing a module.")
-    guard case let .identifier(moduleID) = token else {
-      throw ParserError.unexpectedToken(
-        token,
-        "Expected the module id token while parsing a module."
-      )
-    }
-    module.moduleID = moduleID
+    module.moduleID = try nextIdentifier("Looking for the module id token while parsing a module.")
 
     // Collect any attributes until the beginning of the module members section
     continueProcessing = true
     while continueProcessing {
-      token = try nextToken("Collecting attributes for \(moduleID) module.")
+      token = try nextToken("Collecting attributes for \(module.moduleID) module.")
       switch token {
       case .curlyBracketOpen:
         continueProcessing = false
       case .squareBracketOpen:
-        let attribute = try parseModuleAttribute(moduleID: moduleID)
+        let attribute = try parseModuleAttribute(moduleID: module.moduleID)
         module.attributes.append(attribute)
       default:
-        throw ParserError.unexpectedToken(token, "Collecting attributes for \(moduleID) module.")
+        throw ParserError.unexpectedToken(
+          token,
+          "Collecting attributes for \(module.moduleID) module."
+        )
       }
     }
 
     // Collect the module members
     while true {
-      guard let member = try nextModuleMember(moduleID: moduleID) else {
+      guard let member = try nextModuleMember(moduleID: module.moduleID) else {
         break
       }
       module.members.append(member)
@@ -69,20 +64,25 @@ extension Parser {
 
   mutating func parseModuleAttribute(moduleID: String) throws -> String {
     // Already collected the square bracket open.
-    let attribValueToken = try nextToken("Collecting attribute for \(moduleID) module.")
-    guard case let .identifier(attribValue) = attribValueToken else {
-      throw ParserError.unexpectedToken(
-        attribValueToken,
-        "Collecting attribute for \(moduleID) module."
-      )
-    }
-    let closeToken = try nextToken("Collecting closing square bracket (]) for \(moduleID) module.")
-    guard closeToken == .squareBracketClose else {
-      throw ParserError.unexpectedToken(
-        closeToken,
-        "Collecting closing square bracket (]) for \(moduleID) module."
-      )
-    }
+    // let attribValueToken = try nextToken("Collecting attribute for \(moduleID) module.")
+    // guard case let .identifier(attribValue) = attribValueToken else {
+    //   throw ParserError.unexpectedToken(
+    //     attribValueToken,
+    //     "Collecting attribute for \(moduleID) module."
+    //   )
+    // }
+    let attribValue = try nextIdentifier("Collecting attribute for \(moduleID) module.")
+    // let closeToken = try nextToken("Collecting closing square bracket (]) for \(moduleID) module.")
+    // guard closeToken == .squareBracketClose else {
+    //   throw ParserError.unexpectedToken(
+    //     closeToken,
+    //     "Collecting closing square bracket (]) for \(moduleID) module."
+    //   )
+    // }
+    try assertNextToken(
+      .squareBracketClose,
+      "Collecting closing square bracket (]) for \(moduleID) module."
+    )
     return attribValue
   }
 
