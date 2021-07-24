@@ -29,7 +29,30 @@ class ParserHeaderDeclarationExtsTests: XCTestCase {
   }
 
   func test_parse_ForModule_WithSingleHeaderDeclNoQualifiersWithAttribs_Success() throws {
-    fail("IMPLEMENT ME!")
+    let text = """
+    module MyModule {
+        header "path/to/header.h" { size 1234 mtime 5678 }
+    }
+    """
+    let result = try Parser.parse(text)
+    assertThat(result)
+      .hasCount(1)
+      .firstItem {
+        $0.isA(ModuleDeclaration.self) {
+          $0.key(\.moduleID) { $0.isEqualTo("MyModule") }
+            .key(\.members) {
+              $0.hasCount(1)
+                .firstItem {
+                  $0.isA(HeaderDeclaration.self) { $0.isEqualTo(.with {
+                    $0.type = .single(.init())
+                    $0.path = "path/to/header.h"
+                    $0.size = 1234
+                    $0.mtime = 5678
+                  }) }
+                }
+            }
+        }
+      }
   }
 
   func test_parse_ForModule_WithSingleHeaderDeclAsPrivate_Success() throws {

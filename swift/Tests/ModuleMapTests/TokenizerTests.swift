@@ -31,7 +31,24 @@ class TokenizerTests: XCTestCase {
       .curlyBracketClose,
     ]
     assertThat(tokens).isEqualTo(expected)
-    assertThat(tokenizer.errors).isEmpty()
+  }
+
+  func test_base10Int() throws {
+    let tokens = Array(Tokenizer(text: "1234 5678"))
+    let expected: [Token] = [.integerLiteral(1234), .integerLiteral(5678)]
+    assertThat(tokens).isEqualTo(expected)
+  }
+
+  func test_base16Int() throws {
+    fail("IMPLEMENT ME!")
+  }
+
+  func test_base8Int() throws {
+    fail("IMPLEMENT ME!")
+  }
+
+  func test_float() throws {
+    fail("IMPLEMENT ME!")
   }
 
   // static let submoduleStr = """

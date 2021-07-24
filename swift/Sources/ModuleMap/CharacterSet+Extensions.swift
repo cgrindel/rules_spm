@@ -19,4 +19,23 @@ public extension CharacterSet {
   static let c99Operators: CharacterSet = {
     CharacterSet(charactersIn: "*")
   }()
+
+  static let c99NumberBeginningCharacters: CharacterSet = {
+    .decimalDigits
+  }()
+
+  static let c99OctalDigits: CharacterSet = {
+    .init(charactersIn: "01234567")
+  }()
+
+  static let c99HexadecimalDigits: CharacterSet = {
+    .init(charactersIn: "0123456789abcdefABCDEF")
+  }()
+
+  static let c99NumberCharacters: CharacterSet = {
+    var charSet = CharacterSet.decimalDigits
+    charSet.formUnion(.c99HexadecimalDigits)
+    charSet.insert(charactersIn: ".,")
+    return charSet
+  }()
 }

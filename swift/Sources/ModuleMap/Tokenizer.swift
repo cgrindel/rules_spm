@@ -46,6 +46,8 @@ public struct Tokenizer: Sequence, IteratorProtocol {
         return collectNewline()
       } else if char.isIn(.c99Operators) {
         return collectOperator()
+      } else if char.isIn(.c99NumberBeginningCharacters) {
+        return collectNumberConstant()
       } else if char.isIn(.c99IdentifierBeginningCharacters) {
         return collectIdentifier()
       }
@@ -78,17 +80,18 @@ public struct Tokenizer: Sequence, IteratorProtocol {
   }
 
   mutating func collectNewline() -> Token {
-    inputNavigator.mark()
-    inputNavigator.next()
-    while true {
-      guard
-        let char = inputNavigator.current,
-        char.isIn(.newlines)
-      else {
-        break
-      }
-      inputNavigator.next()
-    }
+    // inputNavigator.mark()
+    // inputNavigator.next()
+    // while true {
+    //   guard
+    //     let char = inputNavigator.current,
+    //     char.isIn(.newlines)
+    //   else {
+    //     break
+    //   }
+    //   inputNavigator.next()
+    // }
+    inputNavigator.next(whileIn: .newlines)
     return .newLine
   }
 
@@ -117,5 +120,40 @@ public struct Tokenizer: Sequence, IteratorProtocol {
     inputNavigator.next()
     // We only support one operator
     return .operator(.asterisk)
+  }
+
+  mutating func collectNumberConstant() -> Token? {
+    // Currently on the first character of the number constant.
+    guard let firstChar = inputNavigator.current else {
+      return nil
+    }
+
+    // Check for octal or hex value
+    if firstChar == "0" {
+      inputNavigator.next()
+      if let secondChar = inputNavigator.current {
+        if secondChar.isIn(["x", "X"]) {
+          // Hex value
+
+        } else {
+          // Octal value
+        }
+      }
+      // No more characters. So, the value is 0
+      return .integerLiteral(0)
+    }
+
+    // Collect the rest of the number digits and see if Swift can parse it.
+    // This is some weak sauce, but is good enough for the current modulemap parsing.
+    inputNavigator.mark()
+    inputNavigator.next(whileIn: .c99NumberCharacters)
+    let numStr = inputNavigator.markToCurrent
+    if let int = Int(numStr) {
+      return .integerLiteral(int)
+    }
+    if let float = Float(numStr) {
+      return .floatLiteral(float)
+    }
+    return nil
   }
 }

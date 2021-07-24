@@ -64,21 +64,7 @@ extension Parser {
 
   mutating func parseModuleAttribute(moduleID: String) throws -> String {
     // Already collected the square bracket open.
-    // let attribValueToken = try nextToken("Collecting attribute for \(moduleID) module.")
-    // guard case let .identifier(attribValue) = attribValueToken else {
-    //   throw ParserError.unexpectedToken(
-    //     attribValueToken,
-    //     "Collecting attribute for \(moduleID) module."
-    //   )
-    // }
     let attribValue = try nextIdentifier("Collecting attribute for \(moduleID) module.")
-    // let closeToken = try nextToken("Collecting closing square bracket (]) for \(moduleID) module.")
-    // guard closeToken == .squareBracketClose else {
-    //   throw ParserError.unexpectedToken(
-    //     closeToken,
-    //     "Collecting closing square bracket (]) for \(moduleID) module."
-    //   )
-    // }
     try assertNextToken(
       .squareBracketClose,
       "Collecting closing square bracket (]) for \(moduleID) module."

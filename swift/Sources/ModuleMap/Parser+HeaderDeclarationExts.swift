@@ -65,7 +65,6 @@ extension Parser {
         )
       }
     }
-    // TODO: Add the rest of the header declaration.
 
     return decl
   }
@@ -86,7 +85,10 @@ extension Parser {
           "Collecting the size attribute value for \(path) in \(moduleID) module."
         )
       case .identifier("mtime"):
-        // TODO: IMPLEMENT ME!
+        decl.mtime = try nextIntLiteral(
+          "Collecting the mtime attribute value for \(path) in \(moduleID) module."
+        )
+      case .newLine:
         break
       case .curlyBracketClose:
         continueProcessing = false
