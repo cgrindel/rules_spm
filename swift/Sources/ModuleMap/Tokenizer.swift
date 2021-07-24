@@ -40,6 +40,9 @@ public struct Tokenizer: Sequence, IteratorProtocol {
       } else if char == "," {
         inputNavigator.next()
         return .comma
+      } else if char == "." {
+        inputNavigator.next()
+        return .period
       } else if char == "\"" {
         return collectStringLiteral()
       } else if char.isIn(.newlines) {

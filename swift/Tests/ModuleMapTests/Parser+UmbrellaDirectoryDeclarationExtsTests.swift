@@ -26,7 +26,7 @@ class ParserUmbrellaDirectoryDeclarationExtsTests: XCTestCase {
       }
   }
 
-  func test_parse_ForMoudle_WithUmbrellaDirDecl_Success() throws {
+  func test_parse_ForModule_WithUmbrellaDirDecl_Success() throws {
     try do_parse_ForModule_UmbrellaDirectory_test("""
     module MyModule {
         umbrella "path/to/header/files"

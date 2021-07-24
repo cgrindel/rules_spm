@@ -13,4 +13,5 @@ public enum Token: Equatable {
   case squareBracketClose
   case exclamationPoint
   case comma
+  case period
 }

@@ -63,6 +63,18 @@ class TokenizerTests: XCTestCase {
     assertThat(tokens).isEqualTo(expected)
   }
 
+  func test_period() throws {
+    let tokens = Array(Tokenizer(text: ". foo.bar 12.34"))
+    let expected: [Token] = [
+      .period,
+      .identifier("foo"),
+      .period,
+      .identifier("bar"),
+      .floatLiteral(12.34),
+    ]
+    assertThat(tokens).isEqualTo(expected)
+  }
+
   // static let submoduleStr = """
   // module std [system] [extern_c] {
   //   module assert {

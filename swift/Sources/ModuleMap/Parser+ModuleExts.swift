@@ -137,6 +137,8 @@ extension Parser {
         return try parseUmbrellaDirectoryDeclaration(moduleID: moduleID, pathToken: nextToken)
       case .reserved(.header):
         return try parseHeaderDeclaration(moduleID: moduleID, prefixTokens: prefixTokens)
+      case .reserved(.export):
+        return try parseExportDeclaration(moduleID: moduleID)
       default:
         prefixTokens.append(token)
       }
