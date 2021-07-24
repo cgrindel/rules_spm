@@ -27,11 +27,14 @@ class ParserUmbrellaDirectoryDeclarationExtsTests: XCTestCase {
   }
 
   func test_parse_ForModule_WithUmbrellaDirDecl_Success() throws {
-    try do_parse_ForModule_UmbrellaDirectory_test("""
-    module MyModule {
-        umbrella "path/to/header/files"
-    }
-    """) {
+    try do_parse_ForModule_ModuleMember_test(
+      expectedType: UmbrellaDirectoryDeclaration.self,
+      text: """
+      module MyModule {
+          umbrella "path/to/header/files"
+      }
+      """
+    ) {
       $0.isEqualTo(.with {
         $0.path = "path/to/header/files"
       })
