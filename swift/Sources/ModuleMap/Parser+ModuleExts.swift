@@ -9,25 +9,21 @@ extension Parser {
   /// attribute:
   ///   '[' identifier ']'
   ///
-  mutating func parseModuleDeclaration(currentToken: Token) throws -> ModuleDeclaration {
+  /// Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
+  mutating func parseModuleDeclaration(prefixTokens: [Token]) throws -> ModuleDeclaration {
+    // We have collected the module word.
     var module = ModuleDeclaration()
     var continueProcessing = true
 
     // Collect the qualififers and the module token
-    var token = currentToken
-    while continueProcessing {
+    for token in prefixTokens {
       switch token {
-      case .reserved(.module):
-        continueProcessing = false
       case .reserved(.explicit):
         module.explicit = true
       case .reserved(.framework):
         module.framework = true
       default:
         throw ParserError.unexpectedToken(token, "Collecting qualifiers for module declaration.")
-      }
-      if continueProcessing {
-        token = try nextToken("Collecting qualifiers for module declaration.")
       }
     }
 
@@ -36,7 +32,7 @@ extension Parser {
     // Collect any attributes until the beginning of the module members section
     continueProcessing = true
     while continueProcessing {
-      token = try nextToken("Collecting attributes for \(module.moduleID) module.")
+      let token = try nextToken("Collecting attributes for \(module.moduleID) module.")
       switch token {
       case .curlyBracketOpen:
         continueProcessing = false

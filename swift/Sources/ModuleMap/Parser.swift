@@ -20,6 +20,7 @@ public struct Parser {
   }
 
   mutating func nextModule() throws -> ModuleDeclarationProtocol? {
+    var prefixTokens = [Token]()
     while true {
       guard let token = tokenIterator.next() else {
         return nil
@@ -27,11 +28,16 @@ public struct Parser {
 
       switch token {
       case .newLine:
-        continue
+        break
       case .reserved(.extern):
+        guard prefixTokens.isEmpty else {
+          throw ParserError.unexpectedTokens(prefixTokens, "Collecting module declarations.")
+        }
         return try parseExternModuleDeclaration()
+      case .reserved(.module):
+        return try parseModuleDeclaration(prefixTokens: prefixTokens)
       default:
-        return try parseModuleDeclaration(currentToken: token)
+        prefixTokens.append(token)
       }
     }
   }
