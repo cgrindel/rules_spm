@@ -3,6 +3,8 @@ import Truth
 import XCTest
 
 class ParserModuleExtsTests: XCTestCase {
+  // MARK: Top-Level Module Parsing
+
   func test_parse_ForModule_WithoutQualifiersAttributesAndMembers_Success() throws {
     let text = """
     module MyModule {}
@@ -91,5 +93,23 @@ class ParserModuleExtsTests: XCTestCase {
         "Collecting closing square bracket (]) for MyModule module."
       )
     )
+  }
+
+  // MARK: Submodules
+
+  func test_parse_ForModule_WithSubmodule_Success() throws {
+    fail("IMPLEMENT ME!")
+  }
+
+  func test_parse_ForModule_WithExplicitSubmodule_Success() throws {
+    // let text = """
+    // module foo {
+    //   explicit module complex {
+    //     header "complex.h"
+    //     export *
+    //   }
+    // }
+    // """
+    fail("IMPLEMENT ME!")
   }
 }
