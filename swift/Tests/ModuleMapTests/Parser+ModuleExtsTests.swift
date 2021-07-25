@@ -98,18 +98,65 @@ class ParserModuleExtsTests: XCTestCase {
   // MARK: Submodules
 
   func test_parse_ForModule_WithSubmodule_Success() throws {
-    fail("IMPLEMENT ME!")
+    try do_parse_ForModule_ModuleMember_test(
+      expectedType: ModuleDeclaration.self,
+      text: """
+      module MyModule {
+          module SubModule {
+            header "SubModule.h"
+            export *
+          }
+      }
+      """
+    ) {
+      $0.key(\.moduleID) { $0.isEqualTo("SubModule") }
+        .key(\.members) {
+          $0.hasCount(2)
+            .firstItem {
+              $0.isA(HeaderDeclaration.self) { $0.isEqualTo(.with { $0.path = "SubModule.h" }) }
+            }
+            .lastItem {
+              $0.isA(ExportDeclaration.self) { $0.isEqualTo(.with { $0.wildcard = true }) }
+            }
+        }
+    }
   }
 
   func test_parse_ForModule_WithExplicitSubmodule_Success() throws {
-    // let text = """
-    // module foo {
-    //   explicit module complex {
-    //     header "complex.h"
-    //     export *
-    //   }
-    // }
-    // """
-    fail("IMPLEMENT ME!")
+    try do_parse_ForModule_ModuleMember_test(
+      expectedType: ModuleDeclaration.self,
+      text: """
+      module MyModule {
+          explicit module SubModule {
+            header "SubModule.h"
+            export *
+          }
+      }
+      """
+    ) {
+      $0.key(\.moduleID) { $0.isEqualTo("SubModule") }
+        .key(\.explicit) { $0.isTrue() }
+        .key(\.members) {
+          $0.hasCount(2)
+            .firstItem {
+              $0.isA(HeaderDeclaration.self) { $0.isEqualTo(.with { $0.path = "SubModule.h" }) }
+            }
+            .lastItem {
+              $0.isA(ExportDeclaration.self) { $0.isEqualTo(.with { $0.wildcard = true }) }
+            }
+        }
+    }
+  }
+
+  func test_parse_ForModule_WithExplicitOnTopLevelModule_Fail() throws {
+    let text = """
+    explicit module MyModule {}
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unexpectedToken(
+        .reserved(.explicit),
+        "The explicit qualifier can only exist on submodules."
+      )
+    )
   }
 }

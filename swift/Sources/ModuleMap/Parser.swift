@@ -35,7 +35,7 @@ public struct Parser {
         }
         return try parseExternModuleDeclaration()
       case .reserved(.module):
-        return try parseModuleDeclaration(prefixTokens: prefixTokens)
+        return try parseModuleDeclaration(isSubmodule: false, prefixTokens: prefixTokens)
       default:
         prefixTokens.append(token)
       }

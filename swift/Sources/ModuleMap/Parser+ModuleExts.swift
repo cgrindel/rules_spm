@@ -10,7 +10,10 @@ extension Parser {
   ///   '[' identifier ']'
   ///
   /// Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
-  mutating func parseModuleDeclaration(prefixTokens: [Token]) throws -> ModuleDeclaration {
+  mutating func parseModuleDeclaration(
+    isSubmodule: Bool,
+    prefixTokens: [Token]
+  ) throws -> ModuleDeclaration {
     // We have collected the module word.
     var module = ModuleDeclaration()
     var continueProcessing = true
@@ -19,6 +22,12 @@ extension Parser {
     for token in prefixTokens {
       switch token {
       case .reserved(.explicit):
+        guard isSubmodule else {
+          throw ParserError.unexpectedToken(
+            token,
+            "The explicit qualifier can only exist on submodules."
+          )
+        }
         module.explicit = true
       case .reserved(.framework):
         module.framework = true
@@ -143,7 +152,7 @@ extension Parser {
         }
         return try parseExternModuleDeclaration()
       case .reserved(.module):
-        return try parseModuleDeclaration(prefixTokens: prefixTokens)
+        return try parseModuleDeclaration(isSubmodule: true, prefixTokens: prefixTokens)
       default:
         prefixTokens.append(token)
       }
