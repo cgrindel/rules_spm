@@ -34,7 +34,7 @@ def _modulemap_for_target(ctx, target_name):
     return None
 
 def _get_src_module_hdr(target_name, src_hdrs, src_modulemap = None):
-    # TODO: Look for modulemap file. It will point to header(s).
+    # GH019: Look for modulemap file. It will point to header(s).
 
     # If a modulemap exists, get the relative location for the header from the modulemap
 
