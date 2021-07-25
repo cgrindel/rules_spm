@@ -153,6 +153,8 @@ extension Parser {
         return try parseExternModuleDeclaration()
       case .reserved(.module):
         return try parseModuleDeclaration(isSubmodule: true, prefixTokens: prefixTokens)
+      case .reserved(.use):
+        return try parseUseDeclaration(moduleID: moduleID)
       default:
         prefixTokens.append(token)
       }
