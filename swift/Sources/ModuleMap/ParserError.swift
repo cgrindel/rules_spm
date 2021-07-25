@@ -8,4 +8,6 @@ enum ParserError: Error, Equatable {
   case invalidRequiresDeclaration(String)
   // The first arg is the string value that could not be converted. The second arg is a message.
   case invalidInt(String, String)
+  // The first arg is the token that triggered the error. The second arg is a message.
+  case unsupported(Token, String)
 }

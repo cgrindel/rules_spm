@@ -157,6 +157,8 @@ extension Parser {
         return try parseUseDeclaration(moduleID: moduleID)
       case .reserved(.link):
         return try parseLinkDeclaration(moduleID: moduleID)
+      case .reserved(.configMacros), .reserved(.conflict):
+        throw ParserError.unsupported(token, "This module member is currently not supported.")
       default:
         prefixTokens.append(token)
       }

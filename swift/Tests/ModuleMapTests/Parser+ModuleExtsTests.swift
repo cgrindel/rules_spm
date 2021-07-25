@@ -159,4 +159,32 @@ class ParserModuleExtsTests: XCTestCase {
       )
     )
   }
+
+  func test_parse_ForModule_WithConfigMacros_Fail() throws {
+    let text = """
+    module MyModule {
+        config_macros macroA
+    }
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unsupported(
+        .reserved(.configMacros),
+        "This module member is currently not supported."
+      )
+    )
+  }
+
+  func test_parse_ForModule_WithConflict_Fail() throws {
+    let text = """
+    module MyModule {
+        conflict AnotherModule, "Message why incompatible."
+    }
+    """
+    assertThat { try Parser.parse(text) }.doesThrow(
+      ParserError.unsupported(
+        .reserved(.conflict),
+        "This module member is currently not supported."
+      )
+    )
+  }
 }
