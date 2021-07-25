@@ -19,3 +19,6 @@ def is_modulemap_file(file):
     if file.is_directory:
         return False
     return file.basename == "module.modulemap"
+
+def contains_path(file, path):
+    return file.path.find(path) > -1

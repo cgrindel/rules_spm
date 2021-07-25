@@ -1,5 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:files.bzl", "is_hdr_file", "is_modulemap_file", "is_target_file")
+load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
 def _is_target_file_test(ctx):
     env = unittest.begin(ctx)
@@ -57,10 +57,24 @@ def _is_modulemap_file_test(ctx):
 
 is_modulemap_file_test = unittest.make(_is_modulemap_file_test)
 
+def _contains_path_test(ctx):
+    env = unittest.begin(ctx)
+
+    file = struct(path = "/path/to/code/Sources/MyModule/include/MyModule.h")
+    asserts.true(env, contains_path(file, "Sources/MyModule/include"))
+
+    file = struct(path = "/path/to/code/Sources/NotMyModule/include/MyModule.h")
+    asserts.false(env, contains_path(file, "Sources/MyModule/include"))
+
+    return unittest.end(env)
+
+contains_path_test = unittest.make(_contains_path_test)
+
 def files_test_suite():
     return unittest.suite(
         "files_tests",
         is_target_file_test,
         is_hdr_file_test,
         is_modulemap_file_test,
+        contains_path_test,
     )
