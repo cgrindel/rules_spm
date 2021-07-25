@@ -137,6 +137,13 @@ extension Parser {
         return try parseExportDeclaration(moduleID: moduleID)
       case .reserved(.exportAs):
         return try parseExportAsDeclaration(moduleID: moduleID)
+      case .reserved(.extern):
+        guard prefixTokens.isEmpty else {
+          throw ParserError.unexpectedTokens(prefixTokens, "Collecting module declarations.")
+        }
+        return try parseExternModuleDeclaration()
+      case .reserved(.module):
+        return try parseModuleDeclaration(prefixTokens: prefixTokens)
       default:
         prefixTokens.append(token)
       }

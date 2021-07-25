@@ -7,4 +7,4 @@ public struct ExternModuleDeclaration: Withable {
   public init() {}
 }
 
-extension ExternModuleDeclaration: ModuleDeclarationProtocol {}
+extension ExternModuleDeclaration: ModuleDeclarationProtocol, ModuleMember {}

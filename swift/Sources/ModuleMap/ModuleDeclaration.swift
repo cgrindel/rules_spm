@@ -16,4 +16,4 @@ public struct ModuleDeclaration: Withable {
   public init() {}
 }
 
-extension ModuleDeclaration: ModuleDeclarationProtocol {}
+extension ModuleDeclaration: ModuleDeclarationProtocol, ModuleMember {}
