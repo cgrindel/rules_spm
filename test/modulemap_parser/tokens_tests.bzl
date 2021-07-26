@@ -1,5 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal/modulemap_parser:tokenizer.bzl", "create_token")
+load("//spm/internal/modulemap_parser:tokens.bzl", "create_token")
 
 def _create_token_test(ctx):
     env = unittest.begin(ctx)
@@ -11,8 +11,8 @@ def _create_token_test(ctx):
 
 create_token_test = unittest.make(_create_token_test)
 
-def tokenizer_test_suite():
+def tokens_test_suite():
     return unittest.suite(
-        "tokenizer_tests",
+        "tokens_tests",
         create_token_test,
     )
