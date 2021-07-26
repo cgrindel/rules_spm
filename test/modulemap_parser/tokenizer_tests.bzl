@@ -4,8 +4,8 @@ load("//spm/internal/modulemap_parser:tokenizer.bzl", "create_token")
 def _create_token_test(ctx):
     env = unittest.begin(ctx)
 
-    result = create_token(type = "foo", value = "bar")
-    asserts.equals(env, result, struct(type = "foo", value = "bar"))
+    asserts.equals(env, struct(type = "foo", value = "bar"), create_token("foo", "bar"))
+    asserts.equals(env, struct(type = "foo", value = None), create_token("foo"))
 
     return unittest.end(env)
 
