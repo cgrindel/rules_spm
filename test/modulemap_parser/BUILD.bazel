@@ -1,0 +1,3 @@
+load(":tokenizer_tests.bzl", "tokenizer_test_suite")
+
+tokenizer_test_suite()
