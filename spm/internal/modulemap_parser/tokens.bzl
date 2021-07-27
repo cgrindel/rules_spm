@@ -3,42 +3,37 @@ load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:structs.bzl", "structs")
 load("@bazel_skylib//lib:types.bzl", "types")
 
-# TOKEN_TYPE_NAMES = sets.make([
-#     "reserved",
-#     "identifier",
-#     "string_literal",
-#     "integer_literal",
-#     "float_literal",
-#     "comment",
-#     "curly_bracket_open",
-#     "curly_bracket_close",
-#     "operator",
-#     "newLine",
-#     "square_bracket_open",
-#     "square_bracket_close",
-#     "exclamation_point",
-#     "comma",
-#     "period",
-# ])
+def _is_valid_value(value_type_or_set, value):
+    """Returns a boolean indicating whether the specified value is valid for the specified value 
+    type.
 
-# def _create_token_type(name, hasValue = False):
-#     return struct(
-#         name = name,
-#         hasValue = hasValue,
-#     )
+    Args:
+        value_type_or_set: If this is a string, then it is considered to be a string type as returned
+                           by type(). Otherwise, it is a set as returned by sets.make() which contains
+                           the acceptable values.
+        value: The value being evaluated.
 
-def _is_valid_value(value_type, value):
-    # If the value_type is an actual string, do a type comparison.
-    # Otherwise, the value_type is a set and we should check if the value is in the set.
-    if types.is_string(value_type):
-        return type(value) == value_type
-    return sets.contains(value_type, value)
+    Returns:
+        True if the value is valid. Otherwise, false.
+    """
+    if types.is_string(value_type_or_set):
+        return type(value) == value_type_or_set
+    return sets.contains(value_type_or_set, value)
 
-def _create_token_type(name, value_type = "none"):
+def _create_token_type(name, value_type_or_set = "none"):
+    """Creates a token type struct.
+
+    Args:
+        name: The name of the type.
+        value_type_or_set: The type name or set of acceptable values.
+
+    Returns:
+        A `struct` representing the token type.
+    """
     return struct(
         name = name,
-        value_type = value_type,
-        is_valid_value_fn = partial.make(_is_valid_value, value_type),
+        value_type = value_type_or_set,
+        is_valid_value_fn = partial.make(_is_valid_value, value_type_or_set),
     )
 
 RESERVED_WORDS = sets.make([
@@ -62,7 +57,7 @@ RESERVED_WORDS = sets.make([
 
 OPERATORS = sets.make(["*"])
 
-token_types = struct(
+_token_types = struct(
     reserved = _create_token_type("reserved", RESERVED_WORDS),
     identifier = _create_token_type("identifier", "string"),
     string_literal = _create_token_type("string_literal", "string"),
@@ -80,9 +75,18 @@ token_types = struct(
     period = _create_token_type("period"),
 )
 
-_token_types_dict = structs.to_dict(token_types)
+_token_types_dict = structs.to_dict(_token_types)
 
 def _create(token_type_or_name, value = None):
+    """Create a token of the specified type.
+
+    Args:
+        token_type_or_name: The token type or the name of the token type.
+        value: Optional. The value associated with the token.
+
+    Returns:
+        A `struct` representing the token.
+    """
     if types.is_string(token_type_or_name):
         token_type = _token_types_dict[token_type_or_name]
     else:
@@ -97,5 +101,6 @@ def _create(token_type_or_name, value = None):
     )
 
 tokens = struct(
+    types = _token_types,
     create = _create,
 )
