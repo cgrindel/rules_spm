@@ -3,6 +3,8 @@ load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:structs.bzl", "structs")
 load("@bazel_skylib//lib:types.bzl", "types")
 
+# MARK: - Token Creation Functions
+
 def _is_valid_value(value_type_or_set, value):
     """Returns a boolean indicating whether the specified value is valid for the specified value 
     type.
@@ -36,47 +38,6 @@ def _create_token_type(name, value_type_or_set = type(None)):
         is_valid_value_fn = partial.make(_is_valid_value, value_type_or_set),
     )
 
-RESERVED_WORDS = sets.make([
-    "config_macros",
-    "conflict",
-    "exclude",
-    "explicit",
-    "export",
-    "export_as",
-    "extern",
-    "framework",
-    "header",
-    "link",
-    "module",
-    "private",
-    "requires",
-    "textual",
-    "umbrella",
-    "use",
-])
-
-OPERATORS = sets.make(["*"])
-
-_token_types = struct(
-    reserved = _create_token_type("reserved", RESERVED_WORDS),
-    identifier = _create_token_type("identifier", "string"),
-    string_literal = _create_token_type("string_literal", "string"),
-    integer_literal = _create_token_type("integer_literal", "int"),
-    float_literal = _create_token_type("float_literal", "float"),
-    comment = _create_token_type("comment", "string"),
-    operator = _create_token_type("operator", OPERATORS),
-    curly_bracket_open = _create_token_type("curly_bracket_open"),
-    curly_bracket_close = _create_token_type("curly_bracket_close"),
-    newLine = _create_token_type("newLine"),
-    square_bracket_open = _create_token_type("square_bracket_open"),
-    square_bracket_close = _create_token_type("square_bracket_close"),
-    exclamation_point = _create_token_type("exclamation_point"),
-    comma = _create_token_type("comma"),
-    period = _create_token_type("period"),
-)
-
-_token_types_dict = structs.to_dict(_token_types)
-
 def _create(token_type_or_name, value = None):
     """Create a token of the specified type.
 
@@ -99,6 +60,54 @@ def _create(token_type_or_name, value = None):
         type = token_type,
         value = value,
     )
+
+# MARK: - Reserved Words
+
+_reserved_words = [
+    "config_macros",
+    "conflict",
+    "exclude",
+    "explicit",
+    "export",
+    "export_as",
+    "extern",
+    "framework",
+    "header",
+    "link",
+    "module",
+    "private",
+    "requires",
+    "textual",
+    "umbrella",
+    "use",
+]
+RESERVED_WORDS = sets.make(_reserved_words)
+
+# MARK: - Operators
+
+OPERATORS = sets.make(["*"])
+
+# MARK: - Token Types
+
+_token_types = struct(
+    reserved = _create_token_type("reserved", RESERVED_WORDS),
+    identifier = _create_token_type("identifier", "string"),
+    string_literal = _create_token_type("string_literal", "string"),
+    integer_literal = _create_token_type("integer_literal", "int"),
+    float_literal = _create_token_type("float_literal", "float"),
+    comment = _create_token_type("comment", "string"),
+    operator = _create_token_type("operator", OPERATORS),
+    curly_bracket_open = _create_token_type("curly_bracket_open"),
+    curly_bracket_close = _create_token_type("curly_bracket_close"),
+    newLine = _create_token_type("newLine"),
+    square_bracket_open = _create_token_type("square_bracket_open"),
+    square_bracket_close = _create_token_type("square_bracket_close"),
+    exclamation_point = _create_token_type("exclamation_point"),
+    comma = _create_token_type("comma"),
+    period = _create_token_type("period"),
+)
+
+_token_types_dict = structs.to_dict(_token_types)
 
 def _create_reserved(value):
     return _create(_token_types.reserved, value)
@@ -145,8 +154,17 @@ def _create_comma():
 def _create_period():
     return _create(_token_types.period)
 
+# MARK: - Tokens Namespace
+
 tokens = struct(
+    # Token Types
     types = _token_types,
+
+    # Specialty sets
+    reserved_words = RESERVED_WORDS,
+    operators = OPERATORS,
+
+    # Token Factories
     reserved = _create_reserved,
     identifier = _create_identifier,
     string_literal = _create_string_literal,
