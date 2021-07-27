@@ -78,13 +78,7 @@ def _tokenize(text):
             continue
 
         char = chars[idx]
-        if sets.contains(_whitespaces, char):
-            pass
-        elif sets.contains(_newlines, char):
-            nl_result = _collect_newlines(_slice_after(chars, idx, list_len = charsLen))
-            collected_tokens.extend(nl_result.tokens)
-            skip_ahead = nl_result.consumed_count
-        elif char == "{":
+        if char == "{":
             collected_tokens.append(tokens.curly_bracket_open())
         elif char == "}":
             collected_tokens.append(tokens.curly_bracket_close())
@@ -98,6 +92,12 @@ def _tokenize(text):
             collected_tokens.append(tokens.comma())
         elif char == ".":
             collected_tokens.append(tokens.period())
+        elif sets.contains(_whitespaces, char):
+            pass
+        elif sets.contains(_newlines, char):
+            nl_result = _collect_newlines(_slice_after(chars, idx, list_len = charsLen))
+            collected_tokens.extend(nl_result.tokens)
+            skip_ahead = nl_result.consumed_count
         else:
             # Did not recognize the char. Keep trucking.
             err = _error(char, "Unrecognized character")
