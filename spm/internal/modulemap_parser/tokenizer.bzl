@@ -26,6 +26,17 @@ def _error(char, msg):
         msg = msg,
     )
 
+def _slice_after(target_list, current_idx, list_len = None):
+    if not list_len:
+        list_len = len(target_list)
+
+    # If the next index is past the end, return an empty list
+    # Else slice from  the next index.
+    next_idx = current_idx + 1
+    if next_idx >= list_len:
+        return []
+    return target_list[next_idx:]
+
 def _collect_newlines(chars):
     count = 0
     for char in chars:
@@ -33,6 +44,11 @@ def _collect_newlines(chars):
             count += 1
         else:
             break
+
+    # DEBUG BEGIN
+    print("*** CHUCK chars: ", chars)
+    print("*** CHUCK _collect_newlines count: ", count)
+    # DEBUG END
 
     return _tokenizer_result(
         tokens = [tokens.newLine()],
@@ -65,7 +81,7 @@ def _tokenize(text):
         if sets.contains(_whitespaces, char):
             pass
         elif sets.contains(_newlines, char):
-            nl_result = _collect_newlines()
+            nl_result = _collect_newlines(_slice_after(chars, idx, list_len = charsLen))
             collected_tokens.extend(nl_result.tokens)
             skip_ahead = nl_result.consumed_count
         elif char == "{":

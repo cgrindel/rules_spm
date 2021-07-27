@@ -10,7 +10,7 @@ def _tokenize_test(ctx):
         tokens = [],
         consumed_count = len(text),
     )
-    asserts.equals(env, expected, tokenizer.tokenize(text))
+    asserts.equals(env, expected, tokenizer.tokenize(text), "consume whitespace")
 
     text = "{}[]!,."
     expected = tokenizer.result(
@@ -25,7 +25,31 @@ def _tokenize_test(ctx):
         ],
         consumed_count = len(text),
     )
-    asserts.equals(env, expected, tokenizer.tokenize(text))
+    asserts.equals(env, expected, tokenizer.tokenize(text), "consume no value tokens")
+
+    text = "{\n\r}"
+    expected = tokenizer.result(
+        tokens = [
+            tokens.curly_bracket_open(),
+            tokens.newLine(),
+            tokens.curly_bracket_close(),
+        ],
+        consumed_count = len(text),
+    )
+    result = tokenizer.tokenize(text)
+    asserts.equals(env, expected, result, "consume multiple new lines")
+
+    text = "{\n}"
+    expected = tokenizer.result(
+        tokens = [
+            tokens.curly_bracket_open(),
+            tokens.newLine(),
+            tokens.curly_bracket_close(),
+        ],
+        consumed_count = len(text),
+    )
+    result = tokenizer.tokenize(text)
+    asserts.equals(env, expected, result, "consume a single new line")
 
     return unittest.end(env)
 
