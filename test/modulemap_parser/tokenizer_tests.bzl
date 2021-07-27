@@ -8,7 +8,6 @@ def _tokenize_test(ctx):
     text = " \t"
     expected = tokenizer.result(
         tokens = [],
-        consumed_count = len(text),
     )
     asserts.equals(env, expected, tokenizer.tokenize(text), "consume whitespace")
 
@@ -23,7 +22,6 @@ def _tokenize_test(ctx):
             tokens.comma(),
             tokens.period(),
         ],
-        consumed_count = len(text),
     )
     asserts.equals(env, expected, tokenizer.tokenize(text), "consume no value tokens")
 
@@ -31,10 +29,9 @@ def _tokenize_test(ctx):
     expected = tokenizer.result(
         tokens = [
             tokens.curly_bracket_open(),
-            tokens.newLine(),
+            tokens.newline(),
             tokens.curly_bracket_close(),
         ],
-        consumed_count = len(text),
     )
     result = tokenizer.tokenize(text)
     asserts.equals(env, expected, result, "consume multiple new lines")
@@ -43,10 +40,9 @@ def _tokenize_test(ctx):
     expected = tokenizer.result(
         tokens = [
             tokens.curly_bracket_open(),
-            tokens.newLine(),
+            tokens.newline(),
             tokens.curly_bracket_close(),
         ],
-        consumed_count = len(text),
     )
     result = tokenizer.tokenize(text)
     asserts.equals(env, expected, result, "consume a single new line")

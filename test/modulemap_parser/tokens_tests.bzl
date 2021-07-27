@@ -16,7 +16,7 @@ def _create_token_test(ctx):
     asserts.equals(env, struct(type = tokens.types.operator, value = "*"), tokens.operator("*"))
     asserts.equals(env, struct(type = tokens.types.curly_bracket_open, value = None), tokens.curly_bracket_open())
     asserts.equals(env, struct(type = tokens.types.curly_bracket_close, value = None), tokens.curly_bracket_close())
-    asserts.equals(env, struct(type = tokens.types.newLine, value = None), tokens.newLine())
+    asserts.equals(env, struct(type = tokens.types.newline, value = None), tokens.newline())
     asserts.equals(env, struct(type = tokens.types.square_bracket_open, value = None), tokens.square_bracket_open())
     asserts.equals(env, struct(type = tokens.types.square_bracket_close, value = None), tokens.square_bracket_close())
     asserts.equals(env, struct(type = tokens.types.exclamation_point, value = None), tokens.exclamation_point())

@@ -4,19 +4,33 @@ load("@bazel_skylib//lib:sets.bzl", "sets")
 _whitespaces = sets.make([
     " ",  # space
     "\t",  # horizontal tab
-    "\\v",  # vertical tab
-    "\\b",  # backspace
+    # "\\v",  # vertical tab
+    # "\\b",  # backspace
 ])
 _newlines = sets.make([
     "\n",  # line feed
     "\r",  # carriage return
-    "\\f",  # form feed
+    # "\\f",  # form feed
 ])
 
-def _tokenizer_result(tokens, consumed_count = 0, errors = []):
+def _tokenizer_result(tokens, errors = []):
     return struct(
         tokens = tokens,
-        consumed_count = consumed_count,
+        errors = errors,
+    )
+
+def _collection_result(chars = [], errors = []):
+    """Creates a collection result `struct`.
+
+    Args:
+        chars: A `list` of the tokens that were collected.
+        errors: A `list` of errors that were found.
+
+    Returns:
+        A `struct` representing the data that was collected.
+    """
+    return struct(
+        chars = chars,
         errors = errors,
     )
 
@@ -26,33 +40,39 @@ def _error(char, msg):
         msg = msg,
     )
 
-def _slice_after(target_list, current_idx, list_len = None):
-    if not list_len:
-        list_len = len(target_list)
+# def _slice_after(target_list, current_idx, list_len = None):
+#     if not list_len:
+#         list_len = len(target_list)
+#     # If the next index is past the end, return an empty list
+#     # Else slice from  the next index.
+#     next_idx = current_idx + 1
+#     if next_idx >= list_len:
+#         return []
+#     return target_list[next_idx:]
 
-    # If the next index is past the end, return an empty list
-    # Else slice from  the next index.
-    next_idx = current_idx + 1
-    if next_idx >= list_len:
-        return []
-    return target_list[next_idx:]
+# def _collect_newlines(chars):
+#     count = 0
+#     for char in chars:
+#         if sets.contains(_newlines, char):
+#             count += 1
+#         else:
+#             break
 
-def _collect_newlines(chars):
-    count = 0
+#     return _tokenizer_result(
+#         tokens = [tokens.newLine()],
+#         consumed_count = count,
+#     )
+
+def _collect_chars_in_set(chars, target_set):
+    collected_chars = []
     for char in chars:
-        if sets.contains(_newlines, char):
-            count += 1
+        if sets.contains(target_set, char):
+            collected_chars.append(char)
         else:
             break
 
-    # DEBUG BEGIN
-    print("*** CHUCK chars: ", chars)
-    print("*** CHUCK _collect_newlines count: ", count)
-    # DEBUG END
-
-    return _tokenizer_result(
-        tokens = [tokens.newLine()],
-        consumed_count = count,
+    return _collection_result(
+        chars = collected_chars,
     )
 
 def _tokenize(text):
@@ -77,6 +97,7 @@ def _tokenize(text):
             skip_ahead -= 1
             continue
 
+        collect_result = None
         char = chars[idx]
         if char == "{":
             collected_tokens.append(tokens.curly_bracket_open())
@@ -95,16 +116,23 @@ def _tokenize(text):
         elif sets.contains(_whitespaces, char):
             pass
         elif sets.contains(_newlines, char):
-            nl_result = _collect_newlines(_slice_after(chars, idx, list_len = charsLen))
-            collected_tokens.extend(nl_result.tokens)
-            skip_ahead = nl_result.consumed_count
+            collect_result = _collect_chars_in_set(chars[idx:], _newlines)
+            collected_tokens.append(tokens.newline())
+        elif sets.contains(tokens.operators, char):
+            # If we implement more than just asterisk for operators, this will need to be
+            # revisited.
+            collect_result = _collect_chars_in_set(chars[idx:], tokens.operators)
+            collected_tokens.append(tokens.operator(collect_result.chars))
         else:
             # Did not recognize the char. Keep trucking.
             err = _error(char, "Unrecognized character")
             errors.append(err)
             idx += 1
 
-    return _tokenizer_result(collected_tokens, consumed_count = charsLen, errors = errors)
+        if collect_result:
+            skip_ahead = len(collect_result.chars) - 1
+
+    return _tokenizer_result(collected_tokens, errors = errors)
 
 tokenizer = struct(
     tokenize = _tokenize,

@@ -99,7 +99,7 @@ _token_types = struct(
     operator = _create_token_type("operator", OPERATORS),
     curly_bracket_open = _create_token_type("curly_bracket_open"),
     curly_bracket_close = _create_token_type("curly_bracket_close"),
-    newLine = _create_token_type("newLine"),
+    newline = _create_token_type("newline"),
     square_bracket_open = _create_token_type("square_bracket_open"),
     square_bracket_close = _create_token_type("square_bracket_close"),
     exclamation_point = _create_token_type("exclamation_point"),
@@ -136,8 +136,8 @@ def _create_curly_bracket_open():
 def _create_curly_bracket_close():
     return _create(_token_types.curly_bracket_close)
 
-def _create_newLine():
-    return _create(_token_types.newLine)
+def _create_newline():
+    return _create(_token_types.newline)
 
 def _create_square_bracket_open():
     return _create(_token_types.square_bracket_open)
@@ -174,7 +174,7 @@ tokens = struct(
     operator = _create_operator,
     curly_bracket_open = _create_curly_bracket_open,
     curly_bracket_close = _create_curly_bracket_close,
-    newLine = _create_newLine,
+    newline = _create_newline,
     square_bracket_open = _create_square_bracket_open,
     square_bracket_close = _create_square_bracket_close,
     exclamation_point = _create_exclamation_point,
