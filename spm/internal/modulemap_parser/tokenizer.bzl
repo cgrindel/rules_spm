@@ -8,7 +8,7 @@ def _tokenizer_result(tokens, errors = []):
         errors = errors,
     )
 
-def _collection_result(chars = [], errors = []):
+def _collection_result(chars = [], count = None, errors = []):
     """Creates a collection result `struct`.
 
     Args:
@@ -18,8 +18,12 @@ def _collection_result(chars = [], errors = []):
     Returns:
         A `struct` representing the data that was collected.
     """
+    if not count:
+        count = len(chars)
     return struct(
         chars = chars,
+        count = count,
+        value = "".join(chars),
         errors = errors,
     )
 
@@ -39,6 +43,20 @@ def _collect_chars_in_set(chars, target_set):
 
     return _collection_result(
         chars = collected_chars,
+    )
+
+def _collect_string_literal(chars):
+    collected_chars = []
+
+    # We know that the first character is the double quote.
+    for char in chars[1:]:
+        if char == "\"":
+            break
+        collected_chars.append(char)
+
+    return _collection_result(
+        chars = collected_chars,
+        count = len(collected_chars) + 2,  # Need account for string delimiters.
     )
 
 def _tokenize(text):
@@ -79,6 +97,10 @@ def _tokenize(text):
             collected_tokens.append(tokens.comma())
         elif char == ".":
             collected_tokens.append(tokens.period())
+        elif char == "\"":
+            collect_result = _collect_string_literal(chars[idx:])
+            collected_value = "".join(collect_result.chars)
+            collected_tokens.append(tokens.string_literal(collected_value))
         elif sets.contains(character_sets.whitespaces, char):
             pass
         elif sets.contains(character_sets.newlines, char):
