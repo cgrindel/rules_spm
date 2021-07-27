@@ -15,8 +15,87 @@ _newlines = sets.make([
 
 _operators = sets.make(["*"])
 
+_non_zero_decimal_digits = sets.make([
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+])
+
+_decimal_digits = sets.union(_non_zero_decimal_digits, sets.make(["0"]))
+
+_lowercase_letters = sets.make([
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+])
+
+_uppercase_letters = sets.make([
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+])
+
+_letters = sets.union(_lowercase_letters, _uppercase_letters)
+
 character_sets = struct(
     whitespaces = _whitespaces,
     newlines = _newlines,
     operators = _operators,
+    lowercase_letters = _lowercase_letters,
+    uppercase_letters = _uppercase_letters,
+    letters = _letters,
+    non_zero_decimal_digits = _non_zero_decimal_digits,
+    decimal_digits = _decimal_digits,
 )
