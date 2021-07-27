@@ -57,6 +57,17 @@ def _tokenize_test(ctx):
     result = tokenizer.tokenize(text)
     asserts.equals(env, expected, result, "consume identifiers and reserved words")
 
+    text = "{ \"Hello, World!\" }"
+    expected = tokenizer.result(
+        tokens = [
+            tokens.curly_bracket_open(),
+            tokens.string_literal("Hello, World!"),
+            tokens.curly_bracket_close(),
+        ],
+    )
+    result = tokenizer.tokenize(text)
+    asserts.equals(env, expected, result, "consume string literals")
+
     return unittest.end(env)
 
 tokenize_test = unittest.make(_tokenize_test)

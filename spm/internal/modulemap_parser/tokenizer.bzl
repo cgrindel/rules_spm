@@ -99,8 +99,8 @@ def _tokenize(text):
             collected_tokens.append(tokens.period())
         elif char == "\"":
             collect_result = _collect_string_literal(chars[idx:])
-            collected_value = "".join(collect_result.chars)
-            collected_tokens.append(tokens.string_literal(collected_value))
+
+            collected_tokens.append(tokens.string_literal(collect_result.value))
         elif sets.contains(character_sets.whitespaces, char):
             pass
         elif sets.contains(character_sets.newlines, char):
@@ -111,11 +111,10 @@ def _tokenize(text):
                 chars[idx:],
                 character_sets.c99_identifier_characters,
             )
-            collected_value = "".join(collect_result.chars)
-            if sets.contains(tokens.reserved_words, collected_value):
-                id_token = tokens.reserved(collected_value)
+            if sets.contains(tokens.reserved_words, collect_result.value):
+                id_token = tokens.reserved(collect_result.value)
             else:
-                id_token = tokens.identifier(collected_value)
+                id_token = tokens.identifier(collect_result.value)
             collected_tokens.append(id_token)
         elif sets.contains(tokens.operators, char):
             # If we implement more than just asterisk for operators, this will need to be
@@ -129,7 +128,7 @@ def _tokenize(text):
             idx += 1
 
         if collect_result:
-            skip_ahead = len(collect_result.chars) - 1
+            skip_ahead = collect_result.count - 1
 
     return _tokenizer_result(collected_tokens, errors = errors)
 
