@@ -82,12 +82,16 @@ token_types = struct(
 
 _token_types_dict = structs.to_dict(token_types)
 
-def create_token(type, value = None):
-    # if not sets.contains(TOKEN_TYPES, type):
-    #     fail("Unrecognized token type", type)
-    if not partial.call(type.is_valid_value_fn, value):
-        fail("Invalid value for token type", type.name, value)
+def create_token(token_type_or_name, value = None):
+    if types.is_string(token_type_or_name):
+        token_type = _token_types_dict[token_type_or_name]
+    else:
+        token_type = token_type_or_name
+
+    if not partial.call(token_type.is_valid_value_fn, value):
+        fail("Invalid value for token type", token_type.name, value)
+
     return struct(
-        type = type,
+        type = token_type,
         value = value,
     )
