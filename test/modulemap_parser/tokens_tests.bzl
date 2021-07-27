@@ -4,9 +4,8 @@ load("//spm/internal/modulemap_parser:tokens.bzl", "tokens")
 def _create_token_test(ctx):
     env = unittest.begin(ctx)
 
-    asserts.equals(env, struct(type = tokens.types.identifier, value = "bar"), tokens.create(tokens.types.identifier, "bar"))
-    asserts.equals(env, struct(type = tokens.types.identifier, value = "bar"), tokens.create("identifier", "bar"))
-    asserts.equals(env, struct(type = tokens.types.comma, value = None), tokens.create("comma"))
+    asserts.equals(env, struct(type = tokens.types.identifier, value = "bar"), tokens.identifier("bar"))
+    asserts.equals(env, struct(type = tokens.types.comma, value = None), tokens.comma())
 
     return unittest.end(env)
 

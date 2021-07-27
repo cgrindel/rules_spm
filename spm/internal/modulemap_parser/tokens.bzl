@@ -100,7 +100,66 @@ def _create(token_type_or_name, value = None):
         value = value,
     )
 
+def _create_reserved(value):
+    return _create(_token_types.reserved, value)
+
+def _create_identifier(value):
+    return _create(_token_types.identifier, value)
+
+def _create_string_literal(value):
+    return _create(_token_types.string_literal, value)
+
+def _create_integer_literal(value):
+    return _create(_token_types.integer_literal, value)
+
+def _create_float_literal(value):
+    return _create(_token_types.float_literal, value)
+
+def _create_comment(value):
+    return _create(_token_types.comment, value)
+
+def _create_operator(value):
+    return _create(_token_types.operator, value)
+
+def _create_curly_bracket_open():
+    return _create(_token_types.curly_bracket_open)
+
+def _create_curly_bracket_close():
+    return _create(_token_types.curly_bracket_close)
+
+def _create_newLine():
+    return _create(_token_types.newLine)
+
+def _create_square_bracket_open():
+    return _create(_token_types.square_bracket_open)
+
+def _create_square_bracket_close():
+    return _create(_token_types.square_bracket_close)
+
+def _create_exclamation_point():
+    return _create(_token_types.exclamation_point)
+
+def _create_comma():
+    return _create(_token_types.comma)
+
+def _create_period():
+    return _create(_token_types.period)
+
 tokens = struct(
     types = _token_types,
-    create = _create,
+    reserved = _create_reserved,
+    identifier = _create_identifier,
+    string_literal = _create_string_literal,
+    integer_literal = _create_integer_literal,
+    float_literal = _create_float_literal,
+    comment = _create_comment,
+    operator = _create_operator,
+    curly_bracket_open = _create_curly_bracket_open,
+    curly_bracket_close = _create_curly_bracket_close,
+    newLine = _create_newLine,
+    square_bracket_open = _create_square_bracket_open,
+    square_bracket_close = _create_square_bracket_close,
+    exclamation_point = _create_exclamation_point,
+    comma = _create_comma,
+    period = _create_period,
 )
