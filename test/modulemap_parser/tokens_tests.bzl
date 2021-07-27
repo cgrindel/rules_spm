@@ -6,6 +6,7 @@ def _create_token_test(ctx):
 
     asserts.equals(env, struct(type = tokens.types.identifier, value = "bar"), tokens.create(tokens.types.identifier, "bar"))
     asserts.equals(env, struct(type = tokens.types.identifier, value = "bar"), tokens.create("identifier", "bar"))
+    asserts.equals(env, struct(type = tokens.types.comma, value = None), tokens.create("comma"))
 
     return unittest.end(env)
 

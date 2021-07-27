@@ -20,7 +20,7 @@ def _is_valid_value(value_type_or_set, value):
         return type(value) == value_type_or_set
     return sets.contains(value_type_or_set, value)
 
-def _create_token_type(name, value_type_or_set = "none"):
+def _create_token_type(name, value_type_or_set = type(None)):
     """Creates a token type struct.
 
     Args:
