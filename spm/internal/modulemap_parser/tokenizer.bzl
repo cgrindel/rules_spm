@@ -13,9 +13,10 @@ _newlines = sets.make([
     "\\f",  # form feed
 ])
 
-def _tokenizer_result(tokens, errors = []):
+def _tokenizer_result(tokens, consumed_count = 0, errors = []):
     return struct(
         tokens = tokens,
+        consumed_count = consumed_count,
         errors = errors,
     )
 
@@ -23,6 +24,19 @@ def _error(char, msg):
     return struct(
         char = char,
         msg = msg,
+    )
+
+def _collect_newlines(chars):
+    count = 0
+    for char in chars:
+        if sets.contains(_newlines, char):
+            count += 1
+        else:
+            break
+
+    return _tokenizer_result(
+        tokens = [tokens.newLine()],
+        consumed_count = count,
     )
 
 def _tokenize(text):
@@ -41,38 +55,40 @@ def _tokenize(text):
     idx = 0
     charsLen = len(chars)
 
+    skip_ahead = 0
     for idx in range(charsLen):
+        if skip_ahead > 0:
+            skip_ahead -= 1
+            continue
+
         char = chars[idx]
         if sets.contains(_whitespaces, char):
-            idx += 1
+            pass
+        elif sets.contains(_newlines, char):
+            nl_result = _collect_newlines()
+            collected_tokens.extend(nl_result.tokens)
+            skip_ahead = nl_result.consumed_count
         elif char == "{":
             collected_tokens.append(tokens.curly_bracket_open())
-            idx += 1
         elif char == "}":
             collected_tokens.append(tokens.curly_bracket_close())
-            idx += 1
         elif char == "[":
             collected_tokens.append(tokens.square_bracket_open())
-            idx += 1
         elif char == "]":
             collected_tokens.append(tokens.square_bracket_close())
-            idx += 1
         elif char == "!":
             collected_tokens.append(tokens.exclamation_point())
-            idx += 1
         elif char == ",":
             collected_tokens.append(tokens.comma())
-            idx += 1
         elif char == ".":
             collected_tokens.append(tokens.period())
-            idx += 1
         else:
             # Did not recognize the char. Keep trucking.
             err = _error(char, "Unrecognized character")
             errors.append(err)
             idx += 1
 
-    return _tokenizer_result(collected_tokens, errors)
+    return _tokenizer_result(collected_tokens, consumed_count = charsLen, errors = errors)
 
 tokenizer = struct(
     tokenize = _tokenize,
