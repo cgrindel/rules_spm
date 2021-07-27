@@ -13,8 +13,6 @@ _newlines = sets.make([
     # "\\f",  # form feed
 ])
 
-_operators = sets.make(["*"])
-
 _non_zero_decimal_digits = sets.make([
     "1",
     "2",
@@ -89,6 +87,8 @@ _uppercase_letters = sets.make([
 
 _letters = sets.union(_lowercase_letters, _uppercase_letters)
 
+_c99_operators = sets.make(["*"])
+
 _c99_identifier_beginning_characters = sets.union(_letters, sets.make(["_"]))
 
 _c99_identifier_characters = sets.union(_c99_identifier_beginning_characters, _decimal_digits)
@@ -96,12 +96,12 @@ _c99_identifier_characters = sets.union(_c99_identifier_beginning_characters, _d
 character_sets = struct(
     whitespaces = _whitespaces,
     newlines = _newlines,
-    operators = _operators,
     lowercase_letters = _lowercase_letters,
     uppercase_letters = _uppercase_letters,
     letters = _letters,
     non_zero_decimal_digits = _non_zero_decimal_digits,
     decimal_digits = _decimal_digits,
+    c99_operators = _c99_operators,
     c99_identifier_beginning_characters = _c99_identifier_beginning_characters,
     c99_identifier_characters = _c99_identifier_characters,
 )

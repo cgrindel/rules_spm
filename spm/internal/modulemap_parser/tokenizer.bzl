@@ -116,7 +116,7 @@ def _tokenize(text):
             else:
                 id_token = tokens.identifier(collect_result.value)
             collected_tokens.append(id_token)
-        elif sets.contains(tokens.operators, char):
+        elif sets.contains(tokens.c99_operators, char):
             # If we implement more than just asterisk for operators, this will need to be
             # revisited.
             collect_result = _collect_chars_in_set(chars[idx:], character_sets.operators)
