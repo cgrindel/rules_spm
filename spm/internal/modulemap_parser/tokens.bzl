@@ -82,7 +82,7 @@ token_types = struct(
 
 _token_types_dict = structs.to_dict(token_types)
 
-def create_token(token_type_or_name, value = None):
+def _create(token_type_or_name, value = None):
     if types.is_string(token_type_or_name):
         token_type = _token_types_dict[token_type_or_name]
     else:
@@ -95,3 +95,7 @@ def create_token(token_type_or_name, value = None):
         type = token_type,
         value = value,
     )
+
+tokens = struct(
+    create = _create,
+)
