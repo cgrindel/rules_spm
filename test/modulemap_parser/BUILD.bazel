@@ -1,3 +1,6 @@
 load(":tokens_tests.bzl", "tokens_test_suite")
+load(":tokenizer_tests.bzl", "tokenizer_test_suite")
 
 tokens_test_suite()
+
+tokenizer_test_suite()

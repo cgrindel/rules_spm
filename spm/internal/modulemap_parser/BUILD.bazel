@@ -6,3 +6,12 @@ bzl_library(
     visibility = ["//spm:__subpackages__"],
     deps = [],
 )
+
+bzl_library(
+    name = "tokenizer",
+    srcs = ["tokenizer.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":tokens",
+    ],
+)
