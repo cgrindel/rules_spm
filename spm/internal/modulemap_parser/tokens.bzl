@@ -85,6 +85,9 @@ RESERVED_WORDS = sets.make(_reserved_words)
 
 # MARK: - Operators
 
+# NOTE: This is meant to be a set of the operators not a set of the operator characters.
+# For instance, operator characters could be ["*", "=", "+"] while the list of operators
+# could be ["*", "+", "+=", "="].
 OPERATORS = sets.make(["*"])
 
 # MARK: - Token Types
@@ -162,7 +165,6 @@ tokens = struct(
 
     # Specialty sets
     reserved_words = RESERVED_WORDS,
-    operators = OPERATORS,
 
     # Token Factories
     reserved = _create_reserved,

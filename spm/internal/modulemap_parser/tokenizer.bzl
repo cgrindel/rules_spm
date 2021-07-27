@@ -1,17 +1,6 @@
-load("//spm/internal/modulemap_parser:tokens.bzl", "tokens")
+load(":tokens.bzl", "tokens")
+load(":character_sets.bzl", "character_sets")
 load("@bazel_skylib//lib:sets.bzl", "sets")
-
-_whitespaces = sets.make([
-    " ",  # space
-    "\t",  # horizontal tab
-    # "\\v",  # vertical tab
-    # "\\b",  # backspace
-])
-_newlines = sets.make([
-    "\n",  # line feed
-    "\r",  # carriage return
-    # "\\f",  # form feed
-])
 
 def _tokenizer_result(tokens, errors = []):
     return struct(
@@ -39,29 +28,6 @@ def _error(char, msg):
         char = char,
         msg = msg,
     )
-
-# def _slice_after(target_list, current_idx, list_len = None):
-#     if not list_len:
-#         list_len = len(target_list)
-#     # If the next index is past the end, return an empty list
-#     # Else slice from  the next index.
-#     next_idx = current_idx + 1
-#     if next_idx >= list_len:
-#         return []
-#     return target_list[next_idx:]
-
-# def _collect_newlines(chars):
-#     count = 0
-#     for char in chars:
-#         if sets.contains(_newlines, char):
-#             count += 1
-#         else:
-#             break
-
-#     return _tokenizer_result(
-#         tokens = [tokens.newLine()],
-#         consumed_count = count,
-#     )
 
 def _collect_chars_in_set(chars, target_set):
     collected_chars = []
@@ -113,15 +79,15 @@ def _tokenize(text):
             collected_tokens.append(tokens.comma())
         elif char == ".":
             collected_tokens.append(tokens.period())
-        elif sets.contains(_whitespaces, char):
+        elif sets.contains(character_sets.whitespaces, char):
             pass
-        elif sets.contains(_newlines, char):
-            collect_result = _collect_chars_in_set(chars[idx:], _newlines)
+        elif sets.contains(character_sets.newlines, char):
+            collect_result = _collect_chars_in_set(chars[idx:], character_sets.newlines)
             collected_tokens.append(tokens.newline())
         elif sets.contains(tokens.operators, char):
             # If we implement more than just asterisk for operators, this will need to be
             # revisited.
-            collect_result = _collect_chars_in_set(chars[idx:], tokens.operators)
+            collect_result = _collect_chars_in_set(chars[idx:], character_sets.operators)
             collected_tokens.append(tokens.operator(collect_result.chars))
         else:
             # Did not recognize the char. Keep trucking.
