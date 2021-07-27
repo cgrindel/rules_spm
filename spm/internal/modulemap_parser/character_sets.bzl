@@ -93,6 +93,27 @@ _c99_identifier_beginning_characters = sets.union(_letters, sets.make(["_"]))
 
 _c99_identifier_characters = sets.union(_c99_identifier_beginning_characters, _decimal_digits)
 
+_c99_hexadecimal_characters = sets.union(_decimal_digits, sets.make([
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+]))
+
+_c99_number_characters = sets.union(
+    _decimal_digits,
+    _c99_hexadecimal_characters,
+    sets.make(["x", "X", "."]),
+)
+
 character_sets = struct(
     whitespaces = _whitespaces,
     newlines = _newlines,
@@ -104,4 +125,6 @@ character_sets = struct(
     c99_operators = _c99_operators,
     c99_identifier_beginning_characters = _c99_identifier_beginning_characters,
     c99_identifier_characters = _c99_identifier_characters,
+    c99_hexadecimal_characters = _c99_hexadecimal_characters,
+    c99_number_characters = _c99_number_characters,
 )

@@ -68,6 +68,18 @@ def _tokenize_test(ctx):
     result = tokenizer.tokenize(text)
     asserts.equals(env, expected, result, "consume string literals")
 
+    text = "1234 0x3 02 12.34"
+    expected = tokenizer.result(
+        tokens = [
+            tokens.integer_literal(1234),
+            tokens.integer_literal(0x3),
+            tokens.integer_literal(0o2),
+            tokens.float_literal(12.34),
+        ],
+    )
+    result = tokenizer.tokenize(text)
+    asserts.equals(env, expected, result, "consume string literals")
+
     return unittest.end(env)
 
 tokenize_test = unittest.make(_tokenize_test)

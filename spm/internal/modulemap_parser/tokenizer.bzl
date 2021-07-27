@@ -85,27 +85,37 @@ def _tokenize(text):
         char = chars[idx]
         if char == "{":
             collected_tokens.append(tokens.curly_bracket_open())
+
         elif char == "}":
             collected_tokens.append(tokens.curly_bracket_close())
+
         elif char == "[":
             collected_tokens.append(tokens.square_bracket_open())
+
         elif char == "]":
             collected_tokens.append(tokens.square_bracket_close())
+
         elif char == "!":
             collected_tokens.append(tokens.exclamation_point())
+
         elif char == ",":
             collected_tokens.append(tokens.comma())
+
         elif char == ".":
             collected_tokens.append(tokens.period())
+
         elif char == "\"":
             collect_result = _collect_string_literal(chars[idx:])
 
             collected_tokens.append(tokens.string_literal(collect_result.value))
+
         elif sets.contains(character_sets.whitespaces, char):
             pass
+
         elif sets.contains(character_sets.newlines, char):
             collect_result = _collect_chars_in_set(chars[idx:], character_sets.newlines)
             collected_tokens.append(tokens.newline())
+
         elif sets.contains(character_sets.c99_identifier_beginning_characters, char):
             collect_result = _collect_chars_in_set(
                 chars[idx:],
@@ -116,11 +126,28 @@ def _tokenize(text):
             else:
                 id_token = tokens.identifier(collect_result.value)
             collected_tokens.append(id_token)
+
+        elif sets.contains(character_sets.decimal_digits, char):
+            # NOTE: This is some weak sauce. This implementation is relying on Starlark to parse
+            # whatever was specified.
+            collect_result = _collect_chars_in_set(chars[idx:], character_sets.c99_number_characters)
+            num_str = collect_result.value.lower()
+            if num_str.find(".") > -1:
+                num_token = tokens.float_literal(float(num_str))
+            elif num_str.startswith("0x"):
+                num_token = tokens.integer_literal(int(num_str, base = 16))
+            elif num_str.startswith("0") and len(num_str) > 1 and sets.contains(character_sets.decimal_digits, num_str[1:2]):
+                num_token = tokens.integer_literal(int(num_str, base = 8))
+            else:
+                num_token = tokens.integer_literal(int(num_str))
+            collected_tokens.append(num_token)
+
         elif sets.contains(tokens.c99_operators, char):
             # If we implement more than just asterisk for operators, this will need to be
             # revisited.
             collect_result = _collect_chars_in_set(chars[idx:], character_sets.operators)
             collected_tokens.append(tokens.operator(collect_result.chars))
+
         else:
             # Did not recognize the char. Keep trucking.
             err = _error(char, "Unrecognized character")
