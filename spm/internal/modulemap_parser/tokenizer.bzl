@@ -84,6 +84,17 @@ def _tokenize(text):
         elif sets.contains(character_sets.newlines, char):
             collect_result = _collect_chars_in_set(chars[idx:], character_sets.newlines)
             collected_tokens.append(tokens.newline())
+        elif sets.contains(character_sets.c99_identifier_beginning_characters, char):
+            collect_result = _collect_chars_in_set(
+                chars[idx:],
+                character_sets.c99_identifier_characters,
+            )
+            collected_value = "".join(collect_result.chars)
+            if sets.contains(tokens.reserved_words, collected_value):
+                id_token = tokens.reserved(collected_value)
+            else:
+                id_token = tokens.identifier(collected_value)
+            collected_tokens.append(id_token)
         elif sets.contains(tokens.operators, char):
             # If we implement more than just asterisk for operators, this will need to be
             # revisited.

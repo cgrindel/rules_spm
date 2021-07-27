@@ -47,6 +47,16 @@ def _tokenize_test(ctx):
     result = tokenizer.tokenize(text)
     asserts.equals(env, expected, result, "consume a single new line")
 
+    text = "a1234 module"
+    expected = tokenizer.result(
+        tokens = [
+            tokens.identifier("a1234"),
+            tokens.reserved("module"),
+        ],
+    )
+    result = tokenizer.tokenize(text)
+    asserts.equals(env, expected, result, "consume identifiers and reserved words")
+
     return unittest.end(env)
 
 tokenize_test = unittest.make(_tokenize_test)
