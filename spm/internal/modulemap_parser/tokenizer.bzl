@@ -34,24 +34,45 @@ def _tokenize(text):
     Returns:
         A `list` of tokens.
     """
-    tokens = []
+    collected_tokens = []
     errors = []
 
     chars = text.elems()
     idx = 0
     charsLen = len(chars)
 
-    # while idx < charsLen:
-    # char = chars[idx]
-    # if sets.contains(_whitespaces, char):
-    #     idx += 1
-    # else:
-    #     # Did not recognize the char. Keep trucking.
-    #     # err = _error(char, "Unrecognized character")
-    #     # errors.append(err)
-    #     idx += 1
+    for idx in range(charsLen):
+        char = chars[idx]
+        if sets.contains(_whitespaces, char):
+            idx += 1
+        elif char == "{":
+            collected_tokens.append(tokens.curly_bracket_open())
+            idx += 1
+        elif char == "}":
+            collected_tokens.append(tokens.curly_bracket_close())
+            idx += 1
+        elif char == "[":
+            collected_tokens.append(tokens.square_bracket_open())
+            idx += 1
+        elif char == "]":
+            collected_tokens.append(tokens.square_bracket_close())
+            idx += 1
+        elif char == "!":
+            collected_tokens.append(tokens.exclamation_point())
+            idx += 1
+        elif char == ",":
+            collected_tokens.append(tokens.comma())
+            idx += 1
+        elif char == ".":
+            collected_tokens.append(tokens.period())
+            idx += 1
+        else:
+            # Did not recognize the char. Keep trucking.
+            err = _error(char, "Unrecognized character")
+            errors.append(err)
+            idx += 1
 
-    return _tokenizer_result(tokens, errors)
+    return _tokenizer_result(collected_tokens, errors)
 
 tokenizer = struct(
     tokenize = _tokenize,
