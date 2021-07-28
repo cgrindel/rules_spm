@@ -43,26 +43,20 @@ def _collect_extern_module(parsed_tokens):
         error `struct` as returned from errors.create().
     """
 
-    # DEBUG BEGIN
-    print("*** CHUCK parsed_tokens: ")
-    for idx, item in enumerate(parsed_tokens):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
     tlen = len(parsed_tokens)
-    extern_token, err = tokens.next_as(parsed_tokens, 0, tts.reserved, rws.extern, count = tlen)
+    extern_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.extern, count = tlen)
     if err:
         return None, err
 
-    module_token, err = tokens.next_as(parsed_tokens, 1, tts.reserved, rws.module, count = tlen)
+    module_token, err = tokens.get_as(parsed_tokens, 1, tts.reserved, rws.module, count = tlen)
     if err:
         return None, err
 
-    module_id_token, err = tokens.next_as(parsed_tokens, 2, tts.identifier, count = tlen)
+    module_id_token, err = tokens.get_as(parsed_tokens, 2, tts.identifier, count = tlen)
     if err:
         return None, err
 
-    path_token, err = tokens.next_as(parsed_tokens, 3, tts.string_literal, count = tlen)
+    path_token, err = tokens.get_as(parsed_tokens, 3, tts.string_literal, count = tlen)
     if err:
         return None, err
 
@@ -108,10 +102,6 @@ def _parse(text):
             prefix_tokens.append(token)
 
         if collect_result:
-            # DEBUG BEGIN
-            print("*** CHUCK collect_result: ", collect_result)
-
-            # DEBUG END
             collected_decls.extend(collect_result.declarations)
             skip_ahead = collect_result.count - 1
 
