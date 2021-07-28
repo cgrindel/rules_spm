@@ -2,24 +2,10 @@ load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
 load(":tokenizer.bzl", "tokenizer")
 load(":tokens.bzl", "reserved_words", "tokens")
+load(":collection_results.bzl", "collection_results")
 
 tts = tokens.types
 rws = reserved_words
-
-def _collection_result(declarations, count):
-    """Creates a collection result `struct`.
-
-    Args:
-        declarations: The declarations that were collected.
-        count: The number of tokens that were collected.
-
-    Returns:
-        A `struct` representing the data that was collected.
-    """
-    return struct(
-        declarations = declarations,
-        count = count,
-    )
 
 def _parser_result(declarations = []):
     return struct(
@@ -61,7 +47,7 @@ def _collect_extern_module(parsed_tokens):
         return None, err
 
     decl = declarations.extern_module(module_id_token.value, path_token.value)
-    return _collection_result([decl], 4), None
+    return collection_results.new([decl], 4), None
 
 def _parse(text):
     tokenizer_result = tokenizer.tokenize(text)

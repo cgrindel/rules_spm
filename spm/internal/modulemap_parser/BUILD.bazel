@@ -8,6 +8,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "collection_results",
+    srcs = ["collection_results.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [],
+)
+
+bzl_library(
     name = "tokens",
     srcs = ["tokens.bzl"],
     visibility = ["//spm:__subpackages__"],
