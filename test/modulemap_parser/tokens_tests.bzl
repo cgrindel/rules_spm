@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//spm/internal/modulemap_parser:tokens.bzl", "tokens")
+load("//spm/internal/modulemap_parser:errors.bzl", "errors")
 
 def _create_token_test(ctx):
     env = unittest.begin(ctx)
@@ -27,28 +28,46 @@ def _create_token_test(ctx):
 
 create_token_test = unittest.make(_create_token_test)
 
-def _next_test(ctx):
+def _get_test(ctx):
+    env = unittest.begin(ctx)
+
+    token_list = [tokens.comma()]
+
+    token, err = tokens.get(token_list, 0)
+    if err:
+        unittest.fail(env, "Error while testing get() %s" % (err))
+    asserts.equals(env, tokens.comma(), token)
+
+    token, err = tokens.get(token_list, 1)
+    asserts.equals(env, err, errors.new("No more tokens available. count: 1, idx: 1"))
+    asserts.equals(env, None, token)
+
+    token, err = tokens.get(token_list, -1)
+    asserts.equals(env, err, errors.new("Negative indices are not supported. idx: -1"))
+    asserts.equals(env, None, token)
+
+    # Make sure that it uses the specified count.
+    token, err = tokens.get(token_list, 0, count = 0)
+    asserts.equals(env, err, errors.new("No more tokens available. count: 0, idx: 0"))
+    asserts.equals(env, None, token)
+
+    return unittest.end(env)
+
+get_test = unittest.make(_get_test)
+
+def _get_as_test(ctx):
     env = unittest.begin(ctx)
 
     unittest.fail(env, "IMPLEMENT ME!")
 
     return unittest.end(env)
 
-next_test = unittest.make(_next_test)
-
-def _next_as_test(ctx):
-    env = unittest.begin(ctx)
-
-    unittest.fail(env, "IMPLEMENT ME!")
-
-    return unittest.end(env)
-
-next_as_test = unittest.make(_next_as_test)
+get_as_test = unittest.make(_get_as_test)
 
 def tokens_test_suite():
     return unittest.suite(
         "tokens_tests",
         create_token_test,
-        next_test,
-        next_as_test,
+        get_test,
+        get_as_test,
     )

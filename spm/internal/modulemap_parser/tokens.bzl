@@ -162,8 +162,8 @@ def _create_period():
 
 # MARK: - Token List Functions
 
-def _next_token(tokens, idx, count = None):
-    """Returns the next token in the list.
+def _get_token(tokens, idx, count = None):
+    """Returns the token in the list at the specified index.
 
     Args:
         tokens: A `list` of tokens.
@@ -171,17 +171,18 @@ def _next_token(tokens, idx, count = None):
         count: Optional. The number of tokens in the list.
 
     Returns:
-        A `tuple` where the first item is the next token and the second item is an error, if any
+        A `tuple` where the first item is the token and the second item is an error, if any
         occurred.
     """
-    if not count:
+    if count == None:
         count = len(tokens)
-    next_idx = idx + 1
-    if next_idx >= count:
-        return None, errors.new("No more tokens available.")
-    return tokens[next_idx], None
+    if idx < 0:
+        return None, errors.new("Negative indices are not supported. idx: %s" % (idx))
+    if idx >= count:
+        return None, errors.new("No more tokens available. count: %s, idx: %s" % (count, idx))
+    return tokens[idx], None
 
-def _next_token_as(tokens, idx, expected_type, expected_value = None, count = None):
+def _get_token_as(tokens, idx, expected_type, expected_value = None, count = None):
     """Returns the next token in the list if it matches the specified type and, optionally, the
     specified value.
 
@@ -196,7 +197,7 @@ def _next_token_as(tokens, idx, expected_type, expected_value = None, count = No
         A `tuple` where the first item is the next token and the second item is an error, if any
         occurred.
     """
-    token, err = _next_token(tokens, idx, count = count)
+    token, err = _get_token(tokens, idx, count = count)
     if err:
         return None, err
     if token.type != expected_type:
@@ -232,8 +233,8 @@ tokens = struct(
     period = _create_period,
 
     # Token List Functions
-    next = _next_token,
-    next_as = _next_token_as,
+    get = _get_token,
+    get_as = _get_token_as,
 )
 
 reserved_words = _reserved_words
