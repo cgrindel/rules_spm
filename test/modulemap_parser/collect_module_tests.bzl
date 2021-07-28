@@ -67,6 +67,16 @@ def _parse_test(ctx):
                        (tokens.identifier("unexpected")),
     )
 
+    # do_failing_parse_test(
+    #     env,
+    #     "module with missing module id",
+    #     text = """
+    #     module {}
+    #     """,
+    #     expected_err = "Unexpected prefix token collecting module declaration. token: %s" %
+    #                    (tokens.identifier("unexpected")),
+    # )
+
     return unittest.end(env)
 
 parse_test = unittest.make(_parse_test)
