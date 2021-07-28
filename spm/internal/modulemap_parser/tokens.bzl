@@ -33,11 +33,11 @@ def _create_token_type(name, value_type_or_set = type(None)):
     Returns:
         A `struct` representing the token type.
     """
-    return struct(
-        name = name,
+    _token_types_validation[name] = struct(
         value_type = value_type_or_set,
         is_valid_value_fn = partial.make(_is_valid_value, value_type_or_set),
     )
+    return name
 
 def _create(token_type_or_name, value = None):
     """Create a token of the specified type.
@@ -49,40 +49,24 @@ def _create(token_type_or_name, value = None):
     Returns:
         A `struct` representing the token.
     """
-    if types.is_string(token_type_or_name):
-        token_type = _token_types_dict[token_type_or_name]
-    else:
-        token_type = token_type_or_name
 
-    if not partial.call(token_type.is_valid_value_fn, value):
-        fail("Invalid value for token type", token_type.name, value)
+    # if types.is_string(token_type_or_name):
+    #     token_type = _token_types_dict[token_type_or_name]
+    # else:
+    #     token_type = token_type_or_name
+    validation_info = _token_types_validation[token_type_or_name]
+    if not validation_info:
+        fail("Invalid token type name", token_type_or_name)
+
+    if not partial.call(validation_info.is_valid_value_fn, value):
+        fail("Invalid value for token type", token_type_or_name, value)
 
     return struct(
-        type = token_type,
+        type = token_type_or_name,
         value = value,
     )
 
 # MARK: - Reserved Words
-
-# _reserved_words = [
-#     "config_macros",
-#     "conflict",
-#     "exclude",
-#     "explicit",
-#     "export",
-#     "export_as",
-#     "extern",
-#     "framework",
-#     "header",
-#     "link",
-#     "module",
-#     "private",
-#     "requires",
-#     "textual",
-#     "umbrella",
-#     "use",
-# ]
-# RESERVED_WORDS = sets.make(_reserved_words)
 
 _reserved_words = struct(
     config_macros = "config_macros",
@@ -114,6 +98,8 @@ OPERATORS = sets.make(["*"])
 
 # MARK: - Token Types
 
+_token_types_validation = dict()
+
 _token_types = struct(
     reserved = _create_token_type("reserved", RESERVED_WORDS),
     identifier = _create_token_type("identifier", "string"),
@@ -132,7 +118,7 @@ _token_types = struct(
     period = _create_token_type("period"),
 )
 
-_token_types_dict = structs.to_dict(_token_types)
+# _token_types_dict = structs.to_dict(_token_types)
 
 def _create_reserved(value):
     return _create(_token_types.reserved, value)
