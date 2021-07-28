@@ -1,9 +1,21 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 
 def _parse_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    text = """
+    """
+    actual = parser.parse(text)
+    expected = parser.result()
+    asserts.equals(env, expected, actual, "parse empty string")
+
+    text = """
+
+    """
+    actual = parser.parse(text)
+    expected = parser.result()
+    asserts.equals(env, expected, actual, "parse just newline")
 
     return unittest.end(env)
 

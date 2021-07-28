@@ -72,7 +72,6 @@ def _tokenize(text):
     errors = []
 
     chars = text.elems()
-    idx = 0
     chars_len = len(chars)
 
     skip_ahead = 0
