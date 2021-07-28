@@ -1,13 +1,12 @@
 load(":tokenizer.bzl", "tokenizer")
 load(":tokens.bzl", "reserved_words", "tokens")
 
-def _collection_result(declarations, count, errors = []):
+def _collection_result(declarations, count):
     """Creates a collection result `struct`.
 
     Args:
         declarations: The declarations that were collected.
         count: The number of tokens that were collected.
-        errors: A `list` of errors that were found.
 
     Returns:
         A `struct` representing the data that was collected.
@@ -15,19 +14,25 @@ def _collection_result(declarations, count, errors = []):
     return struct(
         declarations = declarations,
         count = count,
-        errors = errors,
     )
 
-def _parser_result(declarations = [], errors = []):
+def _parser_result(declarations = []):
     return struct(
         declarations = declarations,
-        errors = errors,
+    )
+
+def _error(msg, child_errors = []):
+    return struct(
+        msg = msg,
+        child_errors = child_errors,
     )
 
 def _collect_extern_module(parsed_tokens):
     """Collect an extern module declaration.
 
-    Syntax
+    Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
+
+    Syntax:
 
     extern module module-id string-literal
 
@@ -35,14 +40,19 @@ def _collect_extern_module(parsed_tokens):
         parsed_tokens: A `list` of tokens.
 
     Returns:
-        A collection result `struct`.
+        A `tuple` where the first item is the collection result and the second is an
+        error `struct` as returned from _error().
     """
+    extern_token, err = tokens.next(parsed_tokens, 0)
+    if err:
+        return None, _error("Failed to find extern token.")
+
     return _collection_result([], 0)
 
 def _parse(text):
     tokenizer_result = tokenizer.tokenize(text)
     if len(tokenizer_result.errors) > 0:
-        return _parser_result(errors = tokenizer_result.errors)
+        return None, _error("Errors from tokenizer", tokenizer_result.errors)
 
     parsed_tokens = tokenizer_result.tokens
     tokens_cnt = len(parsed_tokens)
@@ -63,7 +73,9 @@ def _parse(text):
 
         elif token.type == tokens.types.reserved:
             if token.value == reserved_words.extern:
-                collect_result = _collect_extern_module(parsed_tokens[idx:])
+                collect_result, err = _collect_extern_module(parsed_tokens[idx:])
+                if err:
+                    return None, err
 
             elif token.value == reserved_words.module:
                 # TODO: IMPLEMENT ME!
@@ -79,7 +91,7 @@ def _parse(text):
             collected_decls.extend(collect_result.declarations)
             skip_ahead = collect_result.count - 1
 
-    return _parser_result(collected_decls)
+    return _parser_result(collected_decls), None
 
 parser = struct(
     parse = _parse,
