@@ -1,9 +1,18 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//spm/internal/modulemap_parser:errors.bzl", "errors")
 
 def _create_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    result = errors.new(
+        msg = "The message",
+        child_errors = ["child_error"],
+    )
+    expected = struct(
+        msg = "The message",
+        child_errors = ["child_error"],
+    )
+    asserts.equals(env, expected, result)
 
     return unittest.end(env)
 
