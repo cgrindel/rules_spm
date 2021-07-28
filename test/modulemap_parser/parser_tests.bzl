@@ -16,12 +16,6 @@ def do_parse_test(env, msg, text, expected):
 def _parse_test(ctx):
     env = unittest.begin(ctx)
 
-    # text = """
-    # """
-    # actual, err = parser.parse(text)
-    # asserts.false(env, err, "parse empty string")
-    # expected = parser.result()
-    # asserts.equals(env, expected, actual, "parse empty string")
     do_parse_test(
         env,
         "parse empty string",
@@ -30,13 +24,6 @@ def _parse_test(ctx):
         expected = parser.result(),
     )
 
-    # text = """
-
-    # """
-    # actual, err = parser.parse(text)
-    # asserts.false(env, err, "parse empty string")
-    # expected = parser.result()
-    # asserts.equals(env, expected, actual, "parse just newline")
     do_parse_test(
         env,
         "parse just newline",
@@ -54,6 +41,16 @@ def _parse_test(ctx):
     #     declarations.extern_module("MyModule", "path/to/definition"),
     # ])
     # asserts.equals(env, expected, actual, "parse extern module")
+    do_parse_test(
+        env,
+        "parse extern module",
+        text = """
+        extern module MyModule "path/to/definition"
+        """,
+        expected = parser.result([
+            declarations.extern_module("MyModule", "path/to/definition"),
+        ]),
+    )
 
     return unittest.end(env)
 

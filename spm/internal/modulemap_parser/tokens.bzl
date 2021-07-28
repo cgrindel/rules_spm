@@ -1,3 +1,4 @@
+load(":errors.bzl", "errors")
 load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:structs.bzl", "structs")
@@ -178,6 +179,27 @@ def _create_comma():
 def _create_period():
     return _create(_token_types.period)
 
+# MARK: - Token List Functions
+
+def _next_token(tokens, idx, tokens_len = None):
+    """Returns the next token in the list.
+
+    Args:
+        tokens: A `list` of tokens.
+        idx: The current index.
+        tokens_len: Optional. The number of tokens in the list.
+
+    Returns:
+        A `tuple` where the first item is the next token and the second item is an error, if any
+        occurred.
+    """
+    if not tokens_len:
+        tokens_len = len(tokens)
+    next_idx = idx + 1
+    if next_idx >= tokens_len:
+        return None, errors.new("No more tokens available.")
+    return tokens[next_idx], None
+
 # MARK: - Tokens Namespace
 
 tokens = struct(
@@ -203,6 +225,9 @@ tokens = struct(
     exclamation_point = _create_exclamation_point,
     comma = _create_comma,
     period = _create_period,
+
+    # Token List Functions
+    next = _next_token,
 )
 
 reserved_words = _reserved_words

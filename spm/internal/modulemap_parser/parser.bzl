@@ -1,5 +1,6 @@
 load(":tokenizer.bzl", "tokenizer")
 load(":tokens.bzl", "reserved_words", "tokens")
+load(":errors.bzl", "errors")
 
 def _collection_result(declarations, count):
     """Creates a collection result `struct`.
@@ -21,12 +22,6 @@ def _parser_result(declarations = []):
         declarations = declarations,
     )
 
-def _error(msg, child_errors = []):
-    return struct(
-        msg = msg,
-        child_errors = child_errors,
-    )
-
 def _collect_extern_module(parsed_tokens):
     """Collect an extern module declaration.
 
@@ -41,18 +36,18 @@ def _collect_extern_module(parsed_tokens):
 
     Returns:
         A `tuple` where the first item is the collection result and the second is an
-        error `struct` as returned from _error().
+        error `struct` as returned from errors.create().
     """
     extern_token, err = tokens.next(parsed_tokens, 0)
     if err:
-        return None, _error("Failed to find extern token.")
+        return None, errors.new("Failed to find extern token.")
 
-    return _collection_result([], 0)
+    return _collection_result([], 0), None
 
 def _parse(text):
     tokenizer_result = tokenizer.tokenize(text)
     if len(tokenizer_result.errors) > 0:
-        return None, _error("Errors from tokenizer", tokenizer_result.errors)
+        return None, errors.new("Errors from tokenizer", tokenizer_result.errors)
 
     parsed_tokens = tokenizer_result.tokens
     tokens_cnt = len(parsed_tokens)
