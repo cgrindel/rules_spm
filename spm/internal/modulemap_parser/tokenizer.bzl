@@ -73,10 +73,10 @@ def _tokenize(text):
 
     chars = text.elems()
     idx = 0
-    charsLen = len(chars)
+    chars_len = len(chars)
 
     skip_ahead = 0
-    for idx in range(charsLen):
+    for idx in range(chars_len):
         if skip_ahead > 0:
             skip_ahead -= 1
             continue
