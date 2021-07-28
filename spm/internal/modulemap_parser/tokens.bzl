@@ -63,25 +63,46 @@ def _create(token_type_or_name, value = None):
 
 # MARK: - Reserved Words
 
-_reserved_words = [
-    "config_macros",
-    "conflict",
-    "exclude",
-    "explicit",
-    "export",
-    "export_as",
-    "extern",
-    "framework",
-    "header",
-    "link",
-    "module",
-    "private",
-    "requires",
-    "textual",
-    "umbrella",
-    "use",
-]
-RESERVED_WORDS = sets.make(_reserved_words)
+# _reserved_words = [
+#     "config_macros",
+#     "conflict",
+#     "exclude",
+#     "explicit",
+#     "export",
+#     "export_as",
+#     "extern",
+#     "framework",
+#     "header",
+#     "link",
+#     "module",
+#     "private",
+#     "requires",
+#     "textual",
+#     "umbrella",
+#     "use",
+# ]
+# RESERVED_WORDS = sets.make(_reserved_words)
+
+_reserved_words = struct(
+    config_macros = "config_macros",
+    conflict = "conflict",
+    exclude = "exclude",
+    explicit = "explicit",
+    export = "export",
+    export_as = "export_as",
+    extern = "extern",
+    framework = "framework",
+    header = "header",
+    link = "link",
+    module = "module",
+    private = "private",
+    requires = "requires",
+    textual = "textual",
+    umbrella = "umbrella",
+    use = "use",
+)
+_reserved_words_dict = structs.to_dict(_reserved_words)
+RESERVED_WORDS = sets.make([_reserved_words_dict[k] for k in _reserved_words_dict])
 
 # MARK: - Operators
 
@@ -183,3 +204,5 @@ tokens = struct(
     comma = _create_comma,
     period = _create_period,
 )
+
+reserved_words = _reserved_words
