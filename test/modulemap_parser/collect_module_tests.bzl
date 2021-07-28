@@ -1,6 +1,7 @@
-load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
-load(":test_helpers.bzl", "do_parse_test")
+load("//spm/internal/modulemap_parser:tokens.bzl", "tokens")
+load(":test_helpers.bzl", "do_failing_parse_test", "do_parse_test")
+load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
 def _parse_test(ctx):
     env = unittest.begin(ctx)
@@ -54,6 +55,16 @@ def _parse_test(ctx):
                 members = [],
             ),
         ],
+    )
+
+    do_failing_parse_test(
+        env,
+        "module with unexpected qualifier",
+        text = """
+        unexpected module MyModule {}
+        """,
+        expected_err = "Unexpected prefix token collecting module declaration. token: %s" %
+                       (tokens.identifier("unexpected")),
     )
 
     return unittest.end(env)
