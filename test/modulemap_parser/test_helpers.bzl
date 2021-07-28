@@ -2,11 +2,11 @@ load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 
 def do_parse_test(env, msg, text, expected):
-    if not msg:
+    if msg == None:
         fail("A message must be provided.")
-    if not text:
+    if text == None:
         fail("A text value must be provided.")
-    if not expected:
+    if expected == None:
         fail("An expected value must be provied.")
 
     actual, err = parser.parse(text)

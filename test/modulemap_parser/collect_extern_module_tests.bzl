@@ -1,33 +1,27 @@
-load("@bazel_skylib//lib:unittest.bzl", "unittest")
 load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
 load(":test_helpers.bzl", "do_parse_test")
+load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
 def _parse_test(ctx):
     env = unittest.begin(ctx)
 
     do_parse_test(
         env,
-        "parse empty string",
+        "parse extern module",
         text = """
+        extern module MyModule "path/to/definition"
         """,
-        expected = [],
-    )
-
-    do_parse_test(
-        env,
-        "parse just newline",
-        text = """
-
-        """,
-        expected = [],
+        expected = [
+            declarations.extern_module("MyModule", "path/to/definition"),
+        ],
     )
 
     return unittest.end(env)
 
 parse_test = unittest.make(_parse_test)
 
-def parser_test_suite():
+def collect_extern_module_test_suite():
     return unittest.suite(
-        "parser_tests",
+        "collect_extern_module_tests",
         parse_test,
     )
