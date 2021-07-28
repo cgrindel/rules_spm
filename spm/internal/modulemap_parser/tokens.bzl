@@ -182,15 +182,15 @@ def _get_token(tokens, idx, count = None):
         return None, errors.new("No more tokens available. count: %s, idx: %s" % (count, idx))
     return tokens[idx], None
 
-def _get_token_as(tokens, idx, expected_type, expected_value = None, count = None):
+def _get_token_as(tokens, idx, token_type, value = None, count = None):
     """Returns the next token in the list if it matches the specified type and, optionally, the
     specified value.
 
     Args:
         tokens: A `list` of tokens.
         idx: The current index.
-        expected_type: The expxected token type `struct`.
-        expected_value: Optional. The expected token value.
+        token_type: The expxected token type `struct`.
+        value: Optional. The expected token value.
         count: Optional. The number of tokens in the list.
 
     Returns:
@@ -200,10 +200,10 @@ def _get_token_as(tokens, idx, expected_type, expected_value = None, count = Non
     token, err = _get_token(tokens, idx, count = count)
     if err:
         return None, err
-    if token.type != expected_type:
-        return None, errors.new("Expected type %s, but was %s" % (expected_type, token.type))
-    if expected_value != None and token.value != expected_value:
-        return None, errors.new("Expected value %s, but was %s" % (expected_value, token.value))
+    if token.type != token_type:
+        return None, errors.new("Expected type %s, but was %s" % (token_type, token.type))
+    if value != None and token.value != value:
+        return None, errors.new("Expected value %s, but was %s" % (value, token.value))
     return token, None
 
 # MARK: - Tokens Namespace

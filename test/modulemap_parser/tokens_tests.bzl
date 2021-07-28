@@ -34,21 +34,20 @@ def _get_test(ctx):
     token_list = [tokens.comma()]
 
     token, err = tokens.get(token_list, 0)
-    if err:
-        unittest.fail(env, "Error while testing get() %s" % (err))
+    asserts.equals(env, None, err)
     asserts.equals(env, tokens.comma(), token)
 
     token, err = tokens.get(token_list, 1)
-    asserts.equals(env, err, errors.new("No more tokens available. count: 1, idx: 1"))
+    asserts.equals(env, errors.new("No more tokens available. count: 1, idx: 1"), err)
     asserts.equals(env, None, token)
 
     token, err = tokens.get(token_list, -1)
-    asserts.equals(env, err, errors.new("Negative indices are not supported. idx: -1"))
+    asserts.equals(env, errors.new("Negative indices are not supported. idx: -1"), err)
     asserts.equals(env, None, token)
 
     # Make sure that it uses the specified count.
     token, err = tokens.get(token_list, 0, count = 0)
-    asserts.equals(env, err, errors.new("No more tokens available. count: 0, idx: 0"))
+    asserts.equals(env, errors.new("No more tokens available. count: 0, idx: 0"), err)
     asserts.equals(env, None, token)
 
     return unittest.end(env)
@@ -58,7 +57,23 @@ get_test = unittest.make(_get_test)
 def _get_as_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    token_list = [tokens.string_literal("Hello")]
+
+    token, err = tokens.get_as(token_list, 0, tokens.types.string_literal)
+    asserts.equals(env, None, err)
+    asserts.equals(env, tokens.string_literal("Hello"), token)
+
+    token, err = tokens.get_as(token_list, 0, tokens.types.string_literal, "Hello")
+    asserts.equals(env, None, err)
+    asserts.equals(env, tokens.string_literal("Hello"), token)
+
+    token, err = tokens.get_as(token_list, 0, tokens.types.comma)
+    asserts.equals(env, errors.new("Expected type comma, but was string_literal"), err)
+    asserts.equals(env, None, token)
+
+    token, err = tokens.get_as(token_list, 0, tokens.types.string_literal, "Goodbye")
+    asserts.equals(env, errors.new("Expected value Goodbye, but was Hello"), err)
+    asserts.equals(env, None, token)
 
     return unittest.end(env)
 
