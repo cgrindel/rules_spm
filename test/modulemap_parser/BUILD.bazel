@@ -1,6 +1,12 @@
-load(":tokens_tests.bzl", "tokens_test_suite")
+load(":declarations_tests.bzl", "declarations_test_suite")
+load(":parser_tests.bzl", "parser_test_suite")
 load(":tokenizer_tests.bzl", "tokenizer_test_suite")
+load(":tokens_tests.bzl", "tokens_test_suite")
+
+declarations_test_suite()
 
 tokens_test_suite()
 
 tokenizer_test_suite()
+
+parser_test_suite()

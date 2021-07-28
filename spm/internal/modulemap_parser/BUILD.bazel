@@ -15,3 +15,12 @@ bzl_library(
         ":tokens",
     ],
 )
+
+bzl_library(
+    name = "parser",
+    srcs = ["parser.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":tokenizer",
+    ],
+)
