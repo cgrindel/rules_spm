@@ -4,6 +4,7 @@ load(":parser_tests.bzl", "parser_test_suite")
 load(":tokenizer_tests.bzl", "tokenizer_test_suite")
 load(":tokens_tests.bzl", "tokens_test_suite")
 load(":collect_extern_module_tests.bzl", "collect_extern_module_test_suite")
+load(":collect_module_tests.bzl", "collect_module_test_suite")
 
 errors_test_suite()
 
@@ -16,3 +17,5 @@ tokenizer_test_suite()
 parser_test_suite()
 
 collect_extern_module_test_suite()
+
+collect_module_test_suite()

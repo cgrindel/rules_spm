@@ -1,6 +1,6 @@
+load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":tokens.bzl", "reserved_words", "tokens")
-load(":collection_results.bzl", "collection_results")
 
 tts = tokens.types
 rws = reserved_words
@@ -12,7 +12,7 @@ def collect_extern_module(parsed_tokens):
 
     Syntax:
 
-    extern module module-id string-literal
+        extern module module-id string-literal
 
     Args:
         parsed_tokens: A `list` of tokens.
