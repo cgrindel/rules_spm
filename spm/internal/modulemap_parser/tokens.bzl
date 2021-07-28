@@ -181,24 +181,48 @@ def _create_period():
 
 # MARK: - Token List Functions
 
-def _next_token(tokens, idx, tokens_len = None):
+def _next_token(tokens, idx, count = None):
     """Returns the next token in the list.
 
     Args:
         tokens: A `list` of tokens.
         idx: The current index.
-        tokens_len: Optional. The number of tokens in the list.
+        count: Optional. The number of tokens in the list.
 
     Returns:
         A `tuple` where the first item is the next token and the second item is an error, if any
         occurred.
     """
-    if not tokens_len:
-        tokens_len = len(tokens)
+    if not count:
+        count = len(tokens)
     next_idx = idx + 1
-    if next_idx >= tokens_len:
+    if next_idx >= count:
         return None, errors.new("No more tokens available.")
     return tokens[next_idx], None
+
+def _next_token_as(tokens, idx, expected_type, expected_value = None, count = None):
+    """Returns the next token in the list if it matches the specified type and, optionally, the
+    specified value.
+
+    Args:
+        tokens: A `list` of tokens.
+        idx: The current index.
+        expected_type: The expxected token type `struct`.
+        expected_value: Optional. The expected token value.
+        count: Optional. The number of tokens in the list.
+
+    Returns:
+        A `tuple` where the first item is the next token and the second item is an error, if any
+        occurred.
+    """
+    token, err = _next_token(tokens, idx, count = count)
+    if err:
+        return None, err
+    if token.type != expected_type:
+        return None, errors.new("Expected type %s, but was %s" % (expected_type, token.type))
+    if expected_value != None and token.value != expected_value:
+        return None, errors.new("Expected value %s, but was %s" % (expected_value, token.value))
+    return token, None
 
 # MARK: - Tokens Namespace
 
@@ -228,6 +252,7 @@ tokens = struct(
 
     # Token List Functions
     next = _next_token,
+    next_as = _next_token_as,
 )
 
 reserved_words = _reserved_words

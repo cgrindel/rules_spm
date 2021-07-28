@@ -1,6 +1,10 @@
+load(":declarations.bzl", "declarations")
+load(":errors.bzl", "errors")
 load(":tokenizer.bzl", "tokenizer")
 load(":tokens.bzl", "reserved_words", "tokens")
-load(":errors.bzl", "errors")
+
+tts = tokens.types
+rws = reserved_words
 
 def _collection_result(declarations, count):
     """Creates a collection result `struct`.
@@ -38,11 +42,32 @@ def _collect_extern_module(parsed_tokens):
         A `tuple` where the first item is the collection result and the second is an
         error `struct` as returned from errors.create().
     """
-    extern_token, err = tokens.next(parsed_tokens, 0)
-    if err:
-        return None, errors.new("Failed to find extern token.")
 
-    return _collection_result([], 0), None
+    # DEBUG BEGIN
+    print("*** CHUCK parsed_tokens: ")
+    for t in parsed_tokens:
+        print("*** CHUCK t: ", t)
+
+    # DEBUG END
+    tlen = len(parsed_tokens)
+    extern_token, err = tokens.next_as(parsed_tokens, 0, tts.reserved, rws.extern, count = tlen)
+    if err:
+        return None, err
+
+    module_token, err = tokens.next_as(parsed_tokens, 1, tts.reserved, rws.module, count = tlen)
+    if err:
+        return None, err
+
+    module_id_token, err = tokens.next_as(parsed_tokens, 2, tts.identifier, count = tlen)
+    if err:
+        return None, err
+
+    path_token, err = tokens.next_as(parsed_tokens, 3, tts.string_literal, count = tlen)
+    if err:
+        return None, err
+
+    decl = declarations.extern_module(module_id_token.value, path_token.value)
+    return _collection_result([decl], 4), None
 
 def _parse(text):
     tokenizer_result = tokenizer.tokenize(text)
@@ -83,6 +108,10 @@ def _parse(text):
             prefix_tokens.append(token)
 
         if collect_result:
+            # DEBUG BEGIN
+            print("*** CHUCK collect_result: ", collect_result)
+
+            # DEBUG END
             collected_decls.extend(collect_result.declarations)
             skip_ahead = collect_result.count - 1
 

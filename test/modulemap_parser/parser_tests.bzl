@@ -4,13 +4,16 @@ load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
 
 def do_parse_test(env, msg, text, expected):
     if not msg:
-        unittest.fail("A message must be provided.")
+        fail("A message must be provided.")
     if not text:
-        unittest.fail("A text value must be provided.")
+        fail("A text value must be provided.")
     if not expected:
-        unittest.fail("An expected value must be provied.")
+        fail("An expected value must be provied.")
+
     actual, err = parser.parse(text)
-    asserts.false(env, err, msg)
+    if err:
+        unittest.fail(env, "%s: An error occurred. %s" % (msg, err))
+        return
     asserts.equals(env, expected, actual, msg)
 
 def _parse_test(ctx):
@@ -33,14 +36,6 @@ def _parse_test(ctx):
         expected = parser.result(),
     )
 
-    # text = """
-    # extern module MyModule "path/to/definition"
-    # """
-    # actual = parser.parse(text)
-    # expected = parser.result([
-    #     declarations.extern_module("MyModule", "path/to/definition"),
-    # ])
-    # asserts.equals(env, expected, actual, "parse extern module")
     do_parse_test(
         env,
         "parse extern module",
