@@ -9,7 +9,7 @@ rws = reserved_words
 def _collect_attribute(parsed_tokens):
     tlen = len(parsed_tokens)
 
-    open_token, err = tokens.get_as(parsed_tokens, 0, tts.curly_bracket_open, count = tlen)
+    open_token, err = tokens.get_as(parsed_tokens, 0, tts.square_bracket_open, count = tlen)
     if err != None:
         return None, err
 
@@ -17,11 +17,11 @@ def _collect_attribute(parsed_tokens):
     if err != None:
         return None, err
 
-    open_token, err = tokens.get_as(parsed_tokens, 2, tts.curly_bracket_close, count = tlen)
+    open_token, err = tokens.get_as(parsed_tokens, 2, tts.square_bracket_close, count = tlen)
     if err != None:
         return None, err
 
-    return collection_results.new([attrib_token.value], 3)
+    return collection_results.new([attrib_token.value], 3), None
 
 def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
     """Collect a module declaration.
@@ -56,7 +56,7 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
                 return None, errors.new("The explicit qualifier can only exist on submodules.")
             explicit = True
 
-        elif token.type == tts.reserved and token.value == rws.framewor:
+        elif token.type == tts.reserved and token.value == rws.framework:
             framework = True
 
         else:

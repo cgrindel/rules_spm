@@ -22,6 +22,40 @@ def _parse_test(ctx):
         ],
     )
 
+    do_parse_test(
+        env,
+        "module with qualifiers",
+        text = """
+        framework module MyModule {}
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = True,
+                explicit = False,
+                attributes = [],
+                members = [],
+            ),
+        ],
+    )
+
+    do_parse_test(
+        env,
+        "module with attributes",
+        text = """
+        module MyModule [system] [extern_c] {}
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = ["system", "extern_c"],
+                members = [],
+            ),
+        ],
+    )
+
     return unittest.end(env)
 
 parse_test = unittest.make(_parse_test)
