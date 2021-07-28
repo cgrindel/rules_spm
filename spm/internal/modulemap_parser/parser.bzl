@@ -45,8 +45,8 @@ def _collect_extern_module(parsed_tokens):
 
     # DEBUG BEGIN
     print("*** CHUCK parsed_tokens: ")
-    for t in parsed_tokens:
-        print("*** CHUCK t: ", t)
+    for idx, item in enumerate(parsed_tokens):
+        print("*** CHUCK", idx, ":", item)
 
     # DEBUG END
     tlen = len(parsed_tokens)

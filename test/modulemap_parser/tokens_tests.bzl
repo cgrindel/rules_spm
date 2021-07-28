@@ -27,8 +27,28 @@ def _create_token_test(ctx):
 
 create_token_test = unittest.make(_create_token_test)
 
+def _next_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+next_test = unittest.make(_next_test)
+
+def _next_as_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+next_as_test = unittest.make(_next_as_test)
+
 def tokens_test_suite():
     return unittest.suite(
         "tokens_tests",
         create_token_test,
+        next_test,
+        next_as_test,
     )
