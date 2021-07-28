@@ -39,30 +39,25 @@ def _create_token_type(name, value_type_or_set = type(None)):
     )
     return name
 
-def _create(token_type_or_name, value = None):
+def _create(token_type_name, value = None):
     """Create a token of the specified type.
 
     Args:
-        token_type_or_name: The token type or the name of the token type.
+        token_type_name: The token type or the name of the token type.
         value: Optional. The value associated with the token.
 
     Returns:
         A `struct` representing the token.
     """
-
-    # if types.is_string(token_type_or_name):
-    #     token_type = _token_types_dict[token_type_or_name]
-    # else:
-    #     token_type = token_type_or_name
-    validation_info = _token_types_validation[token_type_or_name]
+    validation_info = _token_types_validation[token_type_name]
     if not validation_info:
-        fail("Invalid token type name", token_type_or_name)
+        fail("Invalid token type name", token_type_name)
 
     if not partial.call(validation_info.is_valid_value_fn, value):
-        fail("Invalid value for token type", token_type_or_name, value)
+        fail("Invalid value for token type", token_type_name, value)
 
     return struct(
-        type = token_type_or_name,
+        type = token_type_name,
         value = value,
     )
 
