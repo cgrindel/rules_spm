@@ -1,9 +1,6 @@
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
-load(":tokens.bzl", "reserved_words", "tokens")
-
-tts = tokens.types
-rws = reserved_words
+load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
 def collect_extern_module(parsed_tokens):
     """Collect an extern module declaration.

@@ -1,11 +1,8 @@
 load(":collection_results.bzl", "collection_results")
 load(":errors.bzl", "errors")
-load(":tokens.bzl", "reserved_words", "tokens")
+load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":collect_header_declaration.bzl", "collect_header_declaration")
-
-tts = tokens.types
-rws = reserved_words
 
 _unsupported_module_members = sets.make([
     rws.config_macros,

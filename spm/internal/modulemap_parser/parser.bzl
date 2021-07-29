@@ -1,13 +1,10 @@
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
 load(":tokenizer.bzl", "tokenizer")
-load(":tokens.bzl", "reserved_words", "tokens")
+load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 load(":collection_results.bzl", "collection_results")
 load(":collect_extern_module.bzl", "collect_extern_module")
 load(":collect_module.bzl", "collect_module")
-
-tts = tokens.types
-rws = reserved_words
 
 def _parse(text):
     tokenizer_result = tokenizer.tokenize(text)
@@ -29,14 +26,14 @@ def _parse(text):
         collect_result = None
         err = None
 
-        if token.type == tokens.types.newline:
+        if token.type == tts.newline:
             pass
 
-        elif token.type == tokens.types.reserved:
-            if token.value == reserved_words.extern:
+        elif token.type == tts.reserved:
+            if token.value == rws.extern:
                 collect_result, err = collect_extern_module(parsed_tokens[idx:])
 
-            elif token.value == reserved_words.module:
+            elif token.value == rws.module:
                 collect_result, err = collect_module(
                     parsed_tokens[idx:],
                     prefix_tokens = prefix_tokens,

@@ -206,10 +206,11 @@ def _get_token_as(tokens, idx, token_type, value = None, count = None):
 
 # MARK: - Tokens Namespace
 
-tokens = struct(
-    # Token Types
-    types = _token_types,
+reserved_words = _reserved_words
 
+token_types = _token_types
+
+tokens = struct(
     # Specialty sets
     reserved_words = RESERVED_WORDS,
 
@@ -234,5 +235,3 @@ tokens = struct(
     get = _get_token,
     get_as = _get_token_as,
 )
-
-reserved_words = _reserved_words

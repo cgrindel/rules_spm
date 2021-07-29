@@ -2,10 +2,7 @@ load(":collection_results.bzl", "collection_results")
 load(":collect_module_members.bzl", "collect_module_members")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
-load(":tokens.bzl", "reserved_words", "tokens")
-
-tts = tokens.types
-rws = reserved_words
+load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
 # MARK: - Attribute Collection
 
