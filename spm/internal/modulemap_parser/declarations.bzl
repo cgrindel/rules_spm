@@ -140,4 +140,6 @@ declarations = struct(
     extern_module = _create_extern_module_decl,
     header_attribs = _create_header_attributes,
     single_header = _create_single_header,
+    umbrella_header = _create_umbrella_header,
+    exclude_header = _create_exclude_header,
 )

@@ -87,7 +87,23 @@ parse_single_header_test = unittest.make(_parse_single_header_test)
 def _parse_umbrella_header_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    do_parse_test(
+        env,
+        "module with umbrella header",
+        text = """
+        module MyModule {
+            umbrella header "path/to/header.h"
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                members = [
+                    declarations.umbrella_header("path/to/header.h"),
+                ],
+            ),
+        ],
+    )
 
     return unittest.end(env)
 
@@ -96,7 +112,23 @@ parse_umbrella_header_test = unittest.make(_parse_umbrella_header_test)
 def _parse_exclude_header_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    do_parse_test(
+        env,
+        "module with exclude header",
+        text = """
+        module MyModule {
+            exclude header "path/to/header.h"
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                members = [
+                    declarations.exclude_header("path/to/header.h"),
+                ],
+            ),
+        ],
+    )
 
     return unittest.end(env)
 
