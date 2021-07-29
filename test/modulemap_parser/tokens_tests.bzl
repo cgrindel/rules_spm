@@ -79,10 +79,24 @@ def _get_as_test(ctx):
 
 get_as_test = unittest.make(_get_as_test)
 
+def _is_a_test(ctx):
+    env = unittest.begin(ctx)
+
+    token = tokens.identifier("foo")
+    asserts.true(env, tokens.is_a(token, tts.identifier))
+    asserts.true(env, tokens.is_a(token, tts.identifier, "foo"))
+    asserts.false(env, tokens.is_a(token, tts.reserved))
+    asserts.false(env, tokens.is_a(token, tts.identifier, "bar"))
+
+    return unittest.end(env)
+
+is_a_test = unittest.make(_is_a_test)
+
 def tokens_test_suite():
     return unittest.suite(
         "tokens_tests",
         create_token_test,
         get_test,
         get_as_test,
+        is_a_test,
     )

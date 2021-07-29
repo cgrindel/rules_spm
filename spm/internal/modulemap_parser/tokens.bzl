@@ -158,6 +158,25 @@ def _create_comma():
 def _create_period():
     return _create(_token_types.period)
 
+# MARK: - Token Type Functions
+
+def _is_a(token, token_type, value = None):
+    """Checks whether the specified token is the specified type and value, if a value is provided.
+
+    Args:
+        token: A token `struct`.
+        token_type: A `string` specifying the expected token type (i.e. value from `token_types`).
+        value: Optional. The expected token value.
+
+    Returns:
+        A `bool` value of True if the token is the specified type/value. Otherwise, it returns False.
+    """
+    if token.type != token_type:
+        return False
+    if value != None and token.value != value:
+        return False
+    return True
+
 # MARK: - Token List Functions
 
 def _get_token(tokens, idx, count = None):
@@ -230,6 +249,9 @@ tokens = struct(
     exclamation_point = _create_exclamation_point,
     comma = _create_comma,
     period = _create_period,
+
+    # Token Functions
+    is_a = _is_a,
 
     # Token List Functions
     get = _get_token,
