@@ -1,10 +1,15 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
+load(
+    "//spm/internal/modulemap_parser:declarations.bzl",
+    "declarations",
+    dts = "declaration_types",
+)
 
 def _module_test(ctx):
     env = unittest.begin(ctx)
 
     expected = struct(
+        decl_type = dts.module,
         module_id = "MyModule",
         explicit = True,
         framework = False,
@@ -28,6 +33,7 @@ def _extern_module_test(ctx):
     env = unittest.begin(ctx)
 
     expected = struct(
+        decl_type = dts.extern_module,
         module_id = "MyModule",
         definition_path = "path/to/definition",
     )
@@ -40,6 +46,23 @@ def _extern_module_test(ctx):
     return unittest.end(env)
 
 extern_module_test = unittest.make(_extern_module_test)
+
+def _header_test(ctx):
+    env = unittest.begin(ctx)
+
+    expected = struct(
+        decl_type = dts.single_header,
+        path = "path/to/header.h",
+        size = None,
+        mtime = None,
+        private = False,
+        textual = False,
+    )
+    actual = declarations
+
+    return unittest.end(env)
+
+header_test = unittest.make(_header_test)
 
 def declarations_test_suite():
     return unittest.suite(

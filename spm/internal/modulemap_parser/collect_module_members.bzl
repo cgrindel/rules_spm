@@ -53,7 +53,7 @@ def collect_module_members(parsed_tokens):
                 return None, errors.new("Unexpected prefix tokens found before end of line.")
 
         elif token.type == tts.reserved and token.value == rws.header:
-            collect_result, err = collect_header_declaration(parsed_tokens[idx:])
+            collect_result, err = collect_header_declaration(parsed_tokens[idx:], prefix_tokens)
 
         elif token.type == tts.reserved and sets.contains(_unsupported_module_members, token.value):
             return None, errors.new("Unsupported module member token. token: %s" % (token))

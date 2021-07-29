@@ -113,8 +113,6 @@ _token_types = struct(
     period = _create_token_type("period"),
 )
 
-# _token_types_dict = structs.to_dict(_token_types)
-
 def _create_reserved(value):
     return _create(_token_types.reserved, value)
 

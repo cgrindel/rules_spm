@@ -2,7 +2,7 @@ load(":errors.bzl", "errors")
 load(":collection_results.bzl", "collection_results")
 load(":tokens.bzl", "reserved_words", "tokens")
 
-def collect_header_declaration(parsed_tokens):
+def collect_header_declaration(parsed_tokens, prefix_tokens):
     """Collect a header declaration.
 
     Spec: https://clang.llvm.org/docs/Modules.html#header-declaration
@@ -22,6 +22,7 @@ def collect_header_declaration(parsed_tokens):
 
     Args:
         parsed_tokens: A `list` of tokens.
+        prefix_tokens: A `list` of tokens that have been consumed but not yet processed.
 
     Returns:
         A `tuple` where the first item is the collection result and the second is an
