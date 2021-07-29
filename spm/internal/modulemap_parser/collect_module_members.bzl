@@ -9,6 +9,9 @@ rws = reserved_words
 _unsupported_module_members = sets.make([
     rws.config_macros,
     rws.conflict,
+    rws.requires,
+    rws.use,
+    rws.link,
 ])
 
 def collect_module_members(parsed_tokens):
