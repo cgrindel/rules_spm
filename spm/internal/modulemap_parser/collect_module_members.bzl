@@ -10,10 +10,15 @@ def collect_module_members(parsed_tokens):
     members = []
     consumed_count = 0
 
+    open_members_token, err = tokens.get_as(parsed_tokens, 0, tts.curly_bracket_open, count = tlen)
+    if err != None:
+        return None, err
+    consumed_count += 1
+
     skip_ahead = 0
     collect_result = None
     prefix_tokens = []
-    for idx in range(tlen):
+    for idx in range(consumed_count, tlen - consumed_count):
         consumed_count += 1
         if skip_ahead > 0:
             skip_ahead -= 1
@@ -37,9 +42,9 @@ def collect_module_members(parsed_tokens):
             if len(prefix_tokens) > 0:
                 return None, errors.new("Unexpected prefix tokens found before end of line.")
 
-        # else:
-        #     # Store any unrecognized tokens as prefix tokens to be processed later
-        #     prefix_tokens.append(token)
+        else:
+            # Store any unrecognized tokens as prefix tokens to be processed later
+            prefix_tokens.append(token)
 
         # Handle index advancement.
         if collect_result:
