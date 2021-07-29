@@ -36,12 +36,6 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
     textual = False
 
     prefix_tokens_count = len(prefix_tokens)
-
-    # DEBUG BEGIN
-    print("*** CHUCK prefix_tokens: ", prefix_tokens)
-    print("*** CHUCK prefix_tokens_count: ", prefix_tokens_count)
-
-    # DEBUG END
     if prefix_tokens_count > 0:
         token = prefix_tokens[0]
         if tokens.is_a(token, tts.reserved, rws.umbrella):
@@ -53,7 +47,7 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
                 if tokens.is_a(token, tts.reserved, rws.private):
                     private = True
                 elif tokens.is_a(token, tts.reserved, rws.textual):
-                    textual = False
+                    textual = True
                 else:
                     return None, errors.new(
                         "Unexpected token processing header declaration prefix tokens. token: %s" %
