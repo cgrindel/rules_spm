@@ -41,16 +41,20 @@ def collect_module_members(parsed_tokens):
         if token.type == tts.curly_bracket_close:
             if len(prefix_tokens) > 0:
                 return None, errors.new(
-                    "Unexpected prefix tokens found at end of module member block.",
+                    "Unexpected prefix tokens found at end of module member block. tokens: %s" %
+                    (prefix_tokens),
                 )
             break
 
         elif token.type == tts.newline:
             if len(prefix_tokens) > 0:
-                return None, errors.new("Unexpected prefix tokens found before end of line.")
+                return None, errors.new(
+                    "Unexpected prefix tokens found before end of line. tokens: %" % (prefix_tokens),
+                )
 
         elif token.type == tts.reserved and token.value == rws.header:
             collect_result, err = collect_header_declaration(parsed_tokens[idx:], prefix_tokens)
+            prefix_tokens = []
 
         elif token.type == tts.reserved and sets.contains(_unsupported_module_members, token.value):
             return None, errors.new("Unsupported module member token. token: %s" % (token))

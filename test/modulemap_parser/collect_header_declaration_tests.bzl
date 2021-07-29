@@ -44,6 +44,32 @@ def _parse_test(ctx):
         ],
     )
 
+    # DEBUG BEGIN
+    print("*** CHUCK START")
+    # DEBUG END
+
+    do_parse_test(
+        env,
+        "module with single header, as private",
+        text = """
+        module MyModule {
+            private header "path/to/header.h"
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                members = [
+                    declarations.single_header("path/to/header.h", private = True),
+                ],
+            ),
+        ],
+    )
+
+    # DEBUG BEGIN
+    print("*** CHUCK END")
+    # DEBUG END
+
     return unittest.end(env)
 
 parse_test = unittest.make(_parse_test)

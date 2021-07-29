@@ -36,18 +36,20 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
     textual = False
 
     prefix_tokens_count = len(prefix_tokens)
+
+    # DEBUG BEGIN
+    print("*** CHUCK prefix_tokens: ", prefix_tokens)
+    print("*** CHUCK prefix_tokens_count: ", prefix_tokens_count)
+
+    # DEBUG END
     if prefix_tokens_count > 0:
         token = prefix_tokens[0]
-
-        # TODO: Create tokens.is_a(...)
-        # if tokens.is_a(token, tts.reserved, rws.umbrella):
-
         if tokens.is_a(token, tts.reserved, rws.umbrella):
             decl_type = dts.umbrella_header
-        elif tokens.is_a(token, tts.reserved, token.value, rws.exclude):
+        elif tokens.is_a(token, tts.reserved, rws.exclude):
             decl_type = dts.exclude_header
-        elif prefix_tokens_count > 1:
-            for token in prefix_tokens[1:]:
+        else:
+            for token in prefix_tokens:
                 if tokens.is_a(token, tts.reserved, rws.private):
                     private = True
                 elif tokens.is_a(token, tts.reserved, rws.textual):
