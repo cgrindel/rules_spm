@@ -2,7 +2,7 @@ load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
 load(":test_helpers.bzl", "do_failing_parse_test", "do_parse_test")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
-def _parse_test(ctx):
+def _parse_single_header_test(ctx):
     env = unittest.begin(ctx)
 
     do_parse_test(
@@ -82,10 +82,30 @@ def _parse_test(ctx):
 
     return unittest.end(env)
 
-parse_test = unittest.make(_parse_test)
+parse_single_header_test = unittest.make(_parse_single_header_test)
+
+def _parse_umbrella_header_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+parse_umbrella_header_test = unittest.make(_parse_umbrella_header_test)
+
+def _parse_exclude_header_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+parse_exclude_header_test = unittest.make(_parse_exclude_header_test)
 
 def collect_header_declaration_test_suite():
     return unittest.suite(
         "collect_header_declaration_tests",
-        parse_test,
+        parse_single_header_test,
+        parse_umbrella_header_test,
+        parse_exclude_header_test,
     )
