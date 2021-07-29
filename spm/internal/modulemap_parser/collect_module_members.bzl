@@ -1,9 +1,15 @@
 load(":collection_results.bzl", "collection_results")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "reserved_words", "tokens")
+load("@bazel_skylib//lib:sets.bzl", "sets")
 
 tts = tokens.types
 rws = reserved_words
+
+_unsupported_module_members = sets.make([
+    rws.config_macros,
+    rws.conflict,
+])
 
 def collect_module_members(parsed_tokens):
     tlen = len(parsed_tokens)
@@ -41,6 +47,9 @@ def collect_module_members(parsed_tokens):
         elif token.type == tts.newline:
             if len(prefix_tokens) > 0:
                 return None, errors.new("Unexpected prefix tokens found before end of line.")
+
+        elif token.type == tts.reserved and sets.contains(_unsupported_module_members, token.value):
+            return None, errors.new("Unsupported module member token. token: %s" % (token))
 
         else:
             # Store any unrecognized tokens as prefix tokens to be processed later
