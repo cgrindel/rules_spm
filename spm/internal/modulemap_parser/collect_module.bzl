@@ -105,6 +105,9 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
             skip_ahead -= 1
             continue
 
+        collect_result = None
+        err = None
+
         # Get next token
         token, err = tokens.get(parsed_tokens, idx, count = tlen)
         if err != None:

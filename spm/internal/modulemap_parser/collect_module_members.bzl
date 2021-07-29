@@ -2,6 +2,7 @@ load(":collection_results.bzl", "collection_results")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "reserved_words", "tokens")
 load("@bazel_skylib//lib:sets.bzl", "sets")
+load(":collect_header_declaration.bzl", "collect_header_declaration")
 
 tts = tokens.types
 rws = reserved_words
@@ -51,6 +52,9 @@ def collect_module_members(parsed_tokens):
             if len(prefix_tokens) > 0:
                 return None, errors.new("Unexpected prefix tokens found before end of line.")
 
+        elif token.type == tts.reserved and token.value == rws.header:
+            collect_result, err = collect_header_declaration(parsed_tokens[idx:])
+
         elif token.type == tts.reserved and sets.contains(_unsupported_module_members, token.value):
             return None, errors.new("Unsupported module member token. token: %s" % (token))
 
@@ -59,7 +63,10 @@ def collect_module_members(parsed_tokens):
             prefix_tokens.append(token)
 
         # Handle index advancement.
+        if err != None:
+            return None, err
         if collect_result:
+            members.extend(collect_result.declarations)
             skip_ahead = collect_result.count - 1
 
     return collection_results.new(members, consumed_count), None
