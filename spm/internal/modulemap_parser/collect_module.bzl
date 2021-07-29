@@ -1,4 +1,5 @@
 load(":collection_results.bzl", "collection_results")
+load(":collect_module_members.bzl", "collect_module_members")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "reserved_words", "tokens")
@@ -6,7 +7,27 @@ load(":tokens.bzl", "reserved_words", "tokens")
 tts = tokens.types
 rws = reserved_words
 
+# MARK: - Attribute Collection
+
 def _collect_attribute(parsed_tokens):
+    """Collect a module attribute.
+
+    Spec: https://clang.llvm.org/docs/Modules.html#attributes
+
+    Syntax:
+        attributes:
+          attribute attributesopt
+
+        attribute:
+          '[' identifier ']'
+
+    Args:
+        parsed_tokens: A `list` of tokens.
+
+    Returns:
+        A `tuple` where the first item is the collection result and the second is an
+        error `struct` as returned from errors.create().
+    """
     tlen = len(parsed_tokens)
 
     open_token, err = tokens.get_as(parsed_tokens, 0, tts.square_bracket_open, count = tlen)
@@ -23,13 +44,14 @@ def _collect_attribute(parsed_tokens):
 
     return collection_results.new([attrib_token.value], 3), None
 
+# MARK: - Module Collection
+
 def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
     """Collect a module declaration.
 
     Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
 
     Syntax:
-
         explicitopt frameworkopt module module-id attributesopt '{' module-member* '}'
 
     Args:
@@ -74,7 +96,7 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
         return None, err
     consumed_count += 1
 
-    # Collect the attributes
+    # Collect the attributes and module members
     skip_ahead = 0
     collect_result = None
     for idx in range(consumed_count, tlen - consumed_count):
@@ -83,21 +105,27 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
             skip_ahead -= 1
             continue
 
+        # Get next token
         token, err = tokens.get(parsed_tokens, idx, count = tlen)
         if err != None:
             return None, err
 
+        # Process the token
         if token.type == tts.curly_bracket_open:
-            break
+            collect_result, err = collect_module_members(parsed_tokens[idx:])
+            members.extend(collect_result.declarations)
         elif token.type == tts.square_bracket_open:
             collect_result, err = _collect_attribute(parsed_tokens[idx:])
+            attributes.extend(collect_result.declarations)
         else:
-            return None, errors.new("Unexpected token collecting attributes. token: %s" % (token))
+            return None, errors.new(
+                "Unexpected token collecting attributes and module members. token: %s" % (token),
+            )
 
+        # Handle any errors and index advancement.
         if err != None:
             return None, err
         if collect_result:
-            attributes.extend(collect_result.declarations)
             skip_ahead = collect_result.count - 1
 
     # Create the declaration

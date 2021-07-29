@@ -89,8 +89,18 @@ def _parse_test(ctx):
 
 parse_test = unittest.make(_parse_test)
 
+def _parse_with_submodules_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+parse_with_submodules_test = unittest.make(_parse_with_submodules_test)
+
 def collect_module_test_suite():
     return unittest.suite(
         "collect_module_tests",
         parse_test,
+        parse_with_submodules_test,
     )
