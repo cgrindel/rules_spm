@@ -116,11 +116,13 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
             if err != None:
                 return None, err
             members.extend(collect_result.declarations)
+
         elif token.type == tts.square_bracket_open:
             collect_result, err = _collect_attribute(parsed_tokens[idx:])
             if err != None:
                 return None, err
             attributes.extend(collect_result.declarations)
+
         else:
             return None, errors.new(
                 "Unexpected token collecting attributes and module members. token: %s" % (token),

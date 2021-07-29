@@ -42,15 +42,15 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
         # TODO: Create tokens.is_a(...)
         # if tokens.is_a(token, tts.reserved, rws.umbrella):
 
-        if token.type == tts.reserved and token.value == rws.umbrella:
+        if tokens.is_a(token, tts.reserved, rws.umbrella):
             decl_type = dts.umbrella_header
-        elif token.type == tts.reserved and token.value == rws.exclude:
+        elif tokens.is_a(token, tts.reserved, token.value, rws.exclude):
             decl_type = dts.exclude_header
         elif prefix_tokens_count > 1:
             for token in prefix_tokens[1:]:
-                if token.type == tts.reserved and token.value == rws.private:
+                if tokens.is_a(token, tts.reserved, rws.private):
                     private = True
-                elif token.type == tts.reserved and token.value == rws.textual:
+                elif tokens.is_a(token, tts.reserved, rws.textual):
                     textual = False
                 else:
                     return None, errors.new(
@@ -70,6 +70,7 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
         return None, err
     consumed_count += 1
 
+    consume_header_attribs_section = False
     for idx in range(consumed_count, tlen - consumed_count):
         consumed_count += 1
 
@@ -78,4 +79,30 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
         if err != None:
             return None, err
 
-    return None, errors.new("IMPLEMEMT ME!")
+        if consume_header_attribs_section:
+            # Consume tokens until we find the end of the section
+            if tokens.is_a(token, tts.curly_bracket_close):
+                consume_header_attribs_section = False
+
+        elif tokens.is_a(token, tts.newline):
+            break
+
+        elif tokens.is_a(token, tts.curly_bracket_open):
+            # Ignoring header attributes for now.
+            consume_header_attribs_section = True
+
+        else:
+            return None, errors.new(
+                "Unexpected token processing header declaration. token: %s" % (token),
+            )
+
+    if decl_type == dts.single_header:
+        decl = declarations.single_header(path_token.value, private = private, textual = textual)
+    elif decl_type == dts.umbrella_header:
+        decl = declarations.umbrella_header(path_token.value)
+    elif decl_type == dts.exclude_header:
+        decl = declarations.exclude_header(path_token.value)
+    else:
+        return None, errors.new("Unrecognized declaration type. %s" % (decl_type))
+
+    return collection_results.new([decl], consumed_count), None

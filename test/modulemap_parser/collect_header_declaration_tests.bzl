@@ -23,6 +23,27 @@ def _parse_test(ctx):
         ],
     )
 
+    do_parse_test(
+        env,
+        "module with single header and attributes (ignored)",
+        text = """
+        module MyModule {
+            header "path/to/header.h" {
+                size 1234
+                mtime 5678
+            }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                members = [
+                    declarations.single_header("path/to/header.h"),
+                ],
+            ),
+        ],
+    )
+
     return unittest.end(env)
 
 parse_test = unittest.make(_parse_test)
