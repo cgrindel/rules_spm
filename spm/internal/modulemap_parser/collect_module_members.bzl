@@ -26,6 +26,10 @@ def collect_module_members(parsed_tokens):
     collect_result = None
     prefix_tokens = []
     for idx in range(consumed_count, tlen - consumed_count):
+        # TODO: Make sure that we are counting consumed tokens correctly. I
+        # think we may be double counting when we come back from collection
+        # functions (e.g. return collect_result).
+
         consumed_count += 1
         if skip_ahead > 0:
             skip_ahead -= 1
@@ -38,7 +42,7 @@ def collect_module_members(parsed_tokens):
 
         # Process token
 
-        if token.type == tts.curly_bracket_close:
+        if tokens.is_a(token, tts.curly_bracket_close):
             if len(prefix_tokens) > 0:
                 return None, errors.new(
                     "Unexpected prefix tokens found at end of module member block. tokens: %s" %
@@ -46,17 +50,17 @@ def collect_module_members(parsed_tokens):
                 )
             break
 
-        elif token.type == tts.newline:
+        elif tokens.is_a(token, tts.newline):
             if len(prefix_tokens) > 0:
                 return None, errors.new(
                     "Unexpected prefix tokens found before end of line. tokens: %" % (prefix_tokens),
                 )
 
-        elif token.type == tts.reserved and token.value == rws.header:
+        elif tokens.is_a(token, tts.reserved, rws.header):
             collect_result, err = collect_header_declaration(parsed_tokens[idx:], prefix_tokens)
             prefix_tokens = []
 
-        elif token.type == tts.reserved and sets.contains(_unsupported_module_members, token.value):
+        elif tokens.is_a(token, tts.reserved) and sets.contains(_unsupported_module_members, token.value):
             return None, errors.new("Unsupported module member token. token: %s" % (token))
 
         else:

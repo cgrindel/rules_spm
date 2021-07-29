@@ -111,13 +111,13 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
             return None, err
 
         # Process the token
-        if token.type == tts.curly_bracket_open:
+        if tokens.is_a(token, tts.curly_bracket_open):
             collect_result, err = collect_module_members(parsed_tokens[idx:])
             if err != None:
                 return None, err
             members.extend(collect_result.declarations)
 
-        elif token.type == tts.square_bracket_open:
+        elif tokens.is_a(token, tts.square_bracket_open):
             collect_result, err = _collect_attribute(parsed_tokens[idx:])
             if err != None:
                 return None, err
