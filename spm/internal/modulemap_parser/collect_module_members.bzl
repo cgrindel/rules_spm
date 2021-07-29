@@ -26,8 +26,23 @@ def collect_module_members(parsed_tokens):
 
         # Process token
 
-        if token.type == tts.newline:
+        if token.type == tts.curly_bracket_close:
+            if len(prefix_tokens) > 0:
+                return None, errors.new(
+                    "Unexpected prefix tokens found at end of module member block.",
+                )
+            break
+
+        elif token.type == tts.newline:
             if len(prefix_tokens) > 0:
                 return None, errors.new("Unexpected prefix tokens found before end of line.")
+
+        # else:
+        #     # Store any unrecognized tokens as prefix tokens to be processed later
+        #     prefix_tokens.append(token)
+
+        # Handle index advancement.
+        if collect_result:
+            skip_ahead = collect_result.count - 1
 
     return collection_results.new(members, consumed_count), None
