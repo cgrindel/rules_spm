@@ -89,71 +89,8 @@ def _collect_module_test(ctx):
 
 collect_module_test = unittest.make(_collect_module_test)
 
-def _collect_submodules_test(ctx):
-    env = unittest.begin(ctx)
-
-    do_parse_test(
-        env,
-        "module with submodule",
-        text = """
-        module MyModule {
-            module SubModule {
-              header "SubModule.h"
-              export *
-            }
-        }
-        """,
-        expected = [
-            declarations.module(
-                module_id = "MyModule",
-                members = [
-                    declarations.module(
-                        module_id = "SubModule",
-                        members = [
-                            declarations.single_header(path = "SubModule.h"),
-                            declarations.export(wildcard = True),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    )
-
-    do_parse_test(
-        env,
-        "module with explicit submodule",
-        text = """
-        module MyModule {
-            explicit module SubModule {
-              header "SubModule.h"
-              export *
-            }
-        }
-        """,
-        expected = [
-            declarations.module(
-                module_id = "MyModule",
-                members = [
-                    declarations.module(
-                        module_id = "SubModule",
-                        explicit = True,
-                        members = [
-                            declarations.single_header(path = "SubModule.h"),
-                            declarations.export(wildcard = True),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    )
-
-    return unittest.end(env)
-
-collect_submodules_test = unittest.make(_collect_submodules_test)
-
 def collect_module_test_suite():
     return unittest.suite(
         "collect_module_tests",
         collect_module_test,
-        collect_submodules_test,
     )
