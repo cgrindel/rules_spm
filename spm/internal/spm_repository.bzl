@@ -24,6 +24,22 @@ spm_clang_module(
 )
 """
 
+def _create_spm_swift_module_decl(ctx, target):
+    """Returns the spm_swift_module declaration for this Swift target.
+    """
+    module_name = target["c99name"]
+    deps = target.get("target_dependencies", default = [])
+    deps = ["        \":%s\"," % (dep) for dep in deps]
+    deps_str = "\n".join(deps)
+    return SPM_SWIFT_MODULE_TPL % (module_name, deps_str)
+
+def _create_spm_clang_module_decl(ctx, target):
+    module_name = target["c99name"]
+    deps = target.get("target_dependencies", default = [])
+    deps = ["        \":%s\"," % (dep) for dep in deps]
+    deps_str = "\n".join(deps)
+    return SPM_CLANG_MODULE_TPL % (module_name, deps_str)
+
 def _spm_repository_impl(ctx):
     # Download the archive
     ctx.download_and_extract(
@@ -42,14 +58,10 @@ def _spm_repository_impl(ctx):
     for target in targets:
         module_type = target["module_type"]
         if module_type == "SwiftTarget":
-            template = SPM_SWIFT_MODULE_TPL
+            module_decl = _create_spm_swift_module_decl(ctx, target)
         elif module_type == "ClangTarget":
-            template = SPM_CLANG_MODULE_TPL
-        module_name = target["c99name"]
-        deps = target.get("target_dependencies", default = [])
-        deps = ["        \":%s\"," % (dep) for dep in deps]
-        deps_str = "\n".join(deps)
-        modules.append(template % (module_name, deps_str))
+            module_decl = _create_spm_clang_module_decl(ctx, target)
+        modules.append(module_decl)
 
     # Template Substitutions
     substitutions = {

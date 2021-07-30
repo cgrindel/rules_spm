@@ -1,0 +1,44 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+bzl_library(
+    name = "errors",
+    srcs = ["errors.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [],
+)
+
+bzl_library(
+    name = "collection_results",
+    srcs = ["collection_results.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [],
+)
+
+bzl_library(
+    name = "tokens",
+    srcs = ["tokens.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":errors",
+    ],
+)
+
+bzl_library(
+    name = "tokenizer",
+    srcs = ["tokenizer.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":tokens",
+    ],
+)
+
+bzl_library(
+    name = "parser",
+    srcs = ["parser.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":errors",
+        ":tokenizer",
+        ":tokens",
+    ],
+)
