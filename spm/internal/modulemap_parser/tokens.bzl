@@ -86,6 +86,10 @@ RESERVED_WORDS = sets.make([_reserved_words_dict[k] for k in _reserved_words_dic
 
 # MARK: - Operators
 
+_operators = struct(
+    asterisk = "*",
+)
+
 # NOTE: This is meant to be a set of the operators not a set of the operator characters.
 # For instance, operator characters could be ["*", "=", "+"] while the list of operators
 # could be ["*", "+", "+=", "="].
@@ -226,6 +230,8 @@ def _get_token_as(tokens, idx, token_type, value = None, count = None):
 # MARK: - Tokens Namespace
 
 reserved_words = _reserved_words
+
+operators = _operators
 
 token_types = _token_types
 

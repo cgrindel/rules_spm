@@ -141,11 +141,11 @@ def _tokenize(text):
                 num_token = tokens.integer_literal(int(num_str))
             collected_tokens.append(num_token)
 
-        elif sets.contains(tokens.c99_operators, char):
+        elif sets.contains(character_sets.c99_operators, char):
             # If we implement more than just asterisk for operators, this will need to be
             # revisited.
-            collect_result = _collect_chars_in_set(chars[idx:], character_sets.operators)
-            collected_tokens.append(tokens.operator(collect_result.chars))
+            collect_result = _collect_chars_in_set(chars[idx:], character_sets.c99_operators)
+            collected_tokens.append(tokens.operator("".join(collect_result.chars)))
 
         else:
             # Did not recognize the char. Keep trucking.
