@@ -17,7 +17,7 @@ def _parse_test(ctx):
             declarations.module(
                 module_id = "MyModule",
                 members = [
-                    declarations.single_header("path/to/header/files"),
+                    declarations.umbrella_directory("path/to/header/files"),
                 ],
             ),
         ],

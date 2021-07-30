@@ -37,6 +37,8 @@ def collect_module_members(parsed_tokens):
             skip_ahead -= 1
             continue
 
+        collect_result = None
+
         # Get next token
         token, err = tokens.get(parsed_tokens, idx, count = tlen)
         if err != None:
