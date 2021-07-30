@@ -118,6 +118,24 @@ def _umbrella_directory_test(ctx):
 
 umbrella_directory_test = unittest.make(_umbrella_directory_test)
 
+def _export_test(ctx):
+    env = unittest.begin(ctx)
+
+    expected = struct(
+        decl_type = dts.export,
+        identifiers = ["foo"],
+        wildcard = True,
+    )
+    actual = declarations.export(
+        identifiers = ["foo"],
+        wildcard = True,
+    )
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+export_test = unittest.make(_export_test)
+
 def declarations_test_suite():
     return unittest.suite(
         "declarations_tests",
@@ -127,4 +145,5 @@ def declarations_test_suite():
         umbrella_header_test,
         exclude_header_test,
         umbrella_directory_test,
+        export_test,
     )

@@ -7,6 +7,7 @@ _declaration_types = struct(
     umbrella_header = "umbrella_header",
     exclude_header = "exclude_header",
     umbrella_directory = "umbrella_directory",
+    export = "export",
 )
 
 def _create_module_decl(module_id, explicit = False, framework = False, attributes = [], members = []):
@@ -148,6 +149,24 @@ def _create_umbrella_directory(path):
         path = path,
     )
 
+def _create_export(identifiers = [], wildcard = False):
+    """Creates a `struct` representing an export declaration.
+
+    Spec: https://clang.llvm.org/docs/Modules.html#umbrella-directory-declaration
+
+    Args:
+        identifiers: A `list` of `string` values.
+        wildcard: A `bool` indicating whether it is a wildcard at the end of the identifiers.
+
+    Returns:
+        A `struct` representing an export declaration.
+    """
+    return struct(
+        decl_type = _declaration_types.export,
+        identifiers = identifiers,
+        wildcard = wildcard,
+    )
+
 # MARK: - Namespaces
 
 declaration_types = _declaration_types
@@ -160,4 +179,5 @@ declarations = struct(
     umbrella_header = _create_umbrella_header,
     exclude_header = _create_exclude_header,
     umbrella_directory = _create_umbrella_directory,
+    export = _create_export,
 )
