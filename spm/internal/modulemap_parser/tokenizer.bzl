@@ -56,7 +56,7 @@ def _collect_string_literal(chars):
 
     return _collection_result(
         chars = collected_chars,
-        count = len(collected_chars) + 2,  # Need account for string delimiters.
+        count = len(collected_chars) + 2,  # Need to account for string delimiters.
     )
 
 def _tokenize(text):
