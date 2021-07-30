@@ -35,24 +35,20 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
     private = False
     textual = False
 
-    prefix_tokens_count = len(prefix_tokens)
-    if prefix_tokens_count > 0:
-        token = prefix_tokens[0]
+    for token in prefix_tokens:
         if tokens.is_a(token, tts.reserved, rws.umbrella):
             decl_type = dts.umbrella_header
         elif tokens.is_a(token, tts.reserved, rws.exclude):
             decl_type = dts.exclude_header
+        elif tokens.is_a(token, tts.reserved, rws.private):
+            private = True
+        elif tokens.is_a(token, tts.reserved, rws.textual):
+            textual = True
         else:
-            for token in prefix_tokens:
-                if tokens.is_a(token, tts.reserved, rws.private):
-                    private = True
-                elif tokens.is_a(token, tts.reserved, rws.textual):
-                    textual = True
-                else:
-                    return None, errors.new(
-                        "Unexpected token processing header declaration prefix tokens. token: %s" %
-                        (token),
-                    )
+            return None, errors.new(
+                "Unexpected token processing header declaration prefix tokens. token: %s" %
+                (token),
+            )
 
     consumed_count = 0
 

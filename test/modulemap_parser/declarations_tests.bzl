@@ -47,26 +47,49 @@ def _extern_module_test(ctx):
 
 extern_module_test = unittest.make(_extern_module_test)
 
-def _header_test(ctx):
+def _single_header_test(ctx):
     env = unittest.begin(ctx)
 
-    expected = struct(
-        decl_type = dts.single_header,
-        path = "path/to/header.h",
-        size = None,
-        mtime = None,
-        private = False,
-        textual = False,
-    )
-    actual = declarations
+    unittest.fail(env, "IMPLEMENT ME!")
 
     return unittest.end(env)
 
-header_test = unittest.make(_header_test)
+single_header_test = unittest.make(_single_header_test)
+
+def _umbrella_header_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+umbrella_header_test = unittest.make(_umbrella_header_test)
+
+def _exclude_header_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+exclude_header_test = unittest.make(_exclude_header_test)
+
+def _umbrella_directory_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+umbrella_directory_test = unittest.make(_umbrella_directory_test)
 
 def declarations_test_suite():
     return unittest.suite(
         "declarations_tests",
         module_test,
         extern_module_test,
+        single_header_test,
+        umbrella_header_test,
+        exclude_header_test,
+        umbrella_directory_test,
     )

@@ -7,6 +7,7 @@ load(":collect_extern_module_tests.bzl", "collect_extern_module_test_suite")
 load(":collect_module_tests.bzl", "collect_module_test_suite")
 load(":collect_module_member_tests.bzl", "collect_module_member_test_suite")
 load(":collect_header_declaration_tests.bzl", "collect_header_declaration_test_suite")
+load(":collect_umbrella_dir_declaration_tests.bzl", "collect_umbrella_dir_declaration_test_suite")
 
 errors_test_suite()
 
@@ -25,3 +26,5 @@ collect_module_test_suite()
 collect_module_member_test_suite()
 
 collect_header_declaration_test_suite()
+
+collect_umbrella_dir_declaration_test_suite()

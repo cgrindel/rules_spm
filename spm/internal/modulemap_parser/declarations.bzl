@@ -6,6 +6,7 @@ _declaration_types = struct(
     single_header = "single_header",
     umbrella_header = "umbrella_header",
     exclude_header = "exclude_header",
+    umbrella_directory = "umbrella_directory",
 )
 
 def _create_module_decl(module_id, explicit = False, framework = False, attributes = [], members = []):
@@ -131,6 +132,22 @@ def _create_exclude_header(path, attribs = None):
         attribs = attribs,
     )
 
+def _create_umbrella_directory(path):
+    """Creates a `struct` representing an umbrella directory declaration.
+
+    Spec: https://clang.llvm.org/docs/Modules.html#umbrella-directory-declaration
+
+    Args:
+        path: A `string` specifying the path to the directory with the header files.
+
+    Returns:
+        A `struct` representing an umbrella directory declaration.
+    """
+    return struct(
+        decl_type = _declaration_types.umbrella_directory,
+        path = path,
+    )
+
 # MARK: - Namespaces
 
 declaration_types = _declaration_types
@@ -142,4 +159,5 @@ declarations = struct(
     single_header = _create_single_header,
     umbrella_header = _create_umbrella_header,
     exclude_header = _create_exclude_header,
+    umbrella_directory = _create_umbrella_directory,
 )
