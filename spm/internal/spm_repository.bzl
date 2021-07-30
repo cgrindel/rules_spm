@@ -21,27 +21,30 @@ SPM_CLANG_MODULE_TPL = """
 spm_clang_module(
     name = "%s",
     package = ":build",
+    hdrs = [
+%s
+    ],
     deps = [
 %s
     ],
 )
 """
 
+def _create_deps_str(target):
+    deps = target.get("target_dependencies", default = [])
+    deps = ["        \":%s\"," % (dep) for dep in deps]
+    return "\n".join(deps)
+
+def _create_hdrs_str(hdr_paths):
+    hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
+    return "\n".join(hdrs)
+
 def _create_spm_swift_module_decl(ctx, target):
     """Returns the spm_swift_module declaration for this Swift target.
     """
     module_name = target["c99name"]
-    deps = target.get("target_dependencies", default = [])
-    deps = ["        \":%s\"," % (dep) for dep in deps]
-    deps_str = "\n".join(deps)
+    deps_str = _create_deps_str(target)
     return SPM_SWIFT_MODULE_TPL % (module_name, deps_str)
-
-# def _create_spm_clang_module_decl(ctx, target):
-#     module_name = target["c99name"]
-#     deps = target.get("target_dependencies", default = [])
-#     deps = ["        \":%s\"," % (dep) for dep in deps]
-#     deps_str = "\n".join(deps)
-#     return SPM_CLANG_MODULE_TPL % (module_name, deps_str)
 
 def _list_files_under(ctx, path):
     exec_result = ctx.execute(
@@ -96,27 +99,31 @@ def _create_spm_clang_module_decl(ctx, target):
     module_name = target["c99name"]
     module_paths = _list_files_under(ctx, target["path"])
 
-    # If a modulemap was provided, read it for header info.
-    # Otherwise, use all of the header files under the "include" directory.
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
     modulemap_paths_len = len(modulemap_paths)
     if modulemap_paths_len > 1:
         fail("Found more than one module.modulemap file. %" % (modulemap_paths))
+
+    # If a modulemap was provided, read it for header info.
+    # Otherwise, use all of the header files under the "include" directory.
     if modulemap_paths_len == 1:
         hdr_paths = _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_paths[0])
     else:
         hdr_paths = [p for p in module_paths if _is_include_hdr_path(p)]
 
+    deps_str = _create_deps_str(target)
+    hdrs_str = _create_hdrs_str(hdr_paths)
+
     # DEBUG BEGIN
     print("*** CHUCK module_name: ", module_name)
-    print("*** CHUCK module_paths: ")
-    for idx, item in enumerate(module_paths):
-        print("*** CHUCK", idx, ":", item)
+
+    # print("*** CHUCK module_paths: ")
+    # for idx, item in enumerate(module_paths):
+    #     print("*** CHUCK", idx, ":", item)
     print("*** CHUCK hdr_paths: ", hdr_paths)
     # DEBUG END
 
-    # TODO: IMPLEMENT ME!
-    return ""
+    return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str, deps_str)
 
 def _spm_repository_impl(ctx):
     # Download the archive
