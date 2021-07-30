@@ -1,4 +1,4 @@
-load(":tokens.bzl", "tokens")
+load(":tokens.bzl", "reserved_words_set", "tokens")
 load(":character_sets.bzl", "character_sets")
 load("@bazel_skylib//lib:sets.bzl", "sets")
 
@@ -120,7 +120,7 @@ def _tokenize(text):
                 chars[idx:],
                 character_sets.c99_identifier_characters,
             )
-            if sets.contains(tokens.reserved_words, collect_result.value):
+            if sets.contains(reserved_words_set, collect_result.value):
                 id_token = tokens.reserved(collect_result.value)
             else:
                 id_token = tokens.identifier(collect_result.value)

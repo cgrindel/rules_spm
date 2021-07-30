@@ -82,7 +82,7 @@ _reserved_words = struct(
     use = "use",
 )
 _reserved_words_dict = structs.to_dict(_reserved_words)
-RESERVED_WORDS = sets.make([_reserved_words_dict[k] for k in _reserved_words_dict])
+_reserved_words_set = sets.make([_reserved_words_dict[k] for k in _reserved_words_dict])
 
 # MARK: - Operators
 
@@ -93,20 +93,20 @@ _operators = struct(
 # NOTE: This is meant to be a set of the operators not a set of the operator characters.
 # For instance, operator characters could be ["*", "=", "+"] while the list of operators
 # could be ["*", "+", "+=", "="].
-OPERATORS = sets.make(["*"])
+_operators_set = sets.make(["*"])
 
 # MARK: - Token Types
 
 _token_types_validation = dict()
 
 _token_types = struct(
-    reserved = _create_token_type("reserved", RESERVED_WORDS),
+    reserved = _create_token_type("reserved", _reserved_words_set),
     identifier = _create_token_type("identifier", "string"),
     string_literal = _create_token_type("string_literal", "string"),
     integer_literal = _create_token_type("integer_literal", "int"),
     float_literal = _create_token_type("float_literal", "float"),
     comment = _create_token_type("comment", "string"),
-    operator = _create_token_type("operator", OPERATORS),
+    operator = _create_token_type("operator", _operators_set),
     curly_bracket_open = _create_token_type("curly_bracket_open"),
     curly_bracket_close = _create_token_type("curly_bracket_close"),
     newline = _create_token_type("newline"),
@@ -230,15 +230,13 @@ def _get_token_as(tokens, idx, token_type, value = None, count = None):
 # MARK: - Tokens Namespace
 
 reserved_words = _reserved_words
+reserved_words_set = _reserved_words_set
 
 operators = _operators
 
 token_types = _token_types
 
 tokens = struct(
-    # Specialty sets
-    reserved_words = RESERVED_WORDS,
-
     # Token Factories
     reserved = _create_reserved,
     identifier = _create_identifier,
