@@ -58,7 +58,7 @@ def collect_module_members(parsed_tokens):
         elif tokens.is_a(token, tts.newline):
             if len(prefix_tokens) > 0:
                 return None, errors.new(
-                    "Unexpected prefix tokens found before end of line. tokens: %" % (prefix_tokens),
+                    "Unexpected prefix tokens found before end of line. tokens: %s" % (prefix_tokens),
                 )
 
         elif tokens.is_a(token, tts.reserved, rws.umbrella):

@@ -3,7 +3,7 @@ load("//spm/internal/modulemap_parser:tokens.bzl", "tokens")
 load(":test_helpers.bzl", "do_failing_parse_test", "do_parse_test")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
-def _parse_test(ctx):
+def _collect_module_test(ctx):
     env = unittest.begin(ctx)
 
     do_parse_test(
@@ -87,20 +87,73 @@ def _parse_test(ctx):
 
     return unittest.end(env)
 
-parse_test = unittest.make(_parse_test)
+collect_module_test = unittest.make(_collect_module_test)
 
-def _parse_with_submodules_test(ctx):
+def _collect_submodules_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    do_parse_test(
+        env,
+        "module with submodule",
+        text = """
+        module MyModule {
+            module SubModule {
+              header "SubModule.h"
+              export *
+            }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                members = [
+                    declarations.module(
+                        module_id = "SubModule",
+                        members = [
+                            declarations.single_header(path = "SubModule.h"),
+                            declarations.export(wildcard = True),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    do_parse_test(
+        env,
+        "module with explicit submodule",
+        text = """
+        module MyModule {
+            explicit module SubModule {
+              header "SubModule.h"
+              export *
+            }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                members = [
+                    declarations.module(
+                        module_id = "SubModule",
+                        explicit = True,
+                        members = [
+                            declarations.single_header(path = "SubModule.h"),
+                            declarations.export(wildcard = True),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
 
     return unittest.end(env)
 
-parse_with_submodules_test = unittest.make(_parse_with_submodules_test)
+collect_submodules_test = unittest.make(_collect_submodules_test)
 
 def collect_module_test_suite():
     return unittest.suite(
         "collect_module_tests",
-        parse_test,
-        parse_with_submodules_test,
+        collect_module_test,
+        collect_submodules_test,
     )
