@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//spm/internal/modulemap_parser:parser.bzl", "parser")
+load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_types")
 load(
     "//spm/internal:package_description.bzl",
     "library_targets",
@@ -62,31 +63,47 @@ def _is_include_hdr_path(path):
     dirname = paths.basename(paths.dirname(path))
     return dirname == "include" and ext == ".h"
 
-def _get_hdr_paths_from_modulemap(ctx, modulemap_path):
+def _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_path):
     modulemap_str = ctx.read(modulemap_path)
-    module_decls, err = parser.parse(modulemap_str)
+    decls, err = parser.parse(modulemap_str)
     if err != None:
         fail("Errors parsing the %s. %s" % (modulemap_path, err))
 
-    # DEBUG BEGIN
-    print("*** CHUCK module_decls: ", module_decls)
-    # DEBUG END
+    module_decls = [d for d in decls if d.decl_type == dts.module]
+    module_decls_len = len(module_decls)
+    if module_decls_len == 0:
+        fail("No module declarations were found in %s." % (modulemap_path))
+    if module_decls_len > 1:
+        fail("Expected a single module definition but found %s." % (module_decls_len))
+    module_decl = module_decls[0]
 
-    # TODO: IMPLEMENT ME!
-    return []
+    # DEBUG BEGIN
+    print("*** CHUCK module_decl: ", module_decl)
+
+    # DEBUG END
+    modulemap_dirname = paths.dirname(modulemap_path)
+    hdrs = []
+    for cdecl in module_decl.members:
+        if cdecl.decl_type == dts.single_header and not cdecl.private and not cdecl.textual:
+            # Resolve the path relative to the modulemap
+            hdr_path = paths.join(modulemap_dirname, cdecl.path)
+            normalized_hdr_path = paths.normalize(hdr_path)
+            hdrs.append(normalized_hdr_path)
+
+    return hdrs
 
 def _create_spm_clang_module_decl(ctx, target):
     module_name = target["c99name"]
     module_paths = _list_files_under(ctx, target["path"])
 
-    # If a modulemap was provided, read it.
+    # If a modulemap was provided, read it for header info.
     # Otherwise, use all of the header files under the "include" directory.
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
     modulemap_paths_len = len(modulemap_paths)
     if modulemap_paths_len > 1:
         fail("Found more than one module.modulemap file. %" % (modulemap_paths))
     if modulemap_paths_len == 1:
-        hdr_paths = _get_hdr_paths_from_modulemap(ctx, modulemap_paths[0])
+        hdr_paths = _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_paths[0])
     else:
         hdr_paths = [p for p in module_paths if _is_include_hdr_path(p)]
 
