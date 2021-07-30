@@ -1,3 +1,4 @@
+load(":collect_export_declaration.bzl", "collect_export_declaration")
 load(":collect_header_declaration.bzl", "collect_header_declaration")
 load(":collect_umbrella_dir_declaration.bzl", "collect_umbrella_dir_declaration")
 load(":collection_results.bzl", "collection_results")
@@ -82,6 +83,9 @@ def collect_module_members(parsed_tokens):
         elif tokens.is_a(token, tts.reserved, rws.header):
             collect_result, err = collect_header_declaration(parsed_tokens[idx:], prefix_tokens)
             prefix_tokens = []
+
+        elif tokens.is_a(token, tts.reserved, rws.export):
+            collect_result, err = collect_export_declaration(parsed_tokens[idx:])
 
         elif tokens.is_a(token, tts.reserved) and sets.contains(_unsupported_module_members, token.value):
             return None, errors.new("Unsupported module member token. token: %s" % (token))
