@@ -50,7 +50,19 @@ extern_module_test = unittest.make(_extern_module_test)
 def _single_header_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    expected = struct(
+        decl_type = dts.single_header,
+        path = "path/to/header.h",
+        private = False,
+        textual = True,
+        attribs = None,
+    )
+    actual = declarations.single_header(
+        path = "path/to/header.h",
+        private = False,
+        textual = True,
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
@@ -59,7 +71,15 @@ single_header_test = unittest.make(_single_header_test)
 def _umbrella_header_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    expected = struct(
+        decl_type = dts.umbrella_header,
+        path = "path/to/header.h",
+        attribs = None,
+    )
+    actual = declarations.umbrella_header(
+        path = "path/to/header.h",
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
@@ -68,7 +88,15 @@ umbrella_header_test = unittest.make(_umbrella_header_test)
 def _exclude_header_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    expected = struct(
+        decl_type = dts.exclude_header,
+        path = "path/to/header.h",
+        attribs = None,
+    )
+    actual = declarations.exclude_header(
+        path = "path/to/header.h",
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
@@ -77,7 +105,14 @@ exclude_header_test = unittest.make(_exclude_header_test)
 def _umbrella_directory_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    expected = struct(
+        decl_type = dts.umbrella_directory,
+        path = "path/to/headers",
+    )
+    actual = declarations.umbrella_directory(
+        path = "path/to/headers",
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
