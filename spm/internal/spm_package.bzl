@@ -52,6 +52,13 @@ def _find_public_hdrs(ctx, target_name):
     include_path = "Sources/%s/include" % (target_name)
     return [s for s in ctx.files.srcs if is_hdr_file(s) and contains_path(s, include_path)]
 
+def _ends_with_any(file, targets):
+    path = file.path
+    for t in targets:
+        if path.endswith(t):
+            return True
+    return False
+
 def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir_path):
     all_build_outs = []
     other_outs = []
@@ -66,8 +73,18 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     # Check if public header paths were provided. If so, then we need to find the corresponding
     # src files.
     public_hdr_paths = ctx.attr.clang_module_headers.get(target_name, default = [])
-    public_hdr_paths_set = sets.make(public_hdr_paths)
-    public_hdrs = [f for f in ctx.files.srcs if sets.contains(public_hdr_paths_set, f.short_path)]
+
+    # public_hdr_paths_set = sets.make(public_hdr_paths)
+    # public_hdrs = [f for f in ctx.files.srcs if sets.contains(public_hdr_paths_set, f.short_path)]
+    public_hdrs = []
+    if len(public_hdr_paths) > 0:
+        public_hdrs = [f for f in ctx.files.srcs if _ends_with_any(f, public_hdr_paths)]
+
+    # DEBUG BEGIN
+    print("*** CHUCK target_name: ", target_name)
+    print("*** CHUCK public_hdr_paths: ", public_hdr_paths)
+    print("*** CHUCK public_hdrs: ", public_hdrs)
+    # DEBUG END
 
     # If no public hdr files were specified/found, then try to find them.
     if len(public_hdrs) == 0:
