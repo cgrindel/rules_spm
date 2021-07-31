@@ -12,6 +12,7 @@ shift 4
 "${swift_worker}" swift build \
   --manifest-cache none \
   --disable-sandbox \
+  --disable-repository-cache \
   --configuration ${build_config} \
   --package-path "${package_path}" \
   --build-path "${build_path}"
