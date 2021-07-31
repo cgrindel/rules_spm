@@ -39,6 +39,18 @@ def _create_hdrs_str(hdr_paths):
     hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
     return "\n".join(hdrs)
 
+def _create_clang_module_headers_entry(target_name, hdr_paths):
+    entry_tpl = """\
+        "%s": [
+    %s
+        ],"""
+    hdrs_str = _create_hdrs_str(hdr_paths)
+    return entry_tpl % (target_name, hdrs_str)
+
+def _create_clang_module_headers(hdrs_dict):
+    entries = [_create_clang_module_headers_entry(k, hdrs_dict[k]) for k in hdrs_dict]
+    return "\n".join(entries)
+
 def _create_spm_swift_module_decl(ctx, target):
     """Returns the spm_swift_module declaration for this Swift target.
     """
@@ -80,10 +92,6 @@ def _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_path):
         fail("Expected a single module definition but found %s." % (module_decls_len))
     module_decl = module_decls[0]
 
-    # DEBUG BEGIN
-    print("*** CHUCK module_decl: ", module_decl)
-
-    # DEBUG END
     modulemap_dirname = paths.dirname(modulemap_path)
     hdrs = []
     for cdecl in module_decl.members:
@@ -98,6 +106,7 @@ def _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_path):
 def _create_spm_clang_module_decl(ctx, target):
     module_name = target["c99name"]
     module_paths = _list_files_under(ctx, target["path"])
+    custom_hdrs = []
 
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
     modulemap_paths_len = len(modulemap_paths)
@@ -108,22 +117,14 @@ def _create_spm_clang_module_decl(ctx, target):
     # Otherwise, use all of the header files under the "include" directory.
     if modulemap_paths_len == 1:
         hdr_paths = _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_paths[0])
+        custom_hdrs = hdr_paths
     else:
         hdr_paths = [p for p in module_paths if _is_include_hdr_path(p)]
 
     deps_str = _create_deps_str(target)
     hdrs_str = _create_hdrs_str(hdr_paths)
 
-    # DEBUG BEGIN
-    print("*** CHUCK module_name: ", module_name)
-
-    # print("*** CHUCK module_paths: ")
-    # for idx, item in enumerate(module_paths):
-    #     print("*** CHUCK", idx, ":", item)
-    print("*** CHUCK hdr_paths: ", hdr_paths)
-    # DEBUG END
-
-    return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str, deps_str)
+    return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str, deps_str), custom_hdrs
 
 def _spm_repository_impl(ctx):
     # Download the archive
@@ -139,13 +140,17 @@ def _spm_repository_impl(ctx):
     pkg_desc = parse_package_description_json(describe_result.stdout)
     targets = library_targets(pkg_desc)
 
+    custom_hdrs_dict = dict()
     modules = []
     for target in targets:
         module_type = target["module_type"]
         if module_type == "SwiftTarget":
             module_decl = _create_spm_swift_module_decl(ctx, target)
         elif module_type == "ClangTarget":
-            module_decl = _create_spm_clang_module_decl(ctx, target)
+            module_decl, custom_hdrs = _create_spm_clang_module_decl(ctx, target)
+            if len(custom_hdrs) > 0:
+                target_name = target["name"]
+                custom_hdrs_dict[target_name] = custom_hdrs
         modules.append(module_decl)
 
     # Template Substitutions
@@ -153,6 +158,7 @@ def _spm_repository_impl(ctx):
         "{spm_repos_name}": ctx.attr.name,
         "{pkg_desc_json}": describe_result.stdout,
         "{spm_modules}": "\n".join(modules),
+        "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
     }
 
     # Write BUILD.bazel file.
