@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:sets.bzl", "sets")
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
 load(
     "//spm/internal:providers.bzl",
@@ -194,6 +195,17 @@ def _spm_package_impl(ctx):
             all_build_outs.extend(clang_module_build_info.all_build_outs)
             copy_infos.extend(clang_module_build_info.copy_infos)
 
+    # # TODO: FIX ME
+    # cache_dirname = "spm_cache"
+    # cache_path = paths.join(ctx.attr.package_path, cache_dirname)
+
+    # # DEBUG BEGIN
+    # print("*** CHUCK ctx.file.deps: ")
+    # for idx, item in enumerate(ctx.files.deps_cache):
+    #     print("*** CHUCK", idx, ":", item)
+
+    # # DEBUG END
+
     other_run_inputs = []
     run_args = ctx.actions.args()
     run_args.add_all([
@@ -207,16 +219,17 @@ def _spm_package_impl(ctx):
         other_run_inputs.append(ci.src)
 
     ctx.actions.run(
+        # inputs = ctx.files.srcs + ctx.files.deps_cache + other_run_inputs,
         inputs = ctx.files.srcs + other_run_inputs,
         tools = [swift_worker],
         outputs = [build_output_dir] + all_build_outs,
         arguments = [run_args],
         executable = ctx.executable._spm_build_tool,
-        execution_requirements = {
-            # "requires-network": "1",
-            # "no-sandbox": "1",
-            # "local": "1",
-        },
+        # execution_requirements = {
+        #     # "requires-network": "1",
+        #     # "no-sandbox": "1",
+        #     # "local": "1",
+        # },
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
@@ -242,6 +255,11 @@ _attrs = {
         allow_files = True,
         mandatory = True,
     ),
+    # "deps_cache": attr.label_list(
+    #     allow_files = True,
+    #     mandatory = True,
+    #     doc = "The files that were fetched and stored in the SPM cache path.",
+    # ),
     "configuration": attr.string(
         default = "release",
         values = ["release", "debug"],
