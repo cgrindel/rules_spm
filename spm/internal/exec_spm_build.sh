@@ -13,11 +13,12 @@ shift 4
 fetched_dir="${package_path}/$(basename "${build_path}")"
 
 # Copy all of the fetch data to the output so that the SPM build will succeed?
-cp -v -R -L "${fetched_dir}/" "${build_path}" 
+# Note the slash at the end of the source. It tells cp to copy the contents of
+# the source directory not the actual directory.
+cp -R -L "${fetched_dir}/" "${build_path}" 
 
 # Execute the SPM build
 "${swift_worker}" swift build \
-  --verbose \
   --manifest-cache none \
   --disable-sandbox \
   --disable-repository-cache \
