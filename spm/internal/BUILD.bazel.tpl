@@ -9,20 +9,6 @@ load(
 
 package(default_visibility = ["//visibility:public"])
 
-# DEPS_CACHE_PATTERNS = ["spm_cache/**"]
-# 
-# filegroup(
-#     name = "deps_cache",
-#     srcs = glob(DEPS_CACHE_PATTERNS),
-#     visibility = ["//visibility:public"],
-# )
-# 
-# filegroup(
-#     name = "all_srcs",
-#     srcs = glob(["**"], exclude = DEPS_CACHE_PATTERNS),
-#     visibility = ["//visibility:public"],
-# )
-
 filegroup(
     name = "all_srcs",
     srcs = glob(["**"]),
