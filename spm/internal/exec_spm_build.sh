@@ -8,15 +8,6 @@ package_path="${3}"
 build_path="${4}"
 shift 4
 
-# DEBUG BEGIN
-set -x
-chuck_dbg_dir="${build_path}/chuck_debug"
-mkdir -p "${chuck_dbg_dir}"
-pushd "${chuck_dbg_dir}"
-git clone https://github.com/apple/swift-crypto.git
-popd
-set +x
-# DEBUG END
 
 # Execute the SPM build
 "${swift_worker}" swift build \
