@@ -28,25 +28,6 @@ def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build
         copy_infos = copy_infos,
     )
 
-# def _modulemap_for_target(ctx, target_name):
-#     for src in ctx.files.srcs:
-#         if is_target_file(target_name, src) and is_modulemap_file(src):
-#             return src
-#     return None
-
-# def _get_src_module_hdr(target_name, src_hdrs):
-#     # GH019: Look for modulemap file. It will point to header(s).
-
-#     # If a modulemap exists, get the relative location for the header from the modulemap
-
-#     # Else look for the first header file under the include directory.
-#     include_path = "Sources/%s/include" % (target_name)
-#     for src_hdr in src_hdrs:
-#         if is_hdr_file(src_hdr) and contains_path(src_hdr, include_path):
-#             return src_hdr
-
-#     fail("Expected header file for %s target." % (target_name))
-
 def _find_public_hdrs(ctx, target_name):
     # Look for header files under the include directory.
     include_path = "Sources/%s/include" % (target_name)
@@ -74,17 +55,9 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     # src files.
     public_hdr_paths = ctx.attr.clang_module_headers.get(target_name, default = [])
 
-    # public_hdr_paths_set = sets.make(public_hdr_paths)
-    # public_hdrs = [f for f in ctx.files.srcs if sets.contains(public_hdr_paths_set, f.short_path)]
     public_hdrs = []
     if len(public_hdr_paths) > 0:
         public_hdrs = [f for f in ctx.files.srcs if _ends_with_any(f, public_hdr_paths)]
-
-    # DEBUG BEGIN
-    print("*** CHUCK target_name: ", target_name)
-    print("*** CHUCK public_hdr_paths: ", public_hdr_paths)
-    print("*** CHUCK public_hdrs: ", public_hdrs)
-    # DEBUG END
 
     # If no public hdr files were specified/found, then try to find them.
     if len(public_hdrs) == 0:
