@@ -134,6 +134,11 @@ def _spm_repository_impl(ctx):
         stripPrefix = ctx.attr.strip_prefix,
     )
 
+    # Resolve/fetch the dependencies and cache them in the spm_cache directory.
+    resolve_result = ctx.execute(["swift", "package", "resolve", "--build-path", "spm_build"])
+    if resolve_result.return_code != 0:
+        fail("Resolution of SPM packages for %s failed.\n%s" % (ctx.attr.name, resolve_result.stderr))
+
     # Generate description for the package.
     describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
 
