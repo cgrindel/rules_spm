@@ -1,4 +1,5 @@
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
 load(
     "//spm/internal:providers.bzl",
@@ -27,24 +28,17 @@ def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build
         copy_infos = copy_infos,
     )
 
-def _modulemap_for_target(ctx, target_name):
-    for src in ctx.files.srcs:
-        if is_target_file(target_name, src) and is_modulemap_file(src):
-            return src
-    return None
-
-def _get_src_module_hdr(target_name, src_hdrs, src_modulemap = None):
-    # GH019: Look for modulemap file. It will point to header(s).
-
-    # If a modulemap exists, get the relative location for the header from the modulemap
-
-    # Else look for the first header file under the include directory.
+def _find_public_hdrs(ctx, target_name):
+    # Look for header files under the include directory.
     include_path = "Sources/%s/include" % (target_name)
-    for src_hdr in src_hdrs:
-        if is_hdr_file(src_hdr) and contains_path(src_hdr, include_path):
-            return src_hdr
+    return [s for s in ctx.files.srcs if is_hdr_file(s) and contains_path(s, include_path)]
 
-    fail("Expected header file for %s target." % (target_name))
+def _ends_with_any(file, targets):
+    path = file.path
+    for t in targets:
+        if path.endswith(t):
+            return True
+    return False
 
 def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir_path):
     all_build_outs = []
@@ -57,32 +51,51 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
     target_modulemap_dirname = "%s/%s.build" % (modulemap_dir_path, target_name)
 
-    src_hdrs = [src for src in ctx.files.srcs if is_target_file(target_name, src) and is_hdr_file(src)]
+    # Check if public header paths were provided. If so, then we need to find the corresponding
+    # src files.
+    public_hdr_paths = ctx.attr.clang_module_headers.get(target_name, default = [])
 
-    src_modulemap = _modulemap_for_target(ctx, target_name)
-    src_module_hdr = _get_src_module_hdr(target_name, src_hdrs, src_modulemap)
-    out_module_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, src_module_hdr.basename))
-    copy_infos.append(create_copy_info(src_module_hdr, out_module_hdr))
-    all_build_outs.append(out_module_hdr)
+    public_hdrs = []
+    if len(public_hdr_paths) > 0:
+        public_hdrs = [f for f in ctx.files.srcs if _ends_with_any(f, public_hdr_paths)]
 
-    if src_modulemap:
-        out_modulemap = src_modulemap
-    else:
-        out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
-        all_build_outs.append(out_modulemap)
-        gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+    # If no public hdr files were specified/found, then try to find them.
+    if len(public_hdrs) == 0:
+        public_hdrs = _find_public_hdrs(ctx, target_name)
 
-        substitutions = {
-            "{spm_module_name}": module_name,
-            "{spm_module_header}": src_module_hdr.basename,
-        }
-        ctx.actions.expand_template(
-            template = ctx.file._modulemap_tpl,
-            output = gen_modulemap,
-            substitutions = substitutions,
-        )
-        copy_infos.append(create_copy_info(gen_modulemap, out_modulemap))
+    # If we still have no public hdr files, then fail.
+    if len(public_hdrs) == 0:
+        fail("No public header files were found for %s target." % (target_name))
 
+    # Copy all of the public headers to the output during the SPM build
+    for hdr in public_hdrs:
+        out_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, hdr.basename))
+        copy_infos.append(create_copy_info(hdr, out_hdr))
+        all_build_outs.append(out_hdr)
+
+    # The gen_modulemap is where the generated modulemap will initially be written.
+    # The out_modulemap is where the generated modulemap will be copied after the SPM build.
+    out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
+    all_build_outs.append(out_modulemap)
+    gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+
+    # The module.modulemap template uses an umbrella header declaration. This means that every header
+    # file in the directory or subdirectory of the specified header will be used as a public. Since
+    # we will be copying all of the header files for the target to the same directory, we can get
+    # away with specifying a single umbrella header.
+    umbrella_hdr = public_hdrs[0]
+    substitutions = {
+        "{spm_module_name}": module_name,
+        "{spm_module_header}": umbrella_hdr.basename,
+    }
+    ctx.actions.expand_template(
+        template = ctx.file._modulemap_tpl,
+        output = gen_modulemap,
+        substitutions = substitutions,
+    )
+    copy_infos.append(create_copy_info(gen_modulemap, out_modulemap))
+
+    # Declare the Mach-O files.
     o_files = []
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
@@ -92,7 +105,7 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
         module_name = module_name,
         modulemap = out_modulemap,
         o_files = o_files,
-        hdrs = src_hdrs,
+        hdrs = public_hdrs,
         build_dir = target_build_dirname,
         all_build_outs = all_build_outs,
         other_outs = other_outs,
@@ -235,6 +248,9 @@ _attrs = {
     ),
     "package_path": attr.string(
         doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",
+    ),
+    "clang_module_headers": attr.string_list_dict(
+        doc = "A dictionary where the keys are target names and the values are public header paths.",
     ),
     "_modulemap_tpl": attr.label(
         allow_single_file = True,
