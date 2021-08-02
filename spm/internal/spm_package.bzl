@@ -212,6 +212,11 @@ def _spm_package_impl(ctx):
         outputs = [build_output_dir] + all_build_outs,
         arguments = [run_args],
         executable = ctx.executable._spm_build_tool,
+        execution_requirements = {
+            # "requires-network": "1",
+            # "no-sandbox": "1",
+            # "local": "1",
+        },
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
