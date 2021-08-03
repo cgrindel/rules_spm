@@ -8,3 +8,10 @@ swift_binary(
         "@vapor_async_kit//:AsyncKit",
     ],
 )
+
+sh_test(
+    name = "package_with_deps_test",
+    srcs = ["package_with_deps_test.sh"],
+    data = [":package_with_deps"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
