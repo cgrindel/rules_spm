@@ -2,13 +2,7 @@ load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
-load(
-    "//spm/internal:providers.bzl",
-    "SPMPackageInfo",
-    "create_clang_module",
-    "create_copy_info",
-    "create_swift_module",
-)
+load("//spm/internal:providers.bzl", "SPMPackageInfo", "providers")
 load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
 load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
@@ -66,7 +60,7 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     # Copy all of the public headers to the output during the SPM build
     for hdr in public_hdrs:
         out_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, hdr.basename))
-        copy_infos.append(create_copy_info(hdr, out_hdr))
+        copy_infos.append(providers.copy_info(hdr, out_hdr))
         all_build_outs.append(out_hdr)
 
     # The gen_modulemap is where the generated modulemap will initially be written.
@@ -89,7 +83,7 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
         output = gen_modulemap,
         substitutions = substitutions,
     )
-    copy_infos.append(create_copy_info(gen_modulemap, out_modulemap))
+    copy_infos.append(providers.copy_info(gen_modulemap, out_modulemap))
 
     # Declare the Mach-O files.
     o_files = []
@@ -109,7 +103,7 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
     )
 
 def _create_clang_module(clang_module_build_info):
-    return create_clang_module(
+    return providers.clang_module(
         module_name = clang_module_build_info.module_name,
         o_files = clang_module_build_info.o_files,
         hdrs = clang_module_build_info.hdrs,
@@ -138,7 +132,7 @@ def _declare_swift_target_files(ctx, target, build_config_dirname):
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_build_outs.extend(o_files)
 
-    return create_swift_module(
+    return providers.swift_module(
         module_name = module_name,
         o_files = o_files,
         swiftdoc = swiftdoc,
