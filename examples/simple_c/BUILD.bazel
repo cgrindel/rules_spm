@@ -8,3 +8,10 @@ swift_binary(
         "@apple_swift_nio//:CNIOSHA1",
     ],
 )
+
+sh_test(
+    name = "simple_c_test",
+    srcs = ["simple_c_test.sh"],
+    data = [":simple_c"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
