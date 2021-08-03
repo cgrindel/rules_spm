@@ -1,7 +1,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_types")
-load("//spm/internal:package_description.bzl", pds = "package_descriptions")
+load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
 
 SPM_SWIFT_MODULE_TPL = """
 spm_swift_module(
@@ -122,13 +122,6 @@ def _create_spm_clang_module_decl(repository_ctx, target):
 
     return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str, deps_str), custom_hdrs
 
-# def _get_package_description(repository_ctx, working_directory = ""):
-#     describe_result = repository_ctx.execute(
-#         ["swift", "package", "describe", "--type", "json"],
-#         working_directory = working_directory,
-#     )
-#     return pds.parse_json(describe_result.stdout)
-
 def _spm_repository_impl(repository_ctx):
     # Download the archive
     repository_ctx.download_and_extract(
@@ -143,10 +136,6 @@ def _spm_repository_impl(repository_ctx):
         fail("Resolution of SPM packages for %s failed.\n%s" % (repository_ctx.attr.name, resolve_result.stderr))
 
     # TODO: For each dependency, generate describe JSON and store it in a JSON struct?
-
-    # # Generate description for the package.
-    # describe_result = repository_ctx.execute(["swift", "package", "describe", "--type", "json"])
-    # pkg_desc = parse_package_description_json(describe_result.stdout)
 
     pkg_descriptions = dict()
     root_pkg_desc = pds.get(repository_ctx)

@@ -1,5 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:package_description.bzl", pds = "package_descriptions")
+load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
 load(":json_test_data.bzl", "package_description_json")
 
 def _parse_json_test(ctx):

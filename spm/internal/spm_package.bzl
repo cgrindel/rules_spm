@@ -9,7 +9,7 @@ load(
     "create_copy_info",
     "create_swift_module",
 )
-load("//spm/internal:package_description.bzl", pds = "package_descriptions")
+load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
 load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
 def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
