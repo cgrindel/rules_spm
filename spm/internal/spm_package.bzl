@@ -9,12 +9,7 @@ load(
     "create_copy_info",
     "create_swift_module",
 )
-load(
-    "//spm/internal:package_description.bzl",
-    "exported_library_targets",
-    "library_targets",
-    "parse_package_description_json",
-)
+load("//spm/internal:package_description.bzl", pds = "package_descriptions")
 load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
 def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
@@ -166,14 +161,14 @@ def _spm_package_impl(ctx):
     swift_worker = swift_toolchain.swift_worker
 
     # Parse the package description JSON.
-    pkg_desc = parse_package_description_json(ctx.attr.package_description_json)
+    pkg_desc = pds.parse_json(ctx.attr.package_description_json)
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
 
     modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
 
-    targets = library_targets(pkg_desc)
+    targets = pds.library_targets(pkg_desc)
 
     swift_module_infos = []
     clang_module_build_infos = []

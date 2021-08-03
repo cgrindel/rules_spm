@@ -1,11 +1,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_types")
-load(
-    "//spm/internal:package_description.bzl",
-    "library_targets",
-    "parse_package_description_json",
-)
+load("//spm/internal:package_description.bzl", pds = "package_descriptions")
 
 SPM_SWIFT_MODULE_TPL = """
 spm_swift_module(
@@ -51,15 +47,15 @@ def _create_clang_module_headers(hdrs_dict):
     entries = [_create_clang_module_headers_entry(k, hdrs_dict[k]) for k in hdrs_dict]
     return "\n".join(entries)
 
-def _create_spm_swift_module_decl(ctx, target):
+def _create_spm_swift_module_decl(repository_ctx, target):
     """Returns the spm_swift_module declaration for this Swift target.
     """
     module_name = target["c99name"]
     deps_str = _create_deps_str(target)
     return SPM_SWIFT_MODULE_TPL % (module_name, deps_str)
 
-def _list_files_under(ctx, path):
-    exec_result = ctx.execute(
+def _list_files_under(repository_ctx, path):
+    exec_result = repository_ctx.execute(
         ["find", path],
         quiet = True,
     )
@@ -78,8 +74,8 @@ def _is_include_hdr_path(path):
     dirname = paths.basename(paths.dirname(path))
     return dirname == "include" and ext == ".h"
 
-def _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_path):
-    modulemap_str = ctx.read(modulemap_path)
+def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
+    modulemap_str = repository_ctx.read(modulemap_path)
     decls, err = parser.parse(modulemap_str)
     if err != None:
         fail("Errors parsing the %s. %s" % (modulemap_path, err))
@@ -103,9 +99,9 @@ def _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_path):
 
     return hdrs
 
-def _create_spm_clang_module_decl(ctx, target):
+def _create_spm_clang_module_decl(repository_ctx, target):
     module_name = target["c99name"]
-    module_paths = _list_files_under(ctx, target["path"])
+    module_paths = _list_files_under(repository_ctx, target["path"])
     custom_hdrs = []
 
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
@@ -116,7 +112,7 @@ def _create_spm_clang_module_decl(ctx, target):
     # If a modulemap was provided, read it for header info.
     # Otherwise, use all of the header files under the "include" directory.
     if modulemap_paths_len == 1:
-        hdr_paths = _get_hdr_paths_from_modulemap(ctx, module_paths, modulemap_paths[0])
+        hdr_paths = _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_paths[0])
         custom_hdrs = hdr_paths
     else:
         hdr_paths = [p for p in module_paths if _is_include_hdr_path(p)]
@@ -126,46 +122,48 @@ def _create_spm_clang_module_decl(ctx, target):
 
     return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str, deps_str), custom_hdrs
 
-def _get_package_description(ctx, working_directory = ""):
-    describe_result = ctx.execute(
-        ["swift", "package", "describe", "--type", "json"],
-        working_directory = working_directory,
-    )
-    return parse_package_description_json(describe_result.stdout)
+# def _get_package_description(repository_ctx, working_directory = ""):
+#     describe_result = repository_ctx.execute(
+#         ["swift", "package", "describe", "--type", "json"],
+#         working_directory = working_directory,
+#     )
+#     return pds.parse_json(describe_result.stdout)
 
-def _spm_repository_impl(ctx):
+def _spm_repository_impl(repository_ctx):
     # Download the archive
-    ctx.download_and_extract(
-        url = ctx.attr.urls,
-        sha256 = ctx.attr.sha256,
-        stripPrefix = ctx.attr.strip_prefix,
+    repository_ctx.download_and_extract(
+        url = repository_ctx.attr.urls,
+        sha256 = repository_ctx.attr.sha256,
+        stripPrefix = repository_ctx.attr.strip_prefix,
     )
 
     # Resolve/fetch the dependencies.
-    resolve_result = ctx.execute(["swift", "package", "resolve", "--build-path", "spm_build"])
+    resolve_result = repository_ctx.execute(["swift", "package", "resolve", "--build-path", "spm_build"])
     if resolve_result.return_code != 0:
-        fail("Resolution of SPM packages for %s failed.\n%s" % (ctx.attr.name, resolve_result.stderr))
+        fail("Resolution of SPM packages for %s failed.\n%s" % (repository_ctx.attr.name, resolve_result.stderr))
 
     # TODO: For each dependency, generate describe JSON and store it in a JSON struct?
 
     # # Generate description for the package.
-    # describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
+    # describe_result = repository_ctx.execute(["swift", "package", "describe", "--type", "json"])
     # pkg_desc = parse_package_description_json(describe_result.stdout)
 
     pkg_descriptions = dict()
-    root_pkg_desc = _get_package_description(ctx)
+    root_pkg_desc = pds.get(repository_ctx)
     pkg_descriptions["_root"] = root_pkg_desc
 
-    targets = library_targets(root_pkg_desc)
+    # dep_names = [dep_names]
+
+    targets = pds.library_targets(root_pkg_desc)
 
     custom_hdrs_dict = dict()
     modules = []
     for target in targets:
         module_type = target["module_type"]
         if module_type == "SwiftTarget":
-            module_decl = _create_spm_swift_module_decl(ctx, target)
+            module_decl = _create_spm_swift_module_decl(repository_ctx, target)
         elif module_type == "ClangTarget":
-            module_decl, custom_hdrs = _create_spm_clang_module_decl(ctx, target)
+            module_decl, custom_hdrs = _create_spm_clang_module_decl(repository_ctx, target)
             if len(custom_hdrs) > 0:
                 target_name = target["name"]
                 custom_hdrs_dict[target_name] = custom_hdrs
@@ -173,16 +171,16 @@ def _spm_repository_impl(ctx):
 
     # Template Substitutions
     substitutions = {
-        "{spm_repos_name}": ctx.attr.name,
+        "{spm_repos_name}": repository_ctx.attr.name,
         "{pkg_desc_json}": json.encode_indent(root_pkg_desc, indent = "  "),
         "{spm_modules}": "\n".join(modules),
         "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
     }
 
     # Write BUILD.bazel file.
-    ctx.template(
+    repository_ctx.template(
         "BUILD.bazel",
-        ctx.attr._build_tpl,
+        repository_ctx.attr._build_tpl,
         substitutions = substitutions,
         executable = False,
     )

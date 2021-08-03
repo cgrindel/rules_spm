@@ -9,6 +9,22 @@ def _parse_json(json_str):
     """
     return json.decode(json_str)
 
+def _get_package_description(repository_ctx, working_directory = ""):
+    """Returns a dict representing the package description for an SPM package.
+
+    Args:
+        repository_ctx: A `repository_ctx`.
+        working_directory: A `string` specifying the directory for the SPM package.
+
+    Returns:
+        A `dict` representing an SPM package description.
+    """
+    describe_result = repository_ctx.execute(
+        ["swift", "package", "describe", "--type", "json"],
+        working_directory = working_directory,
+    )
+    return _parse_json(describe_result.stdout)
+
 def _is_library_product(product):
     return "library" in product["type"]
 
@@ -62,6 +78,7 @@ def _library_targets(pkg_desc):
 
 package_descriptions = struct(
     parse_json = _parse_json,
+    get = _get_package_description,
     is_library_product = _is_library_product,
     library_products = _library_products,
     exported_library_targets = _exported_library_targets,
