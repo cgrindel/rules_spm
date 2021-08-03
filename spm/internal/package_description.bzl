@@ -1,4 +1,4 @@
-def parse_package_description_json(json_str):
+def _parse_json(json_str):
     """Parses the JSON string and returns a dict representing the JSON structure.
 
     Args:
@@ -9,13 +9,13 @@ def parse_package_description_json(json_str):
     """
     return json.decode(json_str)
 
-def is_library_product(product):
+def _is_library_product(product):
     return "library" in product["type"]
 
-def library_products(pkg_desc):
-    return [p for p in pkg_desc["products"] if is_library_product(p)]
+def _library_products(pkg_desc):
+    return [p for p in pkg_desc["products"] if _is_library_product(p)]
 
-def exported_library_targets(pkg_desc):
+def _exported_library_targets(pkg_desc):
     """Returns the exported targets from the SPM pacakge.
 
     Args:
@@ -25,7 +25,7 @@ def exported_library_targets(pkg_desc):
         A list of the targets exported by the package.
     """
     targets_dict = dict([(p["name"], p) for p in pkg_desc["targets"]])
-    products = library_products(pkg_desc)
+    products = _library_products(pkg_desc)
 
     target_names = []
     for product in products:
@@ -35,7 +35,7 @@ def exported_library_targets(pkg_desc):
 
     return [targets_dict[target_name] for target_name in target_names]
 
-def is_library_target(target):
+def _is_library_target(target):
     """Returns True if the specified target is a library target. Otherwise False.
 
     Args:
@@ -46,7 +46,7 @@ def is_library_target(target):
     """
     return target["type"] == "library"
 
-def library_targets(pkg_desc):
+def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
 
     Args:
@@ -56,4 +56,15 @@ def library_targets(pkg_desc):
         A list of the library targets in the package.
     """
     targets = pkg_desc["targets"]
-    return [t for t in targets if is_library_target(t)]
+    return [t for t in targets if _is_library_target(t)]
+
+# MARK: - Namespace
+
+package_descriptions = struct(
+    parse_json = _parse_json,
+    is_library_product = _is_library_product,
+    library_products = _library_products,
+    exported_library_targets = _exported_library_targets,
+    is_library_target = _is_library_target,
+    library_targets = _library_targets,
+)
