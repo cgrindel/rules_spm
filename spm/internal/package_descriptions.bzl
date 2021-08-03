@@ -11,6 +11,9 @@ def _parse_json(json_str):
     """
     return json.decode(json_str)
 
+# TODO: Consider converting the parsed json dict to a struct
+# struct(**parsed_dict). Removes all of the string keys.
+
 def _get_package_description(repository_ctx, working_directory = ""):
     """Returns a dict representing the package description for an SPM package.
 
@@ -91,6 +94,11 @@ def _dependency_name(pkg_dep):
     return name
 
 # MARK: - Namespace
+
+module_types = struct(
+    swift = "SwiftTarget",
+    clang = "ClangTarget",
+)
 
 package_descriptions = struct(
     parse_json = _parse_json,

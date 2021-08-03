@@ -1,7 +1,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_types")
-load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
+load("//spm/internal:package_descriptions.bzl", "module_types", pds = "package_descriptions")
 
 SPM_SWIFT_MODULE_TPL = """
 spm_swift_module(
@@ -146,9 +146,9 @@ def _spm_repository_impl(repository_ctx):
     modules = []
     for target in root_pkg_targets:
         module_type = target["module_type"]
-        if module_type == "SwiftTarget":
+        if module_type == module_types.swift:
             module_decl = _create_spm_swift_module_decl(repository_ctx, target)
-        elif module_type == "ClangTarget":
+        elif module_type == module_types.clang:
             module_decl, custom_hdrs = _create_spm_clang_module_decl(repository_ctx, target)
             if len(custom_hdrs) > 0:
                 target_name = target["name"]
@@ -166,14 +166,19 @@ def _spm_repository_impl(repository_ctx):
         dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
         pkg_descriptions[dep_name] = dep_pkg_desc
 
-    # DEBUG BEGIN
-    print("*** CHUCK pkg_descriptions:\n", json.encode_indent(pkg_descriptions, indent = "  "))
-    # DEBUG END
+        dep_library_targets = pds.library_targets(dep_pkg_desc)
+        for lib_target in dep_library_targets:
+            if target["module_type"] == module_types.clang:
+                # We just need the custom headers. So, ignore the actual declaration
+                dep_module_decl, dep_custom_hdrs = _create_spm_swift_module_decl(repository_ctx, lib_target)
+                if len(dep_custom_hdrs) > 0:
+                    dep_target_name = lib_target["name"]
+                    custom_hdrs_dict[dep_target_name] = dep_custom_hdrs
 
     # Template Substitutions
     substitutions = {
         "{spm_repos_name}": repository_ctx.attr.name,
-        "{pkg_desc_json}": json.encode_indent(root_pkg_desc, indent = "  "),
+        "{pkg_descs_json}": json.encode_indent(pkg_descriptions, indent = "  "),
         "{spm_modules}": "\n".join(modules),
         "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
     }

@@ -155,7 +155,8 @@ def _spm_package_impl(ctx):
     swift_worker = swift_toolchain.swift_worker
 
     # Parse the package description JSON.
-    pkg_desc = pds.parse_json(ctx.attr.package_description_json)
+    pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
+    pkg_desc = pkg_descs_dict["_root"]
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
@@ -232,7 +233,7 @@ _attrs = {
         values = ["release", "debug"],
         doc = "The configuration to use when executing swift build (e.g. debug, release).",
     ),
-    "package_description_json": attr.string(
+    "package_descriptions_json": attr.string(
         mandatory = True,
         doc = "JSON string which describes the package (i.e. swift package describe --type json).",
     ),
