@@ -31,16 +31,16 @@ jobs:
       shell: bash
       run: |
         cd examples/simple
-        bazelisk build //... 
+        bazelisk run //:simple
 
     - name: Build Simple_C Example
       shell: bash
       run: |
         cd examples/simple_c
-        bazelisk build //... 
+        bazelisk run //:simple_c
 
     - name: Build Complex Example
       shell: bash
       run: |
         cd examples/complex
-        bazelisk build //... 
+        bazelisk run //:complex
