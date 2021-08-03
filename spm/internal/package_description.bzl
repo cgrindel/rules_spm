@@ -1,6 +1,4 @@
-load("@erickj_bazel_json//lib:json_parser.bzl", "json_parse")
-
-def parse_package_description_json(json):
+def parse_package_description_json(json_str):
     """Parses the JSON string and returns a dict representing the JSON structure.
 
     Args:
@@ -9,7 +7,7 @@ def parse_package_description_json(json):
     Returns:
         A dict which contains the information from the JSON string.
     """
-    return json_parse(json)
+    return json.decode(json_str)
 
 def is_library_product(product):
     return "library" in product["type"]
