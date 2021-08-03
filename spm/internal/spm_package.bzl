@@ -3,7 +3,7 @@ load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
 load("//spm/internal:providers.bzl", "SPMPackageInfo", "providers")
-load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
+load("//spm/internal:package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
 def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
@@ -170,11 +170,11 @@ def _spm_package_impl(ctx):
     copy_infos = []
     for target in targets:
         module_type = target["module_type"]
-        if module_type == "SwiftTarget":
+        if module_type == module_types.swift:
             swift_module_info = _declare_swift_target_files(ctx, target, build_config_dirname)
             swift_module_infos.append(swift_module_info)
             all_build_outs.extend(swift_module_info.all_outputs)
-        if module_type == "ClangTarget":
+        if module_type == module_types.clang:
             clang_module_build_info = _declare_clang_target_files(
                 ctx,
                 target,
