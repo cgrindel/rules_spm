@@ -94,6 +94,16 @@ def _library_targets_test(ctx):
 
 library_targets_test = unittest.make(_library_targets_test)
 
+def _dependency_name_test(ctx):
+    env = unittest.begin(ctx)
+
+    pkg_dep = {"url": "https://github.com/swift-server/async-http-client.git"}
+    asserts.equals(env, "async-http-client", pds.dependency_name(pkg_dep))
+
+    return unittest.end(env)
+
+dependency_name_test = unittest.make(_dependency_name_test)
+
 def package_description_test_suite():
     unittest.suite(
         "package_description_tests",
@@ -103,4 +113,5 @@ def package_description_test_suite():
         library_products_test,
         is_library_target_test,
         library_targets_test,
+        dependency_name_test,
     )

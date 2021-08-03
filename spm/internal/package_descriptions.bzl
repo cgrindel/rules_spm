@@ -1,3 +1,5 @@
+load("@bazel_skylib//lib:paths.bzl", "paths")
+
 def _parse_json(json_str):
     """Parses the JSON string and returns a dict representing the JSON structure.
 
@@ -74,6 +76,20 @@ def _library_targets(pkg_desc):
     targets = pkg_desc["targets"]
     return [t for t in targets if _is_library_target(t)]
 
+def _dependency_name(pkg_dep):
+    """Returns the name for the package dependency.
+
+    Args:
+        pkg_dep: An entry (`dict`) from a package description's dependencies list.
+
+    Returns:
+        The name as a `string`.
+    """
+    url = pkg_dep["url"]
+    basename = paths.basename(url)
+    name, ext = paths.split_extension(basename)
+    return name
+
 # MARK: - Namespace
 
 package_descriptions = struct(
@@ -84,4 +100,5 @@ package_descriptions = struct(
     exported_library_targets = _exported_library_targets,
     is_library_target = _is_library_target,
     library_targets = _library_targets,
+    dependency_name = _dependency_name,
 )
