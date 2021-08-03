@@ -131,23 +131,20 @@ def _spm_repository_impl(repository_ctx):
     )
 
     # Resolve/fetch the dependencies.
-    resolve_result = repository_ctx.execute(["swift", "package", "resolve", "--build-path", "spm_build"])
+    build_dirname = "spm_build"
+    resolve_result = repository_ctx.execute(["swift", "package", "resolve", "--build-path", build_dirname])
     if resolve_result.return_code != 0:
         fail("Resolution of SPM packages for %s failed.\n%s" % (repository_ctx.attr.name, resolve_result.stderr))
 
     # TODO: For each dependency, generate describe JSON and store it in a JSON struct?
 
-    pkg_descriptions = dict()
     root_pkg_desc = pds.get(repository_ctx)
-    pkg_descriptions["_root"] = root_pkg_desc
+    root_pkg_targets = pds.library_targets(root_pkg_desc)
 
-    # dep_names = [dep_names]
-
-    targets = pds.library_targets(root_pkg_desc)
-
+    # Collect the modules for the root/target package.
     custom_hdrs_dict = dict()
     modules = []
-    for target in targets:
+    for target in root_pkg_targets:
         module_type = target["module_type"]
         if module_type == "SwiftTarget":
             module_decl = _create_spm_swift_module_decl(repository_ctx, target)
@@ -157,6 +154,21 @@ def _spm_repository_impl(repository_ctx):
                 target_name = target["name"]
                 custom_hdrs_dict[target_name] = custom_hdrs
         modules.append(module_decl)
+
+    pkg_descriptions = dict()
+    pkg_descriptions["_root"] = root_pkg_desc
+
+    # Collect the package descriptions for the dependencies of the root package.
+    checkouts_path = paths.join(build_dirname, "checkouts")
+    for pkg_dep in root_pkg_desc["dependencies"]:
+        dep_name = pds.dependency_name(pkg_dep)
+        dep_checkout_path = paths.join(checkouts_path, dep_name)
+        dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
+        pkg_descriptions[dep_name] = dep_pkg_desc
+
+    # DEBUG BEGIN
+    print("*** CHUCK pkg_descriptions:\n", json.encode_indent(pkg_descriptions, indent = "  "))
+    # DEBUG END
 
     # Template Substitutions
     substitutions = {
