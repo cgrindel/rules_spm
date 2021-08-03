@@ -9,9 +9,6 @@ bzl_library(
     name = "spm_package",
     srcs = ["spm_package.bzl"],
     visibility = ["//spm:__subpackages__"],
-    deps = [
-        "@erickj_bazel_json//lib:json_parser.bzl",
-    ],
 )
 
 bzl_library(

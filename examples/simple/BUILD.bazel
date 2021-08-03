@@ -8,3 +8,10 @@ swift_binary(
         "@apple_swift_log//:Logging",
     ],
 )
+
+sh_test(
+    name = "simple_test",
+    srcs = ["simple_test.sh"],
+    data = [":simple"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

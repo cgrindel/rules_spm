@@ -12,22 +12,6 @@ def rules_spm_dependencies():
         ],
     )
 
-    # maybe(
-    #     http_archive,
-    #     name = "erickj_bazel_json",
-    #     sha256 = "a57a6f794943548fde6da8ec3edad88af89436e8102f33d8f6135202699847f4",
-    #     urls = ["https://github.com/erickj/bazel_json/archive/e954ef2c28cd92d97304810e8999e1141e2b5cc8.tar.gz"],  # 2019-01-02
-    # )
-
-    # Forked version with updates making it compatible with Bazel 4.1.0 and bazel-skylib 1.0.3.
-    maybe(
-        http_archive,
-        name = "erickj_bazel_json",
-        sha256 = "50ee4730b124e143eab66afdbe2ce077858aba7c996ae9b1acb45927321d2cd3",
-        strip_prefix = "bazel_json-916ead87b0c19ef6b8ff2763ff2a8e8a1072fa52",
-        urls = ["https://github.com/cgrindel/bazel_json/archive/916ead87b0c19ef6b8ff2763ff2a8e8a1072fa52.tar.gz"],  # 2021-07-02
-    )
-
     maybe(
         http_archive,
         name = "build_bazel_rules_swift",

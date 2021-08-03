@@ -9,3 +9,10 @@ swift_binary(
         "@apple_swift_nio//:NIO",
     ],
 )
+
+sh_test(
+    name = "complex_test",
+    srcs = ["complex_test.sh"],
+    data = [":complex"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
