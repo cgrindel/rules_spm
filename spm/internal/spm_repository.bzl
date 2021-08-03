@@ -126,6 +126,13 @@ def _create_spm_clang_module_decl(ctx, target):
 
     return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str, deps_str), custom_hdrs
 
+def _get_package_description(ctx, working_directory = ""):
+    describe_result = ctx.execute(
+        ["swift", "package", "describe", "--type", "json"],
+        working_directory = working_directory,
+    )
+    return parse_package_description_json(describe_result.stdout)
+
 def _spm_repository_impl(ctx):
     # Download the archive
     ctx.download_and_extract(
@@ -141,11 +148,15 @@ def _spm_repository_impl(ctx):
 
     # TODO: For each dependency, generate describe JSON and store it in a JSON struct?
 
-    # Generate description for the package.
-    describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
+    # # Generate description for the package.
+    # describe_result = ctx.execute(["swift", "package", "describe", "--type", "json"])
+    # pkg_desc = parse_package_description_json(describe_result.stdout)
 
-    pkg_desc = parse_package_description_json(describe_result.stdout)
-    targets = library_targets(pkg_desc)
+    pkg_descriptions = dict()
+    root_pkg_desc = _get_package_description(ctx)
+    pkg_descriptions["_root"] = root_pkg_desc
+
+    targets = library_targets(root_pkg_desc)
 
     custom_hdrs_dict = dict()
     modules = []
@@ -163,7 +174,7 @@ def _spm_repository_impl(ctx):
     # Template Substitutions
     substitutions = {
         "{spm_repos_name}": ctx.attr.name,
-        "{pkg_desc_json}": describe_result.stdout,
+        "{pkg_desc_json}": json.encode_indent(root_pkg_desc, indent = "  "),
         "{spm_modules}": "\n".join(modules),
         "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
     }
