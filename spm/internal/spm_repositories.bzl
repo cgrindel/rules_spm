@@ -4,7 +4,9 @@ def _spm_repositories_impl(repository_ctx):
     packages = repository_ctx.attr.dependencies
 
     # DEBUG BEGIN
-    print("*** CHUCK dependencies: ", dependencies)
+    print("*** CHUCK packages: ")
+    for idx, item in enumerate(packages):
+        print("*** CHUCK", idx, ":", item)
 
     # DEBUG END
     pass
