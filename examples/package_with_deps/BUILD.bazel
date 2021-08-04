@@ -7,7 +7,7 @@ swift_binary(
     deps = [
         "@apple_swift_log//:Logging",
         "@apple_swift_nio//:NIO",
-        "@vapor_async_kit//:AsyncKit",
+        "@cgrindel_pkg_with_deps//:FooKit",
     ],
 )
 

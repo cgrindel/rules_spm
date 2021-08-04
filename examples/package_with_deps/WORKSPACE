@@ -60,6 +60,13 @@ spm_repository(
     urls = ["https://github.com/apple/swift-nio/archive/2.30.0.tar.gz"],
 )
 
+spm_repository(
+    name = "cgrindel_pkg_with_deps",
+    sha256 = "3c527aa6d0ffdb82f7311118474c70aea8ae5fc7e147265f0c90d6e6ac113c0e",
+    strip_prefix = "rules_spm_example_pkg_with_deps-0.1.0",
+    urls = ["https://github.com/cgrindel/rules_spm_example_pkg_with_deps/archive/0.1.0.tar.gz"],
+)
+
 # spm_repository(
 #     name = "vapor_async_kit",
 #     sha256 = "db9f46e1f9728540269fe7fe3b76d9193851bc3a9af20d9ad98548c498e539ae",
