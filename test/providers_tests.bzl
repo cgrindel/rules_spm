@@ -1,15 +1,10 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load(
-    "//spm/internal:providers.bzl",
-    "create_clang_module",
-    "create_copy_info",
-    "create_swift_module",
-)
+load("//spm/internal:providers.bzl", "providers")
 
-def _create_swift_module_test(ctx):
+def _swift_module_test(ctx):
     env = unittest.begin(ctx)
 
-    result = create_swift_module(
+    result = providers.swift_module(
         "MyModule",
         ["first.o", "second.o"],
         "MyModule.swiftdoc",
@@ -31,12 +26,12 @@ def _create_swift_module_test(ctx):
 
     return unittest.end(env)
 
-create_swift_module_test = unittest.make(_create_swift_module_test)
+swift_module_test = unittest.make(_swift_module_test)
 
-def _create_clang_module_test(ctx):
+def _clang_module_test(ctx):
     env = unittest.begin(ctx)
 
-    result = create_clang_module(
+    result = providers.clang_module(
         "MyModule",
         ["first.o", "second.o"],
         ["hdrs"],
@@ -54,23 +49,23 @@ def _create_clang_module_test(ctx):
 
     return unittest.end(env)
 
-create_clang_module_test = unittest.make(_create_clang_module_test)
+clang_module_test = unittest.make(_clang_module_test)
 
-def _create_copy_test(ctx):
+def _copy_info_test(ctx):
     env = unittest.begin(ctx)
 
-    result = create_copy_info("src", "dest")
+    result = providers.copy_info("src", "dest")
     expected = struct(src = "src", dest = "dest")
     asserts.equals(env, expected, result)
 
     return unittest.end(env)
 
-create_copy_test = unittest.make(_create_copy_test)
+copy_info_test = unittest.make(_copy_info_test)
 
 def providers_test_suite():
     return unittest.suite(
         "providers_tests",
-        create_swift_module_test,
-        create_clang_module_test,
-        create_copy_test,
+        swift_module_test,
+        clang_module_test,
+        copy_info_test,
     )

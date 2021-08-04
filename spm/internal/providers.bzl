@@ -2,12 +2,12 @@ SPMPackageInfo = provider(
     doc = "Describes the information about the SPM package.",
     fields = {
         "name": "Name of the Swift package.",
-        "swift_modules": "`List` of values returned from `spm_common.create_swift_module`.",
-        "clang_modules": "`List` of values returned from `spm_common.create_clang_module`.",
+        "swift_modules": "`List` of values returned from `providers.swift_module`.",
+        "clang_modules": "`List` of values returned from `providers.clang_module`.",
     },
 )
 
-def create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, hdrs, all_outputs):
+def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, hdrs, all_outputs):
     """Creates a value representing the Swift module that is built from a package.
 
     Args:
@@ -31,7 +31,7 @@ def create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsource
         all_outputs = all_outputs,
     )
 
-def create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
+def _create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
     """Creates a value representing the Clang module that is built from a package.
 
     Args:
@@ -51,7 +51,7 @@ def create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
         all_outputs = all_outputs,
     )
 
-def create_copy_info(src, dest):
+def _create_copy_info(src, dest):
     """Creates a value describing a copy operation.
 
     Args:
@@ -65,3 +65,11 @@ def create_copy_info(src, dest):
         src = src,
         dest = dest,
     )
+
+# MARK: - Namespace
+
+providers = struct(
+    swift_module = _create_swift_module,
+    clang_module = _create_clang_module,
+    copy_info = _create_copy_info,
+)

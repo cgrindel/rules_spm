@@ -1,5 +1,7 @@
 // AsyncKit imports Logging and NIO for us.
 import AsyncKit
+import Logging
+import NIO
 
 let logger = Logger(label: "com.example.main")
 

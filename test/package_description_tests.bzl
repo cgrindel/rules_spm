@@ -1,30 +1,22 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load(
-    "//spm/internal:package_description.bzl",
-    "exported_library_targets",
-    "is_library_product",
-    "is_library_target",
-    "library_products",
-    "library_targets",
-    "parse_package_description_json",
-)
+load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
 load(":json_test_data.bzl", "package_description_json")
 
-def _parse_package_description_json_test(ctx):
+def _parse_json_test(ctx):
     env = unittest.begin(ctx)
 
-    pkg_desc = parse_package_description_json(package_description_json)
+    pkg_desc = pds.parse_json(package_description_json)
     asserts.equals(env, 3, len(pkg_desc["targets"]))
 
     return unittest.end(env)
 
-parse_package_description_json_test = unittest.make(_parse_package_description_json_test)
+parse_json_test = unittest.make(_parse_json_test)
 
 def _exported_library_targets_test(ctx):
     env = unittest.begin(ctx)
 
-    pkg_desc = parse_package_description_json(package_description_json)
-    result = exported_library_targets(pkg_desc)
+    pkg_desc = pds.parse_json(package_description_json)
+    result = pds.exported_library_targets(pkg_desc)
     asserts.equals(env, 1, len(result))
     asserts.equals(env, "Logging", result[0]["c99name"])
 
@@ -36,9 +28,9 @@ def _is_library_product_test(ctx):
     env = unittest.begin(ctx)
 
     product = {"type": {"library": {}}}
-    asserts.true(env, is_library_product(product))
+    asserts.true(env, pds.is_library_product(product))
     product = {"type": {"executable": None}}
-    asserts.false(env, is_library_product(product))
+    asserts.false(env, pds.is_library_product(product))
 
     return unittest.end(env)
 
@@ -54,7 +46,7 @@ def _library_products_test(ctx):
             {"name": "Bar", "type": {"library": {}}},
         ],
     }
-    result = library_products(pkg_desc)
+    result = pds.library_products(pkg_desc)
     asserts.equals(env, 2, len(result))
     product_names = [p["name"] for p in result]
     asserts.true(env, "Foo" in product_names)
@@ -63,7 +55,7 @@ def _library_products_test(ctx):
     pkg_desc = {
         "products": [],
     }
-    result = library_products(pkg_desc)
+    result = pds.library_products(pkg_desc)
     asserts.equals(env, 0, len(result))
 
     return unittest.end(env)
@@ -74,9 +66,9 @@ def _is_library_target_test(ctx):
     env = unittest.begin(ctx)
 
     target = {"type": "library"}
-    asserts.true(env, is_library_target(target))
+    asserts.true(env, pds.is_library_target(target))
     target["type"] = "executable"
-    asserts.false(env, is_library_target(target))
+    asserts.false(env, pds.is_library_target(target))
 
     return unittest.end(env)
 
@@ -92,7 +84,7 @@ def _library_targets_test(ctx):
             {"name": "Bar", "type": "library"},
         ],
     }
-    result = library_targets(pkg_desc)
+    result = pds.library_targets(pkg_desc)
     asserts.equals(env, 2, len(result))
     target_names = [t["name"] for t in result]
     asserts.true(env, "Foo" in target_names)
@@ -102,13 +94,24 @@ def _library_targets_test(ctx):
 
 library_targets_test = unittest.make(_library_targets_test)
 
+def _dependency_name_test(ctx):
+    env = unittest.begin(ctx)
+
+    pkg_dep = {"url": "https://github.com/swift-server/async-http-client.git"}
+    asserts.equals(env, "async-http-client", pds.dependency_name(pkg_dep))
+
+    return unittest.end(env)
+
+dependency_name_test = unittest.make(_dependency_name_test)
+
 def package_description_test_suite():
     unittest.suite(
         "package_description_tests",
-        parse_package_description_json_test,
+        parse_json_test,
         exported_library_targets_test,
         is_library_product_test,
         library_products_test,
         is_library_target_test,
         library_targets_test,
+        dependency_name_test,
     )
