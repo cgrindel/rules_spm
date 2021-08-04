@@ -8,18 +8,6 @@ package_path="${3}"
 build_path="${4}"
 shift 4
 
-# # DEBUG BEGIN
-# echo >&2 "*** CHUCK:  swift_worker: ${swift_worker}" 
-# echo >&2 "*** CHUCK:  build_config: ${build_config}" 
-# echo >&2 "*** CHUCK:  package_path: ${package_path}" 
-# echo >&2 "*** CHUCK:  build_path: ${build_path}" 
-# arg_cnt=0
-# for arg in "$@" ; do
-#   echo >&2 "*** CHUCK:  ${arg_cnt}: ${arg}" 
-#   arg_cnt=$((arg_cnt+1))
-# done
-# # DEBUG END
-
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
 fetched_dir="${package_path}/$(basename "${build_path}")"
