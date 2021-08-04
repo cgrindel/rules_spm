@@ -60,9 +60,9 @@ spm_repository(
     urls = ["https://github.com/apple/swift-nio/archive/2.30.0.tar.gz"],
 )
 
-spm_repository(
-    name = "vapor_async_kit",
-    sha256 = "db9f46e1f9728540269fe7fe3b76d9193851bc3a9af20d9ad98548c498e539ae",
-    strip_prefix = "async-kit-1.3.1",
-    urls = ["https://github.com/vapor/async-kit/archive/1.3.1.tar.gz"],
-)
+# spm_repository(
+#     name = "vapor_async_kit",
+#     sha256 = "db9f46e1f9728540269fe7fe3b76d9193851bc3a9af20d9ad98548c498e539ae",
+#     strip_prefix = "async-kit-1.3.1",
+#     urls = ["https://github.com/vapor/async-kit/archive/1.3.1.tar.gz"],
+# )
