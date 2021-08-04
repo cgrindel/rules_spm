@@ -156,7 +156,7 @@ def _spm_repository_impl(repository_ctx):
         modules.append(module_decl)
 
     pkg_descriptions = dict()
-    pkg_descriptions["_root"] = root_pkg_desc
+    pkg_descriptions[pds.root_pkg_name] = root_pkg_desc
 
     # Collect the package descriptions for the dependencies of the root package.
     checkouts_path = paths.join(build_dirname, "checkouts")
@@ -166,6 +166,7 @@ def _spm_repository_impl(repository_ctx):
         dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
         pkg_descriptions[dep_name] = dep_pkg_desc
 
+        # Look for custom headers in the dependencies
         dep_library_targets = pds.library_targets(dep_pkg_desc)
         for lib_target in dep_library_targets:
             if target["module_type"] == module_types.clang:

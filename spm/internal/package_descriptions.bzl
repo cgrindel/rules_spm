@@ -109,4 +109,5 @@ package_descriptions = struct(
     is_library_target = _is_library_target,
     library_targets = _library_targets,
     dependency_name = _dependency_name,
+    root_pkg_name = "_root",
 )

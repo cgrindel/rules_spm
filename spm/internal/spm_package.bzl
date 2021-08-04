@@ -30,7 +30,12 @@ def _ends_with_any(file, targets):
             return True
     return False
 
-def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir_path):
+def _declare_clang_target_files(
+        ctx,
+        target,
+        build_config_dirname,
+        modulemap_dir_path,
+        declare_o_files = True):
     all_build_outs = []
     other_outs = []
     copy_infos = []
@@ -87,9 +92,10 @@ def _declare_clang_target_files(ctx, target, build_config_dirname, modulemap_dir
 
     # Declare the Mach-O files.
     o_files = []
-    for src in target["sources"]:
-        o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
-    all_build_outs.extend(o_files)
+    if declare_o_files:
+        for src in target["sources"]:
+            o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
+        all_build_outs.extend(o_files)
 
     return _create_clang_module_build_info(
         module_name = module_name,
@@ -146,6 +152,7 @@ def _spm_package_impl(ctx):
     build_output_dirname = "spm_build"
     build_output_dir = ctx.actions.declare_directory(build_output_dirname)
     output_dir_path = build_output_dir.dirname
+    modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
 
     all_build_outs = []
 
@@ -156,19 +163,29 @@ def _spm_package_impl(ctx):
 
     # Parse the package description JSON.
     pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
-    pkg_desc = pkg_descs_dict["_root"]
+    root_pkg_desc = pkg_descs_dict[pds.root_pkg_name]
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
 
-    modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
-
-    targets = pds.library_targets(pkg_desc)
+    # Gather targets from all of the packages.
+    # targets = []
+    # for pkg_name in pkg_descs_dict:
+    #     pkg_desc = pkg_descs_dict[pkg_name]
+    #     targets.extend(pds.library_targets(pkg_desc))
 
     swift_module_infos = []
     clang_module_build_infos = []
     copy_infos = []
-    for target in targets:
+
+    # all_targets = []
+    # for pkg_name in pkg_descs_dict:
+    #     pkg_desc = pkg_descs_dict[pkg_name]
+    #     all_targets.extend(pds.library_targets(pkg_desc))
+    # for target in all_targets:
+
+    root_targets = pds.library_targets(root_pkg_desc)
+    for target in root_targets:
         module_type = target["module_type"]
         if module_type == module_types.swift:
             swift_module_info = _declare_swift_target_files(ctx, target, build_config_dirname)
@@ -180,6 +197,25 @@ def _spm_package_impl(ctx):
                 target,
                 build_config_dirname,
                 modulemap_dir_path,
+            )
+            clang_module_build_infos.append(clang_module_build_info)
+            all_build_outs.extend(clang_module_build_info.all_build_outs)
+            copy_infos.extend(clang_module_build_info.copy_infos)
+
+    # Make sure that headers and modulemaps for clang dependencies are copied.
+    clang_dep_targets = []
+    for pkg_name in pkg_descs_dict:
+        if pkg_name == pds.root_pkg_name:
+            continue
+        pkg_desc = pkg_descs_dict[pkg_name]
+        clang_targets = [t for t in pds.library_targets(pkg_desc) if t["module_type"] == module_types.clang]
+        for target in clang_targets:
+            clang_module_build_info = _declare_clang_target_files(
+                ctx,
+                target,
+                build_config_dirname,
+                modulemap_dir_path,
+                declare_o_files = False,
             )
             clang_module_build_infos.append(clang_module_build_info)
             all_build_outs.extend(clang_module_build_info.all_build_outs)
@@ -217,7 +253,7 @@ def _spm_package_impl(ctx):
     return [
         DefaultInfo(files = depset(all_outputs)),
         SPMPackageInfo(
-            name = pkg_desc["name"],
+            name = root_pkg_desc["name"],
             swift_modules = swift_module_infos,
             clang_modules = clang_module_infos,
         ),
