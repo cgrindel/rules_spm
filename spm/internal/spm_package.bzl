@@ -168,21 +168,9 @@ def _spm_package_impl(ctx):
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
 
-    # Gather targets from all of the packages.
-    # targets = []
-    # for pkg_name in pkg_descs_dict:
-    #     pkg_desc = pkg_descs_dict[pkg_name]
-    #     targets.extend(pds.library_targets(pkg_desc))
-
     swift_module_infos = []
     clang_module_build_infos = []
     copy_infos = []
-
-    # all_targets = []
-    # for pkg_name in pkg_descs_dict:
-    #     pkg_desc = pkg_descs_dict[pkg_name]
-    #     all_targets.extend(pds.library_targets(pkg_desc))
-    # for target in all_targets:
 
     root_targets = pds.library_targets(root_pkg_desc)
     for target in root_targets:
