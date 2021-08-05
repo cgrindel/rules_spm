@@ -140,8 +140,6 @@ def configure_spm_repository(repository_ctx):
     if resolve_result.return_code != 0:
         fail("Resolution of SPM packages for %s failed.\n%s" % (repository_ctx.attr.name, resolve_result.stderr))
 
-    # TODO: For each dependency, generate describe JSON and store it in a JSON struct?
-
     root_pkg_desc = pds.get(repository_ctx)
     root_pkg_targets = pds.library_targets(root_pkg_desc)
 
@@ -187,6 +185,10 @@ def configure_spm_repository(repository_ctx):
         "{spm_modules}": "\n".join(modules),
         "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
     }
+
+    # DEBUG BEGIN
+    print("*** CHUCK About to write BUILD.bazel")
+    # DEBUG END
 
     # Write BUILD.bazel file.
     repository_ctx.template(
