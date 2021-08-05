@@ -4,9 +4,7 @@ import PackageDescription
 
 let package = Package(
   name: "placeholder",
-  platforms: [
 {swift_platforms}
-  ],
   products: [
     .library(name: "Placeholder", targets: ["Placeholder"]),
   ],

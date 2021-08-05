@@ -1,11 +1,18 @@
 load(":packages.bzl", "packages")
+load(":spm_repository_common.bzl", "configure_spm_repository")
 
 _package_tpl = """\
-.package(url: "%s", from: "%s")\
+.package(name: "%s", url: "%s", from: "%s")\
 """
 
 _target_dep_tpl = """\
 .product(name: "%s", package: "%s")\
+"""
+
+_platforms_tpl = """\
+  platforms: [
+%s
+  ],
 """
 
 def _spm_repositories_impl(repository_ctx):
@@ -19,11 +26,17 @@ def _spm_repositories_impl(repository_ctx):
     # DEBUG END
 
     # Generate Package.swift
-    pkg_deps = [_package_tpl % (pkg.url, pkg.from_version) for pkg in pkgs]
+    swift_platforms = ""
+    if len(repository_ctx.attr.platforms) > 0:
+        swift_platforms = _platforms_tpl % (
+            ",\n".join(["    %s" % (p) for p in repository_ctx.attr.platforms])
+        )
+
+    pkg_deps = [_package_tpl % (pkg.spm_name, pkg.url, pkg.from_version) for pkg in pkgs]
     target_deps = [_target_dep_tpl % (pname, pkg.name) for pkg in pkgs for pname in pkg.products]
     substitutions = {
         "{swift_tools_version}": repository_ctx.attr.swift_version,
-        "{swift_platforms}": ",\n".join(["    %s" % (p) for p in repository_ctx.attr.platforms]),
+        "{swift_platforms}": swift_platforms,
         "{package_dependencies}": ",\n".join(["    %s" % (d) for d in pkg_deps]),
         "{target_dependencies}": ",\n".join(["      %s" % (d) for d in target_deps]),
     }
@@ -42,8 +55,7 @@ def _spm_repositories_impl(repository_ctx):
     )
 
     # Configure the SPM package
-
-    pass
+    configure_spm_repository(repository_ctx)
 
 spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
