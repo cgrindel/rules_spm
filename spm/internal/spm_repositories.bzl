@@ -35,6 +35,11 @@ def _spm_repositories_impl(repository_ctx):
     )
 
     # Create barebones source files
+    repository_ctx.file(
+        "Sources/Placeholder/Placeholder.swift",
+        content = "# Intentionally blank",
+        executable = False,
+    )
 
     # Configure the SPM package
 
