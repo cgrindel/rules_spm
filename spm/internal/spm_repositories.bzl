@@ -5,22 +5,77 @@ load(":packages.bzl", "packages")
 load(":files.bzl", "files")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 
-_package_tpl = """\
-.package(name: "%s", url: "%s", from: "%s")\
+# MARK: - Module Declaration Functions
+
+_spm_swift_module_tpl = """
+spm_swift_module(
+    name = "%s",
+    package = "@%s//:build",
+)
 """
 
-_target_dep_tpl = """\
-.product(name: "%s", package: "%s")\
-"""
-
-_platforms_tpl = """\
-  platforms: [
+_spm_clang_module_tpl = """
+spm_clang_module(
+    name = "%s",
+    package = "@%s//:build",
+    hdrs = [
 %s
-  ],
+    ],
+)
 """
 
-_build_dirname = "spm_build"
-_checkouts_path = paths.join(_build_dirname, "checkouts")
+def _create_spm_swift_module_decl(repository_ctx, target):
+    """Returns the spm_swift_module declaration for this Swift target.
+    """
+    module_name = target["c99name"]
+    return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name)
+
+def _create_spm_clang_module_decl(repository_ctx, custom_hdrs_dict, target):
+    # module_name = target["c99name"]
+    # src_path = paths.join(pkg_root_path, target["path"])
+    # module_paths = _list_files_under(repository_ctx, src_path)
+    # custom_hdrs = []
+
+    # modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
+    # modulemap_paths_len = len(modulemap_paths)
+    # if modulemap_paths_len > 1:
+    #     fail("Found more than one module.modulemap file. %" % (modulemap_paths))
+
+    # # If a modulemap was provided, read it for header info.
+    # # Otherwise, use all of the header files under the "include" directory.
+    # if modulemap_paths_len == 1:
+    #     hdr_paths = _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_paths[0])
+    #     custom_hdrs = hdr_paths
+    # else:
+    #     hdr_paths = [p for p in module_paths if _is_include_hdr_path(p)]
+
+    # # deps_str = _create_deps_str(target)
+    # hdrs_str = _create_hdrs_str(hdr_paths)
+
+    # return _spm_clang_module_tpl % (module_name, hdrs_str), custom_hdrs
+    pass
+
+def _generate_bazel_pkg(repository_ctx, custom_hdrs_dict, pkg_desc):
+    pkg_name = pkg_desc["name"]
+    bld_path = "%s/BUILD.bazel" % (pkg_name)
+    exported_targets = pds.exported_library_targets(pkg_desc)
+
+    module_decls = []
+    for target in exported_targets:
+        if pds.is_clang_target(target):
+            module_decls.append(_create_spm_clang_module_decl(repository_ctx, custom_hdrs_dict, target))
+        else:
+            module_decls.append(_create_spm_swift_module_decl(repository_ctx, target))
+
+    bld_content = _bazel_pkg_hdr + "\n\n".join(module_decls)
+    repository_ctx.file(bld_path, content = bld_content, executable = False)
+
+# MARK: - Other Stuff
+
+_bazel_pkg_hdr = """
+load("@cgrindel_rules_spm//spm:spm.bzl", "spm_swift_module", "spm_clang_module")
+
+"""
 
 def _get_dep_pkg_desc(repository_ctx, pkg_dep):
     """Returns the name and the package description for the specified dependency.
@@ -37,6 +92,8 @@ def _get_dep_pkg_desc(repository_ctx, pkg_dep):
     dep_checkout_path = paths.join(_checkouts_path, dep_name)
     dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
     return (dep_name, dep_pkg_desc)
+
+# MARK: - Clang Custom Headers Functions
 
 def _is_modulemap_path(path):
     basename = paths.basename(path)
@@ -79,6 +136,8 @@ def _get_custom_hdrs_for_clang_target(repository_ctx, target, pkg_root_path = ""
         fail("Found more than one module.modulemap file. %" % (modulemap_paths))
     return _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_paths[0])
 
+# MARK: - Root BUILD.bazel Generation
+
 def _create_hdrs_str(hdr_paths):
     hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
     return "\n".join(hdrs)
@@ -94,6 +153,62 @@ def _create_clang_module_headers_entry(target_name, hdr_paths):
 def _create_clang_module_headers(hdrs_dict):
     entries = [_create_clang_module_headers_entry(k, hdrs_dict[k]) for k in hdrs_dict]
     return "\n".join(entries)
+
+def _generate_root_bld_file(repository_ctx, pkg_descriptions, custom_hdrs_dict):
+    substitutions = {
+        "{spm_repos_name}": repository_ctx.attr.name,
+        "{pkg_descs_json}": json.encode_indent(pkg_descriptions, indent = "  "),
+        "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
+    }
+    repository_ctx.template(
+        "BUILD.bazel",
+        repository_ctx.attr._root_build_tpl,
+        substitutions = substitutions,
+        executable = False,
+    )
+
+# MARK: - Package.swift Generation
+
+_package_tpl = """\
+.package(name: "%s", url: "%s", from: "%s")\
+"""
+
+_target_dep_tpl = """\
+.product(name: "%s", package: "%s")\
+"""
+
+_platforms_tpl = """\
+  platforms: [
+%s
+  ],
+"""
+
+def _generate_package_swift_file(repository_ctx, pkgs):
+    swift_platforms = ""
+    if len(repository_ctx.attr.platforms) > 0:
+        swift_platforms = _platforms_tpl % (
+            ",\n".join(["    %s" % (p) for p in repository_ctx.attr.platforms])
+        )
+
+    pkg_deps = [_package_tpl % (pkg.spm_name, pkg.url, pkg.from_version) for pkg in pkgs]
+    target_deps = [_target_dep_tpl % (pname, pkg.spm_name) for pkg in pkgs for pname in pkg.products]
+    substitutions = {
+        "{swift_tools_version}": repository_ctx.attr.swift_version,
+        "{swift_platforms}": swift_platforms,
+        "{package_dependencies}": ",\n".join(["    %s" % (d) for d in pkg_deps]),
+        "{target_dependencies}": ",\n".join(["      %s" % (d) for d in target_deps]),
+    }
+    repository_ctx.template(
+        "Package.swift",
+        repository_ctx.attr._package_swift_tpl,
+        substitutions = substitutions,
+        executable = False,
+    )
+
+# MARK: - Rule Implementation
+
+_build_dirname = "spm_build"
+_checkouts_path = paths.join(_build_dirname, "checkouts")
 
 def _configure_spm_repository(repository_ctx):
     # Resolve/fetch the dependencies.
@@ -131,20 +246,11 @@ def _configure_spm_repository(repository_ctx):
             dep_target_name = "%s/%s" % (dep_name, clang_target["name"])
             custom_hdrs_dict[dep_target_name] = custom_hdrs
 
-    # Template Substitutions
-    substitutions = {
-        "{spm_repos_name}": repository_ctx.attr.name,
-        "{pkg_descs_json}": json.encode_indent(pkg_descriptions, indent = "  "),
-        "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
-    }
+        # Generate Bazel targets for the library products
+        _generate_bazel_pkg(repository_ctx, custom_hdrs_dict, dep_pkg_desc)
 
     # Write BUILD.bazel file.
-    repository_ctx.template(
-        "BUILD.bazel",
-        repository_ctx.attr._root_build_tpl,
-        substitutions = substitutions,
-        executable = False,
-    )
+    _generate_root_bld_file(repository_ctx, pkg_descriptions, custom_hdrs_dict)
 
 def _spm_repositories_impl(repository_ctx):
     pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
@@ -157,26 +263,7 @@ def _spm_repositories_impl(repository_ctx):
     # DEBUG END
 
     # Generate Package.swift
-    swift_platforms = ""
-    if len(repository_ctx.attr.platforms) > 0:
-        swift_platforms = _platforms_tpl % (
-            ",\n".join(["    %s" % (p) for p in repository_ctx.attr.platforms])
-        )
-
-    pkg_deps = [_package_tpl % (pkg.spm_name, pkg.url, pkg.from_version) for pkg in pkgs]
-    target_deps = [_target_dep_tpl % (pname, pkg.spm_name) for pkg in pkgs for pname in pkg.products]
-    substitutions = {
-        "{swift_tools_version}": repository_ctx.attr.swift_version,
-        "{swift_platforms}": swift_platforms,
-        "{package_dependencies}": ",\n".join(["    %s" % (d) for d in pkg_deps]),
-        "{target_dependencies}": ",\n".join(["      %s" % (d) for d in target_deps]),
-    }
-    repository_ctx.template(
-        "Package.swift",
-        repository_ctx.attr._package_swift_tpl,
-        substitutions = substitutions,
-        executable = False,
-    )
+    _generate_package_swift_file(repository_ctx, pkgs)
 
     # Create barebones source files
     repository_ctx.file(
