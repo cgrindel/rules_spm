@@ -14,12 +14,11 @@ SPMPackageInfo = provider(
     },
 )
 
-def _create_swift_module(module_name, pkg_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, hdrs, all_outputs):
+def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, hdrs, all_outputs):
     """Creates a value representing the Swift module that is built from a package.
 
     Args:
         module_name: Name of the Swift module.
-        pkg_name: Name of the package which declares the module.
         o_files: The Mach-O files that are built by SPM.
         swiftdoc: The .swiftdoc file that is built by SPM.
         swiftmodule: The .swiftmodule file that is built by SPM.
@@ -31,7 +30,6 @@ def _create_swift_module(module_name, pkg_name, o_files, swiftdoc, swiftmodule, 
     """
     return struct(
         module_name = module_name,
-        pkg_name = pkg_name,
         o_files = o_files,
         swiftdoc = swiftdoc,
         swiftmodule = swiftmodule,
@@ -40,12 +38,11 @@ def _create_swift_module(module_name, pkg_name, o_files, swiftdoc, swiftmodule, 
         all_outputs = all_outputs,
     )
 
-def _create_clang_module(module_name, pkg_name, o_files, hdrs, modulemap, all_outputs):
+def _create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
     """Creates a value representing the Clang module that is built from a package.
 
     Args:
         module_name: Name of the Swift module.
-        pkg_name: Name of the package which declares the module.
         o_files: The Mach-O files that are built by SPM.
         hdrs: The header files.
         all_outputs: All of the output files that are declared for the module.
@@ -55,7 +52,6 @@ def _create_clang_module(module_name, pkg_name, o_files, hdrs, modulemap, all_ou
     """
     return struct(
         module_name = module_name,
-        pkg_name = pkg_name,
         o_files = o_files,
         hdrs = hdrs,
         modulemap = modulemap,

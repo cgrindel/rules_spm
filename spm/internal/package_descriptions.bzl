@@ -104,6 +104,17 @@ def _is_clang_target(target):
     """
     return target["module_type"] == module_types.clang
 
+def _is_swift_target(target):
+    """Returns True if the specified target is a swift module. Otherwise, False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a swift module.
+    """
+    return target["module_type"] == module_types.swift
+
 # MARK: - Namespace
 
 module_types = struct(
@@ -123,6 +134,7 @@ package_descriptions = struct(
     library_targets = _library_targets,
     dependency_name = _dependency_name,
     is_clang_target = _is_clang_target,
+    is_swift_target = _is_swift_target,
     # Constants
     root_pkg_name = "_root",
 )
