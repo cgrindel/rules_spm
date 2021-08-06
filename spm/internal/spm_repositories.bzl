@@ -3,7 +3,6 @@ load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":spm_common.bzl", "spm_common")
-load(":files.bzl", "files")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 
 # MARK: - Module Declaration Functions
@@ -116,9 +115,19 @@ def _is_include_hdr_path(path):
     dirname = paths.basename(paths.dirname(path))
     return dirname == "include" and ext == ".h"
 
+def _list_files_under(repository_ctx, path):
+    exec_result = repository_ctx.execute(
+        ["find", path],
+        quiet = True,
+    )
+    if exec_result.return_code != 0:
+        fail("Failed to list files in %s. stderr:\n%s" % (path, exec_result.stderr))
+    paths = exec_result.stdout.splitlines()
+    return paths
+
 def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     src_path = paths.join(pkg_root_path, target["path"])
-    module_paths = files.list_files_under(repository_ctx, src_path)
+    module_paths = _list_files_under(repository_ctx, src_path)
 
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
     modulemap_paths_len = len(modulemap_paths)

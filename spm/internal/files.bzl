@@ -22,17 +22,3 @@ def is_modulemap_file(file):
 
 def contains_path(file, path):
     return file.path.find(path) > -1
-
-def _list_files_under(repository_ctx, path):
-    exec_result = repository_ctx.execute(
-        ["find", path],
-        quiet = True,
-    )
-    if exec_result.return_code != 0:
-        fail("Failed to list files in %s. stderr:\n%s" % (path, exec_result.stderr))
-    paths = exec_result.stdout.splitlines()
-    return paths
-
-files = struct(
-    list_files_under = _list_files_under,
-)
