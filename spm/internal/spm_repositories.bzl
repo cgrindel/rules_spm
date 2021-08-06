@@ -30,32 +30,12 @@ def _create_spm_swift_module_decl(repository_ctx, target):
     module_name = target["c99name"]
     return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name)
 
-def _create_spm_clang_module_decl(repository_ctx, custom_hdrs_dict, target):
-    # module_name = target["c99name"]
-    # src_path = paths.join(pkg_root_path, target["path"])
-    # module_paths = _list_files_under(repository_ctx, src_path)
-    # custom_hdrs = []
+def _create_spm_clang_module_decl(repository_ctx, target, clang_hdrs):
+    module_name = target["c99name"]
+    hdrs_str = _create_hdrs_str(clang_hdrs)
+    return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, hdrs_str)
 
-    # modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
-    # modulemap_paths_len = len(modulemap_paths)
-    # if modulemap_paths_len > 1:
-    #     fail("Found more than one module.modulemap file. %" % (modulemap_paths))
-
-    # # If a modulemap was provided, read it for header info.
-    # # Otherwise, use all of the header files under the "include" directory.
-    # if modulemap_paths_len == 1:
-    #     hdr_paths = _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_paths[0])
-    #     custom_hdrs = hdr_paths
-    # else:
-    #     hdr_paths = [p for p in module_paths if _is_include_hdr_path(p)]
-
-    # # deps_str = _create_deps_str(target)
-    # hdrs_str = _create_hdrs_str(hdr_paths)
-
-    # return _spm_clang_module_tpl % (module_name, hdrs_str), custom_hdrs
-    pass
-
-def _generate_bazel_pkg(repository_ctx, custom_hdrs_dict, pkg_desc):
+def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc):
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
     exported_targets = pds.exported_library_targets(pkg_desc)
@@ -63,7 +43,13 @@ def _generate_bazel_pkg(repository_ctx, custom_hdrs_dict, pkg_desc):
     module_decls = []
     for target in exported_targets:
         if pds.is_clang_target(target):
-            module_decls.append(_create_spm_clang_module_decl(repository_ctx, custom_hdrs_dict, target))
+            clang_hdrs_key = _create_clang_hdrs_key(pkg_name, target["name"])
+            clang_hdrs = clang_hdrs_dict.get(clang_hdrs_key, default = [])
+            module_decls.append(_create_spm_clang_module_decl(
+                repository_ctx,
+                target,
+                clang_hdrs,
+            ))
         else:
             module_decls.append(_create_spm_swift_module_decl(repository_ctx, target))
 
@@ -74,7 +60,6 @@ def _generate_bazel_pkg(repository_ctx, custom_hdrs_dict, pkg_desc):
 
 _bazel_pkg_hdr = """
 load("@cgrindel_rules_spm//spm:spm.bzl", "spm_swift_module", "spm_clang_module")
-
 """
 
 def _get_dep_pkg_desc(repository_ctx, pkg_dep):
@@ -125,16 +110,29 @@ def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
 
     return hdrs
 
-def _get_custom_hdrs_for_clang_target(repository_ctx, target, pkg_root_path = ""):
+def _is_include_hdr_path(path):
+    root, ext = paths.split_extension(path)
+    dirname = paths.basename(paths.dirname(path))
+    return dirname == "include" and ext == ".h"
+
+def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     src_path = paths.join(pkg_root_path, target["path"])
     module_paths = files.list_files_under(repository_ctx, src_path)
+
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
     modulemap_paths_len = len(modulemap_paths)
-    if modulemap_paths_len == 0:
-        return []
-    elif modulemap_paths_len > 1:
+    if modulemap_paths_len > 1:
         fail("Found more than one module.modulemap file. %" % (modulemap_paths))
-    return _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_paths[0])
+
+    # If a modulemap was provided, read it for header info.
+    # Otherwise, use all of the header files under the "include" directory.
+    if modulemap_paths_len == 1:
+        return _get_hdr_paths_from_modulemap(
+            repository_ctx,
+            module_paths,
+            modulemap_paths[0],
+        )
+    return [p for p in module_paths if _is_include_hdr_path(p)]
 
 # MARK: - Root BUILD.bazel Generation
 
@@ -154,11 +152,11 @@ def _create_clang_module_headers(hdrs_dict):
     entries = [_create_clang_module_headers_entry(k, hdrs_dict[k]) for k in hdrs_dict]
     return "\n".join(entries)
 
-def _generate_root_bld_file(repository_ctx, pkg_descriptions, custom_hdrs_dict):
+def _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict):
     substitutions = {
         "{spm_repos_name}": repository_ctx.attr.name,
         "{pkg_descs_json}": json.encode_indent(pkg_descriptions, indent = "  "),
-        "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
+        "{clang_module_headers}": _create_clang_module_headers(clang_hdrs_dict),
     }
     repository_ctx.template(
         "BUILD.bazel",
@@ -210,6 +208,9 @@ def _generate_package_swift_file(repository_ctx, pkgs):
 _build_dirname = "spm_build"
 _checkouts_path = paths.join(_build_dirname, "checkouts")
 
+def _create_clang_hdrs_key(pkg_name, target_name):
+    return "%s/%s" % (pkg_name, target_name)
+
 def _configure_spm_repository(repository_ctx):
     # Resolve/fetch the dependencies.
     resolve_result = repository_ctx.execute(
@@ -222,7 +223,7 @@ def _configure_spm_repository(repository_ctx):
         ))
 
     pkg_descriptions = dict()
-    custom_hdrs_dict = dict()
+    clang_hdrs_dict = dict()
 
     root_pkg_desc = pds.get(repository_ctx)
     pkg_descriptions[pds.root_pkg_name] = root_pkg_desc
@@ -236,21 +237,19 @@ def _configure_spm_repository(repository_ctx):
         # Look for custom header declarations in the clang targets
         clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
         for clang_target in clang_targets:
-            custom_hdrs = _get_custom_hdrs_for_clang_target(
+            clang_hdrs = _get_clang_hdrs_for_target(
                 repository_ctx,
                 clang_target,
                 pkg_root_path = paths.join(_checkouts_path, dep_name),
             )
-            if custom_hdrs == []:
-                continue
-            dep_target_name = "%s/%s" % (dep_name, clang_target["name"])
-            custom_hdrs_dict[dep_target_name] = custom_hdrs
+            clang_hdrs_key = _create_clang_hdrs_key(dep_name, clang_target["name"])
+            clang_hdrs_dict[clang_hdrs_key] = clang_hdrs
 
         # Generate Bazel targets for the library products
-        _generate_bazel_pkg(repository_ctx, custom_hdrs_dict, dep_pkg_desc)
+        _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, dep_pkg_desc)
 
     # Write BUILD.bazel file.
-    _generate_root_bld_file(repository_ctx, pkg_descriptions, custom_hdrs_dict)
+    _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict)
 
 def _spm_repositories_impl(repository_ctx):
     pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
