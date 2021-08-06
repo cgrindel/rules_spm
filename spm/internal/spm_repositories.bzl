@@ -138,14 +138,17 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
 
 def _create_hdrs_str(hdr_paths):
     hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
+
     return "\n".join(hdrs)
 
 def _create_clang_module_headers_entry(target_name, hdr_paths):
     entry_tpl = """\
         "%s": [
     %s
-        ],"""
+        ],
+    """
     hdrs_str = _create_hdrs_str(hdr_paths)
+
     return entry_tpl % (target_name, hdrs_str)
 
 def _create_clang_module_headers(hdrs_dict):
@@ -253,13 +256,6 @@ def _configure_spm_repository(repository_ctx):
 
 def _spm_repositories_impl(repository_ctx):
     pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
-
-    # DEBUG BEGIN
-    print("*** CHUCK pkgs: ")
-    for idx, item in enumerate(pkgs):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
 
     # Generate Package.swift
     _generate_package_swift_file(repository_ctx, pkgs)
