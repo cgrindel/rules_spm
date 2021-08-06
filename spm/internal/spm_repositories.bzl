@@ -67,7 +67,7 @@ def _generate_bazel_pkg(repository_ctx, custom_hdrs_dict, pkg_desc):
         else:
             module_decls.append(_create_spm_swift_module_decl(repository_ctx, target))
 
-    bld_content = _bazel_pkg_hdr + "\n\n".join(module_decls)
+    bld_content = _bazel_pkg_hdr + "".join(module_decls)
     repository_ctx.file(bld_path, content = bld_content, executable = False)
 
 # MARK: - Other Stuff
