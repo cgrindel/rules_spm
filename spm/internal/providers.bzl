@@ -4,6 +4,7 @@ SPMPackageInfo = provider(
         "name": "Name of the Swift package.",
         "swift_modules": "`List` of values returned from `providers.swift_module`.",
         "clang_modules": "`List` of values returned from `providers.clang_module`.",
+        "dependencies": "A `dict` where the keys are the dep name and the value is an SPMPackageInfo.",
     },
 )
 

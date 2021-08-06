@@ -104,7 +104,16 @@ def _dependency_name_test(ctx):
 
 dependency_name_test = unittest.make(_dependency_name_test)
 
-def package_description_test_suite():
+def _is_clang_target_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+is_clang_target_test = unittest.make(_is_clang_target_test)
+
+def package_descriptions_test_suite():
     unittest.suite(
         "package_description_tests",
         parse_json_test,
@@ -114,4 +123,5 @@ def package_description_test_suite():
         is_library_target_test,
         library_targets_test,
         dependency_name_test,
+        is_clang_target_test,
     )

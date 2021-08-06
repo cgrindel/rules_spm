@@ -93,6 +93,17 @@ def _dependency_name(pkg_dep):
     name, ext = paths.split_extension(basename)
     return name
 
+def _is_clang_target(target):
+    """Returns True if the specified target is a clang module. Otherwise, False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a clang module.
+    """
+    return target["module_type"] == module_types.clang
+
 # MARK: - Namespace
 
 module_types = struct(
@@ -103,11 +114,15 @@ module_types = struct(
 package_descriptions = struct(
     parse_json = _parse_json,
     get = _get_package_description,
+    # Library Functions
     is_library_product = _is_library_product,
     library_products = _library_products,
     exported_library_targets = _exported_library_targets,
+    # Target Functions
     is_library_target = _is_library_target,
     library_targets = _library_targets,
     dependency_name = _dependency_name,
+    is_clang_target = _is_clang_target,
+    # Constants
     root_pkg_name = "_root",
 )
