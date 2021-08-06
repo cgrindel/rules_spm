@@ -28,5 +28,4 @@ spm_package(
 {clang_module_headers}
     }
 )
-{spm_modules}
 

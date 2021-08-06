@@ -55,7 +55,7 @@ def _spm_repositories_impl(repository_ctx):
     )
 
     # Configure the SPM package
-    configure_spm_repository(repository_ctx)
+    configure_spm_repository(repository_ctx, pkgs)
 
 spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
@@ -79,8 +79,8 @@ spm_repositories = repository_rule(
         "_package_swift_tpl": attr.label(
             default = "//spm/internal:Package.swift.tpl",
         ),
-        "_build_tpl": attr.label(
-            default = "//spm/internal:BUILD.bazel.tpl",
+        "_root_build_tpl": attr.label(
+            default = "//spm/internal:root.BUILD.bazel.tpl",
         ),
     },
 )

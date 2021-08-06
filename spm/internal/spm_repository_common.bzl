@@ -3,13 +3,33 @@ load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_types")
 load("//spm/internal:package_descriptions.bzl", "module_types", pds = "package_descriptions")
 
+# SPM_SWIFT_MODULE_TPL = """
+# spm_swift_module(
+#     name = "%s",
+#     package = ":build",
+#     deps = [
+# %s
+#     ],
+# )
+# """
+
+# SPM_CLANG_MODULE_TPL = """
+# spm_clang_module(
+#     name = "%s",
+#     package = ":build",
+#     hdrs = [
+# %s
+#     ],
+#     deps = [
+# %s
+#     ],
+# )
+# """
+
 SPM_SWIFT_MODULE_TPL = """
 spm_swift_module(
     name = "%s",
-    package = ":build",
-    deps = [
-%s
-    ],
+    package = "@%s//:build",
 )
 """
 
@@ -20,16 +40,32 @@ spm_clang_module(
     hdrs = [
 %s
     ],
-    deps = [
-%s
-    ],
 )
 """
 
-def _create_deps_str(target):
-    deps = target.get("target_dependencies", default = [])
-    deps = ["        \":%s\"," % (dep) for dep in deps]
-    return "\n".join(deps)
+_bazel_pkg_hdr = """
+load("@cgrindel_rules_spm//spm:spm.bzl", "spm_swift_module")
+
+"""
+
+def _create_bazel_pkg(repository_ctx, pkg):
+    """Creates a Bazel package for the provide SPM package.
+
+    Args:
+      pkg: A `struct` as created by `packages.create()`.
+
+    Returns:
+      None.
+    """
+    bld_path = "%s/BUILD.bazel" % (pkg.bzl_name)
+    pkg_targets = [_create_spm_swift_module_decl(repository_ctx, p) for p in pkg.products]
+    bld_content = _bazel_pkg_hdr + "\n\n".join(pkg_targets)
+    repository_ctx.file(bld_path, content = bld_content, executable = False)
+
+# def _create_deps_str(target):
+#     deps = target.get("target_dependencies", default = [])
+#     deps = ["        \":%s\"," % (dep) for dep in deps]
+#     return "\n".join(deps)
 
 def _create_hdrs_str(hdr_paths):
     hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
@@ -47,12 +83,17 @@ def _create_clang_module_headers(hdrs_dict):
     entries = [_create_clang_module_headers_entry(k, hdrs_dict[k]) for k in hdrs_dict]
     return "\n".join(entries)
 
-def _create_spm_swift_module_decl(repository_ctx, target):
+# def _create_spm_swift_module_decl(repository_ctx, target):
+#     """Returns the spm_swift_module declaration for this Swift target.
+#     """
+#     module_name = target["c99name"]
+#     deps_str = _create_deps_str(target)
+#     return SPM_SWIFT_MODULE_TPL % (module_name, deps_str)
+
+def _create_spm_swift_module_decl(repository_ctx, product_name):
     """Returns the spm_swift_module declaration for this Swift target.
     """
-    module_name = target["c99name"]
-    deps_str = _create_deps_str(target)
-    return SPM_SWIFT_MODULE_TPL % (module_name, deps_str)
+    return SPM_SWIFT_MODULE_TPL % (product_name, repository_ctx.attr.name)
 
 def _list_files_under(repository_ctx, path):
     exec_result = repository_ctx.execute(
@@ -99,9 +140,10 @@ def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
 
     return hdrs
 
-def _create_spm_clang_module_decl(repository_ctx, target):
+def _create_spm_clang_module_decl(repository_ctx, target, pkg_root_path = ""):
     module_name = target["c99name"]
-    module_paths = _list_files_under(repository_ctx, target["path"])
+    src_path = paths.join(pkg_root_path, target["path"])
+    module_paths = _list_files_under(repository_ctx, src_path)
     custom_hdrs = []
 
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
@@ -117,18 +159,19 @@ def _create_spm_clang_module_decl(repository_ctx, target):
     else:
         hdr_paths = [p for p in module_paths if _is_include_hdr_path(p)]
 
-    deps_str = _create_deps_str(target)
+    # deps_str = _create_deps_str(target)
     hdrs_str = _create_hdrs_str(hdr_paths)
 
-    return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str, deps_str), custom_hdrs
+    return SPM_CLANG_MODULE_TPL % (module_name, hdrs_str), custom_hdrs
 
-def configure_spm_repository(repository_ctx):
+def configure_spm_repository(repository_ctx, pkgs):
     """Configures an SPM repository after it has been downloaded or linked.
 
     This is called by the spm_repository and spm_local_repository rules.
 
     Args:
         repository_ctx: A `repository_ctx`.
+        pkgs: The SPM packages to load.
 
     Returns:
         None.
@@ -143,19 +186,20 @@ def configure_spm_repository(repository_ctx):
     root_pkg_desc = pds.get(repository_ctx)
     root_pkg_targets = pds.library_targets(root_pkg_desc)
 
-    # Collect the modules for the root/target package.
     custom_hdrs_dict = dict()
-    modules = []
-    for target in root_pkg_targets:
-        module_type = target["module_type"]
-        if module_type == module_types.swift:
-            module_decl = _create_spm_swift_module_decl(repository_ctx, target)
-        elif module_type == module_types.clang:
-            module_decl, custom_hdrs = _create_spm_clang_module_decl(repository_ctx, target)
-            if len(custom_hdrs) > 0:
-                target_name = target["name"]
-                custom_hdrs_dict[target_name] = custom_hdrs
-        modules.append(module_decl)
+
+    # Collect the modules for the root/target package.
+    # modules = []
+    # for target in root_pkg_targets:
+    #     module_type = target["module_type"]
+    #     if module_type == module_types.swift:
+    #         module_decl = _create_spm_swift_module_decl(repository_ctx, target)
+    #     elif module_type == module_types.clang:
+    #         module_decl, custom_hdrs = _create_spm_clang_module_decl(repository_ctx, target)
+    #         if len(custom_hdrs) > 0:
+    #             target_name = target["name"]
+    #             custom_hdrs_dict[target_name] = custom_hdrs
+    #     modules.append(module_decl)
 
     pkg_descriptions = dict()
     pkg_descriptions[pds.root_pkg_name] = root_pkg_desc
@@ -163,6 +207,10 @@ def configure_spm_repository(repository_ctx):
     # Collect the package descriptions for the dependencies of the root package.
     checkouts_path = paths.join(build_dirname, "checkouts")
     for pkg_dep in root_pkg_desc["dependencies"]:
+        # DEBUG BEGIN
+        print("*** CHUCK pkg_dep: ", pkg_dep)
+
+        # DEBUG END
         dep_name = pds.dependency_name(pkg_dep)
         dep_checkout_path = paths.join(checkouts_path, dep_name)
         dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
@@ -171,9 +219,13 @@ def configure_spm_repository(repository_ctx):
         # Look for custom headers in the dependencies
         dep_library_targets = pds.library_targets(dep_pkg_desc)
         for lib_target in dep_library_targets:
-            if target["module_type"] == module_types.clang:
+            if lib_target["module_type"] == module_types.clang:
                 # We just need the custom headers. So, ignore the actual declaration
-                dep_module_decl, dep_custom_hdrs = _create_spm_swift_module_decl(repository_ctx, lib_target)
+                dep_module_decl, dep_custom_hdrs = _create_spm_clang_module_decl(
+                    repository_ctx,
+                    lib_target,
+                    pkg_root_path = paths.join(checkouts_path, pkg_dep["name"]),
+                )
                 if len(dep_custom_hdrs) > 0:
                     dep_target_name = lib_target["name"]
                     custom_hdrs_dict[dep_target_name] = dep_custom_hdrs
@@ -182,18 +234,17 @@ def configure_spm_repository(repository_ctx):
     substitutions = {
         "{spm_repos_name}": repository_ctx.attr.name,
         "{pkg_descs_json}": json.encode_indent(pkg_descriptions, indent = "  "),
-        "{spm_modules}": "\n".join(modules),
         "{clang_module_headers}": _create_clang_module_headers(custom_hdrs_dict),
     }
-
-    # DEBUG BEGIN
-    print("*** CHUCK About to write BUILD.bazel")
-    # DEBUG END
 
     # Write BUILD.bazel file.
     repository_ctx.template(
         "BUILD.bazel",
-        repository_ctx.attr._build_tpl,
+        repository_ctx.attr._root_build_tpl,
         substitutions = substitutions,
         executable = False,
     )
+
+    # Create Bazel targets for each of the dependencies
+    for pkg in pkgs:
+        _create_bazel_pkg(repository_ctx, pkg)

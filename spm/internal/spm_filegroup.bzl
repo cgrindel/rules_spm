@@ -13,6 +13,17 @@ def _spm_filegroup_impl(ctx):
     pkg_info = ctx.attr.package[SPMPackageInfo]
 
     module_name = ctx.attr.module_name
+
+    # DEBUG BEGIN
+    print("*** CHUCK module_name: ", module_name)
+    print("*** CHUCK pkg_info.swift_modules: ")
+    for idx, item in enumerate(pkg_info.swift_modules):
+        print("*** CHUCK", idx, ":", item)
+    print("*** CHUCK pkg_info.clang_modules: ")
+    for idx, item in enumerate(pkg_info.clang_modules):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
     module_info = _get_module_info(pkg_info, module_name)
 
     output = []
