@@ -20,6 +20,8 @@ def _exported_library_targets_test(ctx):
     asserts.equals(env, 1, len(result))
     asserts.equals(env, "Logging", result[0]["c99name"])
 
+    unittest.fail(env, "Add tests filtering by product names.")
+
     return unittest.end(env)
 
 exported_library_targets_test = unittest.make(_exported_library_targets_test)

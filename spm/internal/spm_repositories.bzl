@@ -35,10 +35,20 @@ def _create_spm_clang_module_decl(repository_ctx, target, clang_hdrs):
     hdrs_str = _create_hdrs_str(clang_hdrs)
     return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, hdrs_str)
 
-def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc):
+def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc, product_names):
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
-    exported_targets = pds.exported_library_targets(pkg_desc)
+
+    exported_targets = pds.exported_library_targets(pkg_desc, product_names = product_names)
+
+    # DEBUG BEGIN
+    print("*** CHUCK pkg_name: ", pkg_name)
+    print("*** CHUCK product_names: ", product_names)
+    print("*** CHUCK exported_targets: ")
+    for idx, item in enumerate(exported_targets):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
 
     module_decls = []
     for target in exported_targets:
@@ -194,6 +204,12 @@ _platforms_tpl = """\
   ],
 """
 
+def _get_pkg(pkgs, pkg_name):
+    for pkg in pkgs:
+        if pkg.spm_name == pkg_name:
+            return pkg
+    fail("Failed to find package", pkg_name)
+
 def _generate_package_swift_file(repository_ctx, pkgs):
     swift_platforms = ""
     if len(repository_ctx.attr.platforms) > 0:
@@ -218,7 +234,7 @@ def _generate_package_swift_file(repository_ctx, pkgs):
 
 # MARK: - Rule Implementation
 
-def _configure_spm_repository(repository_ctx):
+def _configure_spm_repository(repository_ctx, pkgs):
     # Resolve/fetch the dependencies.
     resolve_result = repository_ctx.execute(
         ["swift", "package", "resolve", "--build-path", spm_common.build_dirname],
@@ -256,7 +272,8 @@ def _configure_spm_repository(repository_ctx):
             clang_hdrs_dict[clang_hdrs_key] = clang_hdrs
 
         # Generate Bazel targets for the library products
-        _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, dep_pkg_desc)
+        pkg = _get_pkg(pkgs, dep_name)
+        _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, dep_pkg_desc, pkg.products)
 
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict)
@@ -280,7 +297,7 @@ def _spm_repositories_impl(repository_ctx):
     )
 
     # Configure the SPM package
-    _configure_spm_repository(repository_ctx)
+    _configure_spm_repository(repository_ctx, pkgs)
 
 spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,

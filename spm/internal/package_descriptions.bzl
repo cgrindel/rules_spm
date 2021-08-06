@@ -1,4 +1,5 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:sets.bzl", "sets")
 
 def _parse_json(json_str):
     """Parses the JSON string and returns a dict representing the JSON structure.
@@ -36,7 +37,7 @@ def _is_library_product(product):
 def _library_products(pkg_desc):
     return [p for p in pkg_desc["products"] if _is_library_product(p)]
 
-def _exported_library_targets(pkg_desc):
+def _exported_library_targets(pkg_desc, product_names = None):
     """Returns the exported targets from the SPM pacakge.
 
     Args:
@@ -47,6 +48,9 @@ def _exported_library_targets(pkg_desc):
     """
     targets_dict = dict([(p["name"], p) for p in pkg_desc["targets"]])
     products = _library_products(pkg_desc)
+    if product_names != None:
+        product_names_set = sets.make(product_names)
+        products = [p for p in products if sets.contains(product_names_set, p["name"])]
 
     target_names = []
     for product in products:
