@@ -2,6 +2,7 @@ load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_type
 load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
+load(":spm_common.bzl", "spm_common")
 load(":files.bzl", "files")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 
@@ -43,7 +44,7 @@ def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc):
     module_decls = []
     for target in exported_targets:
         if pds.is_clang_target(target):
-            clang_hdrs_key = _create_clang_hdrs_key(pkg_name, target["name"])
+            clang_hdrs_key = spm_common.create_clang_hdrs_key(pkg_name, target["name"])
             clang_hdrs = clang_hdrs_dict.get(clang_hdrs_key, default = [])
             module_decls.append(_create_spm_clang_module_decl(
                 repository_ctx,
@@ -74,7 +75,7 @@ def _get_dep_pkg_desc(repository_ctx, pkg_dep):
         is the package description for the dependency.
     """
     dep_name = pds.dependency_name(pkg_dep)
-    dep_checkout_path = paths.join(_checkouts_path, dep_name)
+    dep_checkout_path = paths.join(spm_common.checkouts_path, dep_name)
     dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
     return (dep_name, dep_pkg_desc)
 
@@ -208,16 +209,10 @@ def _generate_package_swift_file(repository_ctx, pkgs):
 
 # MARK: - Rule Implementation
 
-_build_dirname = "spm_build"
-_checkouts_path = paths.join(_build_dirname, "checkouts")
-
-def _create_clang_hdrs_key(pkg_name, target_name):
-    return "%s/%s" % (pkg_name, target_name)
-
 def _configure_spm_repository(repository_ctx):
     # Resolve/fetch the dependencies.
     resolve_result = repository_ctx.execute(
-        ["swift", "package", "resolve", "--build-path", _build_dirname],
+        ["swift", "package", "resolve", "--build-path", spm_common.build_dirname],
     )
     if resolve_result.return_code != 0:
         fail("Resolution of SPM packages for %s failed.\n%s" % (
@@ -243,9 +238,12 @@ def _configure_spm_repository(repository_ctx):
             clang_hdrs = _get_clang_hdrs_for_target(
                 repository_ctx,
                 clang_target,
-                pkg_root_path = paths.join(_checkouts_path, dep_name),
+                pkg_root_path = paths.join(spm_common.checkouts_path, dep_name),
             )
-            clang_hdrs_key = _create_clang_hdrs_key(dep_name, clang_target["name"])
+            clang_hdrs_key = spm_common.create_clang_hdrs_key(
+                dep_name,
+                clang_target["name"],
+            )
             clang_hdrs_dict[clang_hdrs_key] = clang_hdrs
 
         # Generate Bazel targets for the library products

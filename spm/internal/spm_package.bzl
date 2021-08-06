@@ -1,10 +1,11 @@
+load(":files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
+load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
+load(":providers.bzl", "SPMPackageInfo", "providers")
+load(":spm_common.bzl", "spm_common")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
-load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
-load("//spm/internal:providers.bzl", "SPMPackageInfo", "providers")
-load("//spm/internal:package_descriptions.bzl", "module_types", pds = "package_descriptions")
-load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
 def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
     return struct(
@@ -149,10 +150,9 @@ def _declare_swift_target_files(ctx, target, build_config_dirname):
     )
 
 def _spm_package_impl(ctx):
-    build_output_dirname = "spm_build"
-    build_output_dir = ctx.actions.declare_directory(build_output_dirname)
+    build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
     output_dir_path = build_output_dir.dirname
-    modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
+    modulemap_dir_path = paths.join(output_dir_path, "modulemaps")
 
     all_build_outs = []
 
@@ -166,7 +166,11 @@ def _spm_package_impl(ctx):
     root_pkg_desc = pkg_descs_dict[pds.root_pkg_name]
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
-    build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
+    build_config_dirname = paths.join(
+        spm_common.build_dirname,
+        "x86_64-apple-macosx",
+        ctx.attr.configuration,
+    )
 
     swift_module_infos = []
     clang_module_build_infos = []
