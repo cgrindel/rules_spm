@@ -1,4 +1,14 @@
-load("//spm/internal:providers.bzl", "SPMPackageInfo")
+load(":providers.bzl", "SPMPackagesInfo")
+load("@bazel_skylib//lib:paths.bzl", "paths")
+
+def _derive_pkg_name(ctx):
+    return paths.basename(paths.dirname(ctx.build_file_path))
+
+def _get_pkg_info(pkg_infos, pkg_name):
+    for pi in pkg_infos:
+        if pi.name == pkg_name:
+            return pi
+    fail("Could not find package with name", pkg_name)
 
 def _get_module_info(pkg_info, module_name):
     for module in pkg_info.swift_modules:
@@ -7,23 +17,18 @@ def _get_module_info(pkg_info, module_name):
     for module in pkg_info.clang_modules:
         if module.module_name == module_name:
             return module
-    fail("Could not find module with module_name", module_name)
+    fail("Could not find module with name", module_name, "in package", pkg_info["name"])
 
 def _spm_filegroup_impl(ctx):
-    pkg_info = ctx.attr.package[SPMPackageInfo]
+    pkgs_info = ctx.attr.packages[SPMPackagesInfo]
+
+    pkg_name = ctx.attr.package_name
+    if pkg_name == "":
+        pkg_name = _derive_pkg_name(ctx)
 
     module_name = ctx.attr.module_name
 
-    # DEBUG BEGIN
-    print("*** CHUCK module_name: ", module_name)
-    print("*** CHUCK pkg_info.swift_modules: ")
-    for idx, item in enumerate(pkg_info.swift_modules):
-        print("*** CHUCK", idx, ":", item)
-    print("*** CHUCK pkg_info.clang_modules: ")
-    for idx, item in enumerate(pkg_info.clang_modules):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
+    pkg_info = _get_pkg_info(pkgs_info.packages, pkg_name)
     module_info = _get_module_info(pkg_info, module_name)
 
     output = []
@@ -50,17 +55,23 @@ def _spm_filegroup_impl(ctx):
 spm_filegroup = rule(
     _spm_filegroup_impl,
     attrs = {
-        "package": attr.label(
+        "packages": attr.label(
             mandatory = True,
-            providers = [[SPMPackageInfo]],
+            providers = [[SPMPackagesInfo]],
             doc = """\
-            A target that outputs an SPMPackageInfo (e.g. spm_pacakge).
+            A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
+            """,
+        ),
+        "package_name": attr.string(
+            doc = """\
+            The name of the package that exports this module. If no value 
+            provided, it will be derived from the Bazel package name.\
             """,
         ),
         "module_name": attr.string(
             mandatory = True,
             doc = """\
-            The name of the module in the SPMPackageInfo to select for file exposition.
+            The name of the module in the SPM package to select for file exposition.\
             """,
         ),
         "file_type": attr.string(
@@ -80,7 +91,7 @@ spm_filegroup = rule(
         ),
     },
     doc = """\
-    Exposes the specified type of file(s) from a rule that outputs an SPMPackageInfo (e.g. 
+    Exposes the specified type of file(s) from a rule that outputs an SPMPackagesInfo (e.g. 
     spm_package).
     """,
 )

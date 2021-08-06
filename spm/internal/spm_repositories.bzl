@@ -10,14 +10,14 @@ load("@bazel_skylib//lib:paths.bzl", "paths")
 _spm_swift_module_tpl = """
 spm_swift_module(
     name = "%s",
-    package = "@%s//:build",
+    packages = "@%s//:build",
 )
 """
 
 _spm_clang_module_tpl = """
 spm_clang_module(
     name = "%s",
-    package = "@%s//:build",
+    packages = "@%s//:build",
     hdrs = [
 %s
     ],
@@ -270,7 +270,12 @@ def _spm_repositories_impl(repository_ctx):
     # Create barebones source files
     repository_ctx.file(
         "Sources/Placeholder/Placeholder.swift",
-        content = "# Intentionally blank",
+        content = """
+        // Placeholder code
+        // public func foo() -> String {
+        //   return "Foo"
+        // }
+        """,
         executable = False,
     )
 
