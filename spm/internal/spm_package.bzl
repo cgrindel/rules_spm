@@ -41,23 +41,28 @@ def _declare_swift_target_files(ctx, target, build_config_path):
 
 # MARK: - Package Build Info
 
-def _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos):
+def _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos, build_inputs = []):
     return struct(
         pkg_desc = pkg_desc,
         pkg_info = pkg_info,
         build_outs = build_outs,
         copy_infos = copy_infos,
+        build_inputs = build_inputs,
     )
 
-def _update_pkg_build_info(pkg_build_info, copy_infos = []):
+def _update_pkg_build_info(pkg_build_info, copy_infos = [], build_inputs = []):
     new_copy_infos = list(pkg_build_info.copy_infos)
     new_copy_infos.extend(copy_infos)
+
+    new_build_inputs = list(pkg_build_info.build_inputs)
+    new_build_inputs.extend(build_inputs)
 
     return _create_pkg_build_info(
         pkg_build_info.pkg_desc,
         pkg_build_info.pkg_info,
         pkg_build_info.build_outs,
         new_copy_infos,
+        build_inputs = new_build_inputs,
     )
 
 def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
@@ -97,6 +102,7 @@ def _customize_clang_modulemap_and_hdrs(
         build_config_path,
         modulemap_dir_path):
     copy_infos = []
+    build_inputs = []
 
     if public_hdrs == []:
         fail("A clang target must have at least one public header. target: %s" % (
@@ -109,12 +115,18 @@ def _customize_clang_modulemap_and_hdrs(
     # Copy all of the public headers to the output during the SPM build
     for hdr in public_hdrs:
         out_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, paths.basename(hdr)))
-        copy_infos.append(providers.copy_info(hdr, out_hdr))
+        src_hdr = paths.join(ctx.attr.package_path, hdr)
+        copy_infos.append(providers.copy_info(src_hdr, out_hdr))
 
     # The gen_modulemap is where the generated modulemap will initially be written.
     # The out_modulemap is where the generated modulemap will be copied after the SPM build.
     gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+    build_inputs.append(gen_modulemap)
     out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
+
+    # DEBUG BEGIN
+    print("*** CHUCK gen_modulemap: ", gen_modulemap)
+    # DEBUG END
 
     # The module.modulemap template uses an umbrella header declaration. This means that every header
     # file in the directory or subdirectory of the specified header will be used as a public. Since
@@ -132,7 +144,7 @@ def _customize_clang_modulemap_and_hdrs(
     )
     copy_infos.append(providers.copy_info(gen_modulemap, out_modulemap))
 
-    return copy_infos
+    return copy_infos, build_inputs
 
 # MARK: - Build Packages
 
@@ -146,10 +158,12 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict):
 
     all_build_outs = []
     copy_infos = []
+    build_inputs = []
     for pkg_name in pkg_build_infos_dict:
         pbi = pkg_build_infos_dict[pkg_name]
         all_build_outs.extend(pbi.build_outs)
         copy_infos.extend(pbi.copy_infos)
+        build_inputs.extend(pbi.build_inputs)
 
     run_args = ctx.actions.args()
     run_args.add_all([
@@ -163,7 +177,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict):
         all_build_outs.append(ci.dest)
 
     ctx.actions.run(
-        inputs = ctx.files.srcs,
+        inputs = ctx.files.srcs + build_inputs,
         tools = [swift_worker],
         outputs = [build_output_dir] + all_build_outs,
         arguments = [run_args],
@@ -208,7 +222,7 @@ def _spm_package_impl(ctx):
         pkg_build_info = pkg_build_infos_dict[pkg_name]
         target_desc = pds.get_target(pkg_build_info.pkg_desc, target_name)
         module_name = target_desc["c99name"]
-        copy_infos = _customize_clang_modulemap_and_hdrs(
+        copy_infos, build_inputs = _customize_clang_modulemap_and_hdrs(
             ctx,
             target_name,
             module_name,
@@ -219,6 +233,7 @@ def _spm_package_impl(ctx):
         pkg_build_infos_dict[pkg_name] = _update_pkg_build_info(
             pkg_build_infos_dict[pkg_name],
             copy_infos = copy_infos,
+            build_inputs = build_inputs,
         )
 
     # Execute the build
