@@ -41,7 +41,7 @@ def _declare_swift_target_files(ctx, target, build_config_path):
 
 # MARK: - Package Build Info
 
-def _create_package_build_info(pkg_desc, pkg_info, build_outs, copy_infos):
+def _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos):
     return struct(
         pkg_desc = pkg_desc,
         pkg_info = pkg_info,
@@ -56,6 +56,7 @@ def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
     clang_modules = []
     pkg_name = pkg_desc["name"]
 
+    # Declare outputs for the modules that will be used
     exported_targets = pds.exported_library_targets(pkg_desc, product_names = product_names)
     for target in exported_targets:
         if pds.is_swift_target(target):
@@ -73,7 +74,7 @@ def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
         clang_modules = clang_modules,
     )
 
-    return _create_package_build_info(pkg_desc, pkg_info, build_outs, copy_infos)
+    return _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos)
 
 # MARK: - Build Packages
 
