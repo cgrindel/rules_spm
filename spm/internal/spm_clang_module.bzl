@@ -1,6 +1,6 @@
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 
-def spm_clang_module(name, packages, deps = None):
+def spm_clang_module(name, packages, deps = None, visibility = None):
     module_name = name
 
     hdr_files_name = "%s_hdrs" % (name)
@@ -29,5 +29,5 @@ def spm_clang_module(name, packages, deps = None):
         ],
         module_name = module_name,
         deps = deps,
-        visibility = ["//visibility:public"],
+        visibility = visibility,
     )

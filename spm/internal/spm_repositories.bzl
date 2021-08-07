@@ -14,6 +14,7 @@ spm_swift_module(
     deps = [
 %s
     ],
+    visibility = ["//visibility:public"],
 )
 """
 
@@ -24,6 +25,7 @@ spm_clang_module(
     deps = [
 %s
     ],
+    visibility = ["//visibility:public"],
 )
 """
 
