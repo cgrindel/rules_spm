@@ -124,10 +124,6 @@ def _customize_clang_modulemap_and_hdrs(
     build_inputs.append(gen_modulemap)
     out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
 
-    # DEBUG BEGIN
-    print("*** CHUCK gen_modulemap: ", gen_modulemap)
-    # DEBUG END
-
     # The module.modulemap template uses an umbrella header declaration. This means that every header
     # file in the directory or subdirectory of the specified header will be used as a public. Since
     # we will be copying all of the header files for the target to the same directory, we can get

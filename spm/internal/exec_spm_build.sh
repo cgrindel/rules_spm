@@ -12,10 +12,6 @@ shift 4
 # same basename as the build_path.
 fetched_dir="${package_path}/$(basename "${build_path}")"
 
-# DEBUG BEGIN
-tree -d
-# DEBUG END
-
 # Copy all of the fetch data to the output so that the SPM build will succeed?
 # Note the slash at the end of the source. It tells cp to copy the contents of
 # the source directory not the actual directory.
