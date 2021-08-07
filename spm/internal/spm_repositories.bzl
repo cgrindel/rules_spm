@@ -27,19 +27,6 @@ spm_clang_module(
 )
 """
 
-# _spm_clang_module_tpl = """
-# spm_clang_module(
-#     name = "%s",
-#     packages = "@%s//:build",
-#     hdrs = [
-# %s
-#     ],
-#     deps = [
-# %s
-#     ],
-# )
-# """
-
 def _create_deps_str(target):
     deps = target.get("target_dependencies", default = [])
     deps = ["        \":%s\"," % (dep) for dep in deps]
@@ -52,13 +39,8 @@ def _create_spm_swift_module_decl(repository_ctx, target):
     deps_str = _create_deps_str(target)
     return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
-def _create_spm_clang_module_decl(repository_ctx, target, clang_hdr_paths):
+def _create_spm_clang_module_decl(repository_ctx, target):
     module_name = target["c99name"]
-
-    # hdrs_with_prefix = [paths.join("..", p) for p in clang_hdr_paths]
-    # hdrs_str = _create_hdrs_str(hdrs_with_prefix)
-    # hdrs_str = _create_hdrs_str(clang_hdr_paths)
-    # return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, hdrs_str, deps_str)
     deps_str = _create_deps_str(target)
     return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
@@ -75,12 +57,9 @@ def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc, product_names
     module_decls = []
     for target in exported_targets:
         if pds.is_clang_target(target):
-            clang_hdrs_key = spm_common.create_clang_hdrs_key(pkg_name, target["name"])
-            clang_hdr_paths = clang_hdrs_dict.get(clang_hdrs_key, default = [])
             module_decls.append(_create_spm_clang_module_decl(
                 repository_ctx,
                 target,
-                clang_hdr_paths,
             ))
         else:
             module_decls.append(_create_spm_swift_module_decl(repository_ctx, target))

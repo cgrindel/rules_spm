@@ -79,50 +79,6 @@ def _create_pkg_build_info(
         build_outs = build_outs,
     )
 
-# def _create_pkg_build_info(
-#         pkg_desc,
-#         pkg_info,
-#         build_outs,
-#         copy_infos,
-#         build_inputs = [],
-#         clang_custom_infos_dict = {}):
-#     return struct(
-#         pkg_desc = pkg_desc,
-#         pkg_info = pkg_info,
-#         build_outs = build_outs,
-#         copy_infos = copy_infos,
-#         build_inputs = build_inputs,
-#         clang_custom_infos_dict = clang_custom_infos_dict,
-#     )
-
-# def _update_pkg_build_info(
-#         pkg_build_info,
-#         copy_infos = [],
-#         build_inputs = [],
-#         clang_custom_infos_dict = {}):
-#     new_copy_infos = list(pkg_build_info.copy_infos)
-#     new_copy_infos.extend(copy_infos)
-
-#     new_build_inputs = list(pkg_build_info.build_inputs)
-#     new_build_inputs.extend(build_inputs)
-
-#     # clang_custom_infos_dict = dict(**pkg_build_info.clang_custom_infos_dict)
-#     # for clang_custom_info in clang_custom_infos:
-#     #     clang_custom_infos_dict[clang_module_info.target_name] = clang_custom_info
-#     new_clang_custom_infos_dict = dicts.add(
-#         pkg_build_info.clang_custom_infos_dict,
-#         clang_custom_infos_dict,
-#     )
-
-#     return _create_pkg_build_info(
-#         pkg_build_info.pkg_desc,
-#         pkg_build_info.pkg_info,
-#         pkg_build_info.build_outs,
-#         new_copy_infos,
-#         build_inputs = new_build_inputs,
-#         clang_custom_infos_dict = new_clang_custom_infos_dict,
-#     )
-
 def _gather_package_build_info(
         ctx,
         pkg_desc,
