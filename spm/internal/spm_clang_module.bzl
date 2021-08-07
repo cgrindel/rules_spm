@@ -29,4 +29,5 @@ def spm_clang_module(name, packages, deps = None):
         ],
         module_name = module_name,
         deps = deps,
+        visibility = ["//visibility:public"],
     )

@@ -34,14 +34,15 @@ load(
 
 rules_spm_dependencies()
 
-load(
-    "@cgrindel_rules_spm//spm:spm.bzl",
-    "spm_repository",
-)
+load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
 
-spm_repository(
-    name = "apple_swift_nio",
-    sha256 = "40b115e77e8af3ffbe84be344c30c0964763e318e1d3dfe0a80da0e2ae17d614",
-    strip_prefix = "swift-nio-2.30.0",
-    urls = ["https://github.com/apple/swift-nio/archive/2.30.0.tar.gz"],
+spm_repositories(
+    name = "swift_pkgs",
+    dependencies = [
+        spm_pkg(
+            "https://github.com/apple/swift-nio.git",
+            from_version = "2.0.0",
+            products = ["NIOWebSocket"],
+        ),
+    ],
 )
