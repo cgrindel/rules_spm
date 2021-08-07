@@ -9,6 +9,15 @@ def _create_clang_hdrs_key_test(ctx):
 
 create_clang_hdrs_key_test = unittest.make(_create_clang_hdrs_key_test)
 
+def _split_clang_hdrs_key_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+split_clang_hdrs_key_test = unittest.make(_split_clang_hdrs_key_test)
+
 def _get_pkg_test(ctx):
     env = unittest.begin(ctx)
 
@@ -22,5 +31,6 @@ def spm_common_test_suite():
     return unittest.suite(
         "spm_common_tests",
         create_clang_hdrs_key_test,
+        split_clang_hdrs_key_test,
         get_pkg_test,
     )

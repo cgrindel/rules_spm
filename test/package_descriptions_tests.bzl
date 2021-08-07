@@ -124,6 +124,15 @@ def _is_swift_target_test(ctx):
 
 is_swift_target_test = unittest.make(_is_swift_target_test)
 
+def _get_target_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+get_target_test = unittest.make(_get_target_test)
+
 def package_descriptions_test_suite():
     unittest.suite(
         "package_description_tests",
@@ -136,4 +145,5 @@ def package_descriptions_test_suite():
         dependency_name_test,
         is_clang_target_test,
         is_swift_target_test,
+        get_target_test,
     )

@@ -49,6 +49,17 @@ def _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos):
         copy_infos = copy_infos,
     )
 
+def _update_pkg_build_info(pkg_build_info, copy_infos = []):
+    new_copy_infos = list(pkg_build_info.copy_infos)
+    new_copy_infos.extend(copy_infos)
+
+    return _create_pkg_build_info(
+        pkg_build_info.pkg_desc,
+        pkg_build_info.pkg_info,
+        pkg_build_info.build_outs,
+        new_copy_infos,
+    )
+
 def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
     build_outs = []
     copy_infos = []
@@ -76,9 +87,56 @@ def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
 
     return _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos)
 
+# MARK: - Clang Target Customization
+
+def _customize_clang_modulemap_and_hdrs(
+        ctx,
+        target_name,
+        module_name,
+        public_hdrs,
+        build_config_path,
+        modulemap_dir_path):
+    copy_infos = []
+
+    if public_hdrs == []:
+        fail("A clang target must have at least one public header. target: %s" % (
+            target_name,
+        ))
+
+    target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
+    target_modulemap_dirname = "%s/%s.build" % (modulemap_dir_path, target_name)
+
+    # Copy all of the public headers to the output during the SPM build
+    for hdr in public_hdrs:
+        out_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, paths.basename(hdr)))
+        copy_infos.append(providers.copy_info(hdr, out_hdr))
+
+    # The gen_modulemap is where the generated modulemap will initially be written.
+    # The out_modulemap is where the generated modulemap will be copied after the SPM build.
+    gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+    out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
+
+    # The module.modulemap template uses an umbrella header declaration. This means that every header
+    # file in the directory or subdirectory of the specified header will be used as a public. Since
+    # we will be copying all of the header files for the target to the same directory, we can get
+    # away with specifying a single umbrella header.
+    umbrella_hdr = public_hdrs[0]
+    substitutions = {
+        "{spm_module_name}": module_name,
+        "{spm_module_header}": paths.basename(umbrella_hdr),
+    }
+    ctx.actions.expand_template(
+        template = ctx.file._modulemap_tpl,
+        output = gen_modulemap,
+        substitutions = substitutions,
+    )
+    copy_infos.append(providers.copy_info(gen_modulemap, out_modulemap))
+
+    return copy_infos
+
 # MARK: - Build Packages
 
-def _build_all_pkgs(ctx, pkg_build_infos):
+def _build_all_pkgs(ctx, pkg_build_infos_dict):
     # Toolchain info
     # The swift_worker is typically xcrun.
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
@@ -88,11 +146,11 @@ def _build_all_pkgs(ctx, pkg_build_infos):
 
     all_build_outs = []
     copy_infos = []
-    for pbi in pkg_build_infos:
+    for pkg_name in pkg_build_infos_dict:
+        pbi = pkg_build_infos_dict[pkg_name]
         all_build_outs.extend(pbi.build_outs)
         copy_infos.extend(pbi.copy_infos)
 
-    # other_run_inputs = []
     run_args = ctx.actions.args()
     run_args.add_all([
         swift_worker,
@@ -102,10 +160,9 @@ def _build_all_pkgs(ctx, pkg_build_infos):
     ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
-        # other_run_inputs.append(ci.src)
+        all_build_outs.append(ci.dest)
 
     ctx.actions.run(
-        # inputs = ctx.files.srcs + other_run_inputs,
         inputs = ctx.files.srcs,
         tools = [swift_worker],
         outputs = [build_output_dir] + all_build_outs,
@@ -129,29 +186,50 @@ def _spm_package_impl(ctx):
     )
 
     # Collect information about the SPM packages
-    pkg_build_infos = []
+    pkg_build_infos_dict = dict()
     for pkg_name in pkg_descs_dict:
         if pkg_name == pds.root_pkg_name:
             continue
         pkg = spm_common.get_pkg(pkgs, pkg_name)
         pkg_desc = pkg_descs_dict[pkg_name]
-        pkg_build_info = _gather_package_build_info(
+        pkg_build_infos_dict[pkg_name] = _gather_package_build_info(
             ctx,
             pkg_desc,
             build_config_path,
             pkg.products,
         )
-        pkg_build_infos.append(pkg_build_info)
+
+    # Customize the headers and modulemap files for all clang targets.
+    # TODO: Do I need to declare a directory and put the modulemaps dir under it?
+    modulemap_dir_path = "modulemaps"
+    for pkg_name_target in ctx.attr.clang_module_headers:
+        src_hdrs = ctx.attr.clang_module_headers[pkg_name_target]
+        pkg_name, target_name = spm_common.split_clang_hdrs_key(pkg_name_target)
+        pkg_build_info = pkg_build_infos_dict[pkg_name]
+        target_desc = pds.get_target(pkg_build_info.pkg_desc, target_name)
+        module_name = target_desc["c99name"]
+        copy_infos = _customize_clang_modulemap_and_hdrs(
+            ctx,
+            target_name,
+            module_name,
+            src_hdrs,
+            build_config_path,
+            modulemap_dir_path,
+        )
+        pkg_build_infos_dict[pkg_name] = _update_pkg_build_info(
+            pkg_build_infos_dict[pkg_name],
+            copy_infos = copy_infos,
+        )
 
     # Execute the build
-    _build_all_pkgs(ctx, pkg_build_infos)
+    _build_all_pkgs(ctx, pkg_build_infos_dict)
 
     # TODO: Populate all_outputs.
     all_outputs = []
     return [
         DefaultInfo(files = depset(all_outputs)),
         SPMPackagesInfo(
-            packages = [pbi.pkg_info for pbi in pkg_build_infos],
+            packages = [pkg_build_infos_dict[pkg_name].pkg_info for pkg_name in pkg_build_infos_dict],
         ),
     ]
 

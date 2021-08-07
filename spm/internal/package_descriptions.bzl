@@ -119,6 +119,12 @@ def _is_swift_target(target):
     """
     return target["module_type"] == module_types.swift
 
+def _get_target(pkg_desc, name):
+    for t in pkg_desc["targets"]:
+        if t["name"] == name:
+            return t
+    fail("Could not find target with name %s." % (name))
+
 # MARK: - Namespace
 
 module_types = struct(
@@ -139,6 +145,7 @@ package_descriptions = struct(
     dependency_name = _dependency_name,
     is_clang_target = _is_clang_target,
     is_swift_target = _is_swift_target,
+    get_target = _get_target,
     # Constants
     root_pkg_name = "_root",
 )
