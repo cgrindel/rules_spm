@@ -134,13 +134,6 @@ def _gather_package_build_info(
     clang_modules = []
     pkg_name = pkg_desc["name"]
 
-    # DEBUG BEGIN
-    print("*** CHUCK clang_custom_infos_dict: ")
-    for key in clang_custom_infos_dict:
-        print("*** CHUCK", key, ":", clang_custom_infos_dict[key])
-
-    # DEBUG END
-
     # Declare outputs for the targets that will be used
     exported_targets = pds.exported_library_targets(
         pkg_desc,

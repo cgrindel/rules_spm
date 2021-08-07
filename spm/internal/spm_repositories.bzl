@@ -41,15 +41,6 @@ def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc, product_names
 
     exported_targets = pds.exported_library_targets(pkg_desc, product_names = product_names)
 
-    # DEBUG BEGIN
-    print("*** CHUCK pkg_name: ", pkg_name)
-    print("*** CHUCK product_names: ", product_names)
-    print("*** CHUCK exported_targets: ")
-    for idx, item in enumerate(exported_targets):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
-
     module_decls = []
     for target in exported_targets:
         if pds.is_clang_target(target):
