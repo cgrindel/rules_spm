@@ -39,41 +39,114 @@ def _declare_swift_target_files(ctx, target, build_config_path):
         all_outputs = all_build_outs,
     )
 
+# MARK: - Clang Module Info
+
+def _declare_clang_target_files(
+        ctx,
+        target,
+        build_config_dirname,
+        clang_custom_info):
+    all_outputs = []
+    o_files = []
+
+    target_name = target["name"]
+    module_name = target["c99name"]
+
+    target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
+
+    # Declare the Mach-O files.
+    for src in target["sources"]:
+        o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
+    all_outputs.extend(o_files)
+
+    return providers.clang_module(
+        module_name = module_name,
+        o_files = o_files,
+        hdrs = clang_custom_info.hdrs,
+        modulemap = clang_custom_info.hdrs,
+        all_outputs = all_outputs,
+    )
+
 # MARK: - Package Build Info
 
-def _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos, build_inputs = []):
+def _create_pkg_build_info(
+        pkg_desc,
+        pkg_info,
+        build_outs):
     return struct(
         pkg_desc = pkg_desc,
         pkg_info = pkg_info,
         build_outs = build_outs,
-        copy_infos = copy_infos,
-        build_inputs = build_inputs,
     )
 
-def _update_pkg_build_info(pkg_build_info, copy_infos = [], build_inputs = []):
-    new_copy_infos = list(pkg_build_info.copy_infos)
-    new_copy_infos.extend(copy_infos)
+# def _create_pkg_build_info(
+#         pkg_desc,
+#         pkg_info,
+#         build_outs,
+#         copy_infos,
+#         build_inputs = [],
+#         clang_custom_infos_dict = {}):
+#     return struct(
+#         pkg_desc = pkg_desc,
+#         pkg_info = pkg_info,
+#         build_outs = build_outs,
+#         copy_infos = copy_infos,
+#         build_inputs = build_inputs,
+#         clang_custom_infos_dict = clang_custom_infos_dict,
+#     )
 
-    new_build_inputs = list(pkg_build_info.build_inputs)
-    new_build_inputs.extend(build_inputs)
+# def _update_pkg_build_info(
+#         pkg_build_info,
+#         copy_infos = [],
+#         build_inputs = [],
+#         clang_custom_infos_dict = {}):
+#     new_copy_infos = list(pkg_build_info.copy_infos)
+#     new_copy_infos.extend(copy_infos)
 
-    return _create_pkg_build_info(
-        pkg_build_info.pkg_desc,
-        pkg_build_info.pkg_info,
-        pkg_build_info.build_outs,
-        new_copy_infos,
-        build_inputs = new_build_inputs,
-    )
+#     new_build_inputs = list(pkg_build_info.build_inputs)
+#     new_build_inputs.extend(build_inputs)
 
-def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
+#     # clang_custom_infos_dict = dict(**pkg_build_info.clang_custom_infos_dict)
+#     # for clang_custom_info in clang_custom_infos:
+#     #     clang_custom_infos_dict[clang_module_info.target_name] = clang_custom_info
+#     new_clang_custom_infos_dict = dicts.add(
+#         pkg_build_info.clang_custom_infos_dict,
+#         clang_custom_infos_dict,
+#     )
+
+#     return _create_pkg_build_info(
+#         pkg_build_info.pkg_desc,
+#         pkg_build_info.pkg_info,
+#         pkg_build_info.build_outs,
+#         new_copy_infos,
+#         build_inputs = new_build_inputs,
+#         clang_custom_infos_dict = new_clang_custom_infos_dict,
+#     )
+
+def _gather_package_build_info(
+        ctx,
+        pkg_desc,
+        build_config_path,
+        product_names,
+        clang_custom_infos_dict):
     build_outs = []
-    copy_infos = []
     swift_modules = []
     clang_modules = []
     pkg_name = pkg_desc["name"]
 
-    # Declare outputs for the modules that will be used
-    exported_targets = pds.exported_library_targets(pkg_desc, product_names = product_names)
+    # DEBUG BEGIN
+    print("*** CHUCK clang_custom_infos_dict: ")
+    for key in clang_custom_infos_dict:
+        print("*** CHUCK", key, ":", clang_custom_infos_dict[key])
+
+    # DEBUG END
+
+    # Declare outputs for the targets that will be used
+    exported_targets = pds.exported_library_targets(
+        pkg_desc,
+        product_names = product_names,
+        with_deps = True,
+    )
     for target in exported_targets:
         if pds.is_swift_target(target):
             swift_module_info = _declare_swift_target_files(ctx, target, build_config_path)
@@ -81,8 +154,14 @@ def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
             build_outs.extend(swift_module_info.all_outputs)
 
         elif pds.is_clang_target(target):
-            # TODO: IMPLEMENT ME!
-            pass
+            clang_module_info = _declare_clang_target_files(
+                ctx,
+                target,
+                build_config_path,
+                clang_custom_infos_dict[target["name"]],
+            )
+            clang_modules.append(clang_module_info)
+            build_outs.extend(clang_module_info.all_outputs)
 
     pkg_info = SPMPackageInfo(
         name = pkg_name,
@@ -90,9 +169,19 @@ def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
         clang_modules = clang_modules,
     )
 
-    return _create_pkg_build_info(pkg_desc, pkg_info, build_outs, copy_infos)
+    return _create_pkg_build_info(pkg_desc, pkg_info, build_outs)
 
 # MARK: - Clang Target Customization
+
+def _create_clang_custom_info(
+        target_name,
+        hdrs = [],
+        modulemap = None):
+    return struct(
+        target_name = target_name,
+        hdrs = hdrs,
+        modulemap = modulemap,
+    )
 
 def _customize_clang_modulemap_and_hdrs(
         ctx,
@@ -101,6 +190,7 @@ def _customize_clang_modulemap_and_hdrs(
         public_hdrs,
         build_config_path,
         modulemap_dir_path):
+    out_hdrs = []
     copy_infos = []
     build_inputs = []
 
@@ -115,6 +205,7 @@ def _customize_clang_modulemap_and_hdrs(
     # Copy all of the public headers to the output during the SPM build
     for hdr in public_hdrs:
         out_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, paths.basename(hdr)))
+        out_hdrs.append(out_hdr)
         src_hdr = paths.join(ctx.attr.package_path, hdr)
         copy_infos.append(providers.copy_info(src_hdr, out_hdr))
 
@@ -140,11 +231,16 @@ def _customize_clang_modulemap_and_hdrs(
     )
     copy_infos.append(providers.copy_info(gen_modulemap, out_modulemap))
 
-    return copy_infos, build_inputs
+    clang_custom_info = _create_clang_custom_info(
+        target_name,
+        hdrs = out_hdrs,
+        modulemap = out_modulemap,
+    )
+    return clang_custom_info, copy_infos, build_inputs
 
 # MARK: - Build Packages
 
-def _build_all_pkgs(ctx, pkg_build_infos_dict):
+def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     # Toolchain info
     # The swift_worker is typically xcrun.
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
@@ -153,13 +249,9 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict):
     build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
     all_build_outs = []
-    copy_infos = []
-    build_inputs = []
     for pkg_name in pkg_build_infos_dict:
         pbi = pkg_build_infos_dict[pkg_name]
         all_build_outs.extend(pbi.build_outs)
-        copy_infos.extend(pbi.copy_infos)
-        build_inputs.extend(pbi.build_inputs)
 
     run_args = ctx.actions.args()
     run_args.add_all([
@@ -195,30 +287,19 @@ def _spm_package_impl(ctx):
         ctx.attr.configuration,
     )
 
-    # Collect information about the SPM packages
-    pkg_build_infos_dict = dict()
-    for pkg_name in pkg_descs_dict:
-        if pkg_name == pds.root_pkg_name:
-            continue
-        pkg = spm_common.get_pkg(pkgs, pkg_name)
-        pkg_desc = pkg_descs_dict[pkg_name]
-        pkg_build_infos_dict[pkg_name] = _gather_package_build_info(
-            ctx,
-            pkg_desc,
-            build_config_path,
-            pkg.products,
-        )
-
     # Customize the headers and modulemap files for all clang targets.
-    # TODO: Do I need to declare a directory and put the modulemaps dir under it?
     modulemap_dir_path = "modulemaps"
+    copy_infos = []
+    build_inputs = []
+    pkg_clang_custom_infos_dict = {}
     for pkg_name_target in ctx.attr.clang_module_headers:
         src_hdrs = ctx.attr.clang_module_headers[pkg_name_target]
         pkg_name, target_name = spm_common.split_clang_hdrs_key(pkg_name_target)
-        pkg_build_info = pkg_build_infos_dict[pkg_name]
-        target_desc = pds.get_target(pkg_build_info.pkg_desc, target_name)
+        pkg_desc = pkg_descs_dict[pkg_name]
+        target_desc = pds.get_target(pkg_desc, target_name)
         module_name = target_desc["c99name"]
-        copy_infos, build_inputs = _customize_clang_modulemap_and_hdrs(
+
+        clang_custom_info, target_copy_infos, target_build_inputs = _customize_clang_modulemap_and_hdrs(
             ctx,
             target_name,
             module_name,
@@ -226,14 +307,37 @@ def _spm_package_impl(ctx):
             build_config_path,
             modulemap_dir_path,
         )
-        pkg_build_infos_dict[pkg_name] = _update_pkg_build_info(
-            pkg_build_infos_dict[pkg_name],
-            copy_infos = copy_infos,
-            build_inputs = build_inputs,
+        clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
+        clang_custom_infos_dict[target_name] = clang_custom_info
+        pkg_clang_custom_infos_dict[pkg_name] = clang_custom_infos_dict
+        copy_infos.extend(target_copy_infos)
+        build_inputs.extend(target_build_inputs)
+
+        # pkg_build_infos_dict[pkg_name] = _update_pkg_build_info(
+        #     pkg_build_infos_dict[pkg_name],
+        #     copy_infos = copy_infos,
+        #     build_inputs = build_inputs,
+        #     clang_custom_infos = {target_name: clang_custom_info},
+        # )
+
+    # Collect information about the SPM packages
+    pkg_build_infos_dict = dict()
+    for pkg_name in pkg_descs_dict:
+        if pkg_name == pds.root_pkg_name:
+            continue
+        pkg = spm_common.get_pkg(pkgs, pkg_name)
+        pkg_desc = pkg_descs_dict[pkg_name]
+        clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
+        pkg_build_infos_dict[pkg_name] = _gather_package_build_info(
+            ctx,
+            pkg_desc,
+            build_config_path,
+            pkg.products,
+            clang_custom_infos_dict,
         )
 
     # Execute the build
-    _build_all_pkgs(ctx, pkg_build_infos_dict)
+    _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs)
 
     # TODO: Populate all_outputs.
     all_outputs = []

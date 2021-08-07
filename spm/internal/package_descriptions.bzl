@@ -41,7 +41,7 @@ def _gather_deps_for_targets(targets_dict, target_names):
     deps = sets.make()
     for name in target_names:
         target = targets_dict[name]
-        target_deps = target["target_dependencies"]
+        target_deps = target.get("target_dependencies", default = [])
         deps = sets.union(deps, sets.make(target_deps))
     return deps
 
