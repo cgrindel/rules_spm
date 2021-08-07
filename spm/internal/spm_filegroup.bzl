@@ -42,6 +42,12 @@ def _spm_filegroup_impl(ctx):
     elif file_type == "swiftsourceinfo":
         output = [module_info.swiftsourceinfo]
     elif file_type == "hdrs":
+        # DEBUG BEGIN
+        print("*** CHUCK pkg_name: ", pkg_name)
+        print("*** CHUCK module_name: ", module_name)
+        print("*** CHUCK module_info.hdrs: ", module_info.hdrs)
+
+        # DEBUG END
         output = module_info.hdrs
     elif file_type == "modulemap":
         output = [module_info.modulemap]

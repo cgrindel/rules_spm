@@ -11,6 +11,9 @@ _spm_swift_module_tpl = """
 spm_swift_module(
     name = "%s",
     packages = "@%s//:build",
+    deps = [
+%s
+    ],
 )
 """
 
@@ -18,38 +21,66 @@ _spm_clang_module_tpl = """
 spm_clang_module(
     name = "%s",
     packages = "@%s//:build",
-    hdrs = [
+    deps = [
 %s
     ],
 )
 """
 
+# _spm_clang_module_tpl = """
+# spm_clang_module(
+#     name = "%s",
+#     packages = "@%s//:build",
+#     hdrs = [
+# %s
+#     ],
+#     deps = [
+# %s
+#     ],
+# )
+# """
+
+def _create_deps_str(target):
+    deps = target.get("target_dependencies", default = [])
+    deps = ["        \":%s\"," % (dep) for dep in deps]
+    return "\n".join(deps)
+
 def _create_spm_swift_module_decl(repository_ctx, target):
     """Returns the spm_swift_module declaration for this Swift target.
     """
     module_name = target["c99name"]
-    return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name)
+    deps_str = _create_deps_str(target)
+    return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
-def _create_spm_clang_module_decl(repository_ctx, target, clang_hdrs):
+def _create_spm_clang_module_decl(repository_ctx, target, clang_hdr_paths):
     module_name = target["c99name"]
-    hdrs_str = _create_hdrs_str(clang_hdrs)
-    return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, hdrs_str)
+
+    # hdrs_with_prefix = [paths.join("..", p) for p in clang_hdr_paths]
+    # hdrs_str = _create_hdrs_str(hdrs_with_prefix)
+    # hdrs_str = _create_hdrs_str(clang_hdr_paths)
+    # return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, hdrs_str, deps_str)
+    deps_str = _create_deps_str(target)
+    return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
 def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc, product_names):
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
 
-    exported_targets = pds.exported_library_targets(pkg_desc, product_names = product_names)
+    exported_targets = pds.exported_library_targets(
+        pkg_desc,
+        product_names = product_names,
+        with_deps = True,
+    )
 
     module_decls = []
     for target in exported_targets:
         if pds.is_clang_target(target):
             clang_hdrs_key = spm_common.create_clang_hdrs_key(pkg_name, target["name"])
-            clang_hdrs = clang_hdrs_dict.get(clang_hdrs_key, default = [])
+            clang_hdr_paths = clang_hdrs_dict.get(clang_hdrs_key, default = [])
             module_decls.append(_create_spm_clang_module_decl(
                 repository_ctx,
                 target,
-                clang_hdrs,
+                clang_hdr_paths,
             ))
         else:
             module_decls.append(_create_spm_swift_module_decl(repository_ctx, target))
@@ -246,7 +277,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
         # Look for custom header declarations in the clang targets
         clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
         for clang_target in clang_targets:
-            clang_hdrs = _get_clang_hdrs_for_target(
+            clang_hdr_paths = _get_clang_hdrs_for_target(
                 repository_ctx,
                 clang_target,
                 pkg_root_path = paths.join(spm_common.checkouts_path, dep_name),
@@ -255,7 +286,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
                 dep_name,
                 clang_target["name"],
             )
-            clang_hdrs_dict[clang_hdrs_key] = clang_hdrs
+            clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
 
         # Generate Bazel targets for the library products
         pkg = spm_common.get_pkg(pkgs, dep_name)
