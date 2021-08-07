@@ -1,5 +1,6 @@
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
+load(":packages.bzl", "packages")
 load(":spm_common.bzl", "spm_common")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
@@ -117,7 +118,7 @@ def _build_all_pkgs(ctx, pkg_build_infos):
 def _spm_package_impl(ctx):
     # Parse the package description JSON.
     pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
-    pkgs = json.decode(ctx.attr.dependencies_json)
+    pkgs = packages.from_json(ctx.attr.dependencies_json)
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_path = paths.join(

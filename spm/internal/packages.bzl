@@ -60,8 +60,12 @@ def _to_json(url, bzl_name = None, spm_name = None, from_version = None, product
     return json.encode(pkg)
 
 def _from_json(json_str):
-    pkg_dict = json.decode(json_str)
-    return _create_pkg(**pkg_dict)
+    result = json.decode(json_str)
+    if types.is_list(result):
+        return [_create_pkg(**d) for d in result]
+    elif types.is_dict(result):
+        return _create_pkg(**result)
+    fail("Unexpected result type decoding JSON string. %s" % (json_str))
 
 packages = struct(
     create_spm_name = _create_spm_name,
