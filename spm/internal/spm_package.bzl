@@ -248,7 +248,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
-    all_build_outs = []
+    all_build_outs = [build_output_dir]
     for pkg_name in pkg_build_infos_dict:
         pbi = pkg_build_infos_dict[pkg_name]
         all_build_outs.extend(pbi.build_outs)
@@ -267,11 +267,13 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     ctx.actions.run(
         inputs = ctx.files.srcs + build_inputs,
         tools = [swift_worker],
-        outputs = [build_output_dir] + all_build_outs,
+        outputs = all_build_outs,
         arguments = [run_args],
         executable = ctx.executable._spm_build_tool,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
+
+    return all_build_outs
 
 # MARK: - Rule Implementation
 
@@ -313,13 +315,6 @@ def _spm_package_impl(ctx):
         copy_infos.extend(target_copy_infos)
         build_inputs.extend(target_build_inputs)
 
-        # pkg_build_infos_dict[pkg_name] = _update_pkg_build_info(
-        #     pkg_build_infos_dict[pkg_name],
-        #     copy_infos = copy_infos,
-        #     build_inputs = build_inputs,
-        #     clang_custom_infos = {target_name: clang_custom_info},
-        # )
-
     # Collect information about the SPM packages
     pkg_build_infos_dict = dict()
     for pkg_name in pkg_descs_dict:
@@ -337,10 +332,8 @@ def _spm_package_impl(ctx):
         )
 
     # Execute the build
-    _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs)
+    all_outputs = _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs)
 
-    # TODO: Populate all_outputs.
-    all_outputs = []
     return [
         DefaultInfo(files = depset(all_outputs)),
         SPMPackagesInfo(
