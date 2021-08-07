@@ -48,14 +48,14 @@ def _create_package_build_info(pkg_desc, pkg_info, build_outs, copy_infos):
         copy_infos = copy_infos,
     )
 
-def _gather_package_build_info(ctx, pkg_desc, build_config_path):
+def _gather_package_build_info(ctx, pkg_desc, build_config_path, product_names):
     build_outs = []
     copy_infos = []
     swift_modules = []
     clang_modules = []
     pkg_name = pkg_desc["name"]
 
-    exported_targets = pds.exported_library_targets(pkg_desc)
+    exported_targets = pds.exported_library_targets(pkg_desc, product_names = product_names)
     for target in exported_targets:
         if pds.is_swift_target(target):
             swift_module_info = _declare_swift_target_files(ctx, target, build_config_path)
@@ -117,6 +117,7 @@ def _build_all_pkgs(ctx, pkg_build_infos):
 def _spm_package_impl(ctx):
     # Parse the package description JSON.
     pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
+    pkgs = json.decode(ctx.attr.dependencies_json)
 
     # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
     build_config_path = paths.join(
@@ -130,11 +131,13 @@ def _spm_package_impl(ctx):
     for pkg_name in pkg_descs_dict:
         if pkg_name == pds.root_pkg_name:
             continue
+        pkg = spm_common.get_pkg(pkgs, pkg_name)
         pkg_desc = pkg_descs_dict[pkg_name]
         pkg_build_info = _gather_package_build_info(
             ctx,
             pkg_desc,
             build_config_path,
+            pkg.products,
         )
         pkg_build_infos.append(pkg_build_info)
 
@@ -163,6 +166,13 @@ _attrs = {
     "package_descriptions_json": attr.string(
         mandatory = True,
         doc = "JSON string which describes the package (i.e. swift package describe --type json).",
+    ),
+    "dependencies_json": attr.string(
+        mandatory = True,
+        doc = """"\
+        JSON string describing the dependencies to expose\
+        (e.g. see dependencies in spm_repositories)\
+        """,
     ),
     "package_path": attr.string(
         doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",

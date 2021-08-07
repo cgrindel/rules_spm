@@ -175,11 +175,12 @@ def _create_clang_module_headers(hdrs_dict):
     entries = [_create_clang_module_headers_entry(k, hdrs_dict[k]) for k in hdrs_dict]
     return "\n".join(entries)
 
-def _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict):
+def _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict, pkgs):
     substitutions = {
         "{spm_repos_name}": repository_ctx.attr.name,
         "{pkg_descs_json}": json.encode_indent(pkg_descriptions, indent = "  "),
         "{clang_module_headers}": _create_clang_module_headers(clang_hdrs_dict),
+        "{dependencies_json}": json.encode_indent(pkgs),
     }
     repository_ctx.template(
         "BUILD.bazel",
@@ -203,12 +204,6 @@ _platforms_tpl = """\
 %s
   ],
 """
-
-def _get_pkg(pkgs, pkg_name):
-    for pkg in pkgs:
-        if pkg.spm_name == pkg_name:
-            return pkg
-    fail("Failed to find package", pkg_name)
 
 def _generate_package_swift_file(repository_ctx, pkgs):
     swift_platforms = ""
@@ -272,11 +267,11 @@ def _configure_spm_repository(repository_ctx, pkgs):
             clang_hdrs_dict[clang_hdrs_key] = clang_hdrs
 
         # Generate Bazel targets for the library products
-        pkg = _get_pkg(pkgs, dep_name)
+        pkg = spm_common.get_pkg(pkgs, dep_name)
         _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, dep_pkg_desc, pkg.products)
 
     # Write BUILD.bazel file.
-    _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict)
+    _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict, pkgs)
 
 def _spm_repositories_impl(repository_ctx):
     pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]

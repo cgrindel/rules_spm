@@ -19,10 +19,15 @@ PACKAGE_DESCRIPTIONS_JSON = """
 {pkg_descs_json}
 """
 
+DEPENDENCIES_JSON = """
+{dependencies_json}
+"""
+
 spm_package(
     name = "build",
     srcs = [":all_srcs"],
     package_descriptions_json = PACKAGE_DESCRIPTIONS_JSON,
+    dependencies_json = DEPENDENCIES_JSON,
     package_path = "external/{spm_repos_name}",
     clang_module_headers = {
 {clang_module_headers}
