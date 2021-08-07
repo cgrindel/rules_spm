@@ -20,7 +20,32 @@ def _exported_library_targets_test(ctx):
     asserts.equals(env, 1, len(result))
     asserts.equals(env, "Logging", result[0]["c99name"])
 
-    unittest.fail(env, "Add tests filtering by product names.")
+    pkg_desc = {
+        "products": [
+            {"name": "Foo", "type": {"library": {}}, "targets": ["Foo"]},
+            {"name": "Bar", "type": {"library": {}}, "targets": ["Bar"]},
+        ],
+        "targets": [
+            {"name": "Foo", "target_dependencies": ["Bar", "Hello"]},
+            {"name": "Bar", "target_dependencies": ["Hello"]},
+            {"name": "Hello", "target_dependencies": []},
+        ],
+    }
+    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Foo"])])
+    expected = ["Foo"]
+    asserts.equals(env, expected, actual)
+
+    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, with_deps = True)])
+    expected = ["Bar", "Foo", "Hello"]
+    asserts.equals(env, expected, actual)
+
+    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Foo"], with_deps = True)])
+    expected = ["Bar", "Foo", "Hello"]
+    asserts.equals(env, expected, actual)
+
+    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Bar"], with_deps = True)])
+    expected = ["Bar", "Hello"]
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 

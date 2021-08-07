@@ -37,7 +37,15 @@ def _is_library_product(product):
 def _library_products(pkg_desc):
     return [p for p in pkg_desc["products"] if _is_library_product(p)]
 
-def _exported_library_targets(pkg_desc, product_names = None):
+def _gather_deps_for_targets(targets_dict, target_names):
+    deps = sets.make()
+    for name in target_names:
+        target = targets_dict[name]
+        target_deps = target["target_dependencies"]
+        deps = sets.union(deps, sets.make(target_deps))
+    return deps
+
+def _exported_library_targets(pkg_desc, product_names = None, with_deps = False):
     """Returns the exported targets from the SPM pacakge.
 
     Args:
@@ -52,13 +60,25 @@ def _exported_library_targets(pkg_desc, product_names = None):
         product_names_set = sets.make(product_names)
         products = [p for p in products if sets.contains(product_names_set, p["name"])]
 
-    target_names = []
+    target_names = sets.make()
+
+    # Collect the targets that are declared by the products.
     for product in products:
         for target_name in product["targets"]:
-            if target_name not in target_names:
-                target_names.append(target_name)
+            sets.insert(target_names, target_name)
 
-    return [targets_dict[target_name] for target_name in target_names]
+    # Collect the deps of the top-level targets
+    if with_deps:
+        target_names_to_collect = sets.to_list(target_names)
+        for iteration in range(10):
+            deps = _gather_deps_for_targets(targets_dict, target_names_to_collect)
+            new_deps = sets.difference(deps, target_names)
+            if sets.length(new_deps) == 0:
+                break
+            target_names_to_collect = sets.to_list(new_deps)
+            target_names = sets.union(target_names, new_deps)
+
+    return [targets_dict[target_name] for target_name in sets.to_list(target_names)]
 
 def _is_library_target(target):
     """Returns True if the specified target is a library target. Otherwise False.
