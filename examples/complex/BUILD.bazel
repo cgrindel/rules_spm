@@ -1,15 +1,5 @@
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_binary")
 
-# swift_binary(
-#     name = "complex",
-#     srcs = ["main.swift"],
-#     visibility = ["//swift:__subpackages__"],
-#     deps = [
-#         "@apple_swift_log//:Logging",
-#         "@apple_swift_nio//:NIO",
-#     ],
-# )
-
 swift_binary(
     name = "complex",
     srcs = ["main.swift"],
@@ -17,8 +7,6 @@ swift_binary(
     deps = [
         "@swift_pkgs//swift-log:Logging",
         "@swift_pkgs//swift-nio:NIO",
-        # "@swift_pkgs//apple_swift_log:Logging",
-        # "@swift_pkgs//apple_swift_nio:NIO",
     ],
 )
 
