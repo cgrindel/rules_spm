@@ -81,6 +81,7 @@ def _create_pkg_build_info(
 
 def _gather_package_build_info(
         ctx,
+        pkg_name,
         pkg_desc,
         build_config_path,
         product_names,
@@ -88,7 +89,7 @@ def _gather_package_build_info(
     build_outs = []
     swift_modules = []
     clang_modules = []
-    pkg_name = pkg_desc["name"]
+    # pkg_name = pkg_desc["name"]
 
     # Declare outputs for the targets that will be used
     exported_targets = pds.exported_library_targets(
@@ -274,6 +275,7 @@ def _spm_package_impl(ctx):
         clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
         pkg_build_infos_dict[pkg_name] = _gather_package_build_info(
             ctx,
+            pkg_name,
             pkg_desc,
             build_config_path,
             pkg.products,
@@ -282,6 +284,13 @@ def _spm_package_impl(ctx):
 
     # Execute the build
     all_outputs = _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs)
+
+    # DEBUG BEGIN
+    print("*** CHUCK pkg_build_infos_dict: ")
+    for idx, item in enumerate(pkg_build_infos_dict):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
 
     return [
         DefaultInfo(files = depset(all_outputs)),

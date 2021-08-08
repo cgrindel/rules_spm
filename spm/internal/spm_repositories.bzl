@@ -46,8 +46,7 @@ def _create_spm_clang_module_decl(repository_ctx, target):
     deps_str = _create_deps_str(target)
     return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
-def _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, pkg_desc, product_names):
-    pkg_name = pkg_desc["name"]
+def _generate_bazel_pkg(repository_ctx, pkg_name, clang_hdrs_dict, pkg_desc, product_names):
     bld_path = "%s/BUILD.bazel" % (pkg_name)
 
     exported_targets = pds.exported_library_targets(
@@ -271,7 +270,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
 
         # Generate Bazel targets for the library products
         pkg = spm_common.get_pkg(pkgs, dep_name)
-        _generate_bazel_pkg(repository_ctx, clang_hdrs_dict, dep_pkg_desc, pkg.products)
+        _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
 
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict, pkgs)
@@ -287,9 +286,6 @@ def _spm_repositories_impl(repository_ctx):
         "Sources/Placeholder/Placeholder.swift",
         content = """
         // Placeholder code
-        // public func foo() -> String {
-        //   return "Foo"
-        // }
         """,
         executable = False,
     )
