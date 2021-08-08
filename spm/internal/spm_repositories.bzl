@@ -49,23 +49,11 @@ def _create_spm_clang_module_decl(repository_ctx, target):
 def _generate_bazel_pkg(repository_ctx, pkg_name, clang_hdrs_dict, pkg_desc, product_names):
     bld_path = "%s/BUILD.bazel" % (pkg_name)
 
-    # DEBUG BEGIN
-    print("*** CHUCK pkg_name: ", pkg_name)
-    print("*** CHUCK clang_hdrs_dict: ", clang_hdrs_dict)
-
-    # print("*** CHUCK pkg_desc: ", pkg_desc)
-    print("*** CHUCK product_names: ", product_names)
-    # DEBUG END
-
     exported_targets = pds.exported_library_targets(
         pkg_desc,
         product_names = product_names,
         with_deps = True,
     )
-
-    # DEBUG BEGIN
-    print("*** CHUCK exported_targets: ", exported_targets)
-    # DEBUG END
 
     module_decls = []
     for target in exported_targets:
@@ -103,11 +91,6 @@ def _get_dep_pkg_desc(repository_ctx, pkg_dep):
 
     dep_name = pds.dependency_name(pkg_dep)
 
-    # DEBUG BEGIN
-    print("*** CHUCK _get_dep_pkg_desc dep_name: ", dep_name)
-    print("*** CHUCK dep_repos_name: ", dep_repos_name)
-
-    # DEBUG END
     return (dep_name, dep_pkg_desc)
 
 # MARK: - Clang Custom Headers Functions

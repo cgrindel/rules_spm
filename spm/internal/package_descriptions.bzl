@@ -25,16 +25,6 @@ def _get_package_description(repository_ctx, working_directory = ""):
     Returns:
         A `dict` representing an SPM package description.
     """
-
-    # DEBUG BEGIN
-    print("*** CHUCK _get_package_description working_directory: ", working_directory)
-    debug_result = repository_ctx.execute(
-        ["tree"],
-        working_directory = working_directory,
-    )
-    print("*** CHUCK debug_result.stdout:\n", debug_result.stdout)
-
-    # DEBUG END
     describe_result = repository_ctx.execute(
         ["swift", "package", "describe", "--type", "json"],
         working_directory = working_directory,

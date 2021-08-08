@@ -285,13 +285,6 @@ def _spm_package_impl(ctx):
     # Execute the build
     all_outputs = _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs)
 
-    # DEBUG BEGIN
-    print("*** CHUCK pkg_build_infos_dict: ")
-    for idx, item in enumerate(pkg_build_infos_dict):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
-
     return [
         DefaultInfo(files = depset(all_outputs)),
         SPMPackagesInfo(
