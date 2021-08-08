@@ -1,5 +1,9 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:package_descriptions.bzl", pds = "package_descriptions")
+load(
+    "//spm/internal:package_descriptions.bzl",
+    "module_types",
+    pds = "package_descriptions",
+)
 load(":json_test_data.bzl", "package_description_json")
 
 def _parse_json_test(ctx):
@@ -137,7 +141,8 @@ dependency_name_test = unittest.make(_dependency_name_test)
 def _dependency_repository_name_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    pkg_dep = {"url": "https://github.com/swift-server/async-http-client.git"}
+    asserts.equals(env, "async-http-client", pds.dependency_repository_name(pkg_dep))
 
     return unittest.end(env)
 
@@ -146,7 +151,11 @@ dependency_repository_name_test = unittest.make(_dependency_repository_name_test
 def _is_clang_target_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    target = {"module_type": module_types.clang}
+    asserts.true(env, pds.is_clang_target(target))
+
+    target = {"module_type": module_types.swift}
+    asserts.false(env, pds.is_clang_target(target))
 
     return unittest.end(env)
 
@@ -155,7 +164,11 @@ is_clang_target_test = unittest.make(_is_clang_target_test)
 def _is_swift_target_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    target = {"module_type": module_types.swift}
+    asserts.true(env, pds.is_swift_target(target))
+
+    target = {"module_type": module_types.clang}
+    asserts.false(env, pds.is_swift_target(target))
 
     return unittest.end(env)
 
@@ -164,7 +177,9 @@ is_swift_target_test = unittest.make(_is_swift_target_test)
 def _get_target_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    pkg_desc = pds.parse_json(package_description_json)
+    result = pds.get_target(pkg_desc, "Logging")
+    asserts.equals(env, "Logging", result["name"])
 
     return unittest.end(env)
 
