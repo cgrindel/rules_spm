@@ -55,9 +55,27 @@ def _from_json(json_str):
         return _create_pkg(**result)
     fail("Unexpected result type decoding JSON string. %s" % (json_str))
 
+def _get_pkg(pkgs, pkg_name):
+    """Returns the package declaration from a list of package declarations.
+
+    Args:
+        pkgs: A `list` of package declarations (`struct`) as created by
+              `packages.create()`, `packages.pkg_json()` or `spm_pkg()`.
+        pkg_name: A `string` representing the name of the Swift package.
+
+    Returns:
+        A package declaration `struct` as created by
+        `packages.create()`, `packages.pkg_json()` or `spm_pkg()`.
+    """
+    for pkg in pkgs:
+        if pkg.name == pkg_name:
+            return pkg
+    fail("Failed to find package", pkg_name)
+
 packages = struct(
     create_name = _create_name,
     create = _create_pkg,
     pkg_json = _to_json,
     from_json = _from_json,
+    get_pkg = _get_pkg,
 )

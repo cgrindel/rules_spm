@@ -59,10 +59,25 @@ def _json_roundtrip_test(ctx):
 
 json_roundtrip_test = unittest.make(_json_roundtrip_test)
 
+def _get_pkg_test(ctx):
+    env = unittest.begin(ctx)
+
+    pkgs = [
+        packages.create("https://github.com/foo/bar-kit.git", from_version = "1.0.0", products = ["Foo"]),
+        packages.create("https://github.com/foo/foo-kit.git", from_version = "1.0.0", products = ["Foo"]),
+    ]
+    pkg = packages.get_pkg(pkgs, "foo-kit")
+    asserts.equals(env, pkgs[1], pkg)
+
+    return unittest.end(env)
+
+get_pkg_test = unittest.make(_get_pkg_test)
+
 def packages_test_suite():
     return unittest.suite(
         "packages_tests",
         create_name_test,
         create_test,
         json_roundtrip_test,
+        get_pkg_test,
     )

@@ -272,7 +272,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
             clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
 
         # Generate Bazel targets for the library products
-        pkg = spm_common.get_pkg(pkgs, dep_name)
+        pkg = packages.get_pkg(pkgs, dep_name)
         _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
 
     # Write BUILD.bazel file.
