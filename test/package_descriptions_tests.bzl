@@ -124,12 +124,24 @@ library_targets_test = unittest.make(_library_targets_test)
 def _dependency_name_test(ctx):
     env = unittest.begin(ctx)
 
+    pkg_dep = {"name": "foo-kit", "url": "https://github.com/swift-server/async-http-client.git"}
+    asserts.equals(env, "foo-kit", pds.dependency_name(pkg_dep))
+
     pkg_dep = {"url": "https://github.com/swift-server/async-http-client.git"}
     asserts.equals(env, "async-http-client", pds.dependency_name(pkg_dep))
 
     return unittest.end(env)
 
 dependency_name_test = unittest.make(_dependency_name_test)
+
+def _dependency_repository_name_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+dependency_repository_name_test = unittest.make(_dependency_repository_name_test)
 
 def _is_clang_target_test(ctx):
     env = unittest.begin(ctx)

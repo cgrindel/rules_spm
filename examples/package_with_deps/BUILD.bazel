@@ -10,7 +10,7 @@ swift_binary(
         # "@cgrindel_pkg_with_deps//:FooKit",
         "@swift_pkgs//swift-log:Logging",
         "@swift_pkgs//swift-nio:NIO",
-        "@swift_pkgs//rules_spm_example_pkg_with_deps:FooKit",
+        "@swift_pkgs//foo-kit:FooKit",
     ],
 )
 

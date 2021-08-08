@@ -25,6 +25,16 @@ def _get_package_description(repository_ctx, working_directory = ""):
     Returns:
         A `dict` representing an SPM package description.
     """
+
+    # DEBUG BEGIN
+    print("*** CHUCK _get_package_description working_directory: ", working_directory)
+    debug_result = repository_ctx.execute(
+        ["tree"],
+        working_directory = working_directory,
+    )
+    print("*** CHUCK debug_result.stdout:\n", debug_result.stdout)
+
+    # DEBUG END
     describe_result = repository_ctx.execute(
         ["swift", "package", "describe", "--type", "json"],
         working_directory = working_directory,
@@ -103,6 +113,12 @@ def _library_targets(pkg_desc):
     targets = pkg_desc["targets"]
     return [t for t in targets if _is_library_target(t)]
 
+def _dependency_repository_name(pkg_dep):
+    url = pkg_dep["url"]
+    basename = paths.basename(url)
+    name, ext = paths.split_extension(basename)
+    return name
+
 def _dependency_name(pkg_dep):
     """Returns the name for the package dependency.
 
@@ -112,10 +128,10 @@ def _dependency_name(pkg_dep):
     Returns:
         The name as a `string`.
     """
-    url = pkg_dep["url"]
-    basename = paths.basename(url)
-    name, ext = paths.split_extension(basename)
-    return name
+    name = pkg_dep.get("name", default = "")
+    if name != "":
+        return name
+    return _dependency_repository_name(pkg_dep)
 
 def _is_clang_target(target):
     """Returns True if the specified target is a clang module. Otherwise, False.
@@ -162,10 +178,12 @@ package_descriptions = struct(
     # Target Functions
     is_library_target = _is_library_target,
     library_targets = _library_targets,
-    dependency_name = _dependency_name,
     is_clang_target = _is_clang_target,
     is_swift_target = _is_swift_target,
     get_target = _get_target,
+    # Dependency Functions
+    dependency_name = _dependency_name,
+    dependency_repository_name = _dependency_repository_name,
     # Constants
     root_pkg_name = "_root",
 )
