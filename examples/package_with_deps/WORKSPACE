@@ -91,6 +91,7 @@ spm_repositories(
         ),
         spm_pkg(
             "https://github.com/cgrindel/rules_spm_example_pkg_with_deps.git",
+            name = "foo-kit",
             from_version = "0.0.0",
             products = ["FooKit"],
         ),
