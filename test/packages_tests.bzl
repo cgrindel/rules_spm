@@ -53,7 +53,13 @@ def _json_roundtrip_test(ctx):
     expected = packages.create("https://github.com/foo/bar-kit.git", from_version = "1.0.0", products = ["Foo"])
     asserts.equals(env, expected, actual)
 
-    unittest.fail(env, "Add test consuming JSON string array.")
+    pkgs = [
+        packages.create("https://github.com/foo/bar-kit.git", from_version = "1.0.0", products = ["Foo"]),
+        packages.create("https://github.com/foo/foo-kit.git", from_version = "1.0.0", products = ["Foo"]),
+    ]
+    json_str = json.encode(pkgs)
+    result = packages.from_json(json_str)
+    asserts.equals(env, pkgs, result)
 
     return unittest.end(env)
 
