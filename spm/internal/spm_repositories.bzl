@@ -214,8 +214,8 @@ def _generate_package_swift_file(repository_ctx, pkgs):
             ",\n".join(["    %s" % (p) for p in repository_ctx.attr.platforms])
         )
 
-    pkg_deps = [_package_tpl % (pkg.spm_name, pkg.url, pkg.from_version) for pkg in pkgs]
-    target_deps = [_target_dep_tpl % (pname, pkg.spm_name) for pkg in pkgs for pname in pkg.products]
+    pkg_deps = [_package_tpl % (pkg.name, pkg.url, pkg.from_version) for pkg in pkgs]
+    target_deps = [_target_dep_tpl % (pname, pkg.name) for pkg in pkgs for pname in pkg.products]
     substitutions = {
         "{swift_tools_version}": repository_ctx.attr.swift_version,
         "{swift_platforms}": swift_platforms,

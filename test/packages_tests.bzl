@@ -1,23 +1,15 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//spm/internal:packages.bzl", "packages")
 
-def _create_bzl_name_test(ctx):
+def _create_name_test(ctx):
     env = unittest.begin(ctx)
 
-    asserts.equals(env, "foo_bar_kit", packages.create_bzl_name("https://github.com/foo/bar-kit.git"))
-    asserts.equals(env, "foo_bar", packages.create_bzl_name("https://github.com/foo/bar.git"))
+    asserts.equals(env, "bar-kit", packages.create_name("https://github.com/foo/bar-kit.git"))
+    asserts.equals(env, "bar", packages.create_name("https://github.com/foo/bar.git"))
 
     return unittest.end(env)
 
-def _create_spm_name_test(ctx):
-    env = unittest.begin(ctx)
-
-    asserts.equals(env, "bar-kit", packages.create_spm_name("https://github.com/foo/bar-kit.git"))
-    asserts.equals(env, "bar", packages.create_spm_name("https://github.com/foo/bar.git"))
-
-    return unittest.end(env)
-
-create_spm_name_test = unittest.make(_create_spm_name_test)
+create_name_test = unittest.make(_create_name_test)
 
 def _create_test(ctx):
     env = unittest.begin(ctx)
@@ -28,26 +20,22 @@ def _create_test(ctx):
     actual = packages.create(url, from_version = from_version, products = ["Foo", "Bar"])
     expected = struct(
         url = url,
-        bzl_name = packages.create_bzl_name(url),
-        spm_name = packages.create_spm_name(url),
+        name = packages.create_name(url),
         from_version = from_version,
         products = ["Foo", "Bar"],
     )
     asserts.equals(env, expected, actual)
 
-    bzl_name = "howdy_bob"
-    spm_name = "howdy-bob"
+    name = "howdy-bob"
     actual = packages.create(
         url,
-        bzl_name = bzl_name,
-        spm_name = spm_name,
+        name = name,
         from_version = from_version,
         products = ["Foo", "Bar"],
     )
     expected = struct(
         url = url,
-        bzl_name = bzl_name,
-        spm_name = spm_name,
+        name = name,
         from_version = from_version,
         products = ["Foo", "Bar"],
     )
@@ -71,13 +59,10 @@ def _json_roundtrip_test(ctx):
 
 json_roundtrip_test = unittest.make(_json_roundtrip_test)
 
-create_bzl_name_test = unittest.make(_create_bzl_name_test)
-
 def packages_test_suite():
     return unittest.suite(
         "packages_tests",
-        create_bzl_name_test,
-        create_spm_name_test,
+        create_name_test,
         create_test,
         json_roundtrip_test,
     )

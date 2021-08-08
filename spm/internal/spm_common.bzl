@@ -11,7 +11,7 @@ def _split_clang_hdrs_key(key):
 
 def _get_pkg(pkgs, pkg_name):
     for pkg in pkgs:
-        if pkg.spm_name == pkg_name:
+        if pkg.name == pkg_name:
             return pkg
     fail("Failed to find package", pkg_name)
 
