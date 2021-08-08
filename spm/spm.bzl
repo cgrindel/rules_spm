@@ -3,10 +3,6 @@ load(
     _spm_package = "spm_package",
 )
 load(
-    "//spm/internal:spm_repository.bzl",
-    _spm_repository = "spm_repository",
-)
-load(
     "//spm/internal:spm_repositories.bzl",
     _spm_pkg = "spm_pkg",
     _spm_repositories = "spm_repositories",
@@ -21,7 +17,6 @@ load(
 )
 
 # Repository Rules
-spm_repository = _spm_repository
 spm_repositories = _spm_repositories
 spm_pkg = _spm_pkg
 
