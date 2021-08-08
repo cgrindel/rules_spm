@@ -70,15 +70,6 @@ def _contains_path_test(ctx):
 
 contains_path_test = unittest.make(_contains_path_test)
 
-def _list_files_under_test(ctx):
-    env = unittest.begin(ctx)
-
-    unittest.fail(env, "IMPLEMENT ME!")
-
-    return unittest.end(env)
-
-list_files_under_test = unittest.make(_list_files_under_test)
-
 def files_test_suite():
     return unittest.suite(
         "files_tests",
@@ -86,5 +77,4 @@ def files_test_suite():
         is_hdr_file_test,
         is_modulemap_file_test,
         contains_path_test,
-        list_files_under_test,
     )
