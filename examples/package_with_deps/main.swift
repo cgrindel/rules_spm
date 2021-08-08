@@ -1,5 +1,4 @@
-// AsyncKit imports Logging and NIO for us.
-import AsyncKit
+import FooKit
 import Logging
 import NIO
 
