@@ -34,46 +34,6 @@ load(
 
 rules_spm_dependencies()
 
-# load(
-#     "@cgrindel_rules_spm//spm:spm.bzl",
-#     "spm_repository",
-# )
-
-# # spm_repository(
-# #     name = "vapor_vapor",
-# #     sha256 = "3d7bc389ef6ae13f3ade731c95cfb88c641004f2f482fe55768799ebbb28aa0c",
-# #     strip_prefix = "vapor-4.48.2",
-# #     urls = ["https://github.com/vapor/vapor/archive/4.48.2.tar.gz"],
-# # )
-
-# spm_repository(
-#     name = "apple_swift_log",
-#     sha256 = "de51662b35f47764b6e12e9f1d43e7de28f6dd64f05bc30a318cf978cf3bc473",
-#     strip_prefix = "swift-log-1.4.2",
-#     urls = ["https://github.com/apple/swift-log/archive/1.4.2.tar.gz"],
-# )
-
-# spm_repository(
-#     name = "apple_swift_nio",
-#     sha256 = "40b115e77e8af3ffbe84be344c30c0964763e318e1d3dfe0a80da0e2ae17d614",
-#     strip_prefix = "swift-nio-2.30.0",
-#     urls = ["https://github.com/apple/swift-nio/archive/2.30.0.tar.gz"],
-# )
-
-# spm_repository(
-#     name = "cgrindel_pkg_with_deps",
-#     sha256 = "3c527aa6d0ffdb82f7311118474c70aea8ae5fc7e147265f0c90d6e6ac113c0e",
-#     strip_prefix = "rules_spm_example_pkg_with_deps-0.1.0",
-#     urls = ["https://github.com/cgrindel/rules_spm_example_pkg_with_deps/archive/0.1.0.tar.gz"],
-# )
-
-# # spm_repository(
-# #     name = "vapor_async_kit",
-# #     sha256 = "db9f46e1f9728540269fe7fe3b76d9193851bc3a9af20d9ad98548c498e539ae",
-# #     strip_prefix = "async-kit-1.3.1",
-# #     urls = ["https://github.com/vapor/async-kit/archive/1.3.1.tar.gz"],
-# # )
-
 load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
 
 spm_repositories(
