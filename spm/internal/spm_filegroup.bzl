@@ -69,7 +69,8 @@ def _spm_filegroup_impl(ctx):
     elif file_type == "swiftdoc":
         output = [module_info.swiftdoc]
     elif file_type == "swiftmodule":
-        output = [module_info.swiftmodule] elif file_type == "swiftsourceinfo":
+        output = [module_info.swiftmodule]
+    elif file_type == "swiftsourceinfo":
         output = [module_info.swiftsourceinfo]
     elif file_type == "hdrs":
         output = module_info.hdrs

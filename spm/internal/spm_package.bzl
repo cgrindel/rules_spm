@@ -9,6 +9,17 @@ load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_c
 # MARK: - Swift Module Info
 
 def _declare_swift_target_files(ctx, target, build_config_path):
+    """Declares the outputs for a Swift module and returns a struct value 
+    describing the Swift module.
+
+    Args:
+        ctx: A `ctx` instance.
+        target: A target `dict` from the package description.
+        build_config_path: A `string` specifying the build output path.
+
+    Returns:
+        A `struct` value as returned from `providers.swift_module()`.
+    """
     all_build_outs = []
     o_files = []
 
@@ -44,15 +55,28 @@ def _declare_swift_target_files(ctx, target, build_config_path):
 def _declare_clang_target_files(
         ctx,
         target,
-        build_config_dirname,
+        build_config_path,
         clang_custom_info):
+    """Declares the outputs for a clang module and returns a struct value 
+    describing the clang module.
+
+    Args:
+        ctx: A `ctx` instance.
+        target: A target `dict` from the package description.
+        build_config_path: A `string` specifying the build output path.
+        clang_custom_info: A `struct` value as created by
+                           `_create_clang_custom_info`.
+
+    Returns:
+        A `struct` value as returned from `providers.clang_module()`.
+    """
     all_outputs = []
     o_files = []
 
     target_name = target["name"]
     module_name = target["c99name"]
 
-    target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
+    target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
 
     # Declare the Mach-O files.
     for src in target["sources"]:
@@ -63,7 +87,7 @@ def _declare_clang_target_files(
         module_name = module_name,
         o_files = o_files,
         hdrs = clang_custom_info.hdrs,
-        modulemap = clang_custom_info.hdrs,
+        modulemap = clang_custom_info.modulemap,
         all_outputs = all_outputs,
     )
 
@@ -73,6 +97,16 @@ def _create_pkg_build_info(
         pkg_desc,
         pkg_info,
         build_outs):
+    """Creates a struct representing the build information for a Swift package.
+
+    Args:
+        pkg_desc: A `dict` representing the package descprtion JSON.
+        pkg_info: A `SPMPackageInfo` value.
+        build_outs: A `list` of declared outputs (`File`) for the package.
+
+    Returns:
+        A `struct` value representing a Swift package's build information.
+    """
     return struct(
         pkg_desc = pkg_desc,
         pkg_info = pkg_info,
@@ -86,6 +120,24 @@ def _gather_package_build_info(
         build_config_path,
         product_names,
         clang_custom_infos_dict):
+    """Gathers build information for a Swift package.
+
+    Args:
+        ctx: A `ctx` instance.
+        pkg_name: The name of the pacakge as a `string`.
+        pkg_desc: A `dict` representing the package description for the
+                  package.
+        build_config_path: A `string` specifying the build output path.
+        product_names: A `list` of product names that should be exported from
+                       the Swift package.
+        clang_custom_infos_dict: A `dict` of `struct` values as created by
+                                 `_create_clang_custom_info()` indexed by
+                                 target name.
+
+    Returns:
+        A `struct` value as created by `_create_pkg_build_info()` representing
+        the build information for the Swift package.
+    """
     build_outs = []
     swift_modules = []
     clang_modules = []
@@ -127,6 +179,18 @@ def _create_clang_custom_info(
         target_name,
         hdrs = [],
         modulemap = None):
+    """Creates a struct value representing the customization info for a clange
+    target.
+
+    Args:
+        target_name: The target name as a `string`.
+        hdrs: A `list` of declared outputs (`File`) for the public headers.
+        modulemap: The declared output for the module's `module.modulemap`
+                   file.
+
+    Returns:
+        A `struct` value.
+    """
     return struct(
         target_name = target_name,
         hdrs = hdrs,
@@ -140,6 +204,29 @@ def _customize_clang_modulemap_and_hdrs(
         public_hdrs,
         build_config_path,
         modulemap_dir_path):
+    """Customize the output for clang modules.
+
+    To ensure that clang modules link properly, the public headers are copied
+    to the output directory and a custom modulemap is written pointing at the
+    copied public headers.
+
+    Args:
+        ctx: A `ctx` instance.
+        target_name: The name of the clang target as a `string`.
+        module_name: The name of the clang module as a `string`.
+        public_hdrs: A `list` of `string` values specifying the path
+                     to the public headers in the source tree.
+        build_config_path: A `string` specifying the build output path.
+        modulemap_dir_path: A `string` specifying the path where custom
+                            modulemaps will be generated.
+
+    Returns:
+        A `tuple` where the first item is a `struct` as created by
+        `_create_clang_custom_info()`, the second item is a `list` of
+        `struct` values created by `providers.copy_info()` and the
+        third item is a `list` of items that should be specified as
+        inputs into the SPM build step.
+    """
     out_hdrs = []
     copy_infos = []
     build_inputs = []
@@ -191,6 +278,21 @@ def _customize_clang_modulemap_and_hdrs(
 # MARK: - Build Packages
 
 def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
+    """Executes the Swift pacakage manager build.
+
+    Args:
+        ctx: A `ctx` instance.
+        pkg_build_infos_dict: A `dict` of package build information `dict`
+                              values indexed by package name.
+        copy_infos: A `list` of `struct` values as created by
+                    `providers.copy_info()`.
+        build_inputs: A `list` of inputs that are specified on the build
+                      action.
+
+    Returns:
+        A `list` of declared build outputs.
+    """
+
     # Toolchain info
     # The swift_worker is typically xcrun.
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
