@@ -2,11 +2,20 @@ workspace(name = "package_with_deps_example")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+# MARK: - Apple and Swift Dependencies
+
 http_archive(
-    name = "build_bazel_rules_swift",
-    sha256 = "f872c0388808c3f8de67e0c6d39b0beac4a65d7e07eff3ced123d0b102046fb6",
-    url = "https://github.com/bazelbuild/rules_swift/releases/download/0.23.0/rules_swift.0.23.0.tar.gz",
+    name = "build_bazel_rules_apple",
+    sha256 = "0052d452af7742c8f3a4e0929763388a66403de363775db7e90adecb2ba4944b",
+    url = "https://github.com/bazelbuild/rules_apple/releases/download/0.31.3/rules_apple.0.31.3.tar.gz",
 )
+
+load(
+    "@build_bazel_rules_apple//apple:repositories.bzl",
+    "apple_rules_dependencies",
+)
+
+apple_rules_dependencies()
 
 load(
     "@build_bazel_rules_swift//swift:repositories.bzl",
@@ -22,6 +31,15 @@ load(
 
 swift_rules_extra_dependencies()
 
+load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
+
+apple_support_dependencies()
+
+# MARK: - rules_spm Dependencies
+
 local_repository(
     name = "cgrindel_rules_spm",
     path = "../..",
@@ -34,16 +52,13 @@ load(
 
 rules_spm_dependencies()
 
+# MARK: - External SPM Packages
+
 load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
 
 spm_repositories(
     name = "swift_pkgs",
     dependencies = [
-        spm_pkg(
-            "https://github.com/apple/swift-log.git",
-            from_version = "1.0.0",
-            products = ["Logging"],
-        ),
         spm_pkg(
             "https://github.com/vapor/vapor.git",
             name = "vapor",
@@ -51,4 +66,16 @@ spm_repositories(
             products = ["Vapor"],
         ),
     ],
+    platforms = [
+        ".macOS(.v10_15)",
+    ],
+)
+
+# MARK: - External Swift Code That Uses Bazel
+
+http_archive(
+    name = "cgrindel_swift_toolbox",
+    sha256 = "3b1022dcb99f45753f94d9e6c2623bf4973c887bae52df8bb1b25ee46878bdff",
+    strip_prefix = "swift_toolbox-0.2.0",
+    url = "https://github.com/cgrindel/swift_toolbox/archive/v0.2.0.tar.gz",
 )

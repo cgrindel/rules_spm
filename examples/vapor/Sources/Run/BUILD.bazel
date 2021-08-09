@@ -1,0 +1,33 @@
+load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
+load("@build_bazel_rules_apple//apple:macos.bzl", "macos_application")
+load("@build_bazel_rules_apple//apple:versioning.bzl", "apple_bundle_version")
+
+swift_library(
+    name = "Run",
+    srcs = glob(["*.swift"]),
+    module_name = "VaporRun",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//Sources/App/Configuration",
+        "@swift_pkgs//vapor:Vapor",
+    ],
+)
+
+apple_bundle_version(
+    name = "vapor_run_version",
+    build_version = "0.1",
+)
+
+# Need to use macos_application and not macos_command_line_application. The rule
+# macos_command_line_application does not bundle resources.
+macos_application(
+    name = "vapor_run",
+    bundle_id = "com.example.app",
+    infoplists = [":Info.plist"],
+    minimum_os_version = "11.0",
+    version = ":vapor_run_version",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":Run",
+    ],
+)
