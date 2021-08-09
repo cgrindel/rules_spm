@@ -30,23 +30,57 @@ spm_clang_module(
 """
 
 def _create_deps_str(target):
+    """Create deps list string suitable for injection into a module template.
+
+    Args:
+        target: A target `dict` from a package description JSON.
+
+    Returns:
+        A `string` value.
+    """
     deps = target.get("target_dependencies", default = [])
     deps = ["        \":%s\"," % (dep) for dep in deps]
     return "\n".join(deps)
 
 def _create_spm_swift_module_decl(repository_ctx, target):
     """Returns the spm_swift_module declaration for this Swift target.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        target: A target `dict` from a package description JSON.
+
+    Returns:
+        A `string` representing an `spm_swift_module` declaration.
     """
     module_name = target["c99name"]
     deps_str = _create_deps_str(target)
     return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
 def _create_spm_clang_module_decl(repository_ctx, target):
+    """Returns the spm_clang_module declaration for this clang target.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        target: A target `dict` from a package description JSON.
+
+    Returns:
+        A `string` representing an `spm_clang_module` declaration.
+    """
     module_name = target["c99name"]
     deps_str = _create_deps_str(target)
     return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
 def _generate_bazel_pkg(repository_ctx, pkg_name, clang_hdrs_dict, pkg_desc, product_names):
+    """Generate a Bazel package for the specified Swift package.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        pkg_name: The package name as a `string`.
+        clang_hdrs_dict: A `dict` where the values are a `list` of clang
+                         public header path `string` values and the keys are
+                         a `string` created by
+                         `spm_common.create_clang_hdrs_key()`.
+    """
     bld_path = "%s/BUILD.bazel" % (pkg_name)
 
     exported_targets = pds.exported_library_targets(
@@ -96,11 +130,31 @@ def _get_dep_pkg_desc(repository_ctx, pkg_dep):
 # MARK: - Clang Custom Headers Functions
 
 def _is_modulemap_path(path):
+    """Determines whether the specified path is to a public `module.modulemap` 
+    file.
+
+    Args:
+        path: A path `string`.
+
+    Returns:
+        A `bool` indicating whether the path is a public `module.modulemap`
+        file.
+    """
     basename = paths.basename(path)
     dirname = paths.basename(paths.dirname(path))
     return dirname == "include" and basename == "module.modulemap"
 
 def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
+    """Retrieves the list of headers declared in the specified modulemap file.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        module_paths: A `list` of path `string` values.
+        modulemap_path: A path `string` to the `module.modulemap` file.
+
+    Returns:
+        A `list` of path `string` values.
+    """
     modulemap_str = repository_ctx.read(modulemap_path)
     decls, err = parser.parse(modulemap_str)
     if err != None:
@@ -126,11 +180,28 @@ def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
     return hdrs
 
 def _is_include_hdr_path(path):
+    """Determines whether the path is a public header.
+
+    Args:
+        path: A path `string` value.
+
+    Returns:
+        A `bool` indicating whether the path is a public header.
+    """
     root, ext = paths.split_extension(path)
     dirname = paths.basename(paths.dirname(path))
     return dirname == "include" and ext == ".h"
 
 def _list_files_under(repository_ctx, path):
+    """Retrieves the list of files under the specified path.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        path: A path `string` value.
+
+    Returns:
+        A `list` of path `string` values.
+    """
     exec_result = repository_ctx.execute(
         ["find", path],
         quiet = True,
@@ -141,6 +212,17 @@ def _list_files_under(repository_ctx, path):
     return paths
 
 def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
+    """Returns a list of the public headers for the clang target.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        target: A target `dict` from the package description JSON.
+        pkg_root_path: A path `string` specifying the location of the package
+                       which defines the target.
+
+    Returns:
+        A `list` of path `string` values.
+    """
     src_path = paths.join(pkg_root_path, target["path"])
     module_paths = _list_files_under(repository_ctx, src_path)
 
@@ -162,25 +244,63 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
 # MARK: - Root BUILD.bazel Generation
 
 def _create_hdrs_str(hdr_paths):
-    hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
+    """Creates a headers string suitable for injection into a BUILD.bazel 
+    template.
 
+    Args:
+        hdr_paths: A `list` of path `string` values.
+
+    Returns:
+        A `string` value suitable for injection into the `clang_module_headers`
+        entry.
+    """
+    hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
     return "\n".join(hdrs)
 
 def _create_clang_module_headers_entry(target_name, hdr_paths):
+    """Creates a `clang_module_headers` entry string.
+
+    Args:
+        target_name: The target name as a `string`.
+        hdr_paths: A `list` of path `string` values.
+
+    Returns:
+        A `string` suitable for injection into a BUILD.bazel template.
+    """
     entry_tpl = """\
         "%s": [
     %s
         ],
     """
     hdrs_str = _create_hdrs_str(hdr_paths)
-
     return entry_tpl % (target_name, hdrs_str)
 
 def _create_clang_module_headers(hdrs_dict):
+    """Creates a collection of `clang_module_headers` entries.
+
+    Args:
+        hdrs_dict: A `dict` where the values are a `list` of path `string`
+                   values and the keys are target name `string` values.
+
+    Returns:
+        A `string` suitable for injection into a BUILD.bazel template.
+    """
     entries = [_create_clang_module_headers_entry(k, hdrs_dict[k]) for k in hdrs_dict]
     return "\n".join(entries)
 
 def _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict, pkgs):
+    """Generates a BUILD.bazel file for the directory from which all external
+    SPM packages will be made available.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        pkg_descriptions: A `dict` of package descriptions indexed by package name.
+        clang_hdrs_dict: A `dict` where the values are a `list` of clang
+                         public header path `string` values and the keys are
+                         a `string` created by
+                         `spm_common.create_clang_hdrs_key()`.
+        pkgs: A `list` of package declarations as created by `packages.create()`.
+    """
     substitutions = {
         "{spm_repos_name}": repository_ctx.attr.name,
         "{pkg_descs_json}": json.encode_indent(pkg_descriptions, indent = "  "),
@@ -211,6 +331,13 @@ _platforms_tpl = """\
 """
 
 def _generate_package_swift_file(repository_ctx, pkgs):
+    """Generate a Package.swift file which will be used to fetch and build the 
+    external SPM packages.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        pkgs: A `list` of package declarations as created by `packages.create()`.
+    """
     swift_platforms = ""
     if len(repository_ctx.attr.platforms) > 0:
         swift_platforms = _platforms_tpl % (
@@ -235,6 +362,14 @@ def _generate_package_swift_file(repository_ctx, pkgs):
 # MARK: - Rule Implementation
 
 def _configure_spm_repository(repository_ctx, pkgs):
+    """Fetches the external SPM packages, prepares them for a future build step 
+    and defines Bazel targets.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        pkgs: A `list` of package declarations as created by `packages.create()`.
+    """
+
     # Resolve/fetch the dependencies.
     resolve_result = repository_ctx.execute(
         ["swift", "package", "resolve", "--build-path", spm_common.build_dirname],
@@ -322,6 +457,9 @@ spm_repositories = repository_rule(
             default = "//spm/internal:root.BUILD.bazel.tpl",
         ),
     },
+    doc = """\
+    Used to fetch and prepare external Swift package manager packages for the build.
+    """,
 )
 
 spm_pkg = packages.pkg_json
