@@ -1,29 +1,29 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
+load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file")
 
-def _is_target_file_test(ctx):
-    env = unittest.begin(ctx)
+# def _is_target_file_test(ctx):
+#     env = unittest.begin(ctx)
 
-    target_name = "MyModule"
+#     target_name = "MyModule"
 
-    file = struct(is_directory = True)
-    asserts.false(env, is_target_file(target_name, file))
+#     file = struct(is_directory = True)
+#     asserts.false(env, is_target_file(target_name, file))
 
-    file = struct(is_directory = False, short_path = "Sources/NotMyModule/Chicken.swift")
-    asserts.false(env, is_target_file(target_name, file))
+#     file = struct(is_directory = False, short_path = "Sources/NotMyModule/Chicken.swift")
+#     asserts.false(env, is_target_file(target_name, file))
 
-    file = struct(is_directory = False, short_path = "Sources/MyModule/Chicken.swift")
-    asserts.true(env, is_target_file(target_name, file))
+#     file = struct(is_directory = False, short_path = "Sources/MyModule/Chicken.swift")
+#     asserts.true(env, is_target_file(target_name, file))
 
-    file = struct(is_directory = False, short_path = "Sources/MyModule/Subdir/Chicken.swift")
-    asserts.true(env, is_target_file(target_name, file))
+#     file = struct(is_directory = False, short_path = "Sources/MyModule/Subdir/Chicken.swift")
+#     asserts.true(env, is_target_file(target_name, file))
 
-    file = struct(is_directory = False, short_path = "Tests/MyModule/Chicken.swift")
-    asserts.true(env, is_target_file(target_name, file))
+#     file = struct(is_directory = False, short_path = "Tests/MyModule/Chicken.swift")
+#     asserts.true(env, is_target_file(target_name, file))
 
-    return unittest.end(env)
+#     return unittest.end(env)
 
-is_target_file_test = unittest.make(_is_target_file_test)
+# is_target_file_test = unittest.make(_is_target_file_test)
 
 def _is_hdr_file_test(ctx):
     env = unittest.begin(ctx)
@@ -73,7 +73,7 @@ contains_path_test = unittest.make(_contains_path_test)
 def files_test_suite():
     return unittest.suite(
         "files_tests",
-        is_target_file_test,
+        # is_target_file_test,
         is_hdr_file_test,
         is_modulemap_file_test,
         contains_path_test,
