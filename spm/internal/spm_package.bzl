@@ -373,6 +373,8 @@ def _spm_package_impl(ctx):
         if pkg_name == pds.root_pkg_name:
             continue
         pkg = packages.get_pkg(pkgs, pkg_name)
+        if pkg == None:
+            continue
         pkg_desc = pkg_descs_dict[pkg_name]
         clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
         pkg_build_infos_dict[pkg_name] = _gather_package_build_info(

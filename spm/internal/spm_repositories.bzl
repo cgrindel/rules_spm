@@ -5,6 +5,39 @@ load(":packages.bzl", "packages")
 load(":spm_common.bzl", "spm_common")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 
+# MARK: - File Listing Functions
+
+def _list_files_under(repository_ctx, path):
+    """Retrieves the list of files under the specified path.
+
+    This function returns paths for all of the files under the specified path.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        path: A path `string` value.
+
+    Returns:
+        A `list` of path `string` values.
+    """
+    exec_result = repository_ctx.execute(
+        ["find", path],
+        quiet = True,
+    )
+    if exec_result.return_code != 0:
+        fail("Failed to list files in %s. stderr:\n%s" % (path, exec_result.stderr))
+    paths = exec_result.stdout.splitlines()
+    return paths
+
+def _list_directories_under(repository_ctx, path, max_depth = None):
+    find_args = ["find", path, "-type", "d"]
+    if max_depth != None:
+        find_args.extend(["-maxdepth", "%d" % (max_depth)])
+    exec_result = repository_ctx.execute(find_args, quiet = True)
+    if exec_result.return_code != 0:
+        fail("Failed to list directories under %s. stderr:\n%s" % (path, exec_result.stderr))
+    paths = exec_result.stdout.splitlines()
+    return [p for p in paths if p != path]
+
 # MARK: - Module Declaration Functions
 
 _spm_swift_module_tpl = """
@@ -108,24 +141,24 @@ _bazel_pkg_hdr = """
 load("@cgrindel_rules_spm//spm:spm.bzl", "spm_swift_module", "spm_clang_module")
 """
 
-def _get_dep_pkg_desc(repository_ctx, pkg_dep):
-    """Returns the name and the package description for the specified dependency.
+# def _get_dep_pkg_desc(repository_ctx, pkg_dep):
+#     """Returns the name and the package description for the specified dependency.
 
-    Args:
-        repository_ctx: A `repository_ctx`.
-        pkg_dep: A `dict` representing a dependency from an SPM package description JSON.
+#     Args:
+#         repository_ctx: A `repository_ctx`.
+#         pkg_dep: A `dict` representing a dependency from an SPM package description JSON.
 
-    Returns:
-        A `tuple` where the firt item is the name of the dependency and the second
-        is the package description for the dependency.
-    """
-    dep_repos_name = pds.dependency_repository_name(pkg_dep)
-    dep_checkout_path = paths.join(spm_common.checkouts_path, dep_repos_name)
-    dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
+#     Returns:
+#         A `tuple` where the firt item is the name of the dependency and the second
+#         is the package description for the dependency.
+#     """
+#     dep_repos_name = pds.dependency_repository_name(pkg_dep)
+#     dep_checkout_path = paths.join(spm_common.checkouts_path, dep_repos_name)
+#     dep_pkg_desc = pds.get(repository_ctx, working_directory = dep_checkout_path)
 
-    dep_name = pds.dependency_name(pkg_dep)
+#     dep_name = pds.dependency_name(pkg_dep)
 
-    return (dep_name, dep_pkg_desc)
+#     return (dep_name, dep_pkg_desc)
 
 # MARK: - Clang Custom Headers Functions
 
@@ -191,25 +224,6 @@ def _is_include_hdr_path(path):
     root, ext = paths.split_extension(path)
     dirname = paths.basename(paths.dirname(path))
     return dirname == "include" and ext == ".h"
-
-def _list_files_under(repository_ctx, path):
-    """Retrieves the list of files under the specified path.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        path: A path `string` value.
-
-    Returns:
-        A `list` of path `string` values.
-    """
-    exec_result = repository_ctx.execute(
-        ["find", path],
-        quiet = True,
-    )
-    if exec_result.return_code != 0:
-        fail("Failed to list files in %s. stderr:\n%s" % (path, exec_result.stderr))
-    paths = exec_result.stdout.splitlines()
-    return paths
 
 def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     """Returns a list of the public headers for the clang target.
@@ -386,10 +400,17 @@ def _configure_spm_repository(repository_ctx, pkgs):
     root_pkg_desc = pds.get(repository_ctx)
     pkg_descriptions[pds.root_pkg_name] = root_pkg_desc
 
-    # Collect the package descriptions for the dependencies
-    for pkg_dep in root_pkg_desc["dependencies"]:
-        # Get the package description
-        dep_name, dep_pkg_desc = _get_dep_pkg_desc(repository_ctx, pkg_dep)
+    fetched_pkg_paths = _list_directories_under(repository_ctx, spm_common.checkouts_path, max_depth = 1)
+
+    # DEBUG BEGIN
+    print("*** CHUCK fetched_pkg_paths: ")
+    for idx, item in enumerate(fetched_pkg_paths):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
+    for pkg_path in fetched_pkg_paths:
+        dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
+        dep_name = dep_pkg_desc["name"]
         pkg_descriptions[dep_name] = dep_pkg_desc
 
         # Look for custom header declarations in the clang targets
@@ -406,9 +427,34 @@ def _configure_spm_repository(repository_ctx, pkgs):
             )
             clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
 
-        # Generate Bazel targets for the library products
+        # Generate Bazel targets for the library products if they were declared
         pkg = packages.get_pkg(pkgs, dep_name)
-        _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
+        if pkg != None:
+            _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
+
+    # # Collect the package descriptions for the dependencies
+    # for pkg_dep in root_pkg_desc["dependencies"]:
+    #     # Get the package description
+    #     dep_name, dep_pkg_desc = _get_dep_pkg_desc(repository_ctx, pkg_dep)
+    #     pkg_descriptions[dep_name] = dep_pkg_desc
+
+    #     # Look for custom header declarations in the clang targets
+    #     clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
+    #     for clang_target in clang_targets:
+    #         clang_hdr_paths = _get_clang_hdrs_for_target(
+    #             repository_ctx,
+    #             clang_target,
+    #             pkg_root_path = paths.join(spm_common.checkouts_path, dep_name),
+    #         )
+    #         clang_hdrs_key = spm_common.create_clang_hdrs_key(
+    #             dep_name,
+    #             clang_target["name"],
+    #         )
+    #         clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
+
+    #     # Generate Bazel targets for the library products
+    #     pkg = packages.get_pkg(pkgs, dep_name)
+    #     _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
 
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict, pkgs)

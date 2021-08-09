@@ -74,6 +74,8 @@ def _get_pkg_test(ctx):
     ]
     pkg = packages.get_pkg(pkgs, "foo-kit")
     asserts.equals(env, pkgs[1], pkg)
+    pkg = packages.get_pkg(pkgs, "does-not-exist")
+    asserts.equals(env, None, pkg)
 
     return unittest.end(env)
 

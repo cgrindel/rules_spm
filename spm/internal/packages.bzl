@@ -97,7 +97,7 @@ def _get_pkg(pkgs, pkg_name):
     for pkg in pkgs:
         if pkg.name == pkg_name:
             return pkg
-    fail("Failed to find package", pkg_name)
+    return None
 
 # MARK: - Namespace
 
