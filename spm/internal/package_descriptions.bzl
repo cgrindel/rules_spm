@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//lib:sets.bzl", "sets")
+load(":packages.bzl", "packages")
 
 def _parse_json(json_str):
     """Parses the JSON string and returns a dict representing the JSON structure.
@@ -105,9 +106,7 @@ def _library_targets(pkg_desc):
 
 def _dependency_repository_name(pkg_dep):
     url = pkg_dep["url"]
-    basename = paths.basename(url)
-    name, ext = paths.split_extension(basename)
-    return name
+    return packages.create_name(url)
 
 def _dependency_name(pkg_dep):
     """Returns the name for the package dependency.
