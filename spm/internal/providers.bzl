@@ -1,5 +1,12 @@
+SPMPackagesInfo = provider(
+    doc = "Provides information about the dependent SPM packages.",
+    fields = {
+        "packages": "A `list` of SPMPackageInfo representing the dependent packages.",
+    },
+)
+
 SPMPackageInfo = provider(
-    doc = "Describes the information about the SPM package.",
+    doc = "Describes the information about an SPM package.",
     fields = {
         "name": "Name of the Swift package.",
         "swift_modules": "`List` of values returned from `providers.swift_module`.",

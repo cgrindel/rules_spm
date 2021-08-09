@@ -12,8 +12,8 @@ bzl_library(
 )
 
 bzl_library(
-    name = "spm_repository",
-    srcs = ["spm_repository.bzl"],
+    name = "spm_repositories",
+    srcs = ["spm_repositories.bzl"],
     visibility = ["//spm:__subpackages__"],
 )
 

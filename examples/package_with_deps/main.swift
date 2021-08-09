@@ -1,5 +1,4 @@
-// AsyncKit imports Logging and NIO for us.
-import AsyncKit
+import FooKit
 import Logging
 import NIO
 
@@ -12,7 +11,7 @@ defer {
 
 let eventLoop = group.next()
 
-// Use an AsyncKit extension
+// Use a FooKit extension
 let future = eventLoop.future()
 
 try future.wait()

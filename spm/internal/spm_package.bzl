@@ -1,135 +1,37 @@
+load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
+load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
+load(":packages.bzl", "packages")
+load(":spm_common.bzl", "spm_common")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
-load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
-load("//spm/internal:providers.bzl", "SPMPackageInfo", "providers")
-load("//spm/internal:package_descriptions.bzl", "module_types", pds = "package_descriptions")
-load("//spm/internal:files.bzl", "contains_path", "is_hdr_file", "is_modulemap_file", "is_target_file")
 
-def _create_clang_module_build_info(module_name, modulemap, o_files, hdrs, build_dir, all_build_outs, other_outs, copy_infos):
-    return struct(
-        module_name = module_name,
-        modulemap = modulemap,
-        o_files = o_files,
-        hdrs = hdrs,
-        build_dir = build_dir,
-        all_build_outs = all_build_outs,
-        other_outs = other_outs,
-        copy_infos = copy_infos,
-    )
+# MARK: - Swift Module Info
 
-def _find_public_hdrs(ctx, target_name):
-    # Look for header files under the include directory.
-    include_path = "Sources/%s/include" % (target_name)
-    return [s for s in ctx.files.srcs if is_hdr_file(s) and contains_path(s, include_path)]
+def _declare_swift_target_files(ctx, target, build_config_path):
+    """Declares the outputs for a Swift module and returns a struct value 
+    describing the Swift module.
 
-def _ends_with_any(file, targets):
-    path = file.path
-    for t in targets:
-        if path.endswith(t):
-            return True
-    return False
+    Args:
+        ctx: A `ctx` instance.
+        target: A target `dict` from the package description.
+        build_config_path: A `string` specifying the build output path.
 
-def _declare_clang_target_files(
-        ctx,
-        target,
-        build_config_dirname,
-        modulemap_dir_path,
-        declare_o_files = True):
-    all_build_outs = []
-    other_outs = []
-    copy_infos = []
-
-    target_name = target["name"]
-    module_name = target["c99name"]
-
-    target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
-    target_modulemap_dirname = "%s/%s.build" % (modulemap_dir_path, target_name)
-
-    # Check if public header paths were provided. If so, then we need to find the corresponding
-    # src files.
-    public_hdr_paths = ctx.attr.clang_module_headers.get(target_name, default = [])
-
-    public_hdrs = []
-    if len(public_hdr_paths) > 0:
-        public_hdrs = [f for f in ctx.files.srcs if _ends_with_any(f, public_hdr_paths)]
-
-    # If no public hdr files were specified/found, then try to find them.
-    if len(public_hdrs) == 0:
-        public_hdrs = _find_public_hdrs(ctx, target_name)
-
-    # If we still have no public hdr files, then fail.
-    if len(public_hdrs) == 0:
-        fail("No public header files were found for %s target." % (target_name))
-
-    # Copy all of the public headers to the output during the SPM build
-    for hdr in public_hdrs:
-        out_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, hdr.basename))
-        copy_infos.append(providers.copy_info(hdr, out_hdr))
-        all_build_outs.append(out_hdr)
-
-    # The gen_modulemap is where the generated modulemap will initially be written.
-    # The out_modulemap is where the generated modulemap will be copied after the SPM build.
-    out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
-    all_build_outs.append(out_modulemap)
-    gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
-
-    # The module.modulemap template uses an umbrella header declaration. This means that every header
-    # file in the directory or subdirectory of the specified header will be used as a public. Since
-    # we will be copying all of the header files for the target to the same directory, we can get
-    # away with specifying a single umbrella header.
-    umbrella_hdr = public_hdrs[0]
-    substitutions = {
-        "{spm_module_name}": module_name,
-        "{spm_module_header}": umbrella_hdr.basename,
-    }
-    ctx.actions.expand_template(
-        template = ctx.file._modulemap_tpl,
-        output = gen_modulemap,
-        substitutions = substitutions,
-    )
-    copy_infos.append(providers.copy_info(gen_modulemap, out_modulemap))
-
-    # Declare the Mach-O files.
-    o_files = []
-    if declare_o_files:
-        for src in target["sources"]:
-            o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
-        all_build_outs.extend(o_files)
-
-    return _create_clang_module_build_info(
-        module_name = module_name,
-        modulemap = out_modulemap,
-        o_files = o_files,
-        hdrs = public_hdrs,
-        build_dir = target_build_dirname,
-        all_build_outs = all_build_outs,
-        other_outs = other_outs,
-        copy_infos = copy_infos,
-    )
-
-def _create_clang_module(clang_module_build_info):
-    return providers.clang_module(
-        module_name = clang_module_build_info.module_name,
-        o_files = clang_module_build_info.o_files,
-        hdrs = clang_module_build_info.hdrs,
-        modulemap = clang_module_build_info.modulemap,
-        all_outputs = clang_module_build_info.all_build_outs + clang_module_build_info.other_outs,
-    )
-
-def _declare_swift_target_files(ctx, target, build_config_dirname):
+    Returns:
+        A `struct` value as returned from `providers.swift_module()`.
+    """
     all_build_outs = []
     o_files = []
 
     target_name = target["name"]
     module_name = target["c99name"]
 
-    swiftdoc = ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_dirname, target_name))
-    swiftmodule = ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_dirname, target_name))
-    swiftsourceinfo = ctx.actions.declare_file("%s/%s.swiftsourceinfo" % (build_config_dirname, target_name))
+    swiftdoc = ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_path, target_name))
+    swiftmodule = ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_path, target_name))
+    swiftsourceinfo = ctx.actions.declare_file("%s/%s.swiftsourceinfo" % (build_config_path, target_name))
     all_build_outs.extend([swiftdoc, swiftmodule, swiftsourceinfo])
 
-    target_build_dirname = "%s/%s.build" % (build_config_dirname, target_name)
+    target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
 
     hdr_file = ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name))
     all_build_outs.append(hdr_file)
@@ -148,68 +50,261 @@ def _declare_swift_target_files(ctx, target, build_config_dirname):
         all_outputs = all_build_outs,
     )
 
-def _spm_package_impl(ctx):
-    build_output_dirname = "spm_build"
-    build_output_dir = ctx.actions.declare_directory(build_output_dirname)
-    output_dir_path = build_output_dir.dirname
-    modulemap_dir_path = "%s/modulemaps" % (output_dir_path)
+# MARK: - Clang Module Info
 
-    all_build_outs = []
+def _declare_clang_target_files(
+        ctx,
+        target,
+        build_config_path,
+        clang_custom_info):
+    """Declares the outputs for a clang module and returns a struct value 
+    describing the clang module.
+
+    Args:
+        ctx: A `ctx` instance.
+        target: A target `dict` from the package description.
+        build_config_path: A `string` specifying the build output path.
+        clang_custom_info: A `struct` value as created by
+                           `_create_clang_custom_info`.
+
+    Returns:
+        A `struct` value as returned from `providers.clang_module()`.
+    """
+    all_outputs = []
+    o_files = []
+
+    target_name = target["name"]
+    module_name = target["c99name"]
+
+    target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
+
+    # Declare the Mach-O files.
+    for src in target["sources"]:
+        o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
+    all_outputs.extend(o_files)
+
+    return providers.clang_module(
+        module_name = module_name,
+        o_files = o_files,
+        hdrs = clang_custom_info.hdrs,
+        modulemap = clang_custom_info.modulemap,
+        all_outputs = all_outputs,
+    )
+
+# MARK: - Package Build Info
+
+def _create_pkg_build_info(
+        pkg_desc,
+        pkg_info,
+        build_outs):
+    """Creates a struct representing the build information for a Swift package.
+
+    Args:
+        pkg_desc: A `dict` representing the package descprtion JSON.
+        pkg_info: A `SPMPackageInfo` value.
+        build_outs: A `list` of declared outputs (`File`) for the package.
+
+    Returns:
+        A `struct` value representing a Swift package's build information.
+    """
+    return struct(
+        pkg_desc = pkg_desc,
+        pkg_info = pkg_info,
+        build_outs = build_outs,
+    )
+
+def _gather_package_build_info(
+        ctx,
+        pkg_name,
+        pkg_desc,
+        build_config_path,
+        product_names,
+        clang_custom_infos_dict):
+    """Gathers build information for a Swift package.
+
+    Args:
+        ctx: A `ctx` instance.
+        pkg_name: The name of the pacakge as a `string`.
+        pkg_desc: A `dict` representing the package description for the
+                  package.
+        build_config_path: A `string` specifying the build output path.
+        product_names: A `list` of product names that should be exported from
+                       the Swift package.
+        clang_custom_infos_dict: A `dict` of `struct` values as created by
+                                 `_create_clang_custom_info()` indexed by
+                                 target name.
+
+    Returns:
+        A `struct` value as created by `_create_pkg_build_info()` representing
+        the build information for the Swift package.
+    """
+    build_outs = []
+    swift_modules = []
+    clang_modules = []
+    # pkg_name = pkg_desc["name"]
+
+    # Declare outputs for the targets that will be used
+    exported_targets = pds.exported_library_targets(
+        pkg_desc,
+        product_names = product_names,
+        with_deps = True,
+    )
+    for target in exported_targets:
+        if pds.is_swift_target(target):
+            swift_module_info = _declare_swift_target_files(ctx, target, build_config_path)
+            swift_modules.append(swift_module_info)
+            build_outs.extend(swift_module_info.all_outputs)
+
+        elif pds.is_clang_target(target):
+            clang_module_info = _declare_clang_target_files(
+                ctx,
+                target,
+                build_config_path,
+                clang_custom_infos_dict[target["name"]],
+            )
+            clang_modules.append(clang_module_info)
+            build_outs.extend(clang_module_info.all_outputs)
+
+    pkg_info = SPMPackageInfo(
+        name = pkg_name,
+        swift_modules = swift_modules,
+        clang_modules = clang_modules,
+    )
+
+    return _create_pkg_build_info(pkg_desc, pkg_info, build_outs)
+
+# MARK: - Clang Target Customization
+
+def _create_clang_custom_info(
+        target_name,
+        hdrs = [],
+        modulemap = None):
+    """Creates a struct value representing the customization info for a clange
+    target.
+
+    Args:
+        target_name: The target name as a `string`.
+        hdrs: A `list` of declared outputs (`File`) for the public headers.
+        modulemap: The declared output for the module's `module.modulemap`
+                   file.
+
+    Returns:
+        A `struct` value.
+    """
+    return struct(
+        target_name = target_name,
+        hdrs = hdrs,
+        modulemap = modulemap,
+    )
+
+def _customize_clang_modulemap_and_hdrs(
+        ctx,
+        target_name,
+        module_name,
+        public_hdrs,
+        build_config_path,
+        modulemap_dir_path):
+    """Customize the output for clang modules.
+
+    To ensure that clang modules link properly, the public headers are copied
+    to the output directory and a custom modulemap is written pointing at the
+    copied public headers.
+
+    Args:
+        ctx: A `ctx` instance.
+        target_name: The name of the clang target as a `string`.
+        module_name: The name of the clang module as a `string`.
+        public_hdrs: A `list` of `string` values specifying the path
+                     to the public headers in the source tree.
+        build_config_path: A `string` specifying the build output path.
+        modulemap_dir_path: A `string` specifying the path where custom
+                            modulemaps will be generated.
+
+    Returns:
+        A `tuple` where the first item is a `struct` as created by
+        `_create_clang_custom_info()`, the second item is a `list` of
+        `struct` values created by `providers.copy_info()` and the
+        third item is a `list` of items that should be specified as
+        inputs into the SPM build step.
+    """
+    out_hdrs = []
+    copy_infos = []
+    build_inputs = []
+
+    if public_hdrs == []:
+        fail("A clang target must have at least one public header. target: %s" % (
+            target_name,
+        ))
+
+    target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
+    target_modulemap_dirname = "%s/%s.build" % (modulemap_dir_path, target_name)
+
+    # Copy all of the public headers to the output during the SPM build
+    for hdr in public_hdrs:
+        out_hdr = ctx.actions.declare_file("%s/%s" % (target_build_dirname, paths.basename(hdr)))
+        out_hdrs.append(out_hdr)
+        src_hdr = paths.join(ctx.attr.package_path, hdr)
+        copy_infos.append(providers.copy_info(src_hdr, out_hdr))
+
+    # The gen_modulemap is where the generated modulemap will initially be written.
+    # The out_modulemap is where the generated modulemap will be copied after the SPM build.
+    gen_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_modulemap_dirname))
+    build_inputs.append(gen_modulemap)
+    out_modulemap = ctx.actions.declare_file("%s/module.modulemap" % (target_build_dirname))
+
+    # The module.modulemap template uses an umbrella header declaration. This means that every header
+    # file in the directory or subdirectory of the specified header will be used as a public. Since
+    # we will be copying all of the header files for the target to the same directory, we can get
+    # away with specifying a single umbrella header.
+    umbrella_hdr = public_hdrs[0]
+    substitutions = {
+        "{spm_module_name}": module_name,
+        "{spm_module_header}": paths.basename(umbrella_hdr),
+    }
+    ctx.actions.expand_template(
+        template = ctx.file._modulemap_tpl,
+        output = gen_modulemap,
+        substitutions = substitutions,
+    )
+    copy_infos.append(providers.copy_info(gen_modulemap, out_modulemap))
+
+    clang_custom_info = _create_clang_custom_info(
+        target_name,
+        hdrs = out_hdrs,
+        modulemap = out_modulemap,
+    )
+    return clang_custom_info, copy_infos, build_inputs
+
+# MARK: - Build Packages
+
+def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
+    """Executes the Swift pacakage manager build.
+
+    Args:
+        ctx: A `ctx` instance.
+        pkg_build_infos_dict: A `dict` of package build information `dict`
+                              values indexed by package name.
+        copy_infos: A `list` of `struct` values as created by
+                    `providers.copy_info()`.
+        build_inputs: A `list` of inputs that are specified on the build
+                      action.
+
+    Returns:
+        A `list` of declared build outputs.
+    """
 
     # Toolchain info
     # The swift_worker is typically xcrun.
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
     swift_worker = swift_toolchain.swift_worker
 
-    # Parse the package description JSON.
-    pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
-    root_pkg_desc = pkg_descs_dict[pds.root_pkg_name]
+    build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
-    # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
-    build_config_dirname = "%s/x86_64-apple-macosx/%s" % (build_output_dirname, ctx.attr.configuration)
+    all_build_outs = [build_output_dir]
+    for pkg_name in pkg_build_infos_dict:
+        pbi = pkg_build_infos_dict[pkg_name]
+        all_build_outs.extend(pbi.build_outs)
 
-    swift_module_infos = []
-    clang_module_build_infos = []
-    copy_infos = []
-
-    root_targets = pds.library_targets(root_pkg_desc)
-    for target in root_targets:
-        module_type = target["module_type"]
-        if module_type == module_types.swift:
-            swift_module_info = _declare_swift_target_files(ctx, target, build_config_dirname)
-            swift_module_infos.append(swift_module_info)
-            all_build_outs.extend(swift_module_info.all_outputs)
-        if module_type == module_types.clang:
-            clang_module_build_info = _declare_clang_target_files(
-                ctx,
-                target,
-                build_config_dirname,
-                modulemap_dir_path,
-            )
-            clang_module_build_infos.append(clang_module_build_info)
-            all_build_outs.extend(clang_module_build_info.all_build_outs)
-            copy_infos.extend(clang_module_build_info.copy_infos)
-
-    # Make sure that headers and modulemaps for clang dependencies are copied.
-    clang_dep_targets = []
-    for pkg_name in pkg_descs_dict:
-        if pkg_name == pds.root_pkg_name:
-            continue
-        pkg_desc = pkg_descs_dict[pkg_name]
-        clang_targets = [t for t in pds.library_targets(pkg_desc) if t["module_type"] == module_types.clang]
-        for target in clang_targets:
-            clang_module_build_info = _declare_clang_target_files(
-                ctx,
-                target,
-                build_config_dirname,
-                modulemap_dir_path,
-                declare_o_files = False,
-            )
-            clang_module_build_infos.append(clang_module_build_info)
-            all_build_outs.extend(clang_module_build_info.all_build_outs)
-            copy_infos.extend(clang_module_build_info.copy_infos)
-
-    other_run_inputs = []
     run_args = ctx.actions.args()
     run_args.add_all([
         swift_worker,
@@ -219,31 +314,83 @@ def _spm_package_impl(ctx):
     ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
-        other_run_inputs.append(ci.src)
+        all_build_outs.append(ci.dest)
 
     ctx.actions.run(
-        inputs = ctx.files.srcs + other_run_inputs,
+        inputs = ctx.files.srcs + build_inputs,
         tools = [swift_worker],
-        outputs = [build_output_dir] + all_build_outs,
+        outputs = all_build_outs,
         arguments = [run_args],
         executable = ctx.executable._spm_build_tool,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
-    clang_module_infos = [_create_clang_module(cmbi) for cmbi in clang_module_build_infos]
+    return all_build_outs
 
-    all_outputs = []
-    for smi in swift_module_infos:
-        all_outputs.extend(smi.all_outputs)
-    for cmi in clang_module_infos:
-        all_outputs.extend(cmi.all_outputs)
+# MARK: - Rule Implementation
+
+def _spm_package_impl(ctx):
+    # Parse the package description JSON.
+    pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
+    pkgs = packages.from_json(ctx.attr.dependencies_json)
+
+    # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
+    build_config_path = paths.join(
+        spm_common.build_dirname,
+        "x86_64-apple-macosx",
+        ctx.attr.configuration,
+    )
+
+    # Customize the headers and modulemap files for all clang targets.
+    modulemap_dir_path = "modulemaps"
+    copy_infos = []
+    build_inputs = []
+    pkg_clang_custom_infos_dict = {}
+    for pkg_name_target in ctx.attr.clang_module_headers:
+        src_hdrs = ctx.attr.clang_module_headers[pkg_name_target]
+        pkg_name, target_name = spm_common.split_clang_hdrs_key(pkg_name_target)
+        pkg_desc = pkg_descs_dict[pkg_name]
+        target_desc = pds.get_target(pkg_desc, target_name)
+        module_name = target_desc["c99name"]
+
+        clang_custom_info, target_copy_infos, target_build_inputs = _customize_clang_modulemap_and_hdrs(
+            ctx,
+            target_name,
+            module_name,
+            src_hdrs,
+            build_config_path,
+            modulemap_dir_path,
+        )
+        clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
+        clang_custom_infos_dict[target_name] = clang_custom_info
+        pkg_clang_custom_infos_dict[pkg_name] = clang_custom_infos_dict
+        copy_infos.extend(target_copy_infos)
+        build_inputs.extend(target_build_inputs)
+
+    # Collect information about the SPM packages
+    pkg_build_infos_dict = dict()
+    for pkg_name in pkg_descs_dict:
+        if pkg_name == pds.root_pkg_name:
+            continue
+        pkg = packages.get_pkg(pkgs, pkg_name)
+        pkg_desc = pkg_descs_dict[pkg_name]
+        clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
+        pkg_build_infos_dict[pkg_name] = _gather_package_build_info(
+            ctx,
+            pkg_name,
+            pkg_desc,
+            build_config_path,
+            pkg.products,
+            clang_custom_infos_dict,
+        )
+
+    # Execute the build
+    all_outputs = _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs)
 
     return [
         DefaultInfo(files = depset(all_outputs)),
-        SPMPackageInfo(
-            name = root_pkg_desc["name"],
-            swift_modules = swift_module_infos,
-            clang_modules = clang_module_infos,
+        SPMPackagesInfo(
+            packages = [pkg_build_infos_dict[pkg_name].pkg_info for pkg_name in pkg_build_infos_dict],
         ),
     ]
 
@@ -261,11 +408,18 @@ _attrs = {
         mandatory = True,
         doc = "JSON string which describes the package (i.e. swift package describe --type json).",
     ),
+    "dependencies_json": attr.string(
+        mandatory = True,
+        doc = """"\
+        JSON string describing the dependencies to expose\
+        (e.g. see dependencies in spm_repositories)\
+        """,
+    ),
     "package_path": attr.string(
         doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",
     ),
     "clang_module_headers": attr.string_list_dict(
-        doc = "A dictionary where the keys are target names and the values are public header paths.",
+        doc = "A `dict` where the keys are target names and the values are public header paths.",
     ),
     "_modulemap_tpl": attr.label(
         allow_single_file = True,

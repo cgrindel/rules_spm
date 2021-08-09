@@ -97,27 +97,28 @@ rules_spm_dependencies()
 ### 2. Add external Swift packages as dependencies to your workspace
 
 Add the following to download and build [apple/swift-log](https://github.com/apple/swift-log) to
-your workspace.
+your workspace. NOTE: It is imperative that the products that will be used by your product are 
+listed in the `products` list.
 
 ```python
-load(
-    "@cgrindel_rules_spm//spm:spm.bzl",
-    "spm_repository",
-)
+load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
 
-spm_repository(
-    name = "apple_swift_log",
-    sha256 = "de51662b35f47764b6e12e9f1d43e7de28f6dd64f05bc30a318cf978cf3bc473",
-    strip_prefix = "swift-log-1.4.2",
-    urls = ["https://github.com/apple/swift-log/archive/1.4.2.tar.gz"],
+spm_repositories(
+    name = "swift_pkgs",
+    dependencies = [
+        spm_pkg(
+            "https://github.com/apple/swift-log.git",
+            from_version = "1.0.0",
+            products = ["Logging"],
+        ),
+    ],
 )
 ```
-
 
 ### 3. Use the module(s) defined in the Swift packages
 
 Each Swift package can contain multiple Swift modules. A Bazel target is created for each Swift
-module.
+module which is exported by the products that were listed in the `spm_pkg` declaration.
 
 The following shows a Bazel BUILD file with a `swift_binary` that depends upon the `Logging` module
 defined in [apple/swift-log](https://github.com/apple/swift-log).
@@ -130,7 +131,7 @@ swift_binary(
     srcs = ["main.swift"],
     visibility = ["//swift:__subpackages__"],
     deps = [
-        "@apple_swift_log//:Logging",
+        "@swift_pkgs//swift-log:Logging",
     ],
 )
 ```

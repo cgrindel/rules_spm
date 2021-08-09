@@ -44,3 +44,9 @@ jobs:
       run: |
         cd examples/complex
         bazelisk test //...
+
+    - name: Build Package With Deps Example
+      shell: bash
+      run: |
+        cd examples/package_with_deps
+        bazelisk test //...

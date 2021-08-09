@@ -3,8 +3,9 @@ load(
     _spm_package = "spm_package",
 )
 load(
-    "//spm/internal:spm_repository.bzl",
-    _spm_repository = "spm_repository",
+    "//spm/internal:spm_repositories.bzl",
+    _spm_pkg = "spm_pkg",
+    _spm_repositories = "spm_repositories",
 )
 load(
     "//spm/internal:spm_swift_module.bzl",
@@ -16,7 +17,8 @@ load(
 )
 
 # Repository Rules
-spm_repository = _spm_repository
+spm_repositories = _spm_repositories
+spm_pkg = _spm_pkg
 
 # Regular Rules and Macros
 spm_package = _spm_package
