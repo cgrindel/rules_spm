@@ -5,6 +5,16 @@ load(
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 
 def spm_swift_module(name, packages, deps = None, visibility = None):
+    """Exposes a Swift module as defined in a dependent Swift package.
+
+    Args:
+        name: The Bazel target name.
+        packages: A target that outputs an SPMPackagesInfo provider (e.g.
+                  `spm_package`).
+        deps: Dependencies appropriate for the `swift_import` which defines
+              the target.
+        visibility: Target visibility.
+    """
     module_name = name
 
     swiftdoc_name = "%s_swiftdoc" % (name)
