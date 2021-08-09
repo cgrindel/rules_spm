@@ -118,7 +118,7 @@ spm_repositories(
 ### 3. Use the module(s) defined in the Swift packages
 
 Each Swift package can contain multiple Swift modules. A Bazel target is created for each Swift
-module.
+module which is exported by the products that were listed in the `spm_pkg` declaration.
 
 The following shows a Bazel BUILD file with a `swift_binary` that depends upon the `Logging` module
 defined in [apple/swift-log](https://github.com/apple/swift-log).
