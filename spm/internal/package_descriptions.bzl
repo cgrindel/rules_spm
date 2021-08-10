@@ -441,7 +441,7 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
                 resolved_deps.append(ref)
             else:
                 resolved_deps.extend(product_deps_dict[ref])
-        resolved_targets_dict[target_ref] = resolved_deps
+        resolved_targets_dict[target_ref] = sorted(resolved_deps)
 
     return resolved_targets_dict
 

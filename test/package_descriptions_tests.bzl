@@ -265,6 +265,20 @@ def _transitive_dependencies_test(ctx):
     }
     asserts.equals(env, expected, actual)
 
+    product_refs = ["product:foo-kit/FooKit"]
+    actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
+    expected = {
+        "target:swift-log/Logging": [],
+        "target:bar-kit/BarKit": ["target:swift-log/Logging"],
+        "target:foo-kit/FooKit": [
+            "target:bar-kit/BarKit",
+            "target:foo-kit/CoolModule",
+            "target:swift-log/Logging",
+        ],
+        "target:foo-kit/CoolModule": [],
+    }
+    asserts.equals(env, expected, actual)
+
     return unittest.end(env)
 
 transitive_dependencies_test = unittest.make(_transitive_dependencies_test)
