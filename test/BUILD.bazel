@@ -2,6 +2,7 @@ load(":package_descriptions_tests.bzl", "package_descriptions_test_suite")
 load(":providers_tests.bzl", "providers_test_suite")
 load(":packages_tests.bzl", "packages_test_suite")
 load(":spm_common_tests.bzl", "spm_common_test_suite")
+load(":references_tests.bzl", "references_test_suite")
 
 package_descriptions_test_suite()
 
@@ -10,3 +11,5 @@ providers_test_suite()
 packages_test_suite()
 
 spm_common_test_suite()
+
+references_test_suite()
