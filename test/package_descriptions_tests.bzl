@@ -250,11 +250,18 @@ def _transitive_dependencies_test(ctx):
         },
     }
 
-    # product_refs = [pds.create_ref(ref_types.product, "swift-log", "Logging")]
     product_refs = ["product:swift-log/Logging"]
     actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
     expected = {
         "target:swift-log/Logging": [],
+    }
+    asserts.equals(env, expected, actual)
+
+    product_refs = ["product:bar-kit/BarKit"]
+    actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
+    expected = {
+        "target:swift-log/Logging": [],
+        "target:bar-kit/BarKit": ["target:swift-log/Logging"],
     }
     asserts.equals(env, expected, actual)
 

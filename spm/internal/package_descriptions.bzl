@@ -337,7 +337,7 @@ def _create_target_ref(pkg_name, by_name_values):
     #      null
     #    ]
     #  }
-    if len(by_name_values) >= 1:
+    if len(by_name_values) < 1:
         fail("Unexpected byName values were received. %s" % (by_name_values))
     target_name = by_name_values[0]
     return _create_ref(ref_types.target, pkg_name, target_name)
@@ -350,7 +350,7 @@ def _create_product_ref(product_values):
     #      null
     #    ]
     #  }
-    if len(product_values) >= 2:
+    if len(product_values) < 2:
         fail("Unexpected product values were received. %s" % (product_values))
     pkg_name = product_values[1]
     product_name = product_values[0]
