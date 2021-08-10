@@ -32,6 +32,7 @@ def _get_package_description(repository_ctx, working_directory = ""):
     """
     describe_result = repository_ctx.execute(
         ["swift", "package", "describe", "--type", "json"],
+        # ["swift", "package", "dump-package"],
         working_directory = working_directory,
     )
     return _parse_json(describe_result.stdout)
