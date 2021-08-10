@@ -424,10 +424,16 @@ def _configure_spm_repository(repository_ctx, pkgs):
             )
             clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
 
-        # Generate Bazel targets for the library products if they were declared
-        pkg = packages.get_pkg(pkgs, dep_name)
-        if pkg != None:
-            _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
+        # # Generate Bazel targets for the library products if they were declared
+        # pkg = packages.get_pkg(pkgs, dep_name)
+        # if pkg != None:
+        #     _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
+
+    # Create Bazel targets for every declared product and any of its transitive
+    # dependencies
+    # bzl_targets = sets.make()
+
+    transitive_target_deps = pds.collect_transitive_deps(pkg_descriptions, product)
 
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict, pkgs)

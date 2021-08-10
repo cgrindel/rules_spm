@@ -131,6 +131,19 @@ def _library_products(pkg_desc):
     """
     return [p for p in pkg_desc["products"] if _is_library_product(p)]
 
+def _find_in_list_of_dicts(items, key, value, item_type = None):
+    for item in items:
+        if item[key] == value:
+            return item
+
+    if item_type == None:
+        item_type = "item"
+    err_msg_tpl = "Failed to find %s with %s equal to %s."
+    fail(err_msg_tpl % (item_type, key, value))
+
+def _get_product(pkg_desc, product_name):
+    return _find_in_list_of_dicts(pkg_desc["products"], "name", product_name)
+
 # MARK: - Target Functions
 
 def _gather_deps_for_targets(targets_dict, target_names):
@@ -297,6 +310,141 @@ def _dependency_name(pkg_dep):
         return name
     return _dependency_repository_name(pkg_dep)
 
+# MARK: - Transitive Dependency Functions
+
+ref_types = struct(
+    target = "target",
+    product = "product",
+)
+
+def _create_ref(ref_type, pkg_name, name):
+    return "%s:%s/%s" % (ref_type, pkg_name, name)
+
+def _split_ref(ref_str):
+    type_value_parts = ref_str.split(":")
+    if len(type_value_parts) != 2:
+        fail("Expected a type and ref value. %s" % (ref_str))
+    ref_type = type_value_parts[0]
+    parts = type_value_parts[1].split("/")
+    if len(parts) != 2:
+        fail("Expected two parts from ref value. %s" % (ref_str))
+    return (ref_type, parts[0], parts[1])
+
+def _create_target_ref(pkg_name, by_name_values):
+    #  {
+    #    "byName": [
+    #      "Logging",
+    #      null
+    #    ]
+    #  }
+    if len(by_name_values) >= 1:
+        fail("Unexpected byName values were received. %s" % (by_name_values))
+    target_name = by_name_values[0]
+    return _create_ref(ref_types.target, pkg_name, target_name)
+
+def _create_product_ref(product_values):
+    #  {
+    #    "product": [
+    #      "NIO",
+    #      "swift-nio",
+    #      null
+    #    ]
+    #  }
+    if len(product_values) >= 2:
+        fail("Unexpected product values were received. %s" % (product_values))
+    pkg_name = product_values[1]
+    product_name = product_values[0]
+    return _create_ref(ref_types.product, pkg_name, product_name)
+
+def _is_target_ref(ref):
+    return ref.startswith(ref_types.target + ":")
+
+def _gather_deps_for_target(pkg_descs_dict, target_ref):
+    ref_type, pkg_name, target_name = _split_ref(target_ref)
+    pkg_desc = pkg_descs_dict[pkg_name]
+    target = _get_target(pkg_desc, target_name)
+
+    product_refs = []
+    target_refs = []
+    for dep in target["dependencies"]:
+        product_values = dep.get("product")
+        if product_values != None:
+            product_refs.append(_create_product_ref(product_values))
+            continue
+        by_name_values = dep.get("byName")
+        if by_name_values != None:
+            target_refs.append(_create_target_ref(pkg_name, by_name_values))
+            continue
+        fail("Unrecognized dependency type. %s" % (dep))
+
+    return product_refs, target_refs
+
+def _get_product_target_refs(pkg_descs_dict, product_ref):
+    ref_typ, pkg_name, product_name = _split_ref(product_ref)
+    pkg_desc = pkg_descs_dict[pkg_name]
+    product = _get_product(pkg_desc, product_name)
+    return [_create_ref(ref_types.target, pkg_name, t) for t in product["targets"]]
+
+def _transitive_dependencies(pkg_descs_dict, product_refs):
+    # Key: target_ref, Value: List of (target_ref|product_ref)
+    target_deps_dict = {}
+
+    # Key: product_ref, Value: List of (target_ref)
+    product_deps_dict = {}
+
+    # Attempt to resolve all of the dependencies to target references
+    product_refs_to_eval = product_refs
+    target_refs_to_eval = sets.make()
+    finished_eval = False
+    for iteration in range(100):
+        # Collect the targets that are referenced by the products
+        for product_ref in product_refs_to_eval:
+            prd_target_refs = _get_product_target_refs(pkg_descs_dict, product_ref)
+            product_deps_dict[product_ref] = prd_target_refs
+            for target_ref in prd_target_refs:
+                if target_deps_dict.get(target_ref) == None:
+                    sets.insert(target_refs_to_eval, target_ref)
+
+        # Eval targets
+        new_prds_to_eval = sets.make()
+        new_trgts_to_eval = sets.make()
+        for target_ref in sets.to_list(target_refs_to_eval):
+            # If we have already resolved this target, don't do it again.
+            if target_deps_dict.get(target_ref) != None:
+                continue
+            dep_prd_refs, dep_trgt_refs = _gather_deps_for_target(pkg_descs_dict, target_ref)
+            target_deps_dict[target_ref] = dep_trgt_refs + dep_prd_refs
+            for product_ref in dep_prd_refs:
+                # If we have not resolved the product_ref, add it to the list for evaluation
+                if product_deps_dict.get(product_ref) == None:
+                    sets.insert(new_prds_to_eval, product_ref)
+            for target_ref in dep_trgt_refs:
+                if target_deps_dict.get(target_ref) == None:
+                    sets.insert(new_trgts_to_eval, target_ref)
+
+        if sets.length(new_prds_to_eval) == 0 and sets.length(new_trgts_to_eval) == 0:
+            finished_eval = True
+            break
+        product_refs_to_eval = sets.to_list(new_prds_to_eval)
+        target_refs_to_eval = new_trgts_to_eval
+
+    # Make sure that dependency resolution completed without "timing out".
+    if not finished_eval:
+        fail("Evaluation of the dependencies did not complete.")
+
+    # Now replace all of the product_refs with their corresponding target refs.
+    resolved_targets_dict = {}
+    for target_ref in target_deps_dict:
+        resolved_deps = []
+        for ref in target_deps_dict[target_ref]:
+            if _is_target_ref(ref):
+                resolved_deps.append(ref)
+            else:
+                resolved_deps.extend(product_deps_dict[ref])
+        resolved_targets_dict[target_ref] = resolved_deps
+
+    return resolved_targets_dict
+
 # MARK: - Namespace
 
 module_types = struct(
@@ -320,6 +468,9 @@ package_descriptions = struct(
     # Dependency Functions
     dependency_name = _dependency_name,
     dependency_repository_name = _dependency_repository_name,
+    # Transitive Dependency Functions
+    create_ref = _create_ref,
+    transitive_dependencies = _transitive_dependencies,
     # Constants
     root_pkg_name = "_root",
 )
