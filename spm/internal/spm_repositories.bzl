@@ -400,8 +400,11 @@ def _configure_spm_repository(repository_ctx, pkgs):
     root_pkg_desc = pds.get(repository_ctx)
     pkg_descriptions[pds.root_pkg_name] = root_pkg_desc
 
-    fetched_pkg_paths = _list_directories_under(repository_ctx, spm_common.checkouts_path, max_depth = 1)
-
+    fetched_pkg_paths = _list_directories_under(
+        repository_ctx,
+        spm_common.checkouts_path,
+        max_depth = 1,
+    )
     for pkg_path in fetched_pkg_paths:
         dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
         dep_name = dep_pkg_desc["name"]
