@@ -85,7 +85,7 @@ def _create_spm_swift_module_decl(repository_ctx, target):
     Returns:
         A `string` representing an `spm_swift_module` declaration.
     """
-    module_name = target["c99name"]
+    module_name = target["name"]
     deps_str = _create_deps_str(target)
     return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
@@ -99,7 +99,7 @@ def _create_spm_clang_module_decl(repository_ctx, target):
     Returns:
         A `string` representing an `spm_clang_module` declaration.
     """
-    module_name = target["c99name"]
+    module_name = target["name"]
     deps_str = _create_deps_str(target)
     return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 

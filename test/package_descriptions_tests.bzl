@@ -22,7 +22,7 @@ def _exported_library_targets_test(ctx):
     pkg_desc = pds.parse_json(package_description_json)
     result = pds.exported_library_targets(pkg_desc)
     asserts.equals(env, 1, len(result))
-    asserts.equals(env, "Logging", result[0]["c99name"])
+    asserts.equals(env, "Logging", result[0]["name"])
 
     pkg_desc = {
         "products": [

@@ -24,7 +24,7 @@ def _declare_swift_target_files(ctx, target, build_config_path):
     o_files = []
 
     target_name = target["name"]
-    module_name = target["c99name"]
+    module_name = target["name"]
 
     swiftdoc = ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_path, target_name))
     swiftmodule = ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_path, target_name))
@@ -74,7 +74,7 @@ def _declare_clang_target_files(
     o_files = []
 
     target_name = target["name"]
-    module_name = target["c99name"]
+    module_name = target["name"]
 
     target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
 
@@ -351,7 +351,7 @@ def _spm_package_impl(ctx):
         pkg_name, target_name = spm_common.split_clang_hdrs_key(pkg_name_target)
         pkg_desc = pkg_descs_dict[pkg_name]
         target_desc = pds.get_target(pkg_desc, target_name)
-        module_name = target_desc["c99name"]
+        module_name = target_desc["name"]
 
         clang_custom_info, target_copy_infos, target_build_inputs = _customize_clang_modulemap_and_hdrs(
             ctx,
