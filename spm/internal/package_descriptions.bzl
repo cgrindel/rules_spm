@@ -20,7 +20,23 @@ def _parse_json(json_str):
     """
     return json.decode(json_str)
 
-def _get_package_description(repository_ctx, working_directory = ""):
+def _retrieve_package_dump(repository_ctx, working_directory = ""):
+    """Returns a dict representing the package dump for an SPM package.
+
+    Args:
+        repository_ctx: A `repository_ctx`.
+        working_directory: A `string` specifying the directory for the SPM package.
+
+    Returns:
+        A `dict` representing an SPM package dump.
+    """
+    describe_result = repository_ctx.execute(
+        ["swift", "package", "dump-package"],
+        working_directory = working_directory,
+    )
+    return _parse_json(describe_result.stdout)
+
+def _retrieve_package_description(repository_ctx, working_directory = ""):
     """Returns a dict representing the package description for an SPM package.
 
     Args:
@@ -32,10 +48,61 @@ def _get_package_description(repository_ctx, working_directory = ""):
     """
     describe_result = repository_ctx.execute(
         ["swift", "package", "describe", "--type", "json"],
-        # ["swift", "package", "dump-package"],
         working_directory = working_directory,
     )
     return _parse_json(describe_result.stdout)
+
+def _get_package_description(repository_ctx, working_directory = ""):
+    """Returns a dict representing the merge of a package's description and 
+    it's dump (dump-package) information.
+
+    Args:
+        repository_ctx: A `repository_ctx`.
+        working_directory: A `string` specifying the directory for the SPM package.
+
+    Returns:
+        A `dict` representing information gathered from an SPM package
+        description and it's dump data.
+    """
+    pkg_desc = _retrieve_package_description(repository_ctx, working_directory = working_directory)
+    pkg_dump = _retrieve_package_dump(repository_ctx, working_directory = working_directory)
+
+    # Collect the dump targets by name
+    dump_targets_dict = {}
+    for dump_target in pkg_dump["targets"]:
+        dump_targets_dict[dump_target["name"]] = dump_target
+
+    # Merge dump target dependencies into the description. After the merge
+    # a target will have a "target_dependencies" key and a "dependencies" key.
+    # The "target_dependencies" value is a list of target names from the package
+    # that are dependencies for the target. The "dependencies" value is a list
+    # of struct values which has a "product" key or a "target" key. The "product"
+    # value is a list where the first item is the target name and the second is
+    # the package name. The "target" value is a list where the first item is
+    # the target name.
+    #
+    # Example:
+    #    {
+    #      "target" : [
+    #        "CURLParser",
+    #        null
+    #      ]
+    #    },
+    #    {
+    #      "product" : [
+    #        "ConsoleKit",
+    #        "console-kit",
+    #        null
+    #      ]
+    #    },
+    for target in pkg_desc["targets"]:
+        target_name = target["name"]
+        dump_target = dump_targets_dict.get(target_name)
+        if dump_target == None:
+            continue
+        target["dependencies"] = dump_target["dependencies"]
+
+    return pkg_desc
 
 # MARK: - Product Functions
 
