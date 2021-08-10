@@ -402,12 +402,6 @@ def _configure_spm_repository(repository_ctx, pkgs):
 
     fetched_pkg_paths = _list_directories_under(repository_ctx, spm_common.checkouts_path, max_depth = 1)
 
-    # DEBUG BEGIN
-    print("*** CHUCK fetched_pkg_paths: ")
-    for idx, item in enumerate(fetched_pkg_paths):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
     for pkg_path in fetched_pkg_paths:
         dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
         dep_name = dep_pkg_desc["name"]
@@ -431,30 +425,6 @@ def _configure_spm_repository(repository_ctx, pkgs):
         pkg = packages.get_pkg(pkgs, dep_name)
         if pkg != None:
             _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
-
-    # # Collect the package descriptions for the dependencies
-    # for pkg_dep in root_pkg_desc["dependencies"]:
-    #     # Get the package description
-    #     dep_name, dep_pkg_desc = _get_dep_pkg_desc(repository_ctx, pkg_dep)
-    #     pkg_descriptions[dep_name] = dep_pkg_desc
-
-    #     # Look for custom header declarations in the clang targets
-    #     clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
-    #     for clang_target in clang_targets:
-    #         clang_hdr_paths = _get_clang_hdrs_for_target(
-    #             repository_ctx,
-    #             clang_target,
-    #             pkg_root_path = paths.join(spm_common.checkouts_path, dep_name),
-    #         )
-    #         clang_hdrs_key = spm_common.create_clang_hdrs_key(
-    #             dep_name,
-    #             clang_target["name"],
-    #         )
-    #         clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
-
-    #     # Generate Bazel targets for the library products
-    #     pkg = packages.get_pkg(pkgs, dep_name)
-    #     _generate_bazel_pkg(repository_ctx, dep_name, clang_hdrs_dict, dep_pkg_desc, pkg.products)
 
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descriptions, clang_hdrs_dict, pkgs)
