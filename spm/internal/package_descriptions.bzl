@@ -311,11 +311,23 @@ def _dependency_name(pkg_dep):
         return name
     return _dependency_repository_name(pkg_dep)
 
-# MARK: - Ref Functions
-
 # MARK: - Transitive Dependency Functions
 
 def _gather_deps_for_target(pkg_descs_dict, target_ref):
+    """Returns the dependencies for the specified target.
+
+    Args:
+        pkg_descs_dict: A `dict` where the keys are the package names and the
+                        values are package description `struct` values as
+                        returned by `package_descriptions.get()`.
+        target_ref: A reference `string` as created by
+                    `references.create_target_ref()`.
+
+    Returns:
+        A `tuple` where the first item is a list of product reference `string`
+        values and the second item is a list of target reference `string`
+        values.
+    """
     ref_type, pkg_name, target_name = refs.split(target_ref)
     pkg_desc = pkg_descs_dict[pkg_name]
     target = _get_target(pkg_desc, target_name)
@@ -336,12 +348,40 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
     return product_refs, target_refs
 
 def _get_product_target_refs(pkg_descs_dict, product_ref):
+    """Returns the target refernces that are directly associated with the 
+    specified product.
+
+    Args:
+        pkg_descs_dict: A `dict` where the keys are the package names and the
+                        values are package description `struct` values as
+                        returned by `package_descriptions.get()`.
+        product_ref: A reference `string` as created by
+                     `references.create_product_ref()`.
+
+    Returns:
+        A `list` of target reference `string` values.
+    """
     ref_typ, pkg_name, product_name = refs.split(product_ref)
     pkg_desc = pkg_descs_dict[pkg_name]
     product = _get_product(pkg_desc, product_name)
     return [refs.create(ref_types.target, pkg_name, t) for t in product["targets"]]
 
 def _transitive_dependencies(pkg_descs_dict, product_refs):
+    """Returns all of the targets that are a transitive dependency for the 
+    specified products.
+
+    Args:
+        pkg_descs_dict: A `dict` where the keys are the package names and the
+                        values are package description `struct` values as
+                        returned by `package_descriptions.get()`.
+        product_refs: A `list` of reference `string` values as created by
+                      `references.create_product_ref()`.
+
+    Returns:
+        A `dict` where the keys are target reference values and the
+        values are a `list` of target references.
+    """
+
     # Key: target_ref, Value: List of (target_ref|product_ref)
     target_deps_dict = {}
 
