@@ -147,6 +147,8 @@ def _get_product(pkg_desc, product_name):
 
 # MARK: - Target Functions
 
+# TODO: KILL _exported_library_targets and _gather_deps_for_targets.
+
 def _gather_deps_for_targets(targets_dict, target_names):
     """Returns a set of target names that are dependencies of the specified
     target names.

@@ -2,6 +2,7 @@
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//lib:types.bzl", "types")
+load(":references.bzl", ref_types = "reference_types", refs = "references")
 
 # MARK: - Package Creation Functions
 
@@ -99,6 +100,18 @@ def _get_pkg(pkgs, pkg_name):
             return pkg
     return None
 
+def _get_product_refs(pkgs):
+    """Returns a list of product references as declared in the specified packages list.
+
+    Args:
+        pkgs: A `list` of package declarations (`struct`) as created by
+              `packages.create()`, `packages.pkg_json()` or `spm_pkg()`.
+
+    Returns:
+        A `list` of product reference (`string`) values.
+    """
+    return [refs.create(ref_types.product, pkg.name, prd) for pkg in pkgs for prd in pkg.products]
+
 # MARK: - Namespace
 
 packages = struct(
@@ -107,4 +120,5 @@ packages = struct(
     pkg_json = _to_json,
     from_json = _from_json,
     get_pkg = _get_pkg,
+    get_product_refs = _get_product_refs,
 )

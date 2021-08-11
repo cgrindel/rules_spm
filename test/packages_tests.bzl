@@ -81,6 +81,15 @@ def _get_pkg_test(ctx):
 
 get_pkg_test = unittest.make(_get_pkg_test)
 
+def _get_product_refs_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+get_product_refs_test = unittest.make(_get_product_refs_test)
+
 def packages_test_suite():
     return unittest.suite(
         "packages_tests",
@@ -88,4 +97,5 @@ def packages_test_suite():
         create_test,
         json_roundtrip_test,
         get_pkg_test,
+        get_product_refs_test,
     )
