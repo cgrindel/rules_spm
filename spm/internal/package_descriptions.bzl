@@ -345,6 +345,10 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
         if by_name_values != None:
             target_refs.append(refs.create_target_ref(pkg_name, by_name_values))
             continue
+        target_values = dep.get("target")
+        if target_values != None:
+            target_refs.append(refs.create_target_ref(pkg_name, target_values))
+            continue
         fail("Unrecognized dependency type. %s" % (dep))
 
     return product_refs, target_refs
