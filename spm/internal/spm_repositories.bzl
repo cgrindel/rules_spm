@@ -1,8 +1,8 @@
 load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_types")
 load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
-load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":packages.bzl", "packages")
+load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 
@@ -439,7 +439,6 @@ def _configure_spm_repository(repository_ctx, pkgs):
 
     # Create Bazel targets for every declared product and any of its transitive
     # dependencies
-    # declared_product_refs = [refs.create(ref_types.product, pkg.name, prd) for pkg in pkgs for prd in pkg.products]
     declared_product_refs = packages.get_product_refs(pkgs)
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
     for pkg_name in pkg_descs_dict:
