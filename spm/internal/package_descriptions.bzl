@@ -273,7 +273,7 @@ def _get_target(pkg_desc, name):
     for t in pkg_desc["targets"]:
         if t["name"] == name:
             return t
-    fail("Could not find target with name %s." % (name))
+    fail("Could not find target %s in package %s." % (name, pkg_desc["name"]))
 
 # MARK: - Package Dependency Functions
 

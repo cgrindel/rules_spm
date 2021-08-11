@@ -86,7 +86,7 @@ def _is_target_ref(ref_str, for_pkg = None):
     """
     starts_with_parts = [reference_types.target, ":"]
     if for_pkg != None:
-        starts_with_parts.append(for_pkg)
+        starts_with_parts.extend([for_pkg, "/"])
     return ref_str.startswith("".join(starts_with_parts))
 
 # MARK: - Namespace
