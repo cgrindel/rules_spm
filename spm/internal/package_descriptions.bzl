@@ -147,74 +147,6 @@ def _get_product(pkg_desc, product_name):
 
 # MARK: - Target Functions
 
-# TODO: KILL _exported_library_targets and _gather_deps_for_targets.
-
-def _gather_deps_for_targets(targets_dict, target_names):
-    """Returns a set of target names that are dependencies of the specified
-    target names.
-
-    Args:
-        target_dict: A `dict` of package description targets indexed by name.
-        target_names: A `list` of target names for which the dependencies
-                      should be gathered.
-
-    Returns:
-        A `set` (see `sets.make()`) of target names that are dependencies
-        of the specified targets.
-    """
-    deps = sets.make()
-    for name in target_names:
-        target = targets_dict[name]
-        target_deps = target.get("target_dependencies", default = [])
-        deps = sets.union(deps, sets.make(target_deps))
-    return deps
-
-def _exported_library_targets(pkg_desc, product_names = None, with_deps = False):
-    """Returns the exported targets from the SPM pacakge.
-
-    If a list of product names is provided, only the targets associated with
-    the specified products will be returned.
-
-    If the dependencies are requested, the outputs will include all of the
-    dependent targets as well as those referenced directly by the products.
-
-    Args:
-        pkg_desc: The dict returned from the `parse_package_descrition_json`.
-        product_names: Optional. A `list` of product names (`string`) to
-                       filter the exported products.
-        with_deps: A `bool` indicating whether the dependencies for the targets
-                   that are referenced by the products should be included
-                   in the result.
-
-    Returns:
-        A list of the targets exported by the package.
-    """
-    targets_dict = dict([(p["name"], p) for p in pkg_desc["targets"]])
-    products = _library_products(pkg_desc)
-    if product_names != None:
-        product_names_set = sets.make(product_names)
-        products = [p for p in products if sets.contains(product_names_set, p["name"])]
-
-    target_names = sets.make()
-
-    # Collect the targets that are declared by the products.
-    for product in products:
-        for target_name in product["targets"]:
-            sets.insert(target_names, target_name)
-
-    # Collect the deps of the top-level targets
-    if with_deps:
-        target_names_to_collect = sets.to_list(target_names)
-        for iteration in range(10):
-            deps = _gather_deps_for_targets(targets_dict, target_names_to_collect)
-            new_deps = sets.difference(deps, target_names)
-            if sets.length(new_deps) == 0:
-                break
-            target_names_to_collect = sets.to_list(new_deps)
-            target_names = sets.union(target_names, new_deps)
-
-    return [targets_dict[target_name] for target_name in sets.to_list(target_names)]
-
 def _is_library_target(target):
     """Returns True if the specified target is a library target. Otherwise False.
 
@@ -460,7 +392,6 @@ package_descriptions = struct(
     # Library Functions
     is_library_product = _is_library_product,
     library_products = _library_products,
-    exported_library_targets = _exported_library_targets,
     # Target Functions
     is_library_target = _is_library_target,
     library_targets = _library_targets,

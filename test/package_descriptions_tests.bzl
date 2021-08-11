@@ -17,45 +17,6 @@ def _parse_json_test(ctx):
 
 parse_json_test = unittest.make(_parse_json_test)
 
-def _exported_library_targets_test(ctx):
-    env = unittest.begin(ctx)
-
-    pkg_desc = pds.parse_json(package_description_json)
-    result = pds.exported_library_targets(pkg_desc)
-    asserts.equals(env, 1, len(result))
-    asserts.equals(env, "Logging", result[0]["name"])
-
-    pkg_desc = {
-        "products": [
-            {"name": "Foo", "type": {"library": {}}, "targets": ["Foo"]},
-            {"name": "Bar", "type": {"library": {}}, "targets": ["Bar"]},
-        ],
-        "targets": [
-            {"name": "Foo", "target_dependencies": ["Bar", "Hello"]},
-            {"name": "Bar", "target_dependencies": ["Hello"]},
-            {"name": "Hello", "target_dependencies": []},
-        ],
-    }
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Foo"])])
-    expected = ["Foo"]
-    asserts.equals(env, expected, actual)
-
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, with_deps = True)])
-    expected = ["Bar", "Foo", "Hello"]
-    asserts.equals(env, expected, actual)
-
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Foo"], with_deps = True)])
-    expected = ["Bar", "Foo", "Hello"]
-    asserts.equals(env, expected, actual)
-
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Bar"], with_deps = True)])
-    expected = ["Bar", "Hello"]
-    asserts.equals(env, expected, actual)
-
-    return unittest.end(env)
-
-exported_library_targets_test = unittest.make(_exported_library_targets_test)
-
 def _is_library_product_test(ctx):
     env = unittest.begin(ctx)
 
@@ -287,7 +248,6 @@ def package_descriptions_test_suite():
     unittest.suite(
         "package_description_tests",
         parse_json_test,
-        exported_library_targets_test,
         is_library_product_test,
         library_products_test,
         is_library_target_test,
