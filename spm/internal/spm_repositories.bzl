@@ -466,8 +466,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
 
     # Create Bazel targets for every declared product and any of its transitive
     # dependencies
-    # declared_product_refs = [refs.create(ref_types.product, pkg, prd) for prd in pkg.products for pkg in pkgs]
-    declared_product_refs = [refs.create(ref_types.product, pkg, prd) for pkg in pkgs for prd in pkg.products]
+    declared_product_refs = [refs.create(ref_types.product, pkg.name, prd) for pkg in pkgs for prd in pkg.products]
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
     for pkg_name in pkg_descs_dict:
         _generate_bazel_pkg(

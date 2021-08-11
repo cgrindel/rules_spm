@@ -54,6 +54,12 @@ def _is_target_ref_test(ctx):
     ref = references.create(reference_types.product, "foo-kit", "FooKit")
     asserts.false(env, references.is_target_ref(ref))
 
+    ref = references.create(reference_types.target, "foo-kit", "FooKit")
+    asserts.true(env, references.is_target_ref(ref, for_pkg = "foo-kit"))
+
+    ref = references.create(reference_types.target, "foo-kit", "FooKit")
+    asserts.false(env, references.is_target_ref(ref, for_pkg = "bar-kit"))
+
     return unittest.end(env)
 
 is_target_ref_test = unittest.make(_is_target_ref_test)

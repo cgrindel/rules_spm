@@ -71,18 +71,23 @@ def _create_product_ref(product_values):
     product_name = product_values[0]
     return _create_ref(reference_types.product, pkg_name, product_name)
 
-def _is_target_ref(ref_str):
+def _is_target_ref(ref_str, for_pkg = None):
     """Returns a boolean indicating whether the reference string is a target
     reference.
 
     Args:
        ref_str: A valid reference `string`.
+       for_pkg: Optional. A package name as a `string` value to include in
+                the check.
 
     Returns:
         A `bool` value indicating whether the reference string is a target
         reference.
     """
-    return ref_str.startswith(reference_types.target + ":")
+    starts_with_parts = [reference_types.target, ":"]
+    if for_pkg != None:
+        starts_with_parts.append(for_pkg)
+    return ref_str.startswith("".join(starts_with_parts))
 
 # MARK: - Namespace
 
