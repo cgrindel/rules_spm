@@ -1,9 +1,11 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//spm/internal:references.bzl", "reference_types", "references")
 
 def _create_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    actual = references.create(reference_types.target, "foo-kit", "FooKit")
+    asserts.equals(env, "target:foo-kit/FooKit", actual)
 
     return unittest.end(env)
 
@@ -12,7 +14,10 @@ create_test = unittest.make(_create_test)
 def _split_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    ref_type, pkg_name, name = references.split("target:foo-kit/FooKit")
+    asserts.equals(env, reference_types.target, ref_type)
+    asserts.equals(env, "foo-kit", pkg_name)
+    asserts.equals(env, "FooKit", name)
 
     return unittest.end(env)
 
