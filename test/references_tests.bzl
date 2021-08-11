@@ -23,28 +23,36 @@ def _split_test(ctx):
 
 split_test = unittest.make(_split_test)
 
-def _create_product_ref_test(ctx):
-    env = unittest.begin(ctx)
-
-    unittest.fail(env, "IMPLEMENT ME!")
-
-    return unittest.end(env)
-
-create_product_ref_test = unittest.make(_create_product_ref_test)
-
 def _create_target_ref_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    actual = references.create_target_ref("foo-kit", ["FooKit", None])
+    expected = references.create(reference_types.target, "foo-kit", "FooKit")
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
 create_target_ref_test = unittest.make(_create_target_ref_test)
 
+def _create_product_ref_test(ctx):
+    env = unittest.begin(ctx)
+
+    actual = references.create_product_ref(["FooKit", "foo-kit", None])
+    expected = references.create(reference_types.product, "foo-kit", "FooKit")
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+create_product_ref_test = unittest.make(_create_product_ref_test)
+
 def _is_target_ref_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    ref = references.create(reference_types.target, "foo-kit", "FooKit")
+    asserts.true(env, references.is_target_ref(ref))
+
+    ref = references.create(reference_types.product, "foo-kit", "FooKit")
+    asserts.false(env, references.is_target_ref(ref))
 
     return unittest.end(env)
 
