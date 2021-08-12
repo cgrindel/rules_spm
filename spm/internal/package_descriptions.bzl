@@ -8,6 +8,25 @@ load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":packages.bzl", "packages")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 
+# MARK: - Helper Functions
+
+def _find_in_list_of_dicts(items, key, value, item_type = None):
+    """Retrieves the dict value from a list of items that have a specified
+    key value.
+
+    Args:
+
+    Returns:
+    """
+    for item in items:
+        if item[key] == value:
+            return item
+
+    if item_type == None:
+        item_type = "item"
+    err_msg_tpl = "Failed to find %s with %s equal to %s."
+    fail(err_msg_tpl % (item_type, key, value))
+
 # MARK: - Package Description JSON Retrieval
 
 def _parse_json(json_str):
@@ -132,17 +151,16 @@ def _library_products(pkg_desc):
     """
     return [p for p in pkg_desc["products"] if _is_library_product(p)]
 
-def _find_in_list_of_dicts(items, key, value, item_type = None):
-    for item in items:
-        if item[key] == value:
-            return item
-
-    if item_type == None:
-        item_type = "item"
-    err_msg_tpl = "Failed to find %s with %s equal to %s."
-    fail(err_msg_tpl % (item_type, key, value))
-
 def _get_product(pkg_desc, product_name):
+    """Returns the product with the specified product name.
+
+    Args:
+        pkg_desc: A `dict` representing a package description.
+        product_name: The product name as a `string`.
+
+    Returns:
+        A `dict` representing the desired product.
+    """
     return _find_in_list_of_dicts(pkg_desc["products"], "name", product_name)
 
 # MARK: - Target Functions
@@ -202,10 +220,7 @@ def _get_target(pkg_desc, name):
     Returns:
         A `dict` representing a target as represented in a package description.
     """
-    for t in pkg_desc["targets"]:
-        if t["name"] == name:
-            return t
-    fail("Could not find target %s in package %s." % (name, pkg_desc["name"]))
+    return _find_in_list_of_dicts(pkg_desc["targets"], "name", name)
 
 # MARK: - Package Dependency Functions
 
