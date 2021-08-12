@@ -164,8 +164,6 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
     bld_content = _bazel_pkg_hdr + "".join(module_decls)
     repository_ctx.file(bld_path, content = bld_content, executable = False)
 
-# MARK: - Other Stuff
-
 # MARK: - Clang Custom Headers Functions
 
 def _is_modulemap_path(path):
