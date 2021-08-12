@@ -123,6 +123,14 @@ def _gather_package_build_info(
     """Gathers build information for a Swift package.
 
     Args:
+        ctx: A `ctx` instance.
+        build_config_path: A `string` specifying the build output path.
+        clang_custom_infos_dict: A `dict` where the keys are clang target names
+                                 for this package and the values are a `list`
+                                 of public headers.
+        pkg_desc: A `dict` representing the package descprtion JSON.
+        target_refs: A `list` of target references (`string`) that are
+                     dependencies for the package.
 
     Returns:
         A `struct` value as created by `_create_pkg_build_info()` representing
