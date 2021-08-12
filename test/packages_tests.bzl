@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//spm/internal:packages.bzl", "packages")
+load("//spm/internal:references.bzl", "reference_types", "references")
 
 def _create_name_test(ctx):
     env = unittest.begin(ctx)
@@ -70,14 +71,34 @@ def _get_pkg_test(ctx):
 
     pkgs = [
         packages.create("https://github.com/foo/bar-kit.git", from_version = "1.0.0", products = ["Foo"]),
-        packages.create("https://github.com/foo/foo-kit.git", from_version = "1.0.0", products = ["Foo"]),
+        packages.create("https://github.com/foo/foo-kit.git", from_version = "1.0.0", products = ["Bar"]),
     ]
     pkg = packages.get_pkg(pkgs, "foo-kit")
     asserts.equals(env, pkgs[1], pkg)
+    pkg = packages.get_pkg(pkgs, "does-not-exist")
+    asserts.equals(env, None, pkg)
 
     return unittest.end(env)
 
 get_pkg_test = unittest.make(_get_pkg_test)
+
+def _get_product_refs_test(ctx):
+    env = unittest.begin(ctx)
+
+    pkgs = [
+        packages.create("https://github.com/foo/bar-kit.git", from_version = "1.0.0", products = ["Bar"]),
+        packages.create("https://github.com/foo/foo-kit.git", from_version = "1.0.0", products = ["Foo"]),
+    ]
+    actual = packages.get_product_refs(pkgs)
+    expected = [
+        references.create(reference_types.product, "bar-kit", "Bar"),
+        references.create(reference_types.product, "foo-kit", "Foo"),
+    ]
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+get_product_refs_test = unittest.make(_get_product_refs_test)
 
 def packages_test_suite():
     return unittest.suite(
@@ -86,4 +107,5 @@ def packages_test_suite():
         create_test,
         json_roundtrip_test,
         get_pkg_test,
+        get_product_refs_test,
     )

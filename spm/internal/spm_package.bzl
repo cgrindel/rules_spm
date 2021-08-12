@@ -1,6 +1,7 @@
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
-load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
 load(":packages.bzl", "packages")
+load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
+load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
@@ -24,7 +25,7 @@ def _declare_swift_target_files(ctx, target, build_config_path):
     o_files = []
 
     target_name = target["name"]
-    module_name = target["c99name"]
+    module_name = target["name"]
 
     swiftdoc = ctx.actions.declare_file("%s/%s.swiftdoc" % (build_config_path, target_name))
     swiftmodule = ctx.actions.declare_file("%s/%s.swiftmodule" % (build_config_path, target_name))
@@ -74,7 +75,7 @@ def _declare_clang_target_files(
     o_files = []
 
     target_name = target["name"]
-    module_name = target["c99name"]
+    module_name = target["name"]
 
     target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
 
@@ -93,10 +94,7 @@ def _declare_clang_target_files(
 
 # MARK: - Package Build Info
 
-def _create_pkg_build_info(
-        pkg_desc,
-        pkg_info,
-        build_outs):
+def _create_pkg_build_info(pkg_desc, pkg_info, build_outs):
     """Creates a struct representing the build information for a Swift package.
 
     Args:
@@ -115,24 +113,21 @@ def _create_pkg_build_info(
 
 def _gather_package_build_info(
         ctx,
-        pkg_name,
-        pkg_desc,
         build_config_path,
-        product_names,
-        clang_custom_infos_dict):
+        clang_custom_infos_dict,
+        pkg_desc,
+        target_refs):
     """Gathers build information for a Swift package.
 
     Args:
         ctx: A `ctx` instance.
-        pkg_name: The name of the pacakge as a `string`.
-        pkg_desc: A `dict` representing the package description for the
-                  package.
         build_config_path: A `string` specifying the build output path.
-        product_names: A `list` of product names that should be exported from
-                       the Swift package.
-        clang_custom_infos_dict: A `dict` of `struct` values as created by
-                                 `_create_clang_custom_info()` indexed by
-                                 target name.
+        clang_custom_infos_dict: A `dict` where the keys are clang target names
+                                 for this package and the values are a `list`
+                                 of public headers.
+        pkg_desc: A `dict` representing the package descprtion JSON.
+        target_refs: A `list` of target references (`string`) that are
+                     dependencies for the package.
 
     Returns:
         A `struct` value as created by `_create_pkg_build_info()` representing
@@ -141,15 +136,13 @@ def _gather_package_build_info(
     build_outs = []
     swift_modules = []
     clang_modules = []
-    # pkg_name = pkg_desc["name"]
+    pkg_name = pkg_desc["name"]
 
     # Declare outputs for the targets that will be used
-    exported_targets = pds.exported_library_targets(
-        pkg_desc,
-        product_names = product_names,
-        with_deps = True,
-    )
-    for target in exported_targets:
+    for target_ref in target_refs:
+        ref_type, pname, target_name = refs.split(target_ref)
+        target = pds.get_target(pkg_desc, target_name)
+
         if pds.is_swift_target(target):
             swift_module_info = _declare_swift_target_files(ctx, target, build_config_path)
             swift_modules.append(swift_module_info)
@@ -175,10 +168,7 @@ def _gather_package_build_info(
 
 # MARK: - Clang Target Customization
 
-def _create_clang_custom_info(
-        target_name,
-        hdrs = [],
-        modulemap = None):
+def _create_clang_custom_info(target_name, hdrs = [], modulemap = None):
     """Creates a struct value representing the customization info for a clange
     target.
 
@@ -351,7 +341,7 @@ def _spm_package_impl(ctx):
         pkg_name, target_name = spm_common.split_clang_hdrs_key(pkg_name_target)
         pkg_desc = pkg_descs_dict[pkg_name]
         target_desc = pds.get_target(pkg_desc, target_name)
-        module_name = target_desc["c99name"]
+        module_name = target_desc["name"]
 
         clang_custom_info, target_copy_infos, target_build_inputs = _customize_clang_modulemap_and_hdrs(
             ctx,
@@ -367,21 +357,26 @@ def _spm_package_impl(ctx):
         copy_infos.extend(target_copy_infos)
         build_inputs.extend(target_build_inputs)
 
+    # Collect the
+    declared_product_refs = packages.get_product_refs(pkgs)
+    dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
+
     # Collect information about the SPM packages
     pkg_build_infos_dict = dict()
     for pkg_name in pkg_descs_dict:
         if pkg_name == pds.root_pkg_name:
             continue
-        pkg = packages.get_pkg(pkgs, pkg_name)
+        target_refs = [tr for tr in dep_target_refs_dict if refs.is_target_ref(tr, for_pkg = pkg_name)]
+        if target_refs == []:
+            continue
         pkg_desc = pkg_descs_dict[pkg_name]
         clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
         pkg_build_infos_dict[pkg_name] = _gather_package_build_info(
             ctx,
-            pkg_name,
-            pkg_desc,
             build_config_path,
-            pkg.products,
             clang_custom_infos_dict,
+            pkg_desc,
+            target_refs,
         )
 
     # Execute the build

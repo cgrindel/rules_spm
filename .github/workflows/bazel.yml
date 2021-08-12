@@ -50,3 +50,9 @@ jobs:
       run: |
         cd examples/package_with_deps
         bazelisk test //...
+
+    - name: Build Vapor Example
+      shell: bash
+      run: |
+        cd examples/vapor
+        bazelisk test //...

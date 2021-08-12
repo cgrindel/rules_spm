@@ -1,4 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//spm/internal:references.bzl", ref_types = "reference_types", refs = "references")
 load(
     "//spm/internal:package_descriptions.bzl",
     "module_types",
@@ -15,45 +16,6 @@ def _parse_json_test(ctx):
     return unittest.end(env)
 
 parse_json_test = unittest.make(_parse_json_test)
-
-def _exported_library_targets_test(ctx):
-    env = unittest.begin(ctx)
-
-    pkg_desc = pds.parse_json(package_description_json)
-    result = pds.exported_library_targets(pkg_desc)
-    asserts.equals(env, 1, len(result))
-    asserts.equals(env, "Logging", result[0]["c99name"])
-
-    pkg_desc = {
-        "products": [
-            {"name": "Foo", "type": {"library": {}}, "targets": ["Foo"]},
-            {"name": "Bar", "type": {"library": {}}, "targets": ["Bar"]},
-        ],
-        "targets": [
-            {"name": "Foo", "target_dependencies": ["Bar", "Hello"]},
-            {"name": "Bar", "target_dependencies": ["Hello"]},
-            {"name": "Hello", "target_dependencies": []},
-        ],
-    }
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Foo"])])
-    expected = ["Foo"]
-    asserts.equals(env, expected, actual)
-
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, with_deps = True)])
-    expected = ["Bar", "Foo", "Hello"]
-    asserts.equals(env, expected, actual)
-
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Foo"], with_deps = True)])
-    expected = ["Bar", "Foo", "Hello"]
-    asserts.equals(env, expected, actual)
-
-    actual = sorted([t["name"] for t in pds.exported_library_targets(pkg_desc, product_names = ["Bar"], with_deps = True)])
-    expected = ["Bar", "Hello"]
-    asserts.equals(env, expected, actual)
-
-    return unittest.end(env)
-
-exported_library_targets_test = unittest.make(_exported_library_targets_test)
 
 def _is_library_product_test(ctx):
     env = unittest.begin(ctx)
@@ -185,11 +147,107 @@ def _get_target_test(ctx):
 
 get_target_test = unittest.make(_get_target_test)
 
+def _transitive_dependencies_test(ctx):
+    env = unittest.begin(ctx)
+
+    pkg_descs_dict = {
+        "foo-kit": {
+            "name": "foo-kit",
+            "products": [
+                {"name": "FooKit", "targets": ["FooKit"], "type": {"library": ["automatic"]}},
+            ],
+            "targets": [
+                {
+                    "name": "FooKit",
+                    "dependencies": [
+                        {"product": ["Logging", "swift-log", None]},
+                        {"product": ["BarKit", "bar-kit", None]},
+                        {"byName": ["CoolModule", None]},
+                    ],
+                    "module_type": "SwiftTarget",
+                    "target_dependencies": ["CoolModule"],
+                    "type": "library",
+                },
+                {
+                    "name": "CoolModule",
+                    "dependencies": [],
+                    "module_type": "SwiftTarget",
+                    "target_dependencies": [],
+                    "type": "library",
+                },
+            ],
+        },
+        "bar-kit": {
+            "name": "bar-kit",
+            "products": [
+                {"name": "BarKit", "targets": ["BarKit"], "type": {"library": ["automatic"]}},
+            ],
+            "targets": [
+                {
+                    "name": "BarKit",
+                    "dependencies": [
+                        {"product": ["Logging", "swift-log", None]},
+                    ],
+                    "module_type": "SwiftTarget",
+                    "target_dependencies": [],
+                    "type": "library",
+                },
+            ],
+        },
+        "swift-log": {
+            "name": "swift-log",
+            "products": [
+                {"name": "Logging", "targets": ["Logging"], "type": {"library": ["automatic"]}},
+            ],
+            "targets": [
+                {
+                    "name": "Logging",
+                    "dependencies": [],
+                    "module_type": "SwiftTarget",
+                    "target_dependencies": [],
+                    "type": "library",
+                },
+            ],
+        },
+    }
+
+    product_refs = ["product:swift-log/Logging"]
+    actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
+    expected = {
+        "target:swift-log/Logging": [],
+    }
+    asserts.equals(env, expected, actual)
+
+    product_refs = ["product:bar-kit/BarKit"]
+    actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
+    expected = {
+        "target:swift-log/Logging": [],
+        "target:bar-kit/BarKit": ["target:swift-log/Logging"],
+    }
+    asserts.equals(env, expected, actual)
+
+    product_refs = ["product:foo-kit/FooKit"]
+    actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
+    expected = {
+        "target:swift-log/Logging": [],
+        "target:bar-kit/BarKit": ["target:swift-log/Logging"],
+        "target:foo-kit/FooKit": [
+            "target:bar-kit/BarKit",
+            "target:foo-kit/CoolModule",
+            "target:swift-log/Logging",
+        ],
+        "target:foo-kit/CoolModule": [],
+    }
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+transitive_dependencies_test = unittest.make(_transitive_dependencies_test)
+
 def package_descriptions_test_suite():
     unittest.suite(
         "package_description_tests",
         parse_json_test,
-        exported_library_targets_test,
         is_library_product_test,
         library_products_test,
         is_library_target_test,
@@ -198,4 +256,5 @@ def package_descriptions_test_suite():
         is_clang_target_test,
         is_swift_target_test,
         get_target_test,
+        transitive_dependencies_test,
     )
