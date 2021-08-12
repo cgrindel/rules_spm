@@ -319,17 +319,30 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
 # MARK: - Rule Implementation
 
+def _get_build_config_path(ctx):
+    # According to https://github.com/apple/swift-package-manager/blob/ce50cb0de101c2d9a5742aaf70efc7c21e8f249b/Sources/Workspace/Destination.swift#L29,
+    # it looks like the build config directory is based upon the triple
+    # with a format of <arch><sub>-<vendor>-<sys>-<abi>, where:
+    #
+    # arch = x86_64, i386, arm, thumb, mips, etc.
+    # sub = for ex. on ARM: v5, v6m, v7a, v7m, etc.
+    # vendor = pc, apple, nvidia, ibm, etc.
+    # sys = none, linux, win32, darwin, cuda, etc.
+    # abi = eabi, gnu, android, macho, elf, etc.
+    #
+    # See: https://clang.llvm.org/docs/CrossCompilation.html#target-triple
+    return paths.join(
+        spm_common.build_dirname,
+        "x86_64-apple-macosx",
+        ctx.attr.configuration,
+    )
+
 def _spm_package_impl(ctx):
     # Parse the package description JSON.
     pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
     pkgs = packages.from_json(ctx.attr.dependencies_json)
 
-    # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
-    build_config_path = paths.join(
-        spm_common.build_dirname,
-        "x86_64-apple-macosx",
-        ctx.attr.configuration,
-    )
+    build_config_path = _get_build_config_path(ctx)
 
     # Customize the headers and modulemap files for all clang targets.
     modulemap_dir_path = "modulemaps"
