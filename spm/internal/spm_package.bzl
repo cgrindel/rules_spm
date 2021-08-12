@@ -94,10 +94,7 @@ def _declare_clang_target_files(
 
 # MARK: - Package Build Info
 
-def _create_pkg_build_info(
-        pkg_desc,
-        pkg_info,
-        build_outs):
+def _create_pkg_build_info(pkg_desc, pkg_info, build_outs):
     """Creates a struct representing the build information for a Swift package.
 
     Args:
@@ -171,10 +168,7 @@ def _gather_package_build_info(
 
 # MARK: - Clang Target Customization
 
-def _create_clang_custom_info(
-        target_name,
-        hdrs = [],
-        modulemap = None):
+def _create_clang_custom_info(target_name, hdrs = [], modulemap = None):
     """Creates a struct value representing the customization info for a clange
     target.
 

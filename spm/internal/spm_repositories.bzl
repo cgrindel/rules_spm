@@ -30,6 +30,16 @@ def _list_files_under(repository_ctx, path):
     return paths
 
 def _list_directories_under(repository_ctx, path, max_depth = None):
+    """Retrieves the list of directories under the specified path.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        path: A path `string` value.
+        max_depth: Optional. The depth for the directory search.
+
+    Returns:
+        A `list` of path `string` values.
+    """
     find_args = ["find", path, "-type", "d"]
     if max_depth != None:
         find_args.extend(["-maxdepth", "%d" % (max_depth)])
