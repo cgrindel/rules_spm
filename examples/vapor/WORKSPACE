@@ -63,7 +63,10 @@ spm_repositories(
             "https://github.com/vapor/vapor.git",
             name = "vapor",
             from_version = "4.0.0",
-            products = ["Vapor"],
+            products = [
+                "Vapor",
+                "XCTVapor",
+            ],
         ),
     ],
     platforms = [
