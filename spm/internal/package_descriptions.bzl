@@ -73,14 +73,14 @@ def _get_package_description(repository_ctx, working_directory = ""):
     for dump_target in pkg_dump["targets"]:
         dump_targets_dict[dump_target["name"]] = dump_target
 
-    # Merge dump target dependencies into the description. After the merge
-    # a target will have a "target_dependencies" key and a "dependencies" key.
-    # The "target_dependencies" value is a list of target names from the package
-    # that are dependencies for the target. The "dependencies" value is a list
-    # of struct values which has a "product" key or a "target" key. The "product"
-    # value is a list where the first item is the target name and the second is
-    # the package name. The "target" value is a list where the first item is
-    # the target name.
+    # Merge dump target dependencies into the package description dict. After
+    # the merge a target will have a "target_dependencies" key and a
+    # "dependencies" key.  The "target_dependencies" value is a list of target
+    # names from the package that are dependencies for the target. The
+    # "dependencies" value is a list of dict values which has a "product" key
+    # or a "target" key. The "product" value is a list where the first item is
+    # the target name and the second is the package name. The "target" value is
+    # a list where the first item is the target name.
     #
     # Example:
     #    {
