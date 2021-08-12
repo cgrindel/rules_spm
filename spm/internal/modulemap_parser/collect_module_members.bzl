@@ -28,11 +28,6 @@ def collect_module_members(parsed_tokens):
     collect_result = None
     prefix_tokens = []
     for idx in range(consumed_count, tlen - consumed_count):
-        # TODO: Make sure that we are counting consumed tokens correctly. I
-        # think we may be double counting when we come back from collection
-        # functions (e.g. return collect_result). I think that is why I
-        # subtract 1 when calculating the skip_ahead below.
-
         consumed_count += 1
         if skip_ahead > 0:
             skip_ahead -= 1
