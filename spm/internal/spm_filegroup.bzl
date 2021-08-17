@@ -48,7 +48,7 @@ def _get_module_info(pkg_info, module_name):
     for module in pkg_info.clang_modules:
         if module.module_name == module_name:
             return module
-    fail("Could not find module with name", module_name, "in package", pkg_info["name"])
+    fail("Could not find module with name", module_name, "in package", pkg_info.name)
 
 def _spm_filegroup_impl(ctx):
     pkgs_info = ctx.attr.packages[SPMPackagesInfo]
