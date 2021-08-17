@@ -197,7 +197,8 @@ def _is_clang_target(target):
     Returns:
         A boolean indicating whether the target is a clang module.
     """
-    return target["module_type"] == module_types.clang
+    module_type = target["module_type"]
+    return module_type == module_types.clang or module_type == module_types.system_library
 
 def _is_swift_target(target):
     """Returns True if the specified target is a swift module. Otherwise, False.
@@ -399,6 +400,7 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
 module_types = struct(
     swift = "SwiftTarget",
     clang = "ClangTarget",
+    system_library = "SystemLibraryTarget",
 )
 
 package_descriptions = struct(

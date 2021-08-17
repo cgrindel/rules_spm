@@ -116,6 +116,9 @@ def _is_clang_target_test(ctx):
     target = {"module_type": module_types.clang}
     asserts.true(env, pds.is_clang_target(target))
 
+    target = {"module_type": module_types.system_library}
+    asserts.true(env, pds.is_clang_target(target))
+
     target = {"module_type": module_types.swift}
     asserts.false(env, pds.is_clang_target(target))
 
