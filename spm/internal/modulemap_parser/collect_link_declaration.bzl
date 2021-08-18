@@ -3,19 +3,12 @@ load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "tokens", ops = "operators", rws = "reserved_words", tts = "token_types")
 
-def collect_export_declaration(parsed_tokens):
-    """Collect export declaration.
-
-    Spec: https://clang.llvm.org/docs/Modules.html#export-declaration
+def collect_link_declaration(parsed_tokens):
+    """Collect a link declaration.
 
     Syntax:
-        export-declaration:
-          export wildcard-module-id
-
-        wildcard-module-id:
-          identifier
-          '*'
-          identifier '.' wildcard-module-id
+        link-declaration:
+          link frameworkopt string-literal
 
     Args:
         parsed_tokens: A `list` of tokens.
@@ -28,13 +21,13 @@ def collect_export_declaration(parsed_tokens):
     consumed_count = 0
     collect_result = None
 
-    export_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.export, count = tlen)
+    link_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.link, count = tlen)
     if err != None:
         return None, err
     consumed_count += 1
 
-    wildcard = False
-    identifiers = []
+    framework = False
+    library_name = None
     for idx in range(consumed_count, tlen - consumed_count):
         consumed_count += 1
 
@@ -43,26 +36,25 @@ def collect_export_declaration(parsed_tokens):
         if err != None:
             return None, err
 
-        if tokens.is_a(token, tts.operator, ops.asterisk):
-            wildcard = True
-            break
+        if tokens.is_a(token, tts.reserved, rws.framework):
+            framework = True
 
-        elif tokens.is_a(token, tts.identifier):
-            identifiers.append(token.value)
-
-        elif tokens.is_a(token, tts.period):
-            pass
-
-        elif tokens.is_a(token, tts.newline):
+        elif tokens.is_a(token, tts.string_literal):
+            library_name = token.value
             break
 
         else:
             return None, errors.new(
-                "Unexpected token collecting export declaration. token: %s" % (token),
+                "Unexpected token collecting link declaration. token: %s" % (token),
             )
 
-    decl = declarations.export(
-        identifiers = identifiers,
-        wildcard = wildcard,
+    if library_name == None:
+        return None, errors.new(
+            "Expected a library/framework name for the link declaration.",
+        )
+
+    decl = declarations.link(
+        library_name,
+        framework = framework,
     )
     return collection_results.new([decl], consumed_count), None
