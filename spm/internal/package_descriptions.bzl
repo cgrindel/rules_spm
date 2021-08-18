@@ -174,7 +174,8 @@ def _is_library_target(target):
     Returns:
         A boolean indicating whether the target is a library target.
     """
-    return target["type"] == "library"
+    target_type = target["type"]
+    return target_type == target_types.library or target_type == target_types.system
 
 def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
@@ -396,6 +397,11 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
     return resolved_targets_dict
 
 # MARK: - Namespace
+
+target_types = struct(
+    library = "library",
+    system = "system-target",
+)
 
 module_types = struct(
     swift = "SwiftTarget",
