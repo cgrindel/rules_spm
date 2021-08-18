@@ -92,6 +92,60 @@ def _declare_clang_target_files(
         all_outputs = all_outputs,
     )
 
+# MARK: - System Library Module Info
+
+def _declare_system_library_target_files(ctx, pkg_name, target):
+    target_name = target["name"]
+    module_name = target["name"]
+
+    # DEBUG BEGIN
+    print("*** CHUCK pkg_name: ", pkg_name)
+    print("*** CHUCK target_name: ", target_name)
+    # DEBUG END
+
+    # target_files = [f for f in ctx.files.srcs if f.dirname.find(target_path)]
+    target_path = paths.join(pkg_name, target["path"])
+    modulemap = None
+    c_files = []
+    hdrs = []
+    for f in ctx.files.srcs:
+        if f.dirname.find(target_path) == -1:
+            continue
+
+        # DEBUG BEGIN
+        print("*** CHUCK f: ", f)
+
+        # DEBUG END
+        if f.basename == "module.modulemap":
+            modulemap = f
+        elif f.extension == "h":
+            hdrs.append(f)
+        elif f.extension == "c":
+            c_files.append(f)
+
+    if c_files == []:
+        fail("Expected to find c files for target %s in package %s." % (target_name, pkg_name))
+    if hdrs == []:
+        fail("Expected to find header files for target %s in package %s." % (target_name, pkg_name))
+
+    # DEBUG BEGIN
+    print("*** CHUCK c_files: ")
+    for idx, item in enumerate(c_files):
+        print("*** CHUCK", idx, ":", item)
+    print("*** CHUCK hdrs: ")
+    for idx, item in enumerate(hdrs):
+        print("*** CHUCK", idx, ":", item)
+    print("*** CHUCK modulemap: ", modulemap)
+    # DEBUG END
+
+    return providers.system_library_module(
+        module_name = module_name,
+        c_files = c_files,
+        hdrs = hdrs,
+        modulemap = modulemap,
+        all_outputs = [],
+    )
+
 # MARK: - Package Build Info
 
 def _create_pkg_build_info(pkg_desc, pkg_info, build_outs):
@@ -136,6 +190,7 @@ def _gather_package_build_info(
     build_outs = []
     swift_modules = []
     clang_modules = []
+    system_library_modules = []
     pkg_name = pkg_desc["name"]
 
     # Declare outputs for the targets that will be used
@@ -158,10 +213,20 @@ def _gather_package_build_info(
             clang_modules.append(clang_module_info)
             build_outs.extend(clang_module_info.all_outputs)
 
+        elif pds.is_system_library_target(target):
+            system_library_module_info = _declare_system_library_target_files(
+                ctx,
+                pname,
+                target,
+            )
+            system_library_modules.append(system_library_module_info)
+            build_outs.extend(system_library_module_info.all_outputs)
+
     pkg_info = SPMPackageInfo(
         name = pkg_name,
         swift_modules = swift_modules,
         clang_modules = clang_modules,
+        system_library_modules = system_library_modules,
     )
 
     return _create_pkg_build_info(pkg_desc, pkg_info, build_outs)

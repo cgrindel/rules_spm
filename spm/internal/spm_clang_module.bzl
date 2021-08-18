@@ -23,21 +23,21 @@ def spm_clang_module(name, packages, module_type = module_types.clang, deps = No
     )
 
     src_files_name = "%s_src_files" % (name)
+    if module_type == module_types.system_library:
+        src_file_type = "c_files"
+    else:
+        src_file_type = "o_files"
     spm_filegroup(
         name = src_files_name,
         packages = packages,
         module_name = module_name,
-        file_type = "o_files",
+        file_type = src_file_type,
     )
-    # if module_type == module_types.system_library:
-    #     src_file_type = "c_files"
-    # else:
-    #     src_file_type = "o_files"
     # spm_filegroup(
     #     name = src_files_name,
     #     packages = packages,
     #     module_name = module_name,
-    #     file_type = src_file_type,
+    #     file_type = "o_files",
     # )
 
     native.objc_library(

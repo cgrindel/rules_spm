@@ -66,6 +66,7 @@ _spm_clang_module_tpl = """
 spm_clang_module(
     name = "%s",
     packages = "@%s//:build",
+    module_type = "%s",
     deps = [
 %s
     ],
@@ -131,9 +132,34 @@ def _create_spm_clang_module_decl(repository_ctx, pkg_name, target, target_deps)
     """
     module_name = target["name"]
     deps_str = _create_deps_str(pkg_name, target_deps)
-    return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
+    return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, module_types.clang, deps_str)
 
-def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hdrs_dict):
+def _create_spm_system_library_module_decl(repository_ctx, pkg_name, target, target_deps, pkg_root_path):
+    """Returns the spm_clang_module declaration for this clang target.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        pkg_name: The name of the Swift package as a `string`.
+        target: A target `dict` from a package description JSON.
+        target_deps: A `list` of the target's dependencies as target
+                     references.
+
+    Returns:
+        A `string` representing an `spm_clang_module` declaration.
+    """
+
+    # TODO: Fix the doc.
+    module_name = target["name"]
+
+    src_path = paths.join(pkg_root_path, target["path"])
+    module_paths = _list_files_under(repository_ctx, src_path)
+
+    deps_str = _create_deps_str(pkg_name, target_deps)
+    return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, module_types.system_library, deps_str)
+    # # TODO: IMPLEMENT ME!
+    # return "# %s" % (module_name)
+
+def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hdrs_dict, pkg_root_path):
     """Generate a Bazel package for the specified Swift package.
 
     Args:
@@ -145,6 +171,8 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
                          a `string` created by
                          `spm_common.create_clang_hdrs_key()`.
     """
+
+    # TODO: Fix doc.
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
 
@@ -163,13 +191,23 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
                 target,
                 target_deps,
             ))
-        else:
+        elif pds.is_swift_target(target):
             module_decls.append(_create_spm_swift_module_decl(
                 repository_ctx,
                 pkg_name,
                 target,
                 target_deps,
             ))
+        elif pds.is_system_library_target(target):
+            module_decls.append(_create_spm_system_library_module_decl(
+                repository_ctx,
+                pkg_name,
+                target,
+                target_deps,
+                pkg_root_path,
+            ))
+        else:
+            fail("Unrecognized target type. %s" % (target))
 
     bld_content = _bazel_pkg_hdr + "".join(module_decls)
     repository_ctx.file(bld_path, content = bld_content, executable = False)
@@ -448,6 +486,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
             pkg_descs_dict[pkg_name],
             dep_target_refs_dict,
             clang_hdrs_dict,
+            pkg_root_path = paths.join(spm_common.checkouts_path, pkg_name),
         )
 
     # Write BUILD.bazel file.

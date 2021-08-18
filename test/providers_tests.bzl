@@ -62,10 +62,20 @@ def _copy_info_test(ctx):
 
 copy_info_test = unittest.make(_copy_info_test)
 
+def _system_library_module_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+system_library_module_test = unittest.make(_system_library_module_test)
+
 def providers_test_suite():
     return unittest.suite(
         "providers_tests",
         swift_module_test,
         clang_module_test,
         copy_info_test,
+        system_library_module_test,
     )
