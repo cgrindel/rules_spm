@@ -190,7 +190,6 @@ def _is_modulemap_path(path):
     basename = paths.basename(path)
     dirname = paths.basename(paths.dirname(path))
     return basename == "module.modulemap"
-    # return dirname == "include" and basename == "module.modulemap"
 
 def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
     """Retrieves the list of headers declared in the specified modulemap file.
@@ -207,14 +206,6 @@ def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
     decls, err = parser.parse(modulemap_str)
     if err != None:
         fail("Errors parsing the %s. %s" % (modulemap_path, err))
-
-    # DEBUG BEGIN
-    print("*** CHUCK modulemap_path: ", modulemap_path)
-    print("*** CHUCK decls: ")
-    for idx, item in enumerate(decls):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
 
     module_decls = [d for d in decls if d.decl_type == dts.module]
     module_decls_len = len(module_decls)
