@@ -113,7 +113,14 @@ dependency_repository_name_test = unittest.make(_dependency_repository_name_test
 def _is_system_library_target_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    target = {"module_type": module_types.system_library}
+    asserts.true(env, pds.is_system_library_target(target))
+
+    target = {"module_type": module_types.clang}
+    asserts.false(env, pds.is_system_library_target(target))
+
+    target = {"module_type": module_types.swift}
+    asserts.false(env, pds.is_system_library_target(target))
 
     return unittest.end(env)
 
@@ -126,7 +133,7 @@ def _is_clang_target_test(ctx):
     asserts.true(env, pds.is_clang_target(target))
 
     target = {"module_type": module_types.system_library}
-    asserts.true(env, pds.is_clang_target(target))
+    asserts.false(env, pds.is_clang_target(target))
 
     target = {"module_type": module_types.swift}
     asserts.false(env, pds.is_clang_target(target))
