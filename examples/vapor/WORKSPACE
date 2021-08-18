@@ -68,6 +68,18 @@ spm_repositories(
                 "XCTVapor",
             ],
         ),
+        spm_pkg(
+            "https://github.com/vapor/fluent.git",
+            # name = "fluent",
+            from_version = "4.0.0",
+            products = ["Fluent"],
+        ),
+        spm_pkg(
+            "https://github.com/vapor/fluent-sqlite-driver.git",
+            # name = "fluent-sqlite-driver",
+            from_version = "4.0.0",
+            products = ["FluentSQLiteDriver"],
+        ),
     ],
     platforms = [
         ".macOS(.v10_15)",

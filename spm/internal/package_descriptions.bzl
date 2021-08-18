@@ -175,7 +175,8 @@ def _is_library_target(target):
         A boolean indicating whether the target is a library target.
     """
     target_type = target["type"]
-    return target_type == target_types.library or target_type == target_types.system
+    return target_type == target_types.library
+    # return target_type == target_types.library or target_type == target_types.system
 
 def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
@@ -189,6 +190,18 @@ def _library_targets(pkg_desc):
     targets = pkg_desc["targets"]
     return [t for t in targets if _is_library_target(t)]
 
+def _is_system_library_target(target):
+    """Returns True if the specified target is a clang module. Otherwise, False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a clang module.
+    """
+    module_type = target["module_type"]
+    return module_type == module_types.system_library
+
 def _is_clang_target(target):
     """Returns True if the specified target is a clang module. Otherwise, False.
 
@@ -199,7 +212,8 @@ def _is_clang_target(target):
         A boolean indicating whether the target is a clang module.
     """
     module_type = target["module_type"]
-    return module_type == module_types.clang or module_type == module_types.system_library
+    return module_type == module_types.clang
+    # return module_type == module_types.clang or module_type == module_types.system_library
 
 def _is_swift_target(target):
     """Returns True if the specified target is a swift module. Otherwise, False.
@@ -264,6 +278,17 @@ def _dependency_name(pkg_dep):
 
 # MARK: - Transitive Dependency Functions
 
+def _get_target_from_ref(pkg_descs_dict, target_ref):
+    ref_type, pkg_name, target_name = refs.split(target_ref)
+    if ref_type != ref_types.target:
+        fail("Expected reference to be of type target. %s" % (target_ref))
+    pkg_desc = pkg_descs_dict[pkg_name]
+    return _get_target(pkg_desc, target_name)
+
+def _is_referencable_target(pkg_descs_dict, target_ref):
+    target = _get_target_from_ref(pkg_descs_dict, target_ref)
+    return not _is_system_library_target(target)
+
 def _gather_deps_for_target(pkg_descs_dict, target_ref):
     """Returns the dependencies for the specified target.
 
@@ -279,9 +304,20 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
         values and the second item is a list of target reference `string`
         values.
     """
+
     ref_type, pkg_name, target_name = refs.split(target_ref)
     pkg_desc = pkg_descs_dict[pkg_name]
     target = _get_target(pkg_desc, target_name)
+    # target = _get_target_from_ref(pkg_descs_dict, target_ref)
+
+    # DEBUG BEGIN
+    print("*** CHUCK target_ref: ", target_ref)
+    tdeps = target["dependencies"]
+    print("*** CHUCK tdeps: ")
+    for idx, item in enumerate(tdeps):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
 
     product_refs = []
     target_refs = []
@@ -292,11 +328,15 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
             continue
         by_name_values = dep.get("byName")
         if by_name_values != None:
-            target_refs.append(refs.create_target_ref(pkg_name, by_name_values))
+            dep_target_ref = refs.create_target_ref(pkg_name, by_name_values)
+            if _is_referencable_target(pkg_descs_dict, dep_target_ref):
+                target_refs.append(dep_target_ref)
             continue
         target_values = dep.get("target")
         if target_values != None:
-            target_refs.append(refs.create_target_ref(pkg_name, target_values))
+            dep_target_ref = refs.create_target_ref(pkg_name, target_values)
+            if _is_referencable_target(pkg_descs_dict, dep_target_ref):
+                target_refs.append(dep_target_ref)
             continue
         fail("Unrecognized dependency type. %s" % (dep))
 

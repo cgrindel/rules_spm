@@ -9,6 +9,8 @@ swift_library(
         "//Tests:__subpackages__",
     ],
     deps = [
+        "@swift_pkgs//fluent:Fluent",
+        "@swift_pkgs//fluent-sqlite-driver:FluentSQLiteDriver",
         "@swift_pkgs//vapor:Vapor",
     ],
 )

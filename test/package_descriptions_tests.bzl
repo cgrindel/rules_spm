@@ -110,6 +110,15 @@ def _dependency_repository_name_test(ctx):
 
 dependency_repository_name_test = unittest.make(_dependency_repository_name_test)
 
+def _is_system_library_target_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+is_system_library_target_test = unittest.make(_is_system_library_target_test)
+
 def _is_clang_target_test(ctx):
     env = unittest.begin(ctx)
 
@@ -256,6 +265,7 @@ def package_descriptions_test_suite():
         is_library_target_test,
         library_targets_test,
         dependency_name_test,
+        is_system_library_target_test,
         is_clang_target_test,
         is_swift_target_test,
         get_target_test,
