@@ -16,6 +16,7 @@ func routes(_ app: Application) throws {
             throw AppError.missingName
         }
 
+        // Create a Foo record and read it back before responding
         let foo = Foo()
         foo.name = name
         return foo.save(on: app.db).flatMap {
