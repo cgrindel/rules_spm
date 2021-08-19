@@ -5,7 +5,16 @@ load(
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 
 def spm_system_library_module(name, packages, deps = None, visibility = None):
-    # TODO: Add doc
+    """Exposes a system library module as defined in a dependent Swift package.
+
+    Args:
+        name: The Bazel target name.
+        packages: A target that outputs an SPMPackagesInfo provider (e.g.
+                  `spm_package`).
+        deps: Dependencies appropriate for the `swift_c_module` which defines
+              the target.
+        visibility: Target visibility.
+    """
     module_name = name
 
     modulemap_files_name = "%s_modulemap" % (name)
@@ -42,7 +51,6 @@ def spm_system_library_module(name, packages, deps = None, visibility = None):
             ":%s" % (src_files_name),
         ],
         tags = ["swift_module=%s" % (name)],
-        visibility = ["//visibility:public"],
         deps = deps,
     )
 
@@ -53,4 +61,5 @@ def spm_system_library_module(name, packages, deps = None, visibility = None):
         ],
         module_map = ":%s" % (modulemap_files_name),
         module_name = name,
+        visibility = visibility,
     )

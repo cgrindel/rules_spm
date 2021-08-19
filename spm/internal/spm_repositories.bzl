@@ -158,17 +158,15 @@ def _create_spm_system_library_module_decl(repository_ctx, pkg_name, target, tar
         target: A target `dict` from a package description JSON.
         target_deps: A `list` of the target's dependencies as target
                      references.
+        pkg_root_path: A path `string` specifying the location of the package
+                       which defines the target.
 
     Returns:
         A `string` representing an `spm_clang_module` declaration.
     """
-
-    # TODO: Fix the doc.
     module_name = target["name"]
-
     src_path = paths.join(pkg_root_path, target["path"])
     module_paths = _list_files_under(repository_ctx, src_path)
-
     deps_str = _create_deps_str(pkg_name, target_deps)
     return _spm_system_library_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
@@ -183,9 +181,9 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
                          public header path `string` values and the keys are
                          a `string` created by
                          `spm_common.create_clang_hdrs_key()`.
+        pkg_root_path: A path `string` specifying the location of the package
+                       which defines the target.
     """
-
-    # TODO: Fix doc.
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
 
