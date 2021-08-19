@@ -136,6 +136,29 @@ def _export_test(ctx):
 
 export_test = unittest.make(_export_test)
 
+def _link_test(ctx):
+    env = unittest.begin(ctx)
+
+    expected = struct(
+        decl_type = dts.link,
+        name = "sqlite3",
+        framework = False,
+    )
+    actual = declarations.link("sqlite3")
+    asserts.equals(env, expected, actual)
+
+    expected = struct(
+        decl_type = dts.link,
+        name = "sqlite3",
+        framework = True,
+    )
+    actual = declarations.link("sqlite3", framework = True)
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+link_test = unittest.make(_link_test)
+
 def declarations_test_suite():
     return unittest.suite(
         "declarations_tests",
@@ -146,4 +169,5 @@ def declarations_test_suite():
         exclude_header_test,
         umbrella_directory_test,
         export_test,
+        link_test,
     )

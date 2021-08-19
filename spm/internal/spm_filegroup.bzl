@@ -48,7 +48,10 @@ def _get_module_info(pkg_info, module_name):
     for module in pkg_info.clang_modules:
         if module.module_name == module_name:
             return module
-    fail("Could not find module with name", module_name, "in package", pkg_info["name"])
+    for module in pkg_info.system_library_modules:
+        if module.module_name == module_name:
+            return module
+    fail("Could not find module with name", module_name, "in package", pkg_info.name)
 
 def _spm_filegroup_impl(ctx):
     pkgs_info = ctx.attr.packages[SPMPackagesInfo]
@@ -66,6 +69,8 @@ def _spm_filegroup_impl(ctx):
     file_type = ctx.attr.file_type
     if file_type == "o_files":
         output = module_info.o_files
+    elif file_type == "c_files":
+        output = module_info.c_files
     elif file_type == "swiftdoc":
         output = [module_info.swiftdoc]
     elif file_type == "swiftmodule":
@@ -109,6 +114,7 @@ spm_filegroup = rule(
             mandatory = True,
             values = [
                 "o_files",
+                "c_files",
                 "swiftdoc",
                 "swiftmodule",
                 "swiftsourceinfo",

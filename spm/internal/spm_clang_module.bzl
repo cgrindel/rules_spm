@@ -1,4 +1,5 @@
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
+load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 
 def spm_clang_module(name, packages, deps = None, visibility = None):
     """Exposes a clang module as defined in a dependent Swift package.
@@ -21,9 +22,9 @@ def spm_clang_module(name, packages, deps = None, visibility = None):
         file_type = "hdrs",
     )
 
-    o_files_name = "%s_o_files" % (name)
+    src_files_name = "%s_src_files" % (name)
     spm_filegroup(
-        name = o_files_name,
+        name = src_files_name,
         packages = packages,
         module_name = module_name,
         file_type = "o_files",
@@ -35,7 +36,7 @@ def spm_clang_module(name, packages, deps = None, visibility = None):
             ":%s" % (hdr_files_name),
         ],
         srcs = [
-            ":%s" % (o_files_name),
+            ":%s" % (src_files_name),
         ],
         module_name = module_name,
         deps = deps,

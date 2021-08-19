@@ -61,12 +61,21 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/vapor/vapor.git",
-            name = "vapor",
             from_version = "4.0.0",
             products = [
                 "Vapor",
                 "XCTVapor",
             ],
+        ),
+        spm_pkg(
+            "https://github.com/vapor/fluent.git",
+            from_version = "4.0.0",
+            products = ["Fluent"],
+        ),
+        spm_pkg(
+            "https://github.com/vapor/fluent-sqlite-driver.git",
+            from_version = "4.0.0",
+            products = ["FluentSQLiteDriver"],
         ),
     ],
     platforms = [
