@@ -176,7 +176,6 @@ def _is_library_target(target):
     """
     target_type = target["type"]
     return target_type == target_types.library
-    # return target_type == target_types.library or target_type == target_types.system
 
 def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
