@@ -30,24 +30,4 @@ func routes(_ app: Application) throws {
             "Hello, \(newFoo.name!)!"
         }
     }
-
-    // app.get("hello", ":name") { req -> String in
-    //     guard let name = req.parameters.get("name") else {
-    //         throw AppError.missingName
-    //     }
-
-    //     let foo = Foo()
-    //     foo.name = name
-    //     try foo.create(on: app.db).wait()
-    //     // do {
-    //     //     try foo.save(on: app.db).wait()
-    //     // } catch {
-    //     //     // DEBUG BEGIN
-    //     //     Swift.print("*** CHUCK  error: \(String(reflecting: error))")
-    //     //     // DEBUG END
-    //     //     throw error
-    //     // }
-
-    //     return "Hello, \(name)!"
-    // }
 }
