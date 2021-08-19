@@ -8,6 +8,7 @@ _declaration_types = struct(
     exclude_header = "exclude_header",
     umbrella_directory = "umbrella_directory",
     export = "export",
+    link = "link",
 )
 
 def _create_module_decl(module_id, explicit = False, framework = False, attributes = [], members = []):
@@ -167,6 +168,24 @@ def _create_export(identifiers = [], wildcard = False):
         wildcard = wildcard,
     )
 
+def _create_link(name, framework = False):
+    """Creates a `struct` representing a link declaration.
+
+    Spec: https://clang.llvm.org/docs/Modules.html#link-declaration
+
+    Args:
+        name: The name of the library or framework as a `string`.
+        framework: A `bool` indicating whether the link is to a framework.
+
+    Returns:
+        A `struct` representing a link declaration.
+    """
+    return struct(
+        decl_type = _declaration_types.link,
+        name = name,
+        framework = framework,
+    )
+
 # MARK: - Namespaces
 
 declaration_types = _declaration_types
@@ -180,4 +199,5 @@ declarations = struct(
     exclude_header = _create_exclude_header,
     umbrella_directory = _create_umbrella_directory,
     export = _create_export,
+    link = _create_link,
 )

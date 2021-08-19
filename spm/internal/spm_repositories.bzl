@@ -73,8 +73,24 @@ spm_clang_module(
 )
 """
 
+_spm_system_library_module_tpl = """
+spm_system_library_module(
+    name = "%s",
+    packages = "@%s//:build",
+    deps = [
+%s
+    ],
+    visibility = ["//visibility:public"],
+)
+"""
+
 _bazel_pkg_hdr = """
-load("@cgrindel_rules_spm//spm:spm.bzl", "spm_swift_module", "spm_clang_module")
+load(
+    "@cgrindel_rules_spm//spm:spm.bzl", 
+    "spm_swift_module", 
+    "spm_clang_module",
+    "spm_system_library_module",
+)
 """
 
 def _create_deps_str(pkg_name, target_deps):
@@ -133,7 +149,28 @@ def _create_spm_clang_module_decl(repository_ctx, pkg_name, target, target_deps)
     deps_str = _create_deps_str(pkg_name, target_deps)
     return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
-def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hdrs_dict):
+def _create_spm_system_library_module_decl(repository_ctx, pkg_name, target, target_deps, pkg_root_path):
+    """Returns the spm_clang_module declaration for this clang target.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        pkg_name: The name of the Swift package as a `string`.
+        target: A target `dict` from a package description JSON.
+        target_deps: A `list` of the target's dependencies as target
+                     references.
+        pkg_root_path: A path `string` specifying the location of the package
+                       which defines the target.
+
+    Returns:
+        A `string` representing an `spm_clang_module` declaration.
+    """
+    module_name = target["name"]
+    src_path = paths.join(pkg_root_path, target["path"])
+    module_paths = _list_files_under(repository_ctx, src_path)
+    deps_str = _create_deps_str(pkg_name, target_deps)
+    return _spm_system_library_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
+
+def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hdrs_dict, pkg_root_path):
     """Generate a Bazel package for the specified Swift package.
 
     Args:
@@ -144,6 +181,8 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
                          public header path `string` values and the keys are
                          a `string` created by
                          `spm_common.create_clang_hdrs_key()`.
+        pkg_root_path: A path `string` specifying the location of the package
+                       which defines the target.
     """
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
@@ -156,20 +195,30 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
         target_deps = dep_target_refs_dict[target_ref]
         rtype, pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
-        if pds.is_clang_target(target):
+        if pds.is_clang_module(target):
             module_decls.append(_create_spm_clang_module_decl(
                 repository_ctx,
                 pkg_name,
                 target,
                 target_deps,
             ))
-        else:
+        elif pds.is_swift_module(target):
             module_decls.append(_create_spm_swift_module_decl(
                 repository_ctx,
                 pkg_name,
                 target,
                 target_deps,
             ))
+        elif pds.is_system_library_module(target):
+            module_decls.append(_create_spm_system_library_module_decl(
+                repository_ctx,
+                pkg_name,
+                target,
+                target_deps,
+                pkg_root_path,
+            ))
+        else:
+            fail("Unrecognized target type. %s" % (target))
 
     bld_content = _bazel_pkg_hdr + "".join(module_decls)
     repository_ctx.file(bld_path, content = bld_content, executable = False)
@@ -189,7 +238,7 @@ def _is_modulemap_path(path):
     """
     basename = paths.basename(path)
     dirname = paths.basename(paths.dirname(path))
-    return dirname == "include" and basename == "module.modulemap"
+    return basename == "module.modulemap"
 
 def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
     """Retrieves the list of headers declared in the specified modulemap file.
@@ -425,7 +474,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
         pkg_descs_dict[dep_name] = dep_pkg_desc
 
         # Look for custom header declarations in the clang targets
-        clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
+        clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_module(t)]
         for clang_target in clang_targets:
             clang_hdr_paths = _get_clang_hdrs_for_target(
                 repository_ctx,
@@ -448,6 +497,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
             pkg_descs_dict[pkg_name],
             dep_target_refs_dict,
             clang_hdrs_dict,
+            pkg_root_path = paths.join(spm_common.checkouts_path, pkg_name),
         )
 
     # Write BUILD.bazel file.

@@ -174,7 +174,8 @@ def _is_library_target(target):
     Returns:
         A boolean indicating whether the target is a library target.
     """
-    return target["type"] == "library"
+    target_type = target["type"]
+    return target_type == target_types.library
 
 def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
@@ -188,7 +189,7 @@ def _library_targets(pkg_desc):
     targets = pkg_desc["targets"]
     return [t for t in targets if _is_library_target(t)]
 
-def _is_clang_target(target):
+def _is_system_library_module(target):
     """Returns True if the specified target is a clang module. Otherwise, False.
 
     Args:
@@ -197,9 +198,22 @@ def _is_clang_target(target):
     Returns:
         A boolean indicating whether the target is a clang module.
     """
-    return target["module_type"] == module_types.clang
+    module_type = target["module_type"]
+    return module_type == module_types.system_library
 
-def _is_swift_target(target):
+def _is_clang_module(target):
+    """Returns True if the specified target is a clang module. Otherwise, False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a clang module.
+    """
+    module_type = target["module_type"]
+    return module_type == module_types.clang
+
+def _is_swift_module(target):
     """Returns True if the specified target is a swift module. Otherwise, False.
 
     Args:
@@ -290,11 +304,13 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
             continue
         by_name_values = dep.get("byName")
         if by_name_values != None:
-            target_refs.append(refs.create_target_ref(pkg_name, by_name_values))
+            dep_target_ref = refs.create_target_ref(pkg_name, by_name_values)
+            target_refs.append(dep_target_ref)
             continue
         target_values = dep.get("target")
         if target_values != None:
-            target_refs.append(refs.create_target_ref(pkg_name, target_values))
+            dep_target_ref = refs.create_target_ref(pkg_name, target_values)
+            target_refs.append(dep_target_ref)
             continue
         fail("Unrecognized dependency type. %s" % (dep))
 
@@ -396,9 +412,15 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
 
 # MARK: - Namespace
 
+target_types = struct(
+    library = "library",
+    system = "system-target",
+)
+
 module_types = struct(
     swift = "SwiftTarget",
     clang = "ClangTarget",
+    system_library = "SystemLibraryTarget",
 )
 
 package_descriptions = struct(
@@ -410,8 +432,9 @@ package_descriptions = struct(
     # Target Functions
     is_library_target = _is_library_target,
     library_targets = _library_targets,
-    is_clang_target = _is_clang_target,
-    is_swift_target = _is_swift_target,
+    is_system_library_module = _is_system_library_module,
+    is_clang_module = _is_clang_module,
+    is_swift_module = _is_swift_module,
     get_target = _get_target,
     # Dependency Functions
     dependency_name = _dependency_name,

@@ -62,10 +62,34 @@ def _copy_info_test(ctx):
 
 copy_info_test = unittest.make(_copy_info_test)
 
+def _system_library_module_test(ctx):
+    env = unittest.begin(ctx)
+
+    actual = providers.system_library_module(
+        "MyModule",
+        ["first.c", "second.c"],
+        ["hdrs"],
+        "modulemap",
+        ["all"],
+    )
+    expected = struct(
+        module_name = "MyModule",
+        c_files = ["first.c", "second.c"],
+        hdrs = ["hdrs"],
+        modulemap = "modulemap",
+        all_outputs = ["all"],
+    )
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+system_library_module_test = unittest.make(_system_library_module_test)
+
 def providers_test_suite():
     return unittest.suite(
         "providers_tests",
         swift_module_test,
         clang_module_test,
         copy_info_test,
+        system_library_module_test,
     )
