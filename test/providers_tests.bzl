@@ -65,7 +65,21 @@ copy_info_test = unittest.make(_copy_info_test)
 def _system_library_module_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    actual = providers.system_library_module(
+        "MyModule",
+        ["first.c", "second.c"],
+        ["hdrs"],
+        "modulemap",
+        ["all"],
+    )
+    expected = struct(
+        module_name = "MyModule",
+        c_files = ["first.c", "second.c"],
+        hdrs = ["hdrs"],
+        modulemap = "modulemap",
+        all_outputs = ["all"],
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
