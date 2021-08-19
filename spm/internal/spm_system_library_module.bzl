@@ -1,3 +1,7 @@
+load(
+    "@build_bazel_rules_swift//swift:swift.bzl",
+    "swift_c_module",
+)
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 
 def spm_system_library_module(name, packages, deps = None, visibility = None):
@@ -28,19 +32,43 @@ def spm_system_library_module(name, packages, deps = None, visibility = None):
         file_type = "c_files",
     )
 
-    native.objc_library(
-        name = name,
+    cc_lib_name = "%s_cc_lib" % (name)
+    native.cc_library(
+        name = cc_lib_name,
         hdrs = [
             ":%s" % (hdr_files_name),
         ],
         srcs = [
             ":%s" % (src_files_name),
         ],
-        # module_name = module_name,
-        module_map = ":%s" % (modulemap_files_name),
+        tags = ["swift_module=%s" % (name)],
+        visibility = ["//visibility:public"],
         deps = deps,
-        visibility = visibility,
     )
+
+    swift_c_module(
+        name = name,
+        deps = [
+            ":%s" % (cc_lib_name),
+        ],
+        module_map = ":%s" % (modulemap_files_name),
+        module_name = name,
+    )
+
+    # native.objc_library(
+    #     name = name,
+    #     hdrs = [
+    #         ":%s" % (hdr_files_name),
+    #     ],
+    #     srcs = [
+    #         ":%s" % (src_files_name),
+    #     ],
+    #     # module_name = module_name,
+    #     module_map = ":%s" % (modulemap_files_name),
+    #     deps = deps,
+    #     visibility = visibility,
+    # )
+
     # native.objc_library(
     #     name = name,
     #     hdrs = [
