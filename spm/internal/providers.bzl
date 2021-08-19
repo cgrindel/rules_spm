@@ -60,7 +60,19 @@ def _create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
     )
 
 def _create_system_library_module(module_name, c_files, hdrs, modulemap, all_outputs):
-    # TODO: Do doc.
+    """Creates a value representing the system library module that is built from a package.
+
+    Args:
+        module_name: Name of the Swift module.
+        c_files: The C source files that are part of the system library
+                 definition.
+        hdrs: The header files.
+        modulemap: The module.modulemap file for the system library module.
+        all_outputs: All of the output files that are declared for the module.
+
+    Returns:
+        A struct which provides info about a system library module.
+    """
     return struct(
         module_name = module_name,
         c_files = c_files,
