@@ -98,12 +98,6 @@ def _declare_system_library_target_files(ctx, pkg_name, target):
     target_name = target["name"]
     module_name = target["name"]
 
-    # DEBUG BEGIN
-    print("*** CHUCK pkg_name: ", pkg_name)
-    print("*** CHUCK target_name: ", target_name)
-    # DEBUG END
-
-    # target_files = [f for f in ctx.files.srcs if f.dirname.find(target_path)]
     target_path = paths.join(pkg_name, target["path"])
     modulemap = None
     c_files = []
@@ -112,10 +106,6 @@ def _declare_system_library_target_files(ctx, pkg_name, target):
         if f.dirname.find(target_path) == -1:
             continue
 
-        # DEBUG BEGIN
-        print("*** CHUCK f: ", f)
-
-        # DEBUG END
         if f.basename == "module.modulemap":
             modulemap = f
         elif f.extension == "h":
@@ -127,16 +117,6 @@ def _declare_system_library_target_files(ctx, pkg_name, target):
         fail("Expected to find c files for target %s in package %s." % (target_name, pkg_name))
     if hdrs == []:
         fail("Expected to find header files for target %s in package %s." % (target_name, pkg_name))
-
-    # DEBUG BEGIN
-    print("*** CHUCK c_files: ")
-    for idx, item in enumerate(c_files):
-        print("*** CHUCK", idx, ":", item)
-    print("*** CHUCK hdrs: ")
-    for idx, item in enumerate(hdrs):
-        print("*** CHUCK", idx, ":", item)
-    print("*** CHUCK modulemap: ", modulemap)
-    # DEBUG END
 
     return providers.system_library_module(
         module_name = module_name,

@@ -1,7 +1,7 @@
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 
-def spm_clang_module(name, packages, module_type = module_types.clang, deps = None, visibility = None):
+def spm_clang_module(name, packages, deps = None, visibility = None):
     """Exposes a clang module as defined in a dependent Swift package.
 
     Args:
@@ -23,22 +23,12 @@ def spm_clang_module(name, packages, module_type = module_types.clang, deps = No
     )
 
     src_files_name = "%s_src_files" % (name)
-    if module_type == module_types.system_library:
-        src_file_type = "c_files"
-    else:
-        src_file_type = "o_files"
     spm_filegroup(
         name = src_files_name,
         packages = packages,
         module_name = module_name,
-        file_type = src_file_type,
+        file_type = "o_files",
     )
-    # spm_filegroup(
-    #     name = src_files_name,
-    #     packages = packages,
-    #     module_name = module_name,
-    #     file_type = "o_files",
-    # )
 
     native.objc_library(
         name = name,
