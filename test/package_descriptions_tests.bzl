@@ -110,50 +110,50 @@ def _dependency_repository_name_test(ctx):
 
 dependency_repository_name_test = unittest.make(_dependency_repository_name_test)
 
-def _is_system_library_target_test(ctx):
+def _is_system_library_module_test(ctx):
     env = unittest.begin(ctx)
 
     target = {"module_type": module_types.system_library}
-    asserts.true(env, pds.is_system_library_target(target))
+    asserts.true(env, pds.is_system_library_module(target))
 
     target = {"module_type": module_types.clang}
-    asserts.false(env, pds.is_system_library_target(target))
+    asserts.false(env, pds.is_system_library_module(target))
 
     target = {"module_type": module_types.swift}
-    asserts.false(env, pds.is_system_library_target(target))
+    asserts.false(env, pds.is_system_library_module(target))
 
     return unittest.end(env)
 
-is_system_library_target_test = unittest.make(_is_system_library_target_test)
+is_system_library_module_test = unittest.make(_is_system_library_module_test)
 
-def _is_clang_target_test(ctx):
+def _is_clang_module_test(ctx):
     env = unittest.begin(ctx)
 
     target = {"module_type": module_types.clang}
-    asserts.true(env, pds.is_clang_target(target))
+    asserts.true(env, pds.is_clang_module(target))
 
     target = {"module_type": module_types.system_library}
-    asserts.false(env, pds.is_clang_target(target))
+    asserts.false(env, pds.is_clang_module(target))
 
     target = {"module_type": module_types.swift}
-    asserts.false(env, pds.is_clang_target(target))
+    asserts.false(env, pds.is_clang_module(target))
 
     return unittest.end(env)
 
-is_clang_target_test = unittest.make(_is_clang_target_test)
+is_clang_module_test = unittest.make(_is_clang_module_test)
 
-def _is_swift_target_test(ctx):
+def _is_swift_module_test(ctx):
     env = unittest.begin(ctx)
 
     target = {"module_type": module_types.swift}
-    asserts.true(env, pds.is_swift_target(target))
+    asserts.true(env, pds.is_swift_module(target))
 
     target = {"module_type": module_types.clang}
-    asserts.false(env, pds.is_swift_target(target))
+    asserts.false(env, pds.is_swift_module(target))
 
     return unittest.end(env)
 
-is_swift_target_test = unittest.make(_is_swift_target_test)
+is_swift_module_test = unittest.make(_is_swift_module_test)
 
 def _get_target_test(ctx):
     env = unittest.begin(ctx)
@@ -272,9 +272,9 @@ def package_descriptions_test_suite():
         is_library_target_test,
         library_targets_test,
         dependency_name_test,
-        is_system_library_target_test,
-        is_clang_target_test,
-        is_swift_target_test,
+        is_system_library_module_test,
+        is_clang_module_test,
+        is_swift_module_test,
         get_target_test,
         transitive_dependencies_test,
     )
