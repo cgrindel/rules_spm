@@ -3,6 +3,7 @@ import Vapor
 
 enum AppError: Error {
     case missingName
+    case notFound
 }
 
 func routes(_ app: Application) throws {
@@ -17,8 +18,16 @@ func routes(_ app: Application) throws {
 
         let foo = Foo()
         foo.name = name
-        return foo.save(on: app.db).map {
-            "Hello, \(name)!"
+        return foo.save(on: app.db).flatMap {
+            Foo.find(foo.id, on: app.db)
+        }.flatMap { optFoo -> EventLoopFuture<Foo> in
+            let eventLoop = app.db.eventLoop
+            guard let newFoo = optFoo else {
+                return eventLoop.makeFailedFuture(AppError.notFound)
+            }
+            return eventLoop.makeSucceededFuture(newFoo)
+        }.map { newFoo in
+            "Hello, \(newFoo.name!)!"
         }
     }
 
