@@ -54,30 +54,3 @@ def spm_system_library_module(name, packages, deps = None, visibility = None):
         module_map = ":%s" % (modulemap_files_name),
         module_name = name,
     )
-
-    # native.objc_library(
-    #     name = name,
-    #     hdrs = [
-    #         ":%s" % (hdr_files_name),
-    #     ],
-    #     srcs = [
-    #         ":%s" % (src_files_name),
-    #     ],
-    #     # module_name = module_name,
-    #     module_map = ":%s" % (modulemap_files_name),
-    #     deps = deps,
-    #     visibility = visibility,
-    # )
-
-    # native.objc_library(
-    #     name = name,
-    #     hdrs = [
-    #         ":%s" % (hdr_files_name),
-    #     ],
-    #     srcs = [
-    #         ":%s" % (src_files_name),
-    #     ],
-    #     module_name = module_name,
-    #     deps = deps,
-    #     visibility = visibility,
-    # )
