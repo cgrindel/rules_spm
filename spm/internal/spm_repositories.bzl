@@ -195,21 +195,21 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
         target_deps = dep_target_refs_dict[target_ref]
         rtype, pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
-        if pds.is_clang_target(target):
+        if pds.is_clang_module(target):
             module_decls.append(_create_spm_clang_module_decl(
                 repository_ctx,
                 pkg_name,
                 target,
                 target_deps,
             ))
-        elif pds.is_swift_target(target):
+        elif pds.is_swift_module(target):
             module_decls.append(_create_spm_swift_module_decl(
                 repository_ctx,
                 pkg_name,
                 target,
                 target_deps,
             ))
-        elif pds.is_system_library_target(target):
+        elif pds.is_system_library_module(target):
             module_decls.append(_create_spm_system_library_module_decl(
                 repository_ctx,
                 pkg_name,
@@ -474,7 +474,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
         pkg_descs_dict[dep_name] = dep_pkg_desc
 
         # Look for custom header declarations in the clang targets
-        clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
+        clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_module(t)]
         for clang_target in clang_targets:
             clang_hdr_paths = _get_clang_hdrs_for_target(
                 repository_ctx,

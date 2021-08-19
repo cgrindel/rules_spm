@@ -178,12 +178,12 @@ def _gather_package_build_info(
         ref_type, pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
 
-        if pds.is_swift_target(target):
+        if pds.is_swift_module(target):
             swift_module_info = _declare_swift_target_files(ctx, target, build_config_path)
             swift_modules.append(swift_module_info)
             build_outs.extend(swift_module_info.all_outputs)
 
-        elif pds.is_clang_target(target):
+        elif pds.is_clang_module(target):
             clang_module_info = _declare_clang_target_files(
                 ctx,
                 target,
@@ -193,7 +193,7 @@ def _gather_package_build_info(
             clang_modules.append(clang_module_info)
             build_outs.extend(clang_module_info.all_outputs)
 
-        elif pds.is_system_library_target(target):
+        elif pds.is_system_library_module(target):
             system_library_module_info = _declare_system_library_target_files(
                 ctx,
                 pname,
