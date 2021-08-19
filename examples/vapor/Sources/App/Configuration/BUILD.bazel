@@ -10,6 +10,7 @@ swift_library(
     ],
     deps = [
         "//Sources/App/Migrations",
+        "//Sources/App/Models",
         "@swift_pkgs//fluent:Fluent",
         "@swift_pkgs//fluent-sqlite-driver:FluentSQLiteDriver",
         "@swift_pkgs//vapor:Vapor",

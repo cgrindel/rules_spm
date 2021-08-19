@@ -4,7 +4,10 @@ swift_library(
     name = "Models",
     srcs = glob(["*.swift"]),
     module_name = "App_Models",
-    visibility = ["//swift:__subpackages__"],
+    visibility = [
+        "//Sources:__subpackages__",
+        "//Tests:__subpackages__",
+    ],
     deps = [
         "@swift_pkgs//fluent:Fluent",
     ],
