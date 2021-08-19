@@ -10,22 +10,35 @@ func routes(_ app: Application) throws {
         "It works!"
     }
 
-    app.get("hello", ":name") { req -> String in
+    app.get("hello", ":name") { req -> EventLoopFuture<String> in
         guard let name = req.parameters.get("name") else {
             throw AppError.missingName
         }
 
         let foo = Foo()
         foo.name = name
-        // do {
-        //     try foo.save(on: app.db).wait()
-        // } catch {
-        //     // DEBUG BEGIN
-        //     Swift.print("*** CHUCK  error: \(String(reflecting: error))")
-        //     // DEBUG END
-        //     throw error
-        // }
-
-        return "Hello, \(name)!"
+        return foo.save(on: app.db).map {
+            "Hello, \(name)!"
+        }
     }
+
+    // app.get("hello", ":name") { req -> String in
+    //     guard let name = req.parameters.get("name") else {
+    //         throw AppError.missingName
+    //     }
+
+    //     let foo = Foo()
+    //     foo.name = name
+    //     try foo.create(on: app.db).wait()
+    //     // do {
+    //     //     try foo.save(on: app.db).wait()
+    //     // } catch {
+    //     //     // DEBUG BEGIN
+    //     //     Swift.print("*** CHUCK  error: \(String(reflecting: error))")
+    //     //     // DEBUG END
+    //     //     throw error
+    //     // }
+
+    //     return "Hello, \(name)!"
+    // }
 }
