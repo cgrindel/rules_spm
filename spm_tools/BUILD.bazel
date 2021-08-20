@@ -2,30 +2,3 @@ load(":spm_toolchain.bzl", "spm_toolchain")
 
 # Define a toolchain type.
 toolchain_type(name = "toolchain_type")
-
-spm_toolchain(
-    name = "spm_macos",
-    build_tool = "//spm/internal:exec_spm_build",
-)
-
-spm_toolchain(
-    name = "spm_linux",
-    build_tool = "//spm/internal:exec_spm_build",
-)
-
-toolchain(
-    name = "spm_macos_toolchain",
-    exec_compatible_with = [
-        "@platforms//os:macos",
-        "@platforms//cpu:x86_64",
-        # "@platforms//cpu:arm64",
-    ],
-    target_compatible_with = [
-        "@platforms//os:macos",
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-        "@platforms//cpu:arm64",
-    ],
-    toolchain = ":barc_linux",
-    toolchain_type = ":toolchain_type",
-)
