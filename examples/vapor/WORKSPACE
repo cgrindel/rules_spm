@@ -46,11 +46,14 @@ local_repository(
 )
 
 load(
-    "@cgrindel_rules_spm//spm:repositories.bzl",
-    "rules_spm_dependencies",
+    "@cgrindel_rules_spm//spm:deps.bzl",
+    "spm_register_toolchains",
+    "spm_rules_dependencies",
 )
 
-rules_spm_dependencies()
+spm_rules_dependencies()
+
+spm_register_toolchains()
 
 # MARK: - External SPM Packages
 

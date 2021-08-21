@@ -31,11 +31,14 @@ http_archive(
 )
 
 load(
-    "@cgrindel_rules_spm//spm:repositories.bzl",
-    "rules_spm_dependencies",
+    "@cgrindel_rules_spm//spm:deps.bzl",
+    "spm_rules_dependencies",
+    "spm_register_toolchains",
 )
 
-rules_spm_dependencies()
+spm_rules_dependencies()
+
+spm_register_toolchains()
 
 load(
     "@build_bazel_rules_swift//swift:repositories.bzl",
@@ -89,11 +92,14 @@ http_archive(
 )
 
 load(
-    "@cgrindel_rules_spm//spm:repositories.bzl",
-    "rules_spm_dependencies",
+    "@cgrindel_rules_spm//spm:deps.bzl",
+    "spm_rules_dependencies",
+    "spm_register_toolchains",
 )
 
-rules_spm_dependencies()
+spm_rules_dependencies()
+
+spm_register_toolchains()
 ```
 
 ### 2. Add external Swift packages as dependencies to your workspace

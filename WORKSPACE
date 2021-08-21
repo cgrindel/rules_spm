@@ -1,8 +1,8 @@
 workspace(name = "cgrindel_rules_spm")
 
-load("//spm:repositories.bzl", "rules_spm_dependencies")
+load("//spm:deps.bzl", "spm_rules_dependencies")
 
-rules_spm_dependencies()
+spm_rules_dependencies()
 
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
