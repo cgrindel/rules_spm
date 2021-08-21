@@ -2,13 +2,15 @@ load(":platforms.bzl", "SPMOS_SPMARCH", "platforms")
 
 SpmBuildInfo = provider(
     doc = "Information about how to invoke the Swift package manager.",
-    fields = ["build_tool"],
+    fields = ["build_tool", "os", "arch"],
 )
 
 def _spm_toolchain_impl(ctx):
     toolchain_info = platform_common.ToolchainInfo(
         spmbuildinfo = SpmBuildInfo(
             build_tool = ctx.executable.build_tool,
+            os = ctx.attr.os,
+            arch = ctx.attr.arch,
         ),
     )
     return [toolchain_info]

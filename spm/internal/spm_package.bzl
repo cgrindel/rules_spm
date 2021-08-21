@@ -328,7 +328,10 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         A `list` of declared build outputs.
     """
 
-    # Toolchain info
+    # SPM Toolchain Info
+    spm_build_info = ctx.toolchains["@cgrindel_rules_spm//spm:toolchain_type"].spmbuildinfo
+
+    # Swift Toolchain info
     # The swift_worker is typically xcrun.
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
     swift_worker = swift_toolchain.swift_worker
@@ -356,7 +359,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         tools = [swift_worker],
         outputs = all_build_outs,
         arguments = [run_args],
-        executable = ctx.executable._spm_build_tool,
+        executable = spm_build_info.build_tool,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
@@ -478,11 +481,11 @@ _attrs = {
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
     ),
-    "_spm_build_tool": attr.label(
-        executable = True,
-        cfg = "exec",
-        default = Label("//spm/internal:exec_spm_build"),
-    ),
+    # "_spm_build_tool": attr.label(
+    #     executable = True,
+    #     cfg = "exec",
+    #     default = Label("//spm/internal:exec_spm_build"),
+    # ),
 }
 
 spm_package = rule(
@@ -491,5 +494,6 @@ spm_package = rule(
         _attrs,
         swift_common.toolchain_attrs(),
     ),
+    toolchains = ["@cgrindel_rules_spm//spm:toolchain_type"],
     doc = "Builds the specified Swift package.",
 )
