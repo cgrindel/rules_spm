@@ -1,4 +1,0 @@
-load(":spm_toolchain.bzl", "spm_toolchain")
-
-# Define a toolchain type.
-toolchain_type(name = "toolchain_type")

@@ -20,12 +20,6 @@ load(
     _spm_system_library_module = "spm_system_library_module",
 )
 
-# Define a toolchain type.
-toolchain_type(
-    name = "toolchain_type",
-    visibility = ["//visibility:public"],
-)
-
 # Repository Rules
 spm_repositories = _spm_repositories
 spm_pkg = _spm_pkg

@@ -1,3 +1,5 @@
+load(":platforms.bzl", "SPMOS_SPMARCH", "platforms")
+
 SpmBuildInfo = provider(
     doc = "Information about how to invoke the Swift package manager.",
     fields = ["build_tool"],
@@ -27,16 +29,9 @@ spm_toolchain = rule(
     },
 )
 
-SPMOS_SPMARCH = [
-    ("macos", "x86_64"),
-    ("macos", "arm64"),
-    ("linux", "x86_64"),
-    ("linux", "arm64"),
-]
-
 def declare_toolchains():
     for spmos, spmarch in SPMOS_SPMARCH:
-        impl_name = "spm_%s_%s" % (spmos, spmarch)
+        impl_name = platforms.toolchain_impl_name(spmos, spmarch)
         spm_toolchain(
             name = impl_name,
             build_tool = "//spm/internal:exec_spm_build",
@@ -44,16 +39,22 @@ def declare_toolchains():
             arch = spmarch,
         )
 
+        toolchain_name = platforms.toolchain_name(spmos, spmarch)
         native.toolchain(
-            name = "%s_toolchain" % (impl_name),
+            name = toolchain_name,
             exec_compatible_with = [
-                "@platforms//os:%s" % (spmos),
-                "@platforms//cpu:%s" % (spmarch),
+                "@platforms//os:" + spmos,
+                "@platforms//cpu:" + spmarch,
             ],
             target_compatible_with = [
-                "@platforms//os:%s" % (spmos),
-                "@platforms//cpu:%s" % (spmarch),
+                "@platforms//os:" + spmos,
+                "@platforms//cpu:" + spmarch,
             ],
             toolchain = ":" + impl_name,
             toolchain_type = "@cgrindel_rules_spm//spm:toolchain_type",
         )
+
+def spm_register_toolchains():
+    toolchain_names = platforms.toolchain_names()
+    toolchain_labels = ["@cgrindel_rules_spm//spm:" + n for n in toolchain_names]
+    native.register_toolchains(*toolchain_labels)
