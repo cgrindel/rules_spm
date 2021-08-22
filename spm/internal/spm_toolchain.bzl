@@ -1,6 +1,7 @@
 load(":platforms.bzl", "SUPPORTED_BZL_PLATFORMS", "platforms")
 
-SPM_TOOLCHAIN_TYPE = "@cgrindel_rules_spm//spm:toolchain_type"
+SPM_LABEL_PREFIX = "@cgrindel_rules_spm//spm:"
+SPM_TOOLCHAIN_TYPE = SPM_LABEL_PREFIX + "toolchain_type"
 
 SpmBuildInfo = provider(
     doc = "Information about how to invoke the Swift package manager.",
@@ -57,9 +58,11 @@ spm_toolchain = rule(
             doc = "The SPM designation for the vendor.",
         ),
     },
+    doc = "Defines an SPM toolchain implementation.",
 )
 
 def declare_toolchains():
+    """Macro that defines the supported SPM toolchains."""
     for bzl_os, bzl_arch in SUPPORTED_BZL_PLATFORMS:
         impl_name = platforms.toolchain_impl_name(bzl_os, bzl_arch)
         spm_os = platforms.spm_os(bzl_os)
@@ -91,9 +94,19 @@ def declare_toolchains():
         )
 
 def spm_register_toolchains():
+    """Called by clients of rules_spm to register the SPM toolchains."""
     toolchain_names = platforms.toolchain_names()
-    toolchain_labels = ["@cgrindel_rules_spm//spm:" + n for n in toolchain_names]
+    toolchain_labels = [SPM_LABEL_PREFIX + n for n in toolchain_names]
     native.register_toolchains(*toolchain_labels)
 
 def get_spm_build_info(ctx):
+    """Returns the `SpmBuildInfo` that has been selected as part of the 
+    toolchain evaluation.
+
+    Args:
+        ctx: A `ctx` instance.
+
+    Returns:
+        An instance of a `SpmBuildInfo`.
+    """
     return ctx.toolchains[SPM_TOOLCHAIN_TYPE].spm_build_info
