@@ -17,7 +17,7 @@ spm_vendors = struct(
     apple = "apple",
 )
 
-supported_bzl_platforms = [
+SUPPORTED_BZL_PLATFORMS = [
     (bzl_oss.macos, bzl_archs.x86_64),
     (bzl_oss.macos, bzl_archs.arm64),
     # GH024: Add Linux support.
@@ -41,7 +41,7 @@ def _create_toolchain_name(bzl_os, bzl_arch):
 
 def _generate_toolchain_names():
     toolchain_names = []
-    for bzl_os, bzl_arch in supported_bzl_platforms:
+    for bzl_os, bzl_arch in SUPPORTED_BZL_PLATFORMS:
         toolchain_names.append(_create_toolchain_name(bzl_os, bzl_arch))
     return toolchain_names
 

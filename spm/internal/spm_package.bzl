@@ -1,9 +1,9 @@
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
-load(":platforms.bzl", "platforms")
 load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
+load(":spm_toolchain.bzl", "get_spm_build_info")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
@@ -330,7 +330,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     """
 
     # SPM Toolchain Info
-    spm_build_info = ctx.toolchains["@cgrindel_rules_spm//spm:toolchain_type"].spmbuildinfo
+    spm_build_info = get_spm_build_info(ctx)
 
     # Swift Toolchain info
     # The swift_worker is typically xcrun.
@@ -381,11 +381,12 @@ def _get_build_config_path(ctx):
     #
     # See: https://clang.llvm.org/docs/CrossCompilation.html#target-triple
     # Example arch-vendor-os: "x86_64-apple-macosx"
-    spm_build_info = ctx.toolchains["@cgrindel_rules_spm//spm:toolchain_type"].spmbuildinfo
+    spm_build_info = get_spm_build_info(ctx)
+    spm_platform_info = spm_build_info.spm_platform_info
     arch_vendor_os = "-".join([
-        spm_build_info.arch,
-        platforms.vendor_name(spm_build_info.os),
-        spm_build_info.os,
+        spm_platform_info.arch,
+        spm_platform_info.vendor,
+        spm_platform_info.os,
     ])
     return paths.join(
         spm_common.build_dirname,

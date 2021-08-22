@@ -1,4 +1,6 @@
-load(":platforms.bzl", "platforms", "supported_bzl_platforms")
+load(":platforms.bzl", "SUPPORTED_BZL_PLATFORMS", "platforms")
+
+SPM_TOOLCHAIN_TYPE = "@cgrindel_rules_spm//spm:toolchain_type"
 
 SpmBuildInfo = provider(
     doc = "Information about how to invoke the Swift package manager.",
@@ -17,7 +19,7 @@ SpmPlatformInfo = provider(
 
 def _spm_toolchain_impl(ctx):
     toolchain_info = platform_common.ToolchainInfo(
-        spmbuildinfo = SpmBuildInfo(
+        spm_build_info = SpmBuildInfo(
             build_tool = ctx.executable.build_tool,
             bzl_platform_info = BzlPlatformInfo(
                 os = ctx.attr.bzl_os,
@@ -58,7 +60,7 @@ spm_toolchain = rule(
 )
 
 def declare_toolchains():
-    for bzl_os, bzl_arch in supported_bzl_platforms:
+    for bzl_os, bzl_arch in SUPPORTED_BZL_PLATFORMS:
         impl_name = platforms.toolchain_impl_name(bzl_os, bzl_arch)
         spm_os = platforms.spm_os(bzl_os)
         spm_arch = platforms.spm_arch(bzl_arch)
@@ -85,10 +87,13 @@ def declare_toolchains():
                 "@platforms//cpu:" + bzl_arch,
             ],
             toolchain = ":" + impl_name,
-            toolchain_type = "@cgrindel_rules_spm//spm:toolchain_type",
+            toolchain_type = SPM_TOOLCHAIN_TYPE,
         )
 
 def spm_register_toolchains():
     toolchain_names = platforms.toolchain_names()
     toolchain_labels = ["@cgrindel_rules_spm//spm:" + n for n in toolchain_names]
     native.register_toolchains(*toolchain_labels)
+
+def get_spm_build_info(ctx):
+    return ctx.toolchains[SPM_TOOLCHAIN_TYPE].spm_build_info

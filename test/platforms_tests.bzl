@@ -1,10 +1,12 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load(
     "//spm/internal:platforms.bzl",
+    "SUPPORTED_BZL_PLATFORMS",
+    "bzl_archs",
+    "bzl_oss",
     "platforms",
     "spm_oss",
     "spm_vendors",
-    "supported_bzl_platforms",
 )
 
 def _create_toolchain_impl_name_test(ctx):
@@ -37,7 +39,7 @@ def _generate_toolchain_names_test(ctx):
     env = unittest.begin(ctx)
 
     actual = platforms.toolchain_names()
-    asserts.equals(env, len(supported_bzl_platforms), len(actual))
+    asserts.equals(env, len(SUPPORTED_BZL_PLATFORMS), len(actual))
     for name in actual:
         asserts.true(env, name.endswith("_toolchain"))
 
@@ -48,7 +50,7 @@ generate_toolchain_names_test = unittest.make(_generate_toolchain_names_test)
 def _spm_os_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    asserts.equals(env, spm_oss.macos, platforms.spm_os(bzl_oss.macos))
 
     return unittest.end(env)
 
@@ -57,7 +59,7 @@ spm_os_test = unittest.make(_spm_os_test)
 def _spm_arch_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    asserts.equals(env, bzl_archs.arm64, platforms.spm_arch(bzl_archs.arm64))
 
     return unittest.end(env)
 
@@ -66,7 +68,7 @@ spm_arch_test = unittest.make(_spm_arch_test)
 def _spm_vendor_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    asserts.equals(env, spm_vendors.apple, platforms.spm_vendor(bzl_oss.macos))
 
     return unittest.end(env)
 
