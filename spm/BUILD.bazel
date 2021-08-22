@@ -8,17 +8,22 @@ bzl_library(
 )
 
 bzl_library(
-    name = "repositories",
-    srcs = ["repositories.bzl"],
-    deps = [
-        ":bazel_tools_bzl",
-    ],
-)
-
-bzl_library(
     name = "spm",
     srcs = ["spm.bzl"],
     deps = [
         "//spm/internal:spm_package",
     ],
 )
+
+# MARK: - Toolchains
+
+load("//spm/internal:spm_toolchain.bzl", "declare_toolchains")
+
+# Define a toolchain type.
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+# Declare the toolchains
+declare_toolchains()

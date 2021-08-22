@@ -3,6 +3,7 @@ load(":packages.bzl", "packages")
 load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
+load(":spm_toolchain.bzl", "get_spm_build_info")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
@@ -328,7 +329,10 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         A `list` of declared build outputs.
     """
 
-    # Toolchain info
+    # SPM Toolchain Info
+    spm_build_info = get_spm_build_info(ctx)
+
+    # Swift Toolchain info
     # The swift_worker is typically xcrun.
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
     swift_worker = swift_toolchain.swift_worker
@@ -356,7 +360,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         tools = [swift_worker],
         outputs = all_build_outs,
         arguments = [run_args],
-        executable = ctx.executable._spm_build_tool,
+        executable = spm_build_info.build_tool,
         progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
     )
 
@@ -364,17 +368,38 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
 # MARK: - Rule Implementation
 
+def _get_build_config_path(ctx):
+    # According to https://github.com/apple/swift-package-manager/blob/ce50cb0de101c2d9a5742aaf70efc7c21e8f249b/Sources/Workspace/Destination.swift#L29,
+    # it looks like the build config directory is based upon the triple
+    # with a format of <arch><sub>-<vendor>-<sys>-<abi>, where:
+    #
+    # arch = x86_64, i386, arm, thumb, mips, etc.
+    # sub = for ex. on ARM: v5, v6m, v7a, v7m, etc.
+    # vendor = pc, apple, nvidia, ibm, etc.
+    # sys = none, linux, win32, darwin, cuda, etc.
+    # abi = eabi, gnu, android, macho, elf, etc.
+    #
+    # See: https://clang.llvm.org/docs/CrossCompilation.html#target-triple
+    # Example arch-vendor-os: "x86_64-apple-macosx"
+    spm_build_info = get_spm_build_info(ctx)
+    spm_platform_info = spm_build_info.spm_platform_info
+    arch_vendor_os = "-".join([
+        spm_platform_info.arch,
+        spm_platform_info.vendor,
+        spm_platform_info.os,
+    ])
+    return paths.join(
+        spm_common.build_dirname,
+        arch_vendor_os,
+        ctx.attr.configuration,
+    )
+
 def _spm_package_impl(ctx):
     # Parse the package description JSON.
     pkg_descs_dict = pds.parse_json(ctx.attr.package_descriptions_json)
     pkgs = packages.from_json(ctx.attr.dependencies_json)
 
-    # GH005: Figure out how to determine the arch part of the directory (e.g. x86_64-apple-macosx).
-    build_config_path = paths.join(
-        spm_common.build_dirname,
-        "x86_64-apple-macosx",
-        ctx.attr.configuration,
-    )
+    build_config_path = _get_build_config_path(ctx)
 
     # Customize the headers and modulemap files for all clang targets.
     modulemap_dir_path = "modulemaps"
@@ -465,11 +490,6 @@ _attrs = {
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
     ),
-    "_spm_build_tool": attr.label(
-        executable = True,
-        cfg = "exec",
-        default = Label("//spm/internal:exec_spm_build"),
-    ),
 }
 
 spm_package = rule(
@@ -478,5 +498,6 @@ spm_package = rule(
         _attrs,
         swift_common.toolchain_attrs(),
     ),
+    toolchains = ["@cgrindel_rules_spm//spm:toolchain_type"],
     doc = "Builds the specified Swift package.",
 )
