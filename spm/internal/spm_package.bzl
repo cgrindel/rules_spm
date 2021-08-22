@@ -1,5 +1,6 @@
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
+load(":platforms.bzl", "platforms")
 load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
@@ -379,9 +380,16 @@ def _get_build_config_path(ctx):
     # abi = eabi, gnu, android, macho, elf, etc.
     #
     # See: https://clang.llvm.org/docs/CrossCompilation.html#target-triple
+    # Example arch-vendor-os: "x86_64-apple-macosx"
+    spm_build_info = ctx.toolchains["@cgrindel_rules_spm//spm:toolchain_type"].spmbuildinfo
+    arch_vendor_os = "-".join([
+        spm_build_info.arch,
+        platforms.vendor_name(spm_build_info.os),
+        spm_build_info.os,
+    ])
     return paths.join(
         spm_common.build_dirname,
-        "x86_64-apple-macosx",
+        arch_vendor_os,
         ctx.attr.configuration,
     )
 
@@ -481,11 +489,6 @@ _attrs = {
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
     ),
-    # "_spm_build_tool": attr.label(
-    #     executable = True,
-    #     cfg = "exec",
-    #     default = Label("//spm/internal:exec_spm_build"),
-    # ),
 }
 
 spm_package = rule(

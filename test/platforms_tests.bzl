@@ -1,5 +1,11 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:platforms.bzl", "SPMOS_SPMARCH", "platforms")
+load(
+    "//spm/internal:platforms.bzl",
+    "platforms",
+    "spm_oss",
+    "spm_vendors",
+    "supported_bzl_platforms",
+)
 
 def _create_toolchain_impl_name_test(ctx):
     env = unittest.begin(ctx)
@@ -31,7 +37,7 @@ def _generate_toolchain_names_test(ctx):
     env = unittest.begin(ctx)
 
     actual = platforms.toolchain_names()
-    asserts.equals(env, len(SPMOS_SPMARCH), len(actual))
+    asserts.equals(env, len(supported_bzl_platforms), len(actual))
     for name in actual:
         asserts.true(env, name.endswith("_toolchain"))
 
@@ -39,10 +45,40 @@ def _generate_toolchain_names_test(ctx):
 
 generate_toolchain_names_test = unittest.make(_generate_toolchain_names_test)
 
+def _spm_os_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+spm_os_test = unittest.make(_spm_os_test)
+
+def _spm_arch_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+spm_arch_test = unittest.make(_spm_arch_test)
+
+def _spm_vendor_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+spm_vendor_test = unittest.make(_spm_vendor_test)
+
 def platforms_test_suite():
     return unittest.suite(
         "platforms_tests",
         create_toolchain_impl_name_test,
         create_toolchain_name_test,
         generate_toolchain_names_test,
+        spm_os_test,
+        spm_arch_test,
+        spm_vendor_test,
     )

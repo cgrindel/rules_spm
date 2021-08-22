@@ -1,16 +1,33 @@
-load(":platforms.bzl", "SPMOS_SPMARCH", "platforms")
+load(":platforms.bzl", "platforms", "supported_bzl_platforms")
 
 SpmBuildInfo = provider(
     doc = "Information about how to invoke the Swift package manager.",
-    fields = ["build_tool", "os", "arch"],
+    fields = ["build_tool", "bzl_platform_info", "spm_platform_info"],
+)
+
+BzlPlatformInfo = provider(
+    doc = "Bazel designations for the architecture and OS.",
+    fields = ["os", "arch"],
+)
+
+SpmPlatformInfo = provider(
+    doc = "SPM designations for the architecture, OS and vendor.",
+    fields = ["os", "arch", "vendor"],
 )
 
 def _spm_toolchain_impl(ctx):
     toolchain_info = platform_common.ToolchainInfo(
         spmbuildinfo = SpmBuildInfo(
             build_tool = ctx.executable.build_tool,
-            os = ctx.attr.os,
-            arch = ctx.attr.arch,
+            bzl_platform_info = BzlPlatformInfo(
+                os = ctx.attr.bzl_os,
+                arch = ctx.attr.bzl_arch,
+            ),
+            spm_platform_info = SpmPlatformInfo(
+                os = ctx.attr.spm_os,
+                arch = ctx.attr.spm_arch,
+                vendor = ctx.attr.spm_vendor,
+            ),
         ),
     )
     return [toolchain_info]
@@ -22,35 +39,50 @@ spm_toolchain = rule(
             executable = True,
             cfg = "exec",
         ),
-        "os": attr.string(
-            doc = "The OS to build.",
+        "bzl_os": attr.string(
+            doc = "The Bazel designation for the OS.",
         ),
-        "arch": attr.string(
-            doc = "The architecture to build.",
+        "bzl_arch": attr.string(
+            doc = "The Bazel designation for the architecture.",
+        ),
+        "spm_os": attr.string(
+            doc = "The SPM designation for the OS.",
+        ),
+        "spm_arch": attr.string(
+            doc = "The SPM designation for the architecture.",
+        ),
+        "spm_vendor": attr.string(
+            doc = "The SPM designation for the vendor.",
         ),
     },
 )
 
 def declare_toolchains():
-    for spmos, spmarch in SPMOS_SPMARCH:
-        impl_name = platforms.toolchain_impl_name(spmos, spmarch)
+    for bzl_os, bzl_arch in supported_bzl_platforms:
+        impl_name = platforms.toolchain_impl_name(bzl_os, bzl_arch)
+        spm_os = platforms.spm_os(bzl_os)
+        spm_arch = platforms.spm_arch(bzl_arch)
+        spm_vendor = platforms.spm_vendor(bzl_os)
         spm_toolchain(
             name = impl_name,
             build_tool = "//spm/internal:exec_spm_build",
-            os = spmos,
-            arch = spmarch,
+            bzl_os = bzl_os,
+            bzl_arch = bzl_arch,
+            spm_os = spm_os,
+            spm_arch = spm_arch,
+            spm_vendor = spm_vendor,
         )
 
-        toolchain_name = platforms.toolchain_name(spmos, spmarch)
+        toolchain_name = platforms.toolchain_name(bzl_os, bzl_arch)
         native.toolchain(
             name = toolchain_name,
             exec_compatible_with = [
-                "@platforms//os:" + spmos,
-                "@platforms//cpu:" + spmarch,
+                "@platforms//os:" + bzl_os,
+                "@platforms//cpu:" + bzl_arch,
             ],
             target_compatible_with = [
-                "@platforms//os:" + spmos,
-                "@platforms//cpu:" + spmarch,
+                "@platforms//os:" + bzl_os,
+                "@platforms//cpu:" + bzl_arch,
             ],
             toolchain = ":" + impl_name,
             toolchain_type = "@cgrindel_rules_spm//spm:toolchain_type",
