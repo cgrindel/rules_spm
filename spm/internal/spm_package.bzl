@@ -354,6 +354,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         ctx.attr.package_path,
         "--build-path",
         build_output_dir.path,
+        "--arch",
+        spm_build_info.spm_platform_info.arch,
     ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])

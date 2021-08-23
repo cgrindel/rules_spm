@@ -1,4 +1,7 @@
 bzl_oss = struct(
+    # They have a TODO to rename :osx to :macos
+    # https://github.com/bazelbuild/platforms/blob/main/os/BUILD#L54
+    # macos = "osx",
     macos = "macos",
     ios = "ios",
     # GH024: Add Linux support.
@@ -23,9 +26,9 @@ spm_vendors = struct(
 
 SUPPORTED_BZL_PLATFORMS = [
     (bzl_oss.macos, bzl_archs.x86_64),
-    (bzl_oss.ios, bzl_archs.arm64),
-    # (bzl_oss.macos, bzl_archs.arm64),
+    (bzl_oss.macos, bzl_archs.arm64),
     # (bzl_oss.macos, bzl_archs.arm64e),
+    (bzl_oss.ios, bzl_archs.arm64),
     # GH024: Add Linux support.
     # (bzloss.linux, bzlarchs.x86_64),
     # (bzloss.linux, bzlarchs.arm64),

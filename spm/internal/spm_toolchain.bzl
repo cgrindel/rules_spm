@@ -82,8 +82,10 @@ def declare_toolchains():
         native.toolchain(
             name = toolchain_name,
             exec_compatible_with = [
-                "@platforms//os:" + bzl_os,
-                "@platforms//cpu:" + bzl_arch,
+                # GH024: Add Linux support.
+                "@platforms//os:macos",
+                # TODO: Support x86_64 and arm64
+                "@platforms//cpu:x86_64",
             ],
             target_compatible_with = [
                 "@platforms//os:" + bzl_os,

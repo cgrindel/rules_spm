@@ -21,6 +21,10 @@ while (("$#")); do
       build_path="${2}"
       shift 2
       ;;
+    "--arch")
+      arch="${2}"
+      shift 2
+      ;;
     *)
       args+=("${1}")
       shift 1
@@ -44,7 +48,8 @@ cp -R -L "${fetched_dir}/" "${build_path}"
   --disable-repository-cache \
   --configuration ${build_config} \
   --package-path "${package_path}" \
-  --build-path "${build_path}" 
+  --build-path "${build_path}" \
+  --arch "${arch}"
 
 # Replace the specified files with the provided ones
 idx=0
