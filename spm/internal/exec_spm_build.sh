@@ -2,11 +2,31 @@
 
 set -euo pipefail
 
-swift_worker="${1}"
-build_config=${2}
-package_path="${3}"
-build_path="${4}"
-shift 4
+args=()
+while (("$#")); do
+  case "${1}" in
+    "--swift-worker")
+      swift_worker="${2}"
+      shift 2
+      ;;
+    "--build-config")
+      build_config="${2}"
+      shift 2
+      ;;
+    "--package-path")
+      package_path="${2}"
+      shift 2
+      ;;
+    "--build-path")
+      build_path="${2}"
+      shift 2
+      ;;
+    *)
+      args+=("${1}")
+      shift 1
+      ;;
+  esac
+done
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
@@ -27,9 +47,10 @@ cp -R -L "${fetched_dir}/" "${build_path}"
   --build-path "${build_path}" 
 
 # Replace the specified files with the provided ones
-while (("$#")); do
-  src="${1}"
-  dest="${2}"
+idx=0
+while [ "$idx" -lt "${#args[@]}" ]; do
+  src="${args[idx]}"
+  dest="${args[idx+1]}"
   cp -f "${src}" "${dest}"
-  shift 2
+  idx=$((idx+2))
 done

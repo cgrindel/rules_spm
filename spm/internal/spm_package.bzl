@@ -346,9 +346,13 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     run_args = ctx.actions.args()
     run_args.add_all([
+        "--swift-worker",
         swift_worker,
+        "--build-config",
         ctx.attr.configuration,
+        "--package-path",
         ctx.attr.package_path,
+        "--build-path",
         build_output_dir.path,
     ])
     for ci in copy_infos:
