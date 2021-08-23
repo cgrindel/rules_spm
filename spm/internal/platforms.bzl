@@ -1,7 +1,4 @@
 bzl_oss = struct(
-    # They have a TODO to rename :osx to :macos
-    # https://github.com/bazelbuild/platforms/blob/main/os/BUILD#L54
-    # macos = "osx",
     macos = "macos",
     ios = "ios",
     # GH024: Add Linux support.
