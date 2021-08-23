@@ -1,16 +1,20 @@
 bzl_oss = struct(
     macos = "macos",
+    ios = "ios",
     # GH024: Add Linux support.
     # linux = "linux",
 )
 
 bzl_archs = struct(
     x86_64 = "x86_64",
+    # https://stackoverflow.com/questions/52624308/xcode-arm64-vs-arm64e
     arm64 = "arm64",
+    arm64e = "arm64e",
 )
 
 spm_oss = struct(
     macos = "macosx",
+    ios = "ios",
 )
 
 spm_vendors = struct(
@@ -19,7 +23,9 @@ spm_vendors = struct(
 
 SUPPORTED_BZL_PLATFORMS = [
     (bzl_oss.macos, bzl_archs.x86_64),
-    (bzl_oss.macos, bzl_archs.arm64),
+    (bzl_oss.ios, bzl_archs.arm64),
+    # (bzl_oss.macos, bzl_archs.arm64),
+    # (bzl_oss.macos, bzl_archs.arm64e),
     # GH024: Add Linux support.
     # (bzloss.linux, bzlarchs.x86_64),
     # (bzloss.linux, bzlarchs.arm64),
@@ -27,10 +33,12 @@ SUPPORTED_BZL_PLATFORMS = [
 
 _bzl_to_spm_os_mapping = {
     bzl_oss.macos: spm_oss.macos,
+    bzl_oss.ios: spm_oss.ios,
 }
 
 _spm_os_to_vendor_mapping = {
     spm_oss.macos: spm_vendors.apple,
+    spm_oss.ios: spm_vendors.apple,
 }
 
 def _create_toolchain_impl_name(bzl_os, bzl_arch):
