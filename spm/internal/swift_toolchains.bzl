@@ -1,26 +1,6 @@
 load("@build_bazel_rules_swift//swift/internal:actions.bzl", "swift_action_names")
 load("@bazel_skylib//lib:types.bzl", "types")
 
-# def _get_action_configs(swift_toolchain_info, action_name = None):
-#     pass
-
-# def _get_action_config(swift_toolchain_info, action_name = None, flag = None):
-#     for action_config in swift_toolchain_info.action_configs:
-#         for configurator in configurators:
-#             pass
-
-# def _get_target_triple(swift_toolchain_info):
-#     target_flag_action_config = _get_action_config(
-#         swift_toolchain_info,
-#         action_name = swift_action_names.COMPILE,
-#         flag = "-target",
-#     )
-#     triple = None
-#     for configurator in configurators:
-#         if not types.is_struct(configurator):
-#             continue
-#     return
-
 def _get_args_for_action(swift_toolchain_info, action_name):
     args = []
     for action_config in swift_toolchain_info.action_configs:

@@ -409,20 +409,21 @@ def _get_spm_build_info(ctx):
     # Swift rules do not support platforms and Bazel toolchains. We will
     # interrogate their SwiftToolchainInfo for cpu/arch and OS.
     swift_toolchain_info = ctx.attr._toolchain[SwiftToolchainInfo]
+    target_triple = swift_toolchains.target_triple(swift_toolchain_info)
 
     # DEBUG BEGIN
     print("*** CHUCK swift_toolchain_info.cpu: ", swift_toolchain_info.cpu)
     print("*** CHUCK swift_toolchain_info.system_name: ", swift_toolchain_info.system_name)
-    print("*** CHUCK swift_toolchain_info.action_configs: ")
-    for idx, item in enumerate(swift_toolchain_info.action_configs):
-        print("*** CHUCK", idx, ":", item)
+    # print("*** CHUCK swift_toolchain_info.action_configs: ")
+    # for idx, item in enumerate(swift_toolchain_info.action_configs):
+    #     print("*** CHUCK", idx, ":", item)
 
-    target_triple = swift_toolchains.target_triple(swift_toolchain_info)
     print("*** CHUCK target_triple: ", target_triple)
 
     # DEBUG END
     return SPMBuildInfo(
         build_tool = ctx.executable._macos_build_tool,
+        target_triple = target_triple,
         spm_platform_info = _create_spm_platform_info(
             swift_toolchain_info.cpu,
             swift_toolchain_info.system_name,
