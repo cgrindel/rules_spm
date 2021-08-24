@@ -337,6 +337,12 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
     swift_worker = swift_toolchain.swift_worker
 
+    # DEBUG BEGIN
+    print("*** CHUCK swift_toolchain: ", swift_toolchain)
+    print("*** CHUCK swift_toolchain.cpu: ", swift_toolchain.cpu)
+    print("*** CHUCK swift_toolchain.system_name: ", swift_toolchain.system_name)
+    # DEBUG END
+
     build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
     all_build_outs = [build_output_dir]
@@ -496,6 +502,11 @@ _attrs = {
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
     ),
+    "_macos_build_tool": attr.label(
+        executable = True,
+        cfg = "exec",
+        default = "//spm/internal:exec_spm_build",
+    ),
 }
 
 spm_package = rule(
@@ -504,6 +515,7 @@ spm_package = rule(
         _attrs,
         swift_common.toolchain_attrs(),
     ),
-    toolchains = ["@cgrindel_rules_spm//spm:toolchain_type"],
+    # toolchains = ["@cgrindel_rules_spm//spm:toolchain_type"],
+    # fragments = ["apple"],
     doc = "Builds the specified Swift package.",
 )
