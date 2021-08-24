@@ -509,7 +509,5 @@ spm_package = rule(
         _attrs,
         swift_common.toolchain_attrs(),
     ),
-    # toolchains = ["@cgrindel_rules_spm//spm:toolchain_type"],
-    # fragments = ["apple"],
     doc = "Builds the specified Swift package.",
 )
