@@ -1,9 +1,9 @@
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
-load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "providers")
+load(":platforms.bzl", "platforms")
+load(":providers.bzl", "SPMBuildInfo", "SPMPackageInfo", "SPMPackagesInfo", "SPMPlatformInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
-load(":spm_toolchain.bzl", "get_spm_build_info")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
@@ -330,7 +330,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     """
 
     # SPM Toolchain Info
-    spm_build_info = get_spm_build_info(ctx)
+    spm_build_info = _get_spm_build_info(ctx)
 
     # Swift Toolchain info
     # The swift_worker is typically xcrun.
@@ -346,10 +346,16 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     run_args = ctx.actions.args()
     run_args.add_all([
+        "--swift-worker",
         swift_worker,
+        "--build-config",
         ctx.attr.configuration,
+        "--package-path",
         ctx.attr.package_path,
+        "--build-path",
         build_output_dir.path,
+        "--arch",
+        spm_build_info.spm_platform_info.arch,
     ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
@@ -366,6 +372,47 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     return all_build_outs
 
+# MARK: - Toolchain Info
+
+def _create_spm_platform_info(swift_cpu, swift_os):
+    """Creates an `SpmPlatformInfo` from the `cpu` and `system_name` from
+    SwiftToolchainInfo.
+
+    Args:
+        swift_cpu: A `string` value from `SwiftToolchainInfo.cpu`.
+        swift_os: A `string` value from `SwiftToolchainInfo.system_name`.
+
+    Returns:
+        An instance of `SPMPlatformInfo` provider.
+    """
+    return SPMPlatformInfo(
+        os = platforms.spm_os(swift_os),
+        arch = platforms.spm_arch(swift_cpu),
+        vendor = platforms.spm_vendor(swift_os),
+    )
+
+def _get_spm_build_info(ctx):
+    """Returns the `SPMBuildInfo` that has been selected as part of Swift's 
+    toolchain evaluation.
+
+    Args:
+        ctx: A `ctx` instance.
+
+    Returns:
+        An instance of a `SPMBuildInfo`.
+    """
+
+    # Swift rules do not support platforms and Bazel toolchains. We will
+    # interrogate their SwiftToolchainInfo for cpu/arch and OS.
+    swift_toolchain_info = ctx.attr._toolchain[SwiftToolchainInfo]
+    return SPMBuildInfo(
+        build_tool = ctx.executable._macos_build_tool,
+        spm_platform_info = _create_spm_platform_info(
+            swift_toolchain_info.cpu,
+            swift_toolchain_info.system_name,
+        ),
+    )
+
 # MARK: - Rule Implementation
 
 def _get_build_config_path(ctx):
@@ -381,7 +428,7 @@ def _get_build_config_path(ctx):
     #
     # See: https://clang.llvm.org/docs/CrossCompilation.html#target-triple
     # Example arch-vendor-os: "x86_64-apple-macosx"
-    spm_build_info = get_spm_build_info(ctx)
+    spm_build_info = _get_spm_build_info(ctx)
     spm_platform_info = spm_build_info.spm_platform_info
     arch_vendor_os = "-".join([
         spm_platform_info.arch,
@@ -490,6 +537,11 @@ _attrs = {
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
     ),
+    "_macos_build_tool": attr.label(
+        executable = True,
+        cfg = "exec",
+        default = "//spm/internal:exec_spm_build",
+    ),
 }
 
 spm_package = rule(
@@ -498,6 +550,5 @@ spm_package = rule(
         _attrs,
         swift_common.toolchain_attrs(),
     ),
-    toolchains = ["@cgrindel_rules_spm//spm:toolchain_type"],
     doc = "Builds the specified Swift package.",
 )
