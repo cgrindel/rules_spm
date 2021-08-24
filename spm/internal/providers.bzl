@@ -1,3 +1,24 @@
+# MARK: - SPM Toolchain/Build Providers
+
+SPMBuildInfo = provider(
+    doc = "Information about how to invoke the Swift package manager.",
+    fields = {
+        "build_tool": "The executable that will be used to build the Swift package.",
+        "spm_platform_info": "An `SpmPlatformInfo` describing the target platform.",
+    },
+)
+
+SPMPlatformInfo = provider(
+    doc = "SPM designations for the architecture, OS and vendor.",
+    fields = {
+        "os": "The OS designation as understood by SPM.",
+        "arch": "The architecture designation as understood by SPM.",
+        "vendor": "The vendor designation as understood by SPM.",
+    },
+)
+
+# MARK: - SPM Package Providers
+
 SPMPackagesInfo = provider(
     doc = "Provides information about the dependent SPM packages.",
     fields = {
@@ -9,8 +30,8 @@ SPMPackageInfo = provider(
     doc = "Describes the information about an SPM package.",
     fields = {
         "name": "Name of the Swift package.",
-        "swift_modules": "`List` of values returned from `providers.swift_module`.",
-        "clang_modules": "`List` of values returned from `providers.clang_module`.",
+        "swift_modules": "A `list` of values returned from `providers.swift_module`.",
+        "clang_modules": "A `list` of values returned from `providers.clang_module`.",
         "system_library_modules": "`List` of values returned from `providers.system_library_module`.",
     },
 )
