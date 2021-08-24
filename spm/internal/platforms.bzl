@@ -19,6 +19,13 @@ swift_oss = struct(
     # linux = "linux",
 )
 
+swift_archs = struct(
+    x86_64 = "x86_64",
+    # https://stackoverflow.com/questions/52624308/xcode-arm64-vs-arm64e
+    arm64 = "arm64",
+    arm64e = "arm64e",
+)
+
 spm_oss = struct(
     macos = "macosx",
     ios = "ios",

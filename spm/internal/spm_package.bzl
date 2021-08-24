@@ -337,12 +337,6 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
     swift_worker = swift_toolchain.swift_worker
 
-    # DEBUG BEGIN
-    print("*** CHUCK swift_toolchain: ", swift_toolchain)
-    print("*** CHUCK swift_toolchain.cpu: ", swift_toolchain.cpu)
-    print("*** CHUCK swift_toolchain.system_name: ", swift_toolchain.system_name)
-    # DEBUG END
-
     build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
     all_build_outs = [build_output_dir]
