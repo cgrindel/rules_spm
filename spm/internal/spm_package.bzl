@@ -4,6 +4,7 @@ load(":platforms.bzl", "platforms")
 load(":providers.bzl", "SPMBuildInfo", "SPMPackageInfo", "SPMPackagesInfo", "SPMPlatformInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
+load(":swift_toolchains.bzl", "swift_toolchains")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
@@ -391,6 +392,9 @@ def _create_spm_platform_info(swift_cpu, swift_os):
         vendor = platforms.spm_vendor(swift_os),
     )
 
+def _get_target_triple(swift_toolchain_info):
+    pass
+
 def _get_spm_build_info(ctx):
     """Returns the `SPMBuildInfo` that has been selected as part of Swift's 
     toolchain evaluation.
@@ -405,6 +409,18 @@ def _get_spm_build_info(ctx):
     # Swift rules do not support platforms and Bazel toolchains. We will
     # interrogate their SwiftToolchainInfo for cpu/arch and OS.
     swift_toolchain_info = ctx.attr._toolchain[SwiftToolchainInfo]
+
+    # DEBUG BEGIN
+    print("*** CHUCK swift_toolchain_info.cpu: ", swift_toolchain_info.cpu)
+    print("*** CHUCK swift_toolchain_info.system_name: ", swift_toolchain_info.system_name)
+    print("*** CHUCK swift_toolchain_info.action_configs: ")
+    for idx, item in enumerate(swift_toolchain_info.action_configs):
+        print("*** CHUCK", idx, ":", item)
+
+    target_triple = swift_toolchains.target_triple(swift_toolchain_info)
+    print("*** CHUCK target_triple: ", target_triple)
+
+    # DEBUG END
     return SPMBuildInfo(
         build_tool = ctx.executable._macos_build_tool,
         spm_platform_info = _create_spm_platform_info(
