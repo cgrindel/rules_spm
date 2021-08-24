@@ -29,13 +29,10 @@ local_repository(
 
 load(
     "@cgrindel_rules_spm//spm:deps.bzl",
-    "spm_register_toolchains",
     "spm_rules_dependencies",
 )
 
 spm_rules_dependencies()
-
-spm_register_toolchains()
 
 load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
 

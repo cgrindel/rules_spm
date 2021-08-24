@@ -100,14 +100,6 @@ def declare_toolchains():
     #     )
     pass
 
-def spm_register_toolchains():
-    """Called by clients of rules_spm to register the SPM toolchains."""
-
-    # toolchain_names = platforms.toolchain_names()
-    # toolchain_labels = [SPM_LABEL_PREFIX + n for n in toolchain_names]
-    # native.register_toolchains(*toolchain_labels)
-    pass
-
 def _create_spm_platform_info(swift_cpu, swift_os):
     return SpmPlatformInfo(
         os = platforms.spm_os(swift_os),

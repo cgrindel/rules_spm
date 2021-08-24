@@ -15,15 +15,15 @@ bzl_library(
     ],
 )
 
-# MARK: - Toolchains
+# # MARK: - Toolchains
 
-load("//spm/internal:spm_toolchain.bzl", "declare_toolchains")
+# load("//spm/internal:spm_toolchain.bzl", "declare_toolchains")
 
-# Define a toolchain type.
-toolchain_type(
-    name = "toolchain_type",
-    visibility = ["//visibility:public"],
-)
+# # Define a toolchain type.
+# toolchain_type(
+#     name = "toolchain_type",
+#     visibility = ["//visibility:public"],
+# )
 
-# Declare the toolchains
-declare_toolchains()
+# # Declare the toolchains
+# declare_toolchains()
