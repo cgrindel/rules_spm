@@ -28,7 +28,8 @@ def _get_os_name(platform):
         platform_string = "macosx"
     return platform_string
 
-# This was copied from https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L594.
+# This was heavily inspired by
+# https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L594.
 def _swift_apple_target_triple(cpu, platform, version):
     """Returns a target triple string for an Apple platform.
 

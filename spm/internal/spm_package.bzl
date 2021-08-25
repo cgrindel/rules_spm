@@ -413,7 +413,7 @@ def _get_spm_build_info(ctx):
     # Apple fragment doc: https://docs.bazel.build/versions/4.0.0/skylark/lib/apple.html
     apple_fragment = ctx.fragments.apple
 
-    # This was highly inspired by
+    # This was heavily inspired by
     # https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L638
     cpu = apple_fragment.single_arch_cpu
     platform = apple_fragment.single_arch_platform
@@ -423,7 +423,9 @@ def _get_spm_build_info(ctx):
     )
     target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
     sdk_name = swift_toolchains.sdk_name(platform)
-    os = swift_toolchains.os_name(platform)
+
+    # exec_os = swift_toolchains.os_name(platform)
+    exec_os = "macosx"
 
     # DEBUG BEGIN
     print("*** CHUCK platform: ", platform)
@@ -438,7 +440,7 @@ def _get_spm_build_info(ctx):
         build_tool = ctx.executable._macos_build_tool,
         sdk_name = sdk_name,
         target_triple = target_triple,
-        spm_platform_info = _create_spm_platform_info(cpu, os),
+        spm_platform_info = _create_spm_platform_info(cpu, exec_os),
     )
 
 # MARK: - Rule Implementation
