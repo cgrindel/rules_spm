@@ -405,34 +405,32 @@ def _get_spm_build_info(ctx):
         An instance of a `SPMBuildInfo`.
     """
 
-    # Swift rules do not support platforms and Bazel toolchains. We will
-    # interrogate their SwiftToolchainInfo for cpu/arch and OS.
-    swift_toolchain_info = ctx.attr._toolchain[SwiftToolchainInfo]
-    target_triple = swift_toolchains.target_triple(swift_toolchain_info)
-
-    # sdk_name = swift_toolchains.sdk_name(swift_toolchain_info)
-    sdk_name = ""
-
-    # DEBUG BEGIN
+    # # Swift rules do not support platforms and Bazel toolchains. We will
+    # # interrogate their SwiftToolchainInfo for cpu/arch and OS.
+    # swift_toolchain_info = ctx.attr._toolchain[SwiftToolchainInfo]
+    # target_triple = swift_toolchains.target_triple(swift_toolchain_info)
 
     # Apple fragment doc: https://docs.bazel.build/versions/4.0.0/skylark/lib/apple.html
     apple_fragment = ctx.fragments.apple
+
+    # This was highly inspired by
+    # https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L638
     cpu = apple_fragment.single_arch_cpu
     platform = apple_fragment.single_arch_platform
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
     target_os_version = xcode_config.minimum_os_for_platform_type(
         platform.platform_type,
     )
-    target = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
+    target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
+    sdk_name = swift_toolchains.sdk_name(platform)
+    os = swift_toolchains.os_name(platform)
 
+    # DEBUG BEGIN
     print("*** CHUCK platform: ", platform)
     print("*** CHUCK platform.name_in_plist: ", platform.name_in_plist)
     print("*** CHUCK cpu: ", cpu)
     print("*** CHUCK target_os_version: ", target_os_version)
-    print("*** CHUCK target: ", target)
-    apple_toolchain = apple_common.apple_toolchain()
-    print("*** CHUCK apple_toolchain: ", apple_toolchain)
-    print("*** CHUCK apple_toolchain.sdk_dir(): ", apple_toolchain.sdk_dir())
+    print("*** CHUCK target_triple: ", target_triple)
 
     # DEBUG END
 
@@ -440,10 +438,7 @@ def _get_spm_build_info(ctx):
         build_tool = ctx.executable._macos_build_tool,
         sdk_name = sdk_name,
         target_triple = target_triple,
-        spm_platform_info = _create_spm_platform_info(
-            swift_toolchain_info.cpu,
-            swift_toolchain_info.system_name,
-        ),
+        spm_platform_info = _create_spm_platform_info(cpu, os),
     )
 
 # MARK: - Rule Implementation
