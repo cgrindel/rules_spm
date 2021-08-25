@@ -4,6 +4,7 @@ SPMBuildInfo = provider(
     doc = "Information about how to invoke the Swift package manager.",
     fields = {
         "build_tool": "The executable that will be used to build the Swift package.",
+        "sdk_name": "A string representing the name of the SDK",
         "target_triple": "A string representing the target platform as a triple.",
         "spm_platform_info": "An `SpmPlatformInfo` describing the target platform.",
     },

@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+# DEBUG BEGIN
+# echo >&2 "*** CHUCK:  __BAZEL_XCODE_SDKROOT__: ${__BAZEL_XCODE_SDKROOT__}" 
+# echo >&2 "*** CHUCK:  SDKROOT: ${SDKROOT}" 
+# DEBUG END
+
 args=()
 while (("$#")); do
   case "${1}" in
@@ -21,16 +26,25 @@ while (("$#")); do
       build_path="${2}"
       shift 2
       ;;
-    "--arch")
-      arch="${2}"
+    "--target_triple")
+      target_triple="${2}"
       shift 2
       ;;
+    # "--arch")
+    #   arch="${2}"
+    #   shift 2
+    #   ;;
     *)
       args+=("${1}")
       shift 1
       ;;
   esac
 done
+
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  swift_worker: ${swift_worker}" 
+echo >&2 "*** CHUCK:  target_triple: ${target_triple}" 
+# DEBUG END
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
@@ -49,7 +63,12 @@ cp -R -L "${fetched_dir}/" "${build_path}"
   --configuration ${build_config} \
   --package-path "${package_path}" \
   --build-path "${build_path}" \
-  --arch "${arch}"
+  -Xswiftc "-target" -Xswiftc "${target_triple}"
+
+  # -Xswiftc "-sdk" -Xswiftc "__BAZEL_XCODE_SDKROOT__" \
+  # --triple "${target_triple}"
+  # --sdk "__BAZEL_XCODE_SDKROOT__" \
+  # --arch "${arch}"
 
 # Replace the specified files with the provided ones
 idx=0

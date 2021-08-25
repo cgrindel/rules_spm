@@ -355,8 +355,10 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         ctx.attr.package_path,
         "--build-path",
         build_output_dir.path,
-        "--arch",
-        spm_build_info.spm_platform_info.arch,
+        "--target_triple",
+        spm_build_info.target_triple,
+        # "--arch",
+        # spm_build_info.spm_platform_info.arch,
     ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
@@ -392,9 +394,6 @@ def _create_spm_platform_info(swift_cpu, swift_os):
         vendor = platforms.spm_vendor(swift_os),
     )
 
-def _get_target_triple(swift_toolchain_info):
-    pass
-
 def _get_spm_build_info(ctx):
     """Returns the `SPMBuildInfo` that has been selected as part of Swift's 
     toolchain evaluation.
@@ -411,18 +410,35 @@ def _get_spm_build_info(ctx):
     swift_toolchain_info = ctx.attr._toolchain[SwiftToolchainInfo]
     target_triple = swift_toolchains.target_triple(swift_toolchain_info)
 
-    # DEBUG BEGIN
-    print("*** CHUCK swift_toolchain_info.cpu: ", swift_toolchain_info.cpu)
-    print("*** CHUCK swift_toolchain_info.system_name: ", swift_toolchain_info.system_name)
-    # print("*** CHUCK swift_toolchain_info.action_configs: ")
-    # for idx, item in enumerate(swift_toolchain_info.action_configs):
-    #     print("*** CHUCK", idx, ":", item)
+    # sdk_name = swift_toolchains.sdk_name(swift_toolchain_info)
+    sdk_name = ""
 
-    print("*** CHUCK target_triple: ", target_triple)
+    # DEBUG BEGIN
+
+    # Apple fragment doc: https://docs.bazel.build/versions/4.0.0/skylark/lib/apple.html
+    apple_fragment = ctx.fragments.apple
+    cpu = apple_fragment.single_arch_cpu
+    platform = apple_fragment.single_arch_platform
+    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+    target_os_version = xcode_config.minimum_os_for_platform_type(
+        platform.platform_type,
+    )
+    target = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
+
+    print("*** CHUCK platform: ", platform)
+    print("*** CHUCK platform.name_in_plist: ", platform.name_in_plist)
+    print("*** CHUCK cpu: ", cpu)
+    print("*** CHUCK target_os_version: ", target_os_version)
+    print("*** CHUCK target: ", target)
+    apple_toolchain = apple_common.apple_toolchain()
+    print("*** CHUCK apple_toolchain: ", apple_toolchain)
+    print("*** CHUCK apple_toolchain.sdk_dir(): ", apple_toolchain.sdk_dir())
 
     # DEBUG END
+
     return SPMBuildInfo(
         build_tool = ctx.executable._macos_build_tool,
+        sdk_name = sdk_name,
         target_triple = target_triple,
         spm_platform_info = _create_spm_platform_info(
             swift_toolchain_info.cpu,
@@ -559,6 +575,12 @@ _attrs = {
         cfg = "exec",
         default = "//spm/internal:exec_spm_build",
     ),
+    "_xcode_config": attr.label(
+        default = configuration_field(
+            name = "xcode_config_label",
+            fragment = "apple",
+        ),
+    ),
 }
 
 spm_package = rule(
@@ -567,5 +589,6 @@ spm_package = rule(
         _attrs,
         swift_common.toolchain_attrs(),
     ),
+    fragments = ["apple"],
     doc = "Builds the specified Swift package.",
 )
