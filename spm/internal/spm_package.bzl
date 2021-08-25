@@ -335,8 +335,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     # Swift Toolchain info
     # The swift_worker is typically xcrun.
-    swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
-    swift_worker = swift_toolchain.swift_worker
+    # swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
+    # swift_worker = swift_toolchain.swift_worker
 
     build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
@@ -347,8 +347,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     run_args = ctx.actions.args()
     run_args.add_all([
-        "--swift-worker",
-        swift_worker,
+        # "--swift-worker",
+        # swift_worker,
         "--build-config",
         ctx.attr.configuration,
         "--package-path",
@@ -366,7 +366,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     ctx.actions.run(
         inputs = ctx.files.srcs + build_inputs,
-        tools = [swift_worker],
+        # tools = [swift_worker],
         outputs = all_build_outs,
         arguments = [run_args],
         executable = spm_build_info.build_tool,
@@ -580,10 +580,11 @@ _attrs = {
 
 spm_package = rule(
     implementation = _spm_package_impl,
-    attrs = dicts.add(
-        _attrs,
-        swift_common.toolchain_attrs(),
-    ),
+    attrs = _attrs,
+    # attrs = dicts.add(
+    #     _attrs,
+    #     swift_common.toolchain_attrs(),
+    # ),
     fragments = ["apple"],
     doc = "Builds the specified Swift package.",
 )
