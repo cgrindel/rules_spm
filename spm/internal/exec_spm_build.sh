@@ -30,6 +30,10 @@ while (("$#")); do
       target_triple="${2}"
       shift 2
       ;;
+    "--sdk_name")
+      sdk_name="${2}"
+      shift 2
+      ;;
     # "--arch")
     #   arch="${2}"
     #   shift 2
@@ -40,6 +44,8 @@ while (("$#")); do
       ;;
   esac
 done
+
+sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
@@ -59,6 +65,7 @@ xcrun swift build \
   --configuration ${build_config} \
   --package-path "${package_path}" \
   --build-path "${build_path}" \
+  -Xswiftc "-sdk" -Xswiftc "${sdk_path}" \
   -Xswiftc "-target" -Xswiftc "${target_triple}"
 
   # -Xswiftc "-sdk" -Xswiftc "__BAZEL_XCODE_SDKROOT__" \

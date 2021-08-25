@@ -357,8 +357,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         build_output_dir.path,
         "--target_triple",
         spm_build_info.target_triple,
-        # "--arch",
-        # spm_build_info.spm_platform_info.arch,
+        "--sdk_name",
+        spm_build_info.sdk_name,
     ])
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])

@@ -40,9 +40,10 @@ def _swift_apple_target_triple(cpu, platform, version):
     Returns:
         A target triple string describing the platform.
     """
-    platform_string = str(platform.platform_type)
-    if platform_string == "macos":
-        platform_string = "macosx"
+    platform_string = _get_os_name(platform)
+    # platform_string = str(platform.platform_type)
+    # if platform_string == "macos":
+    #     platform_string = "macosx"
 
     environment = ""
     if not platform.is_device:
