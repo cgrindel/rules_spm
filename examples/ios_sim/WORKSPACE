@@ -1,4 +1,4 @@
-workspace(name = "vapor_example")
+workspace(name = "ios_simulator_example")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -71,6 +71,7 @@ spm_repositories(
         ),
     ],
     # platforms = [
-    #     ".macOS(.v10_15)",
+    #     # ".macOS(.v10_15)",
+    #     ".iOS(.v14)",
     # ],
 )

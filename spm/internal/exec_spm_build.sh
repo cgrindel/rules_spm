@@ -56,22 +56,52 @@ fetched_dir="${package_path}/$(basename "${build_path}")"
 # the source directory not the actual directory.
 cp -R -L "${fetched_dir}/" "${build_path}" 
 
+# DEBUG BEGIN
+# set -x
+echo >&2 "*** CHUCK:  target_triple: ${target_triple}" 
+echo >&2 "*** CHUCK:  build_path: ${build_path}" 
+SDKROOT="${sdk_path}"
+echo >&2 "*** CHUCK:  SDKROOT:-: ${SDKROOT:-}" 
+# DEBUG END
+
 # Execute the SPM build
-# "${swift_worker}" swift build \
-xcrun swift build \
+# xcrun --sdk "${sdk_name}" \
+xcrun \
+  swift build \
   --manifest-cache none \
   --disable-sandbox \
   --disable-repository-cache \
   --configuration ${build_config} \
   --package-path "${package_path}" \
   --build-path "${build_path}" \
+  -v \
   -Xswiftc "-sdk" -Xswiftc "${sdk_path}" \
-  -Xswiftc "-target" -Xswiftc "${target_triple}"
+  -Xswiftc "-target" -Xswiftc "${target_triple}" \
+  -Xcc "-target" -Xcc "${target_triple}"
+
+
+  # --sdk "${sdk_path}" \
+
+  # # WORKED
+  # -Xswiftc "-sdk" -Xswiftc "${sdk_path}" \
+  # -Xswiftc "-target" -Xswiftc "${target_triple}"
+
+  # # FAILED - "error: The value 'x86_64-apple-ios14.0-simulator' is invalid for '--triple <triple>': unknownOS"
+  # --sdk "${sdk_name}" \
+  # --triple "${target_triple}"
+
+  # # FAILED - "clang: warning: using sysroot for 'iPhoneSimulator' but targeting 'MacOSX' [-Wincompatible-sysroot]"
+  # --sdk "${sdk_path}" \
+  # -Xswiftc "-target" -Xswiftc "${target_triple}"
 
   # -Xswiftc "-sdk" -Xswiftc "__BAZEL_XCODE_SDKROOT__" \
   # --triple "${target_triple}"
   # --sdk "__BAZEL_XCODE_SDKROOT__" \
   # --arch "${arch}"
+
+# DEBUG BEGIN
+set +x
+# DEBUG END
 
 # Replace the specified files with the provided ones
 idx=0

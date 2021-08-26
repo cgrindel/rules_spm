@@ -370,7 +370,10 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         outputs = all_build_outs,
         arguments = [run_args],
         executable = spm_build_info.build_tool,
-        progress_message = "Building Swift package (%s) using SPM." % (ctx.attr.package_path),
+        progress_message = "Building Swift package (%s) for %s using SPM." % (
+            ctx.attr.package_path,
+            spm_build_info.target_triple,
+        ),
     )
 
     return all_build_outs
