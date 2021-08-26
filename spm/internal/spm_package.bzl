@@ -427,17 +427,9 @@ def _get_spm_build_info(ctx):
     target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
     sdk_name = swift_toolchains.sdk_name(platform)
 
+    # TODO: FIX ME!
     # exec_os = swift_toolchains.os_name(platform)
     exec_os = "macosx"
-
-    # DEBUG BEGIN
-    print("*** CHUCK platform: ", platform)
-    print("*** CHUCK platform.name_in_plist: ", platform.name_in_plist)
-    print("*** CHUCK cpu: ", cpu)
-    print("*** CHUCK target_os_version: ", target_os_version)
-    print("*** CHUCK target_triple: ", target_triple)
-
-    # DEBUG END
 
     return SPMBuildInfo(
         build_tool = ctx.executable._macos_build_tool,
