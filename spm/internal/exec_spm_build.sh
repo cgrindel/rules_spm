@@ -74,7 +74,6 @@ xcrun \
   --configuration ${build_config} \
   --package-path "${package_path}" \
   --build-path "${build_path}" \
-  -v \
   -Xswiftc "-sdk" -Xswiftc "${sdk_path}" \
   -Xswiftc "-target" -Xswiftc "${target_triple}" \
   -Xcc "-target" -Xcc "${target_triple}"
