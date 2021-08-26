@@ -1,10 +1,3 @@
-swift_oss = struct(
-    macos = "darwin",
-    ios = "ios",
-    # GH024: Add Linux support.
-    # linux = "linux",
-)
-
 swift_archs = struct(
     x86_64 = "x86_64",
     # https://stackoverflow.com/questions/52624308/xcode-arm64-vs-arm64e
@@ -20,11 +13,6 @@ spm_oss = struct(
 spm_vendors = struct(
     apple = "apple",
 )
-
-_swift_to_spm_os_mapping = {
-    swift_oss.macos: spm_oss.macos,
-    swift_oss.ios: spm_oss.ios,
-}
 
 _spm_os_to_vendor_mapping = {
     spm_oss.macos: spm_vendors.apple,
