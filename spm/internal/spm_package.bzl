@@ -7,7 +7,6 @@ load(":spm_common.bzl", "spm_common")
 load(":swift_toolchains.bzl", "swift_toolchains")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
-load("@build_bazel_rules_swift//swift:swift.bzl", "SwiftToolchainInfo", "swift_common")
 
 # MARK: - Swift Module Info
 
@@ -333,11 +332,6 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     # SPM Toolchain Info
     spm_build_info = _get_spm_build_info(ctx)
 
-    # Swift Toolchain info
-    # The swift_worker is typically xcrun.
-    # swift_toolchain = ctx.attr._toolchain[SwiftToolchainInfo]
-    # swift_worker = swift_toolchain.swift_worker
-
     build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
     all_build_outs = [build_output_dir]
@@ -381,12 +375,11 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 # MARK: - Toolchain Info
 
 def _create_spm_platform_info(swift_cpu, swift_os):
-    """Creates an `SpmPlatformInfo` from the `cpu` and `system_name` from
-    SwiftToolchainInfo.
+    """Creates an `SpmPlatformInfo` from the cpu and OS from the apple fragment.
 
     Args:
-        swift_cpu: A `string` value from `SwiftToolchainInfo.cpu`.
-        swift_os: A `string` value from `SwiftToolchainInfo.system_name`.
+        swift_cpu: A `string` value from an apple fragment `single_arch_cpu`.
+        swift_os: A `string` value.
 
     Returns:
         An instance of `SPMPlatformInfo` provider.
@@ -407,11 +400,6 @@ def _get_spm_build_info(ctx):
     Returns:
         An instance of a `SPMBuildInfo`.
     """
-
-    # # Swift rules do not support platforms and Bazel toolchains. We will
-    # # interrogate their SwiftToolchainInfo for cpu/arch and OS.
-    # swift_toolchain_info = ctx.attr._toolchain[SwiftToolchainInfo]
-    # target_triple = swift_toolchains.target_triple(swift_toolchain_info)
 
     # Apple fragment doc: https://docs.bazel.build/versions/4.0.0/skylark/lib/apple.html
     apple_fragment = ctx.fragments.apple
