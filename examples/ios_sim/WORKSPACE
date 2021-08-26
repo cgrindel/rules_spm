@@ -69,19 +69,10 @@ load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
 spm_repositories(
     name = "swift_pkgs",
     dependencies = [
-        # spm_pkg(
-        #     "https://github.com/apple/swift-log.git",
-        #     from_version = "1.0.0",
-        #     products = ["Logging"],
-        # ),
         spm_pkg(
             "https://github.com/apple/swift-nio.git",
             from_version = "2.0.0",
             products = ["NIO"],
         ),
     ],
-    # platforms = [
-    #     # ".macOS(.v10_15)",
-    #     ".iOS(.v14)",
-    # ],
 )
