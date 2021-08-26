@@ -12,6 +12,7 @@ swift_library(
     visibility = ["//visibility:private"],
     deps = [
         "//Sources/Foo",
+        "@swift_pkgs//swift-nio:NIO",
     ],
 )
 
