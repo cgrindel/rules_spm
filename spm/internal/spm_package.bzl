@@ -427,8 +427,7 @@ def _get_spm_build_info(ctx):
     target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
     sdk_name = swift_toolchains.sdk_name(platform)
 
-    # TODO: FIX ME!
-    # exec_os = swift_toolchains.os_name(platform)
+    # GH024: Add Linux support.
     exec_os = "macosx"
 
     return SPMBuildInfo(
@@ -578,10 +577,6 @@ _attrs = {
 spm_package = rule(
     implementation = _spm_package_impl,
     attrs = _attrs,
-    # attrs = dicts.add(
-    #     _attrs,
-    #     swift_common.toolchain_attrs(),
-    # ),
     fragments = ["apple"],
     doc = "Builds the specified Swift package.",
 )

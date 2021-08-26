@@ -54,11 +54,7 @@ def _get_spm_os(swift_os):
         A `string` representing the SPM OS value.
     """
 
-    # spm_os = _swift_to_spm_os_mapping.get(swift_os.lower())
-    # if spm_os == None:
-    #     fail("No SPM OS mapping for %s." % (swift_os))
-    # return spm_os
-    # TODO: FIX ME
+    # No mapping at this time.
     return swift_os
 
 def _get_spm_vendor(swift_os):
