@@ -33,22 +33,10 @@ jobs:
         cd examples/simple
         bazelisk test //...
 
-    - name: Build Simple_C Example
+    - name: Test Package With Shared Deps Example
       shell: bash
       run: |
-        cd examples/simple_c
-        bazelisk test //...
-
-    - name: Test Complex Example
-      shell: bash
-      run: |
-        cd examples/complex
-        bazelisk test //...
-
-    - name: Test Package With Deps Example
-      shell: bash
-      run: |
-        cd examples/package_with_deps
+        cd examples/package_with_shared_deps
         bazelisk test //...
 
     - name: Test Vapor Example
