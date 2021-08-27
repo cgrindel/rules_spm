@@ -27,7 +27,7 @@ jobs:
       run: |
         bazelisk build //... 
 
-    - name: Build Simple Example
+    - name: Test Simple Example
       shell: bash
       run: |
         cd examples/simple
@@ -39,20 +39,26 @@ jobs:
         cd examples/simple_c
         bazelisk test //...
 
-    - name: Build Complex Example
+    - name: Test Complex Example
       shell: bash
       run: |
         cd examples/complex
         bazelisk test //...
 
-    - name: Build Package With Deps Example
+    - name: Test Package With Deps Example
       shell: bash
       run: |
         cd examples/package_with_deps
         bazelisk test //...
 
-    - name: Build Vapor Example
+    - name: Test Vapor Example
       shell: bash
       run: |
         cd examples/vapor
+        bazelisk test //...
+
+    - name: Test iOS Simulator Example
+      shell: bash
+      run: |
+        cd examples/ios_sim
         bazelisk test //...

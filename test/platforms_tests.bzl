@@ -5,13 +5,12 @@ load(
     "spm_oss",
     "spm_vendors",
     "swift_archs",
-    "swift_oss",
 )
 
 def _spm_os_test(ctx):
     env = unittest.begin(ctx)
 
-    asserts.equals(env, spm_oss.macos, platforms.spm_os(swift_oss.macos))
+    asserts.equals(env, spm_oss.macos, platforms.spm_os(spm_oss.macos))
 
     return unittest.end(env)
 
@@ -29,7 +28,7 @@ spm_arch_test = unittest.make(_spm_arch_test)
 def _spm_vendor_test(ctx):
     env = unittest.begin(ctx)
 
-    asserts.equals(env, spm_vendors.apple, platforms.spm_vendor(swift_oss.macos))
+    asserts.equals(env, spm_vendors.apple, platforms.spm_vendor(spm_oss.macos))
 
     return unittest.end(env)
 
