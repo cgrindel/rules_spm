@@ -341,8 +341,6 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     run_args = ctx.actions.args()
     run_args.add_all([
-        # "--swift-worker",
-        # swift_worker,
         "--build-config",
         ctx.attr.configuration,
         "--package-path",
@@ -360,7 +358,6 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     ctx.actions.run(
         inputs = ctx.files.srcs + build_inputs,
-        # tools = [swift_worker],
         outputs = all_build_outs,
         arguments = [run_args],
         executable = spm_build_info.build_tool,
