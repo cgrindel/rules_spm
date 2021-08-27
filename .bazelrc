@@ -1,7 +1,8 @@
-# Verbose Failures
-build --verbose_failures
+# Import Shared settings
+import %workspace%/shared.bazelrc
 
-# Strict PATH. Helps prevent build cache invalidation due to PATH differences.
-build --incompatible_strict_action_env=true
+# Import CI settings.
+import %workspace%/ci.bazelrc
 
-
+# Try to import a local.rc file; typically, written by CI
+try-import %workspace%/local.bazelrc

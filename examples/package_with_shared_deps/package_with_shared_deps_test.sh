@@ -17,9 +17,8 @@ err_msg() {
   exit 1
 }
 
-workspace="complex_example"
-binary="$(rlocation "${workspace}/complex")"
+workspace="package_with_shared_deps_example"
+binary="$(rlocation "${workspace}/package_with_shared_deps")"
 
 expected="Hello World"
 "${binary}" | grep "${expected}" || err_msg "Failed to find expected output. ${expected}"
-
