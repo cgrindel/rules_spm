@@ -2,9 +2,26 @@ load("@build_bazel_rules_swift//swift/internal:actions.bzl", "swift_action_names
 load("@bazel_skylib//lib:types.bzl", "types")
 
 def _get_sdk_name(platform):
+    """Returns the SDK name for the provided platform.
+
+    Args:
+        platform: The `apple_platform` value describing the target platform.
+
+    Returns:
+        A `string` value representing the SDK name.
+    """
     return platform.name_in_plist.lower()
 
 def _get_os_name(platform):
+    """Returns the OS name for the given platform. This value can be used 
+    when constructing target triplets.
+
+    Args:
+        platform: The `apple_platform` value describing the target platform.
+
+    Returns:
+        A `string` value representing the OS name.
+    """
     platform_string = str(platform.platform_type)
     if platform_string == "macos":
         platform_string = "macosx"
@@ -21,7 +38,7 @@ def _swift_apple_target_triple(cpu, platform, version):
         version: The target platform version as a dotted version string.
 
     Returns:
-        A target triple string describing the platform.
+        A target triple `string` describing the platform.
     """
     platform_string = _get_os_name(platform)
     environment = ""
