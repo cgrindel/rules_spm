@@ -4,6 +4,7 @@ load(":platforms.bzl", "platforms")
 load(":providers.bzl", "SPMBuildInfo", "SPMPackageInfo", "SPMPackagesInfo", "SPMPlatformInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
+load("spm_toolchain.bzl", "SPM_TOOLCHAIN_TYPE")
 load(":swift_toolchains.bzl", "swift_toolchains")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
@@ -371,56 +372,59 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
 # MARK: - Toolchain Info
 
-def _create_spm_platform_info(swift_cpu, swift_os):
-    """Creates an `SpmPlatformInfo` from the cpu and OS from the apple fragment.
+# def _create_spm_platform_info(swift_cpu, swift_os):
+#     """Creates an `SpmPlatformInfo` from the cpu and OS from the apple fragment.
 
-    Args:
-        swift_cpu: A `string` value from an apple fragment `single_arch_cpu`.
-        swift_os: A `string` value.
+#     Args:
+#         swift_cpu: A `string` value from an apple fragment `single_arch_cpu`.
+#         swift_os: A `string` value.
 
-    Returns:
-        An instance of `SPMPlatformInfo` provider.
-    """
-    return SPMPlatformInfo(
-        os = platforms.spm_os(swift_os),
-        arch = platforms.spm_arch(swift_cpu),
-        vendor = platforms.spm_vendor(swift_os),
-    )
+#     Returns:
+#         An instance of `SPMPlatformInfo` provider.
+#     """
+#     return SPMPlatformInfo(
+#         os = platforms.spm_os(swift_os),
+#         arch = platforms.spm_arch(swift_cpu),
+#         vendor = platforms.spm_vendor(swift_os),
+#     )
+
+# def _get_spm_build_info(ctx):
+#     """Returns the `SPMBuildInfo` that has been selected as part of Swift's
+#     toolchain evaluation.
+
+#     Args:
+#         ctx: A `ctx` instance.
+
+#     Returns:
+#         An instance of a `SPMBuildInfo`.
+#     """
+
+#     # Apple fragment doc: https://docs.bazel.build/versions/4.0.0/skylark/lib/apple.html
+#     apple_fragment = ctx.fragments.apple
+
+#     # This was heavily inspired by
+#     # https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L638
+#     cpu = apple_fragment.single_arch_cpu
+#     platform = apple_fragment.single_arch_platform
+#     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
+#     target_os_version = xcode_config.minimum_os_for_platform_type(
+#         platform.platform_type,
+#     )
+#     target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
+#     sdk_name = swift_toolchains.sdk_name(platform)
+
+#     # GH024: Add Linux support.
+#     exec_os = "macosx"
+
+#     return SPMBuildInfo(
+#         build_tool = ctx.executable._macos_build_tool,
+#         sdk_name = sdk_name,
+#         target_triple = target_triple,
+#         spm_platform_info = _create_spm_platform_info(cpu, exec_os),
+#     )
 
 def _get_spm_build_info(ctx):
-    """Returns the `SPMBuildInfo` that has been selected as part of Swift's 
-    toolchain evaluation.
-
-    Args:
-        ctx: A `ctx` instance.
-
-    Returns:
-        An instance of a `SPMBuildInfo`.
-    """
-
-    # Apple fragment doc: https://docs.bazel.build/versions/4.0.0/skylark/lib/apple.html
-    apple_fragment = ctx.fragments.apple
-
-    # This was heavily inspired by
-    # https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L638
-    cpu = apple_fragment.single_arch_cpu
-    platform = apple_fragment.single_arch_platform
-    xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
-    target_os_version = xcode_config.minimum_os_for_platform_type(
-        platform.platform_type,
-    )
-    target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
-    sdk_name = swift_toolchains.sdk_name(platform)
-
-    # GH024: Add Linux support.
-    exec_os = "macosx"
-
-    return SPMBuildInfo(
-        build_tool = ctx.executable._macos_build_tool,
-        sdk_name = sdk_name,
-        target_triple = target_triple,
-        spm_platform_info = _create_spm_platform_info(cpu, exec_os),
-    )
+    return ctx.toolchains[SPM_TOOLCHAIN_TYPE].spm_build_info
 
 # MARK: - Rule Implementation
 
@@ -546,22 +550,23 @@ _attrs = {
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
     ),
-    "_macos_build_tool": attr.label(
-        executable = True,
-        cfg = "exec",
-        default = "//spm/internal:exec_spm_build",
-    ),
-    "_xcode_config": attr.label(
-        default = configuration_field(
-            name = "xcode_config_label",
-            fragment = "apple",
-        ),
-    ),
+    # "_macos_build_tool": attr.label(
+    #     executable = True,
+    #     cfg = "exec",
+    #     default = "//spm/internal:exec_spm_build",
+    # ),
+    # "_xcode_config": attr.label(
+    #     default = configuration_field(
+    #         name = "xcode_config_label",
+    #         fragment = "apple",
+    #     ),
+    # ),
 }
 
 spm_package = rule(
     implementation = _spm_package_impl,
     attrs = _attrs,
-    fragments = ["apple"],
+    # fragments = ["apple"],
     doc = "Builds the specified Swift package.",
+    toolchains = [SPM_TOOLCHAIN_TYPE],
 )

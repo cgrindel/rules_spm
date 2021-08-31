@@ -1,6 +1,3 @@
-load("@build_bazel_rules_swift//swift/internal:actions.bzl", "swift_action_names")
-load("@bazel_skylib//lib:types.bzl", "types")
-
 def _get_sdk_name(platform):
     """Returns the SDK name for the provided platform.
 
