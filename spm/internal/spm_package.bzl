@@ -372,7 +372,6 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 # MARK: - Toolchain Info
 
 def _get_spm_build_info(ctx):
-    # return ctx.toolchains[SPM_TOOLCHAIN_TYPE].spm_build_info
     return ctx.attr._toolchain[SPMBuildInfo]
 
 # MARK: - Rule Implementation
