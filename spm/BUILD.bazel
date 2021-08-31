@@ -1,5 +1,4 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("//spm/internal:spm_toolchain.bzl", "declare_toolchains")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,12 +14,3 @@ bzl_library(
         "//spm/internal:spm_package",
     ],
 )
-
-# MARK: - Toolchains
-
-toolchain_type(
-    name = "toolchain_type",
-    visibility = ["//visibility:public"],
-)
-
-declare_toolchains()

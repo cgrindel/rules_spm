@@ -4,7 +4,6 @@ load(":platforms.bzl", "platforms")
 load(":providers.bzl", "SPMBuildInfo", "SPMPackageInfo", "SPMPackagesInfo", "SPMPlatformInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
-load("spm_toolchain.bzl", "SPM_TOOLCHAIN_TYPE")
 load(":swift_toolchains.bzl", "swift_toolchains")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
@@ -373,7 +372,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 # MARK: - Toolchain Info
 
 def _get_spm_build_info(ctx):
-    return ctx.toolchains[SPM_TOOLCHAIN_TYPE].spm_build_info
+    # return ctx.toolchains[SPM_TOOLCHAIN_TYPE].spm_build_info
+    return ctx.attr._toolchain[SPMBuildInfo]
 
 # MARK: - Rule Implementation
 
@@ -499,11 +499,14 @@ _attrs = {
         allow_single_file = True,
         default = "//spm/internal:module.modulemap.tpl",
     ),
+    "_toolchain": attr.label(
+        default = Label("@cgrindel_rules_spm_local_config//:toolchain"),
+        providers = [[SPMBuildInfo]],
+    ),
 }
 
 spm_package = rule(
     implementation = _spm_package_impl,
     attrs = _attrs,
     doc = "Builds the specified Swift package.",
-    toolchains = [SPM_TOOLCHAIN_TYPE],
 )
