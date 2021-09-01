@@ -1,7 +1,30 @@
 load(":repository_utils.bzl", "repository_utils")
 
 def _create_linux_toolchain(repository_ctx):
-    fail("NOT IMPLEMENTED YET")
+    path_to_swift = repository_ctx.which("swift")
+    if not path_to_swift:
+        fail("Could not find `swift` in $PATH.")
+
+    repository_ctx.file(
+        "BUILD.bazel",
+        """
+load(
+    "@cgrindel_rules_spm//spm/internal:spm_linux_toolchain.bzl",
+    "spm_linux_toolchain",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+spm_linux_toolchain(
+    name = "toolchain",
+    arch = "x86_64",
+    os = "linux",
+    swift = "{swift}",
+)
+""".format(
+            swift = path_to_swift,
+        ),
+    )
 
 def _create_xcode_toolchain(repository_ctx):
     """Creates BUILD targets for the SPM toolchain on macOS using Xcode.

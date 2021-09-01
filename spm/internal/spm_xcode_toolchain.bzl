@@ -35,11 +35,10 @@ def _spm_xcode_toolchain(ctx):
     target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
     sdk_name = swift_toolchains.sdk_name(platform)
 
-    # GH024: Add Linux support.
     exec_os = "macosx"
 
     spm_build_info = SPMBuildInfo(
-        build_tool = ctx.executable._macos_build_tool,
+        build_tool = ctx.executable._build_tool,
         sdk_name = sdk_name,
         target_triple = target_triple,
         spm_platform_info = _create_spm_platform_info(cpu, exec_os),
@@ -51,10 +50,10 @@ spm_xcode_toolchain = rule(
     implementation = _spm_xcode_toolchain,
     fragments = ["apple"],
     attrs = {
-        "_macos_build_tool": attr.label(
+        "_build_tool": attr.label(
             executable = True,
             cfg = "exec",
-            default = "//spm/internal:exec_spm_build",
+            default = "//spm/internal:exec_macos_build",
         ),
         "_xcode_config": attr.label(
             default = configuration_field(

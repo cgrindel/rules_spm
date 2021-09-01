@@ -24,6 +24,32 @@ def _get_os_name(platform):
         platform_string = "macosx"
     return platform_string
 
+def _target_triple(arch, vendor, sys, abi = ""):
+    """Creates a target triple.
+
+    Documentation:
+        https://clang.llvm.org/docs/CrossCompilation.html#target-triple
+    
+    Args:
+        arch: A `string` representing the architecture. (e.g. `x86_64`,
+              `arm64`)
+        vendor: A `string` representing the vendor. (e.g. `apple`, `nvidia`,
+                `unknown`)
+        sys: A `string` representing the operating system. (e.g. `none`,
+             `linux`, `darwin`)
+    
+    Returns:
+        A `string` representing a target triple.
+    """
+    triple = "{arch}-{vendor}-{sys}".format(
+        arch = arch,
+        vendor = vendor,
+        sys = sys,
+    )
+    if abi:
+        triple = triple + "-" + abi
+    return triple
+
 # This was heavily inspired by
 # https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L594.
 def _swift_apple_target_triple(cpu, platform, version):
@@ -42,15 +68,20 @@ def _swift_apple_target_triple(cpu, platform, version):
     if not platform.is_device:
         environment = "-simulator"
 
-    return "{cpu}-apple-{platform}{version}{environment}".format(
-        cpu = cpu,
+    sys = "{platform}{version}{environment}".format(
         environment = environment,
         platform = platform_string,
         version = version,
+    )
+    return _target_triple(
+        arch = cpu,
+        vendor = "apple",
+        sys = sys,
     )
 
 swift_toolchains = struct(
     apple_target_triple = _swift_apple_target_triple,
     sdk_name = _get_sdk_name,
     os_name = _get_os_name,
+    target_triple = _target_triple,
 )

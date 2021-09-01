@@ -18,7 +18,13 @@ bzl_library(
 )
 
 sh_binary(
-    name = "exec_spm_build",
-    srcs = ["exec_spm_build.sh"],
+    name = "exec_macos_build",
+    srcs = ["exec_macos_build.sh"],
+    visibility = ["//visibility:public"],
+)
+
+sh_binary(
+    name = "exec_linux_build",
+    srcs = ["exec_linux_build.sh"],
     visibility = ["//visibility:public"],
 )
