@@ -1,3 +1,5 @@
+load(":repository_utils.bzl", "repository_utils")
+
 def _create_linux_toolchain(repository_ctx):
     fail("NOT IMPLEMENTED YET")
 
@@ -24,8 +26,7 @@ spm_xcode_toolchain(
     )
 
 def _spm_autoconfiguration_impl(repository_ctx):
-    os_name = repository_ctx.os.name.lower()
-    if os_name.startswith("mac os"):
+    if repository_utils.is_macos(repository_ctx):
         _create_xcode_toolchain(repository_ctx)
     else:
         _create_linux_toolchain(repository_ctx)
