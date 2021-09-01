@@ -19,6 +19,7 @@ spm_linux_toolchain(
     name = "toolchain",
     arch = "x86_64",
     os = "linux",
+    vendor = "unknown",
     swift = "{swift}",
 )
 """.format(

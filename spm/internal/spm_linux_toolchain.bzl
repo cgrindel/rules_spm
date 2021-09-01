@@ -1,15 +1,22 @@
 load(":providers.bzl", "SPMBuildInfo", "SPMPlatformInfo")
+load(":swift_toolchains.bzl", "swift_toolchains")
+
+# TODO: Update the non-Xcode toolchain to conform to the Bazel toolchains? Get the target OS
+# and arch from the platform.
 
 def _spm_linux_toolchain(ctx):
+    # TODO: What should we do with the SDK?
     sdk_name = "no-sdk"
-    exec_os = "linux"
 
-    # TODO: IMPLEMENT ME!
-    target_triple = ""
+    target_triple = swift_toolchains.target_triple(
+        arch = ctx.attr.arch,
+        vendor = ctx.attr.vendor,
+        sys = ctx.attr.os,
+    )
     spm_platform_info = SPMPlatformInfo(
         os = ctx.attr.os,
         arch = ctx.attr.arch,
-        vendor = "unknown",
+        vendor = ctx.attr.vendor,
     )
 
     spm_build_info = SPMBuildInfo(
@@ -37,6 +44,10 @@ spm_linux_toolchain = rule(
             doc = """\
             The name of the operating system that this toolchain targets.
             """,
+            mandatory = True,
+        ),
+        "vendor": attr.string(
+            doc = "The vendor for the system being targetd.",
             mandatory = True,
         ),
         "_build_tool": attr.label(
