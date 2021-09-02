@@ -2,7 +2,7 @@ load("@bazel_tools//tools/cpp:toolchain_utils.bzl", "find_cpp_toolchain")
 
 def _spm_archive_impl(ctx):
     cc_toolchain = ctx.attr._cc_toolchain[cc_common.CcToolchainInfo]
-    a_file = ctx.actions.declare_file("lib.a")
+    a_file = ctx.actions.declare_file("lib%s.a" % (ctx.attr.name))
 
     run_args = ctx.actions.args()
     # ar commands
