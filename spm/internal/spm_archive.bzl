@@ -2,9 +2,6 @@ load("@bazel_tools//tools/cpp:toolchain_utils.bzl", "find_cpp_toolchain")
 
 def _spm_archive_impl(ctx):
     cc_toolchain = ctx.attr._cc_toolchain[cc_common.CcToolchainInfo]
-    # DEBUG BEGIN
-    print("*** CHUCK cc_toolchain.ar_executable: ", cc_toolchain.ar_executable)
-    # DEBUG END
     a_file = ctx.actions.declare_file("lib.a")
 
     run_args = ctx.actions.args()
