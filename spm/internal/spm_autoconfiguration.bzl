@@ -20,7 +20,7 @@ spm_linux_toolchain(
     arch = "x86_64",
     os = "linux",
     vendor = "unknown",
-    swift = "{swift}",
+    swift_executable = "{swift}",
 )
 """.format(
             swift = path_to_swift,

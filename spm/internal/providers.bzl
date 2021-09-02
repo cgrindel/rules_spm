@@ -7,6 +7,7 @@ SPMBuildInfo = provider(
         "sdk_name": "A string representing the name of the SDK",
         "target_triple": "A string representing the target platform as a triple.",
         "spm_platform_info": "An `SpmPlatformInfo` describing the target platform.",
+        "swift_executable": "The path for the `swift` executable."
     },
 )
 

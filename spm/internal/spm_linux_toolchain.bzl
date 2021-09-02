@@ -24,6 +24,7 @@ def _spm_linux_toolchain(ctx):
         sdk_name = sdk_name,
         target_triple = target_triple,
         spm_platform_info = spm_platform_info,
+        swift_executable = ctx.attr.swift_executable,
     )
 
     return [spm_build_info]
@@ -31,11 +32,16 @@ def _spm_linux_toolchain(ctx):
 spm_linux_toolchain = rule(
     implementation = _spm_linux_toolchain,
     attrs = {
-        # TODO: Do I need the swift executable?
-        "swift": attr.string(
+        "swift_executable": attr.string(
             mandatory = True,
             doc = "Path to `swift` executable."
         ),
+        # "swift_executable": attr.label(
+        #     mandatory = True,
+        #     allow_single_file = True,
+        #     executable = True,
+        #     cfg = "exec",
+        # ),
         "arch": attr.string(
             doc = "The name of the architecture that this toolchain targets.",
             mandatory = True,

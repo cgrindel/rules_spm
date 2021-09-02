@@ -341,6 +341,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
     run_args = ctx.actions.args()
     run_args.add_all([
+        "--swift",
+        spm_build_info.swift_executable,
         "--build-config",
         ctx.attr.configuration,
         "--package-path",
