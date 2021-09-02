@@ -5,6 +5,11 @@ def _spm_archive_impl(ctx):
     a_file = ctx.actions.declare_file("lib.a")
 
     run_args = ctx.actions.args()
+    # ar commands
+    # r: replace existing or insert new files into archive
+    # c: do not warn if library had to be created
+    # s: create an archive index
+    run_args.add("rcs")
     run_args.add(a_file)
     run_args.add_all(ctx.files.o_files)
 

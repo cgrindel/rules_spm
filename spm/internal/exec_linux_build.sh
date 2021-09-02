@@ -51,13 +51,7 @@ fetched_dir="${package_path}/$(basename "${build_path}")"
 # copy the contents of the source directory not the actual directory.
 cp -R -L "${fetched_dir}/." "${build_path}" 
 
-# DEBUG BEGIN
-echo >&2 "*** CHUCK:  build_path: ${build_path}" 
-tree $(dirname "${build_path}") >&2
-# DEBUG END
-
 # Execute the SPM build
-# swift build \
 "${swift_exec}" build \
   --manifest-cache none \
   --disable-sandbox \
@@ -78,4 +72,9 @@ while [ "$idx" -lt "${#args[@]}" ]; do
   cp -f "${src}" "${dest}"
   idx=$((idx+2))
 done
+
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  build_path: ${build_path}" 
+tree $(dirname "${build_path}") >&2
+# DEBUG END
 

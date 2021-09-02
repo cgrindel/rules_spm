@@ -17,6 +17,7 @@ SPMPlatformInfo = provider(
         "os": "The OS designation as understood by SPM.",
         "arch": "The architecture designation as understood by SPM.",
         "vendor": "The vendor designation as understood by SPM.",
+        "abi": "The abi destination as understood by SPM."
     },
 )
 

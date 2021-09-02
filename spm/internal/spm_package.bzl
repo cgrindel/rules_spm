@@ -35,8 +35,8 @@ def _declare_swift_target_files(ctx, target, build_config_path):
 
     target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
 
-    hdr_file = ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name))
-    all_build_outs.append(hdr_file)
+    # hdr_file = ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name))
+    # all_build_outs.append(hdr_file)
 
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
@@ -48,7 +48,8 @@ def _declare_swift_target_files(ctx, target, build_config_path):
         swiftdoc = swiftdoc,
         swiftmodule = swiftmodule,
         swiftsourceinfo = swiftsourceinfo,
-        hdrs = [hdr_file],
+        # hdrs = [hdr_file],
+        hdrs = [],
         all_outputs = all_build_outs,
     )
 
@@ -393,11 +394,17 @@ def _get_build_config_path(ctx):
     # Example arch-vendor-os: "x86_64-apple-macosx"
     spm_build_info = _get_spm_build_info(ctx)
     spm_platform_info = spm_build_info.spm_platform_info
-    arch_vendor_os = "-".join([
-        spm_platform_info.arch,
-        spm_platform_info.vendor,
-        spm_platform_info.os,
-    ])
+    # arch_vendor_os = "-".join([
+    #     spm_platform_info.arch,
+    #     spm_platform_info.vendor,
+    #     spm_platform_info.os,
+    # ])
+    arch_vendor_os = swift_toolchains.target_triple(
+        arch = spm_platform_info.arch,
+        vendor = spm_platform_info.vendor,
+        sys = spm_platform_info.os,
+        abi = spm_platform_info.abi,
+    )
     return paths.join(
         spm_common.build_dirname,
         arch_vendor_os,

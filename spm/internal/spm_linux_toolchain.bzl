@@ -18,6 +18,7 @@ def _spm_linux_toolchain(ctx):
         os = ctx.attr.os,
         arch = ctx.attr.arch,
         vendor = ctx.attr.vendor,
+        abi = ctx.attr.abi,
     )
 
     spm_build_info = SPMBuildInfo(

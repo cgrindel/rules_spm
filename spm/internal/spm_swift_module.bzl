@@ -39,7 +39,6 @@ def spm_swift_module(name, packages, deps = None, visibility = None):
         file_type = "o_files",
     )
     
-    # TODO: Create a rule that converts the .o files to .a.
     a_file_name = "%s_a_file" % (name)
     spm_archive(
         name = a_file_name,
