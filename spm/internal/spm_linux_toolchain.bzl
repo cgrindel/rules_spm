@@ -12,6 +12,7 @@ def _spm_linux_toolchain(ctx):
         arch = ctx.attr.arch,
         vendor = ctx.attr.vendor,
         sys = ctx.attr.os,
+        abi = ctx.attr.abi,
     )
     spm_platform_info = SPMPlatformInfo(
         os = ctx.attr.os,
@@ -49,6 +50,9 @@ spm_linux_toolchain = rule(
         "vendor": attr.string(
             doc = "The vendor for the system being targetd.",
             mandatory = True,
+        ),
+        "abi": attr.string(
+            doc = "The abi for the system being targetd.",
         ),
         "_build_tool": attr.label(
             executable = True,

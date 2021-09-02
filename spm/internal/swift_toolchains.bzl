@@ -37,6 +37,7 @@ def _target_triple(arch, vendor, sys, abi = ""):
                 `unknown`)
         sys: A `string` representing the operating system. (e.g. `none`,
              `linux`, `darwin`)
+        abi: Optional. A `string` representing the abi. (e.g. `gnu`, `android`)
     
     Returns:
         A `string` representing a target triple.
