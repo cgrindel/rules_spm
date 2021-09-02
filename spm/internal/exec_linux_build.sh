@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-# DEBUG BEGIN
-set -x
-# DEBUG END
 
 args=()
 while (("$#")); do
@@ -73,8 +70,4 @@ while [ "$idx" -lt "${#args[@]}" ]; do
   idx=$((idx+2))
 done
 
-# DEBUG BEGIN
-echo >&2 "*** CHUCK:  build_path: ${build_path}" 
-tree $(dirname "${build_path}") >&2
-# DEBUG END
 
