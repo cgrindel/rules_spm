@@ -15,3 +15,7 @@ Be sure to install the folllwing to ensure that all of the prerequisites are sat
 sudo apt install sqlite3 libsqlite3-dev
 ```
 
+## Other Considerations
+
+To get this example to link successfully on Ubuntu, I needed to add a dependency on `@zlib//:zlib`
+to `//Tests/AppTests:AppTests` target and the `//Sources/Run:Run` target.
