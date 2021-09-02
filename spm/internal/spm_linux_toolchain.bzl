@@ -36,12 +36,6 @@ spm_linux_toolchain = rule(
             mandatory = True,
             doc = "Path to `swift` executable."
         ),
-        # "swift_executable": attr.label(
-        #     mandatory = True,
-        #     allow_single_file = True,
-        #     executable = True,
-        #     cfg = "exec",
-        # ),
         "arch": attr.string(
             doc = "The name of the architecture that this toolchain targets.",
             mandatory = True,
