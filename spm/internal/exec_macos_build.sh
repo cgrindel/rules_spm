@@ -59,28 +59,14 @@ build_args+=(--build-path "${build_path}")
 build_args+=(-Xswiftc "-target" -Xswiftc "${target_triple}")
 build_args+=(-Xcc "-target" -Xcc "${target_triple}")
 
-if [[ -n "${sdk_name}" ]]; then
+if [[ -n "${sdk_name:-}" ]]; then
   # NOTE: This will only succeed when Xcode is installed.
   sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
   build_args+=(-Xswiftc "-sdk" -Xswiftc "${sdk_path}")
 fi
 
-# DEBUG BEGIN
-echo >&2 "*** CHUCK:  build_args[@]: ${build_args[@]}" 
-# DEBUG END
-
 # Execute the SPM build
 "${swift_exec}" build "${build_args[@]}"
-# "${swift_exec}" build \
-#   --manifest-cache none \
-#   --disable-sandbox \
-#   --disable-repository-cache \
-#   --configuration ${build_config} \
-#   --package-path "${package_path}" \
-#   --build-path "${build_path}" \
-#   -Xswiftc "-sdk" -Xswiftc "${sdk_path}" \
-#   -Xswiftc "-target" -Xswiftc "${target_triple}" \
-#   -Xcc "-target" -Xcc "${target_triple}"
 
 # Replace the specified files with the provided ones
 idx=0
