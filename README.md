@@ -8,7 +8,7 @@ rules in this repository build the external Swift packages with [Swift Package
 Manager](https://swift.org/package-manager/), then make the outputs available to Bazel rules.
 
 
-## Prequisites
+## Prerequisites
 
 ### Mac OS
 
