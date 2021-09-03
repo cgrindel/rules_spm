@@ -5,9 +5,6 @@ load(":swift_toolchains.bzl", "swift_toolchains")
 # and arch from the platform.
 
 def _spm_linux_toolchain(ctx):
-    # TODO: What should we do with the SDK?
-    sdk_name = "no-sdk"
-
     target_triple = swift_toolchains.target_triple(
         arch = ctx.attr.arch,
         vendor = ctx.attr.vendor,
@@ -23,7 +20,7 @@ def _spm_linux_toolchain(ctx):
 
     spm_build_info = SPMBuildInfo(
         build_tool = ctx.executable._build_tool,
-        sdk_name = sdk_name,
+        sdk_name = None,
         target_triple = target_triple,
         spm_platform_info = spm_platform_info,
         swift_executable = ctx.attr.swift_executable,

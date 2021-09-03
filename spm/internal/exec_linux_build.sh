@@ -26,10 +26,13 @@ while (("$#")); do
       target_triple="${2}"
       shift 2
       ;;
-    "--sdk_name")
-      sdk_name="${2}"
-      shift 2
-      ;;
+    # "--sdk_name")
+    #   sdk_name="${2}"
+    #   shift 2
+    #   ;;
+    --*)
+      echo >&2 "Unrecognized flag ${1}"
+      exit 1
     *)
       args+=("${1}")
       shift 1

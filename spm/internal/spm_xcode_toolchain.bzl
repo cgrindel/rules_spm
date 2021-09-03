@@ -21,12 +21,12 @@ def _create_spm_platform_info(swift_cpu, swift_os):
         abi = None,
     )
 
+# This was heavily inspired by
+# https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L638
 def _spm_xcode_toolchain(ctx):
     # Apple fragment doc: https://docs.bazel.build/versions/4.0.0/skylark/lib/apple.html
     apple_fragment = ctx.fragments.apple
 
-    # This was heavily inspired by
-    # https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L638
     cpu = apple_fragment.single_arch_cpu
     platform = apple_fragment.single_arch_platform
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]

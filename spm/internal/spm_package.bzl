@@ -354,9 +354,10 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         build_output_dir.path,
         "--target_triple",
         spm_build_info.target_triple,
-        "--sdk_name",
-        spm_build_info.sdk_name,
     ])
+    if spm_build_info.sdk_name:
+        run_args.add_all(["--sdk_name", spm_build_info.sdk_name])
+
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
         all_build_outs.append(ci.dest)
