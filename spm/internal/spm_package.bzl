@@ -35,14 +35,9 @@ def _declare_swift_target_files(ctx, target, build_config_path):
 
     target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
 
-    # hdr_file = ctx.actions.declare_file("%s/%s-Swift.h" % (target_build_dirname, target_name))
-    # all_build_outs.append(hdr_file)
-
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))
     all_build_outs.extend(o_files)
-
-    # TODO: Remove hdrs from providers.swift_module().
 
     return providers.swift_module(
         module_name = module_name,
