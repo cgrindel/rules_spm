@@ -43,9 +43,9 @@ sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
 fetched_dir="${package_path}/$(basename "${build_path}")"
 
 # Copy all of the fetch data to the output so that the SPM build will succeed?
-# Note the slash at the end of the source. It tells cp to copy the contents of
-# the source directory not the actual directory.
-cp -R -L "${fetched_dir}/" "${build_path}" 
+# Note the slash followed by a period at the end of the source. It tells cp to 
+# copy the contents of the source directory not the actual directory.
+cp -R -L "${fetched_dir}/." "${build_path}" 
 
 # Execute the SPM build
 "${swift_exec}" build \
