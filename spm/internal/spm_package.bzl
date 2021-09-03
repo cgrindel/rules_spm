@@ -396,11 +396,6 @@ def _get_build_config_path(ctx):
     # Example arch-vendor-os: "x86_64-apple-macosx"
     spm_build_info = _get_spm_build_info(ctx)
     spm_platform_info = spm_build_info.spm_platform_info
-    # arch_vendor_os = "-".join([
-    #     spm_platform_info.arch,
-    #     spm_platform_info.vendor,
-    #     spm_platform_info.os,
-    # ])
     arch_vendor_os = swift_toolchains.target_triple(
         arch = spm_platform_info.arch,
         vendor = spm_platform_info.vendor,
