@@ -44,16 +44,3 @@ def spm_clang_module(name, packages, deps = None, visibility = None):
         deps = deps,
         visibility = visibility,
     )
-
-    # native.objc_library(
-    #     name = name,
-    #     hdrs = [
-    #         ":%s" % (hdr_files_name),
-    #     ],
-    #     srcs = [
-    #         ":%s" % (src_files_name),
-    #     ],
-    #     module_name = module_name,
-    #     deps = deps,
-    #     visibility = visibility,
-    # )
