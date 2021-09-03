@@ -5,7 +5,8 @@ def _create_linux_toolchain(repository_ctx):
     if not path_to_swift:
         fail("Could not find `swift` in $PATH.")
 
-    # TODO: Get the parts for the target triple from swift --version
+    # GH051: Do a better job figuring out what the target parameters should 
+    # be.
 
     repository_ctx.file(
         "BUILD.bazel",
