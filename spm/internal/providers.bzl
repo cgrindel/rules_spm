@@ -40,7 +40,7 @@ SPMPackageInfo = provider(
     },
 )
 
-def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, hdrs, all_outputs):
+def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, all_outputs):
     """Creates a value representing the Swift module that is built from a package.
 
     Args:
@@ -60,7 +60,6 @@ def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourc
         swiftdoc = swiftdoc,
         swiftmodule = swiftmodule,
         swiftsourceinfo = swiftsourceinfo,
-        hdrs = hdrs,
         all_outputs = all_outputs,
     )
 

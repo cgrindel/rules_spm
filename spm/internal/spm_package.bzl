@@ -50,8 +50,6 @@ def _declare_swift_target_files(ctx, target, build_config_path):
         swiftdoc = swiftdoc,
         swiftmodule = swiftmodule,
         swiftsourceinfo = swiftsourceinfo,
-        # hdrs = [hdr_file],
-        hdrs = [],
         all_outputs = all_build_outs,
     )
 
