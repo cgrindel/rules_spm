@@ -29,14 +29,16 @@ while (("$#")); do
       sdk_name="${2}"
       shift 2
       ;;
+    --*)
+      echo >&2 "Unrecognized flag ${1}"
+      exit 1
+      ;;
     *)
       args+=("${1}")
       shift 1
       ;;
   esac
 done
-
-sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
@@ -47,17 +49,38 @@ fetched_dir="${package_path}/$(basename "${build_path}")"
 # copy the contents of the source directory not the actual directory.
 cp -R -L "${fetched_dir}/." "${build_path}" 
 
+build_args=()
+build_args+=(--manifest-cache none)
+build_args+=(--disable-sandbox)
+build_args+=(--disable-repository-cache)
+build_args+=(--configuration ${build_config})
+build_args+=(--package-path "${package_path}")
+build_args+=(--build-path "${build_path}")
+build_args+=(-Xswiftc "-target" -Xswiftc "${target_triple}")
+build_args+=(-Xcc "-target" -Xcc "${target_triple}")
+
+if [[ -n "${sdk_name}" ]]; then
+  # NOTE: This will only succeed when Xcode is installed.
+  sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
+  build_args+=(-Xswiftc "-sdk" -Xswiftc "${sdk_path}")
+fi
+
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  build_args[@]: ${build_args[@]}" 
+# DEBUG END
+
 # Execute the SPM build
-"${swift_exec}" build \
-  --manifest-cache none \
-  --disable-sandbox \
-  --disable-repository-cache \
-  --configuration ${build_config} \
-  --package-path "${package_path}" \
-  --build-path "${build_path}" \
-  -Xswiftc "-sdk" -Xswiftc "${sdk_path}" \
-  -Xswiftc "-target" -Xswiftc "${target_triple}" \
-  -Xcc "-target" -Xcc "${target_triple}"
+"${swift_exec}" build "${build_args[@]}"
+# "${swift_exec}" build \
+#   --manifest-cache none \
+#   --disable-sandbox \
+#   --disable-repository-cache \
+#   --configuration ${build_config} \
+#   --package-path "${package_path}" \
+#   --build-path "${build_path}" \
+#   -Xswiftc "-sdk" -Xswiftc "${sdk_path}" \
+#   -Xswiftc "-target" -Xswiftc "${target_triple}" \
+#   -Xcc "-target" -Xcc "${target_triple}"
 
 # Replace the specified files with the provided ones
 idx=0
