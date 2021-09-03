@@ -69,47 +69,6 @@ def _spm_archive_impl(ctx):
 
     return [DefaultInfo(files = depset([output_file]))]
 
-# def _spm_archive_impl(ctx):
-#     cc_toolchain = ctx.attr._cc_toolchain[cc_common.CcToolchainInfo]
-#     a_filename = "lib%s.a" % (ctx.attr.name)
-#     a_file = ctx.actions.declare_file(a_filename)
-
-#     run_args = ctx.actions.args()
-
-#     # ar commands
-#     # r: replace existing or insert new files into archive
-#     # c: do not warn if library had to be created
-#     # s: create an archive index
-#     run_args.add("rcs")
-#     run_args.add(a_file)
-#     run_args.add_all(ctx.files.o_files)
-
-#     # DEBUG BEGIN
-#     print("*** CHUCK cc_toolchain.ar_executable: ", cc_toolchain.ar_executable)
-#     # DEBUG END
-
-#     link_outputs = cc_common.link(
-#         actions = ctx.actions,
-#         # TODO: FIX ME
-#         feature_configuration = None,
-#         cc_toolchain = cc_toolchain,
-#         # TODO: Should I create a CcCompilationOutputs with the object files?
-#         compilation_outputs = None,
-#         name = a_filename,
-#         output_type = "dynamic_library",
-#     )
-
-#     print("*** CHUCK link_outputs.library_to_link: ", link_outputs.library_to_link)
-
-#     ctx.actions.run(
-#         inputs = ctx.files.o_files,
-#         outputs = [a_file],
-#         arguments = [run_args],
-#         executable = cc_toolchain.ar_executable,
-#         progress_message = "Creating archive file (%s)." % (a_file),
-#     )
-#     return [DefaultInfo(files = depset([a_file]))]
-
 spm_archive = rule(
     implementation = _spm_archive_impl,
     attrs = {
@@ -131,4 +90,7 @@ spm_archive = rule(
     fragments = ["cpp"],
     toolchains = ["@bazel_tools//tools/cpp:toolchain_type"],
     incompatible_use_toolchain_transition = True,
+    doc = """\
+    Combines object files (.o) into an archive file (.a).
+    """,
 )
