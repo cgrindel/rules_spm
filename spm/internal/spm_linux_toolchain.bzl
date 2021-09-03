@@ -55,8 +55,7 @@ spm_linux_toolchain = rule(
         "_build_tool": attr.label(
             executable = True,
             cfg = "exec",
-            # default = "//spm/internal:exec_linux_build",
-            default = "//spm/internal:exec_macos_build",
+            default = "//spm/internal:exec_spm_build",
         ),
     },
 )
