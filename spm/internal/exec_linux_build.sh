@@ -33,6 +33,7 @@ while (("$#")); do
     --*)
       echo >&2 "Unrecognized flag ${1}"
       exit 1
+      ;;
     *)
       args+=("${1}")
       shift 1
