@@ -5,6 +5,10 @@ set -euo pipefail
 args=()
 while (("$#")); do
   case "${1}" in
+    "--swift")
+      swift_exec="${2}"
+      shift 2
+      ;;
     "--build-config")
       build_config="${2}"
       shift 2
@@ -44,8 +48,7 @@ fetched_dir="${package_path}/$(basename "${build_path}")"
 cp -R -L "${fetched_dir}/" "${build_path}" 
 
 # Execute the SPM build
-xcrun \
-  swift build \
+"${swift_exec}" build \
   --manifest-cache none \
   --disable-sandbox \
   --disable-repository-cache \

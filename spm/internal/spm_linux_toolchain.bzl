@@ -36,7 +36,7 @@ spm_linux_toolchain = rule(
     attrs = {
         "swift_executable": attr.string(
             mandatory = True,
-            doc = "Path to `swift` executable."
+            doc = "Path to `swift` executable.",
         ),
         "arch": attr.string(
             doc = "The name of the architecture that this toolchain targets.",

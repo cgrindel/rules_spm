@@ -18,6 +18,7 @@ def _create_spm_platform_info(swift_cpu, swift_os):
         os = platforms.spm_os(swift_os),
         arch = platforms.spm_arch(swift_cpu),
         vendor = platforms.spm_vendor(swift_os),
+        abi = None,
     )
 
 def _spm_xcode_toolchain(ctx):
@@ -42,6 +43,7 @@ def _spm_xcode_toolchain(ctx):
         sdk_name = sdk_name,
         target_triple = target_triple,
         spm_platform_info = _create_spm_platform_info(cpu, exec_os),
+        swift_executable = ctx.attr.swift_executable,
     )
 
     return [spm_build_info]
@@ -50,6 +52,10 @@ spm_xcode_toolchain = rule(
     implementation = _spm_xcode_toolchain,
     fragments = ["apple"],
     attrs = {
+        "swift_executable": attr.string(
+            mandatory = True,
+            doc = "Path to `swift` executable.",
+        ),
         "_build_tool": attr.label(
             executable = True,
             cfg = "exec",
