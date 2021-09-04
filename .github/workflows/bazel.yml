@@ -72,8 +72,8 @@ jobs:
       shell: bash
       run: |
         which ld.gold && \
-          which clang && \
-          sudo ln -s $(which ld.gold) $(dirname $(which clang))
+          which clang 
+          # sudo ln -s $(which ld.gold) $(dirname $(which clang))
 
     - name: Write local.bazelrc File
       shell: bash
