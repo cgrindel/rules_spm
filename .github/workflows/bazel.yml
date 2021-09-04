@@ -71,7 +71,9 @@ jobs:
     - name: Install Prerequisites
       shell: bash
       run: |
-        swift --version
+        which ld.gold && \
+          which clang && \
+          sudo ln -s $(which ld.gold) $(dirname $(which clang))
 
     - name: Write local.bazelrc File
       shell: bash
