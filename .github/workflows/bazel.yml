@@ -87,3 +87,25 @@ jobs:
       run: |
         bazelisk test //... 
 
+    - name: Build Anything Not Tested
+      shell: bash
+      run: |
+        bazelisk build //... 
+
+    - name: Test Simple Example
+      shell: bash
+      run: |
+        cd examples/simple
+        bazelisk test //...
+
+    - name: Test Package With Shared Deps Example
+      shell: bash
+      run: |
+        cd examples/package_with_shared_deps
+        bazelisk test //...
+
+    - name: Test Vapor Example
+      shell: bash
+      run: |
+        cd examples/vapor
+        bazelisk test //...
