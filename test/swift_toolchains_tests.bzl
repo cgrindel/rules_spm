@@ -30,6 +30,25 @@ def _target_triple_test(ctx):
 
     asserts.equals(
         env,
+        "x86_64-unknown-linux-gnu",
+        swift_toolchains.target_triple("x86_64", "unknown", "linux", abi = "gnu"),
+    )
+
+    asserts.equals(
+        env,
+        "x86_64-unknown-linux",
+        swift_toolchains.target_triple("x86_64", "unknown", "linux"),
+    )
+
+    return unittest.end(env)
+
+target_triple_test = unittest.make(_target_triple_test)
+
+def _apple_target_triple_test(ctx):
+    env = unittest.begin(ctx)
+
+    asserts.equals(
+        env,
         "arm64-apple-macosx11.3",
         swift_toolchains.apple_target_triple("arm64", apple_common.platform.macos, "11.3"),
     )
@@ -42,7 +61,7 @@ def _target_triple_test(ctx):
 
     return unittest.end(env)
 
-target_triple_test = unittest.make(_target_triple_test)
+apple_target_triple_test = unittest.make(_apple_target_triple_test)
 
 def swift_toolchains_test_suite():
     return unittest.suite(
@@ -50,4 +69,5 @@ def swift_toolchains_test_suite():
         sdk_name_test,
         os_name_test,
         target_triple_test,
+        apple_target_triple_test,
     )

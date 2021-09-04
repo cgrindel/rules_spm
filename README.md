@@ -5,9 +5,32 @@
 This repository contains rules for [Bazel](https://bazel.build/) that can be used to download, build
 and consume Swift packages with [rules_swift](https://github.com/bazelbuild/rules_swift) rules.  The
 rules in this repository build the external Swift packages with [Swift Package
-Manager](https://swift.org/package-manager/), then make the outputs available to Bazel rules using
-[objc_library](https://docs.bazel.build/versions/main/be/objective-c.html#objc_library) and
-[swift_import](https://github.com/bazelbuild/rules_swift/blob/master/doc/rules.md#swift_import).
+Manager](https://swift.org/package-manager/), then make the outputs available to Bazel rules.
+
+
+## Prerequisites
+
+### Mac OS
+
+Be sure to install Xcode.
+
+### Linux
+
+You will need to [install Swift](https://swift.org/getting-started/#installing-swift). Make sure
+that running `swift --version` works properly.
+
+Don't forget that `rules_swift` [expects the use of
+`clang`](https://github.com/bazelbuild/rules_swift#3-additional-configuration-linux-only). Hence,
+you will need to specify `CC=clang` before running Bazel.
+
+In addition, the Bazel toolchains want to use the [Gold
+linker](https://en.wikipedia.org/wiki/Gold_(linker)). While it may be installed on the system, it is
+possible that it will not be findable when using `clang` as mentioned previously. So, you may need
+to create a symlink to the linker in the `clang` directory.
+
+```sh
+sudo ln -s $(which ld.gold) $(dirname $(which clang))
+```
 
 
 ## Quick Start
@@ -52,54 +75,10 @@ load(
 swift_rules_extra_dependencies()
 ```
 
-NOTE: This repository uses [rules_swift](https://github.com/bazelbuild/rules_swift) under the
-covers. If you prefer to download a different version of the rules, then download the desired
-version and initialize it before initializing this repository. The following shows an example.
-
-```python
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-# Load custom version of rules_swift.
-http_archive(
-    name = "build_bazel_rules_swift",
-    sha256 = "f872c0388808c3f8de67e0c6d39b0beac4a65d7e07eff3ced123d0b102046fb6",
-    url = "https://github.com/bazelbuild/rules_swift/releases/download/0.23.0/rules_swift.0.23.0.tar.gz",
-)
-
-load(
-    "@build_bazel_rules_swift//swift:repositories.bzl",
-    "swift_rules_dependencies",
-)
-
-swift_rules_dependencies()
-
-load(
-    "@build_bazel_rules_swift//swift:extras.bzl",
-    "swift_rules_extra_dependencies",
-)
-
-swift_rules_extra_dependencies()
-
-# Download this repository 
-http_archive(
-    name = "cgrindel_rules_spm",
-    sha256 = "ba24597390eba246b6125897ae4917f9be0bdfcf5c5273b9d5ad6ce75a57c791",
-    strip_prefix = "rules_spm-0.3.0-alpha",
-    urls = ["https://github.com/cgrindel/rules_spm/archive/v0.3.0-alpha.tar.gz"],
-)
-
-load(
-    "@cgrindel_rules_spm//spm:deps.bzl",
-    "spm_rules_dependencies",
-)
-
-spm_rules_dependencies()
-```
-
 ### 2. Add external Swift packages as dependencies to your workspace
 
 Add the following to download and build [apple/swift-log](https://github.com/apple/swift-log) to
-your workspace. NOTE: It is imperative that the products that will be used by your product are 
+your workspace. NOTE: It is imperative that the products that will be used by your project are 
 listed in the `products` list.
 
 ```python
@@ -146,11 +125,4 @@ import Logging
 let logger = Logger(label: "com.example.main")
 logger.info("Hello World!")
 ```
-
-## Future Work
-
-- [Ensure that toolchains are being leveraged properly.](https://github.com/cgrindel/rules_spm/issues/4)
-- [Build the correct architecture in SPM](https://github.com/cgrindel/rules_spm/issues/5)
-- [Ensure that the rules work on Linux](https://github.com/cgrindel/rules_spm/issues/24)
-- [Properly handle clang modules with custom module.modulemap files](https://github.com/cgrindel/rules_spm/issues/19)
 

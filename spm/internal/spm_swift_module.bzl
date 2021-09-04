@@ -1,8 +1,6 @@
-load(
-    "@build_bazel_rules_swift//swift:swift.bzl",
-    "swift_import",
-)
-load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
+load( "@build_bazel_rules_swift//swift:swift.bzl", "swift_import")
+load(":spm_filegroup.bzl", "spm_filegroup")
+load(":spm_archive.bzl", "spm_archive")
 
 def spm_swift_module(name, packages, deps = None, visibility = None):
     """Exposes a Swift module as defined in a dependent Swift package.
@@ -40,19 +38,16 @@ def spm_swift_module(name, packages, deps = None, visibility = None):
         module_name = module_name,
         file_type = "o_files",
     )
-
-    objc_lib_name = "%s_static_library" % (name)
-    native.objc_library(
-        name = objc_lib_name,
-        srcs = [
-            ":%s" % (o_files_name),
-        ],
-        module_name = module_name,
+    
+    a_file_name = "%s_a_file" % (name)
+    spm_archive(
+        name = a_file_name,
+        o_files = ":%s" % o_files_name,
     )
 
     swift_import(
         name = name,
-        archives = [":%s" % (objc_lib_name)],
+        archives = [":%s" % (a_file_name)],
         module_name = module_name,
         swiftdoc = ":%s" % (swiftdoc_name),
         swiftmodule = ":%s" % (swiftmodule_name),

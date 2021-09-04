@@ -19,6 +19,10 @@ load(
     "//spm/internal:spm_system_library_module.bzl",
     _spm_system_library_module = "spm_system_library_module",
 )
+load(
+    "//spm/internal:spm_archive.bzl",
+    _spm_archive = "spm_archive",
+)
 
 # Repository Rules
 spm_repositories = _spm_repositories
@@ -29,3 +33,4 @@ spm_package = _spm_package
 spm_swift_module = _spm_swift_module
 spm_clang_module = _spm_clang_module
 spm_system_library_module = _spm_system_library_module
+spm_archive = _spm_archive

@@ -6,5 +6,6 @@ swift_test(
     deps = [
         "//Sources/App/Configuration",
         "@swift_pkgs//vapor:XCTVapor",
+        "@zlib//:zlib",
     ],
 )
