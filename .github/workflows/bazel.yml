@@ -99,7 +99,7 @@ jobs:
       shell: bash
       run: |
         cd examples/simple
-        bazelisk test //...
+        bazelisk test //... --verbose_failures --sandbox_debug
 
     - name: Test Package With Shared Deps Example
       shell: bash
