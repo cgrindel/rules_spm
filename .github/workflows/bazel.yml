@@ -77,8 +77,11 @@ jobs:
         clang_path=$(realpath $(which clang))
         real_clang_path=$(realpath "${clang_path}")
         real_clang_dir=$(dirname "${real_clang_path}")
-        sudo ln -s "${real_ld_gold_path}" "${real_clang_dir}/ld.gold"
-        ls -la "${real_clang_dir}/ld.gold"
+        realpath $(which ld)
+        #
+        # sudo ln -s "${real_ld_gold_path}" "${real_clang_dir}/ld.gold"
+        # ls -la "${real_clang_dir}/ld.gold"
+        #
         # echo "ld_gold_path: ${ld_gold_path}"
         # echo "clang_path: ${clang_path}"
         # echo "real_clang_path: ${real_clang_path}"
