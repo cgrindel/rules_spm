@@ -46,6 +46,9 @@ echo >&2 "*** CHUCK:  swift_exec: ${swift_exec}"
 swift_dir=$(dirname $swift_exec)
 echo >&2 "*** CHUCK:  swift_dir: ${swift_dir}" 
 ls -l "${swift_dir}" >&2
+real_swift_exec=$(realpath $swift_exec)
+real_swift_dir=$(dirname $real_swift_exec)
+ls -l "${real_swift_dir}" >&2
 
 # DEBUG END
 

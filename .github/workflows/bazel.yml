@@ -81,6 +81,7 @@ jobs:
         ld_dir=$(dirname $ld_path)
         sudo mv "${ld_path}" "${ld_path}.HIDE"
         sudo cp "${ld_gold_path}" "${ld_path}"
+        sudo find / -name "lld"
         # realpath $(which ld)
         #
         # sudo ln -s "${real_ld_gold_path}" "${real_clang_dir}/ld.gold"
