@@ -71,15 +71,17 @@ jobs:
     - name: Make sure that ld.gold is visible to clang
       shell: bash
       run: |
-        ld_gold_path=$(which ld.gold)
+        ld_gold_path=$(realpath $(which ld.gold))
         clang_path=$(realpath $(which clang))
         clang_dir=$(dirname "${clang_path}")
-        ls -la $(which clang)
-        ls -la $(dirname $(which clang))
+        # ls -la $(which clang)
+        # ls -la $(dirname $(which clang))
         echo "ld_gold_path: ${ld_gold_path}"
         echo "clang_path: ${clang_path}"
         echo "clang_dir: ${clang_dir}"
         sudo ln -s "${ld_gold_path}" "${clang_dir}"
+        echo "Direcotry ${clang_dir}"
+        ls -la "${clang_dir}"
 
     - name: Write local.bazelrc File
       shell: bash
