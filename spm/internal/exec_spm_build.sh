@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-# DEBUG BEGIN
-echo >&2 "*** CHUCK:  PATH: ${PATH}" 
-# DEBUG END
-
 args=()
 while (("$#")); do
   case "${1}" in
@@ -43,6 +39,16 @@ while (("$#")); do
       ;;
   esac
 done
+
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  PATH: ${PATH}" 
+echo >&2 "*** CHUCK:  swift_exec: ${swift_exec}" 
+swift_dir=$(dirname $swift_exec)
+echo >&2 "*** CHUCK:  swift_dir: ${swift_dir}" 
+ls -l "${swift_dir}" >&2
+
+# DEBUG END
+
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
