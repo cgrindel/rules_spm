@@ -73,6 +73,7 @@ jobs:
       run: |
         set -x
         sudo find / -name "ld.gold"
+        #
         # /usr/bin/ld.gold -plugin
         # ld_gold_path=$(realpath $(which ld.gold))
         # clang_path=$(realpath $(which clang))
