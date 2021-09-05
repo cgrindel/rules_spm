@@ -68,12 +68,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Prerequisites
+    - name: Make sure that ld.gold is visible to clang
       shell: bash
       run: |
         ld_gold_path=$(which ld.gold)
         clang_path=$(realpath $(which clang))
         clang_dir=$(dirname "${clang_path}")
+        ls -la $(which clang)
         echo "ld_gold_path: ${ld_gold_path}"
         echo "clang_path: ${clang_path}"
         echo "clang_dir: ${clang_dir}"
