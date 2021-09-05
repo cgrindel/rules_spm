@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  PATH: ${PATH}" 
+# DEBUG END
+
 args=()
 while (("$#")); do
   case "${1}" in
