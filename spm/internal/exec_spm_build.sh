@@ -52,6 +52,9 @@ echo >&2 "*** CHUCK:  real_swift_exec: ${real_swift_exec}"
 echo >&2 "*** CHUCK:  real_swift_dir: ${real_swift_dir}" 
 ls -l "${real_swift_dir}" >&2
 
+# Make sure that Swift directory is first in the PATH for ld resolution.
+export PATH="${real_swift_dir}:$PATH"
+
 # DEBUG END
 
 
