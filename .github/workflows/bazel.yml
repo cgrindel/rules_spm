@@ -72,16 +72,22 @@ jobs:
       shell: bash
       run: |
         set -x
-        ld_gold_path=$(which ld.gold)
-        # real_ld_gold_path=$(realpath "${ld_gold_path}")
-        # clang_path=$(realpath $(which clang))
-        # real_clang_path=$(realpath "${clang_path}")
-        # real_clang_dir=$(dirname "${real_clang_path}")
-        ld_path=$(which ld)
-        ld_dir=$(dirname $ld_path)
-        sudo mv "${ld_path}" "${ld_path}.HIDE"
-        sudo cp "${ld_gold_path}" "${ld_path}"
-        sudo find / -name "lld"
+        swift_exec=$(which swift)
+        real_swift_exec=$(realpath $swift_exec)
+        real_swift_dir=$(dirname $real_swift_exec)
+        find "${real_swift_dir}" -type f -print0 | xargs -0 cp -t /usr/local/bin -f -s
+        ls -la /usr/local/bin
+        # set -x
+        # ld_gold_path=$(which ld.gold)
+        # # real_ld_gold_path=$(realpath "${ld_gold_path}")
+        # # clang_path=$(realpath $(which clang))
+        # # real_clang_path=$(realpath "${clang_path}")
+        # # real_clang_dir=$(dirname "${real_clang_path}")
+        # ld_path=$(which ld)
+        # ld_dir=$(dirname $ld_path)
+        # sudo mv "${ld_path}" "${ld_path}.HIDE"
+        # sudo cp "${ld_gold_path}" "${ld_path}"
+        # sudo find / -name "lld"
         # realpath $(which ld)
         #
         # sudo ln -s "${real_ld_gold_path}" "${real_clang_dir}/ld.gold"
