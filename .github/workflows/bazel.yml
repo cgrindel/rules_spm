@@ -75,8 +75,14 @@ jobs:
         swift_exec=$(which swift)
         real_swift_exec=$(realpath $swift_exec)
         real_swift_dir=$(dirname $real_swift_exec)
-        find "${real_swift_dir}" -type f -print0 | xargs -0 cp -t /usr/local/bin -f -s
-        ls -la /usr/local/bin
+        new_path="${real_swift_dir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        cat >local.bazelrc <<EOF
+        common --action_env=PATH=${new_path}
+        EOF
+
+        # find "${real_swift_dir}" -type f -print0 | xargs -0 cp -t /usr/local/bin -f -s
+        # ls -la /usr/local/bin
+        #
         # set -x
         # ld_gold_path=$(which ld.gold)
         # # real_ld_gold_path=$(realpath "${ld_gold_path}")

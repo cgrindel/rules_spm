@@ -40,15 +40,15 @@ while (("$#")); do
   esac
 done
 
-# # DEBUG BEGIN
-# echo >&2 "*** CHUCK:  PATH: ${PATH}" 
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  PATH: ${PATH}" 
 # echo >&2 "*** CHUCK:  swift_exec: ${swift_exec}" 
 # swift_dir=$(dirname $swift_exec)
 # echo >&2 "*** CHUCK:  swift_dir: ${swift_dir}" 
 # ls -l "${swift_dir}" >&2
 # echo >&2 "*** CHUCK:  /usr/local/bin:" 
 # ls -l /usr/local/bin >&2
-# # DEBUG END
+# DEBUG END
 
 # # Make sure that the Swift bin directory is first in the PATH. This addresses
 # # the `invalid linker name in argument '-fuse-ld=gold'` error when running
