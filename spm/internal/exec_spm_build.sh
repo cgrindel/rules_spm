@@ -46,17 +46,16 @@ echo >&2 "*** CHUCK:  swift_exec: ${swift_exec}"
 swift_dir=$(dirname $swift_exec)
 echo >&2 "*** CHUCK:  swift_dir: ${swift_dir}" 
 ls -l "${swift_dir}" >&2
-real_swift_exec=$(realpath $swift_exec)
-real_swift_dir=$(dirname $real_swift_exec)
-echo >&2 "*** CHUCK:  real_swift_exec: ${real_swift_exec}" 
-echo >&2 "*** CHUCK:  real_swift_dir: ${real_swift_dir}" 
-ls -l "${real_swift_dir}" >&2
-
-# Make sure that Swift directory is first in the PATH for ld resolution.
-export PATH="${real_swift_dir}:$PATH"
-
+echo >&2 "*** CHUCK:  /usr/local/bin:" 
+ls -l /usr/local/bin >&2
 # DEBUG END
 
+# Make sure that the Swift bin directory is first in the PATH. This addresses
+# the `invalid linker name in argument '-fuse-ld=gold'` error when running
+# SPM. In short, it allows SPM to find the correct linker.
+real_swift_exec=$(realpath $swift_exec)
+real_swift_dir=$(dirname $real_swift_exec)
+export PATH="${real_swift_dir}:$PATH"
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
