@@ -79,8 +79,9 @@ jobs:
     - name: Bazel Config for Linux
       shell: bash
       run: |
-        # Find the actual Swift bin directory. Make sure that this appears
-        # first in the PATH that is used by the actions.
+        # Make sure that the Swift bin directory is first in the PATH. This addresses
+        # the `invalid linker name in argument '-fuse-ld=gold'` error when running
+        # SPM. In short, it allows SPM to find the correct linker.
         swift_exec=$(which swift)
         real_swift_exec=$(realpath $swift_exec)
         real_swift_dir=$(dirname $real_swift_exec)
