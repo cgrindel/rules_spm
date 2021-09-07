@@ -40,6 +40,7 @@ while (("$#")); do
   esac
 done
 
+
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
 fetched_dir="${package_path}/$(basename "${build_path}")"

@@ -360,6 +360,9 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         outputs = all_build_outs,
         arguments = [run_args],
         executable = spm_build_info.build_tool,
+        # Recommended for all rules.
+        # See for details: https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036
+        use_default_shell_env = True,
         progress_message = "Building Swift package (%s) for %s using SPM." % (
             ctx.attr.package_path,
             spm_build_info.target_triple,
