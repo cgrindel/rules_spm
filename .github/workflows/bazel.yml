@@ -68,7 +68,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Make sure that ld.gold is visible to clang
+
+    - name: Write local.bazelrc File
+      shell: bash
+      run: |
+        cat >local.bazelrc <<EOF
+        common --config=ci
+        EOF
+
+    - name: Bazel Config for Linux
       shell: bash
       run: |
         set -x
@@ -76,7 +84,7 @@ jobs:
         real_swift_exec=$(realpath $swift_exec)
         real_swift_dir=$(dirname $real_swift_exec)
         new_path="${real_swift_dir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-        cat >local.bazelrc <<EOF
+        cat >>local.bazelrc <<EOF
         build --action_env=PATH=${new_path}
         EOF
 
@@ -118,13 +126,6 @@ jobs:
         # sudo ln -s "${ld_gold_path}" "${clang_dir}"
         # echo "Direcotry ${clang_dir}"
         # ls -la "${clang_dir}"
-
-    - name: Write local.bazelrc File
-      shell: bash
-      run: |
-        cat >local.bazelrc <<EOF
-        common --config=ci
-        EOF
 
     - name: Output the Bazel Info
       shell: bash
