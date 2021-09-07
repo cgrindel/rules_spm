@@ -71,7 +71,7 @@ def _to_json(url, name = None, from_version = None, revision = None, products = 
         url: A `string` representing the URL for the package repository.
         products: A `list` of `string` values representing the names of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
-        from_version: A `string` representing a valid "from" SPM version.
+        from_version: Optional. A `string` representing a valid "from" SPM version.
         revision: Optional. A commit hash (`string`).
 
     Returns:
