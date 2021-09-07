@@ -23,6 +23,7 @@ def _create_test(ctx):
         url = url,
         name = packages.create_name(url),
         from_version = from_version,
+        revision = None,
         products = ["Foo", "Bar"],
     )
     asserts.equals(env, expected, actual)
@@ -38,6 +39,24 @@ def _create_test(ctx):
         url = url,
         name = name,
         from_version = from_version,
+        revision = None,
+        products = ["Foo", "Bar"],
+    )
+    asserts.equals(env, expected, actual)
+
+    name = "howdy-bob"
+    revision = "db8fccb22cc2d801db74cf93bea88697b13fbeb0"
+    actual = packages.create(
+        url,
+        name = name,
+        revision = revision,
+        products = ["Foo", "Bar"],
+    )
+    expected = struct(
+        url = url,
+        name = name,
+        from_version = None,
+        revision = revision,
         products = ["Foo", "Bar"],
     )
     asserts.equals(env, expected, actual)
@@ -52,6 +71,12 @@ def _json_roundtrip_test(ctx):
     json_str = packages.pkg_json("https://github.com/foo/bar-kit.git", from_version = "1.0.0", products = ["Foo"])
     actual = packages.from_json(json_str)
     expected = packages.create("https://github.com/foo/bar-kit.git", from_version = "1.0.0", products = ["Foo"])
+    asserts.equals(env, expected, actual)
+
+    revision = "db8fccb22cc2d801db74cf93bea88697b13fbeb0"
+    json_str = packages.pkg_json("https://github.com/foo/bar-kit.git", revision = revision, products = ["Foo"])
+    actual = packages.from_json(json_str)
+    expected = packages.create("https://github.com/foo/bar-kit.git", revision = revision, products = ["Foo"])
     asserts.equals(env, expected, actual)
 
     pkgs = [
