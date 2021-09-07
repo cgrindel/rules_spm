@@ -25,12 +25,34 @@ you will need to specify `CC=clang` before running Bazel.
 
 In addition, the Bazel toolchains want to use the [Gold
 linker](https://en.wikipedia.org/wiki/Gold_(linker)). While it may be installed on the system, it is
-possible that it will not be findable when using `clang` as mentioned previously. So, you may need
-to create a symlink to the linker in the `clang` directory.
+possible that it will not be findable when using `clang` as mentioned previously. So, you will want
+to do one of the following:
+
+#### Option #1: Create a symlink to the linker in the `clang` directory.
 
 ```sh
 sudo ln -s $(which ld.gold) $(dirname $(which clang))
 ```
+
+This option worked well on a fairly minimal install of Ubuntu 20.04.
+
+#### Option #2:
+
+Specify a custom `PATH` to Bazel via `--action_env`. The custom `PATH` should have the Swift bin
+directory as the first item.
+
+```sh
+swift_exec=$(which swift)
+real_swift_exec=$(realpath $swift_exec)
+real_swift_dir=$(dirname $real_swift_exec)
+new_path="${real_swift_dir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+cat >>local.bazelrc <<EOF
+build --action_env=PATH=${new_path}
+EOF
+```
+
+This approach was necessary to successfully execute the examples on an Ubuntu runner using Github
+actions. See the [Github workflow](.github/workflows/bazel.yml) for more details.
 
 
 ## Quick Start
