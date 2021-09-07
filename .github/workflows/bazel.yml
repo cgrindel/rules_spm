@@ -121,7 +121,8 @@ jobs:
       shell: bash
       run: |
         cd examples/simple_revision
-        bazelisk test //...
+        # TODO: Remove the debug flags.
+        bazelisk test //... --verbose_failures --sandbox_debug
 
     - name: Test Package With Shared Deps Example
       shell: bash
