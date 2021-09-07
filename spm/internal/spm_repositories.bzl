@@ -393,8 +393,12 @@ def _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkg
 
 # MARK: - Package.swift Generation
 
-_package_tpl = """\
-.package(name: "%s", url: "%s", from: "%s")\
+_package_from_tpl = """\
+.package(name: "{name}", url: "{url}", from: "{version}")\
+"""
+
+_package_revision_tpl = """\
+.package(name: "{name}", url: "{url}", .revision("{revision}"))\
 """
 
 _target_dep_tpl = """\
@@ -406,6 +410,29 @@ _platforms_tpl = """\
 %s
   ],
 """
+
+def _generate_spm_package_dep(pkg):
+    """Generates a package dependency for the generated Package.swift.
+
+    Args:
+        pkgs: A package declaration `struct` as created by `packages.create()`.
+
+    Returns:
+        A `string` suitable to be added as an SPM package dependency.
+    """
+    if pkg.from_version:
+        return _package_from_tpl.format(
+            name = pkg.name,
+            url = pkg.url,
+            version = pkg.from_version,
+        )
+    if pkg.revision:
+        return _package_revision_tpl.format(
+            name = pkg.name,
+            url = pkg.url,
+            revision = pkg.revision,
+        )
+    fail("Unrecognized package requirement. %s" % (pkg))
 
 def _generate_package_swift_file(repository_ctx, pkgs):
     """Generate a Package.swift file which will be used to fetch and build the 
@@ -421,7 +448,7 @@ def _generate_package_swift_file(repository_ctx, pkgs):
             ",\n".join(["    %s" % (p) for p in repository_ctx.attr.platforms])
         )
 
-    pkg_deps = [_package_tpl % (pkg.name, pkg.url, pkg.from_version) for pkg in pkgs]
+    pkg_deps = [_generate_spm_package_dep(pkg) for pkg in pkgs]
     target_deps = [_target_dep_tpl % (pname, pkg.name) for pkg in pkgs for pname in pkg.products]
     substitutions = {
         "{swift_tools_version}": repository_ctx.attr.swift_version,
