@@ -56,6 +56,9 @@ def _spm_archive_impl(ctx):
         variables = archiver_variables,
     )
 
+    # NOTE: Purposely not setting use_default_shell_env, because we need to pass `env`.
+    # See https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036 for
+    # the gory details.
     ctx.actions.run(
         executable = archiver_path,
         arguments = [args],
