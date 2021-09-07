@@ -40,6 +40,12 @@ jobs:
         cd examples/simple
         bazelisk test //...
 
+    - name: Test Simple Example Using Revision
+      shell: bash
+      run: |
+        cd examples/simple_revision
+        bazelisk test //...
+
     - name: Test Package With Shared Deps Example
       shell: bash
       run: |
@@ -109,7 +115,13 @@ jobs:
       shell: bash
       run: |
         cd examples/simple
-        bazelisk test //... --verbose_failures --sandbox_debug
+        bazelisk test //...
+
+    - name: Test Simple Example Using Revision
+      shell: bash
+      run: |
+        cd examples/simple_revision
+        bazelisk test //...
 
     - name: Test Package With Shared Deps Example
       shell: bash
