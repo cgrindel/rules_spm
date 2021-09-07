@@ -415,7 +415,7 @@ def _generate_spm_package_dep(pkg):
     """Generates a package dependency for the generated Package.swift.
 
     Args:
-        pkgs: A package declaration `struct` as created by `packages.create()`.
+        pkg: A package declaration `struct` as created by `packages.create()`.
 
     Returns:
         A `string` suitable to be added as an SPM package dependency.
