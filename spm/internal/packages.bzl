@@ -19,15 +19,20 @@ def _create_name(url):
     repo_name, ext = paths.split_extension(basename)
     return repo_name
 
-def _create_pkg(url, name = None, from_version = None, products = []):
+def _create_pkg(url, name = None, from_version = None, revision = None, products = []):
     """Create a Swift package dependency struct.
+
+    See the Swift Package Manager documentation for information on the various
+    requirement specifications.
+
+    https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html#package-dependency
 
     Args:
         url: A `string` representing the URL for the package repository.
         products: A `list` of `string` values representing the names of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
-        from_version: A `string` representing a valid "from" SPM version.
-                      https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html#package-dependency
+        from_version: Optional. A `string` representing a valid "from" SPM version.
+        revision: Optional. A commit hash (`string`).
 
     Returns:
         A `struct` representing a Swift package.
@@ -36,30 +41,43 @@ def _create_pkg(url, name = None, from_version = None, products = []):
         name = _create_name(url)
     if len(products) == 0:
         fail("A list of product names from the package must be provided.")
+    dep_requirements = [from_version, revision]
+    specified_dep_reqs = [d for d in dep_requirements if d != None]
+    specified_dep_reqs_cnt = len(specified_dep_reqs)
+    if specified_dep_reqs_cnt < 1:
+        fail("A package requirement (e.g. from_version, revision) must be specified.")
+    if specified_dep_reqs_cnt > 1:
+        fail("Only a single package requirement (e.g. from_version, revision) can be specified.")
 
     return struct(
         url = url,
         name = name,
         from_version = from_version,
+        revision = revision,
         products = products,
     )
 
 # MARK: - Package JSON Functions
 
-def _to_json(url, name = None, from_version = None, products = []):
+def _to_json(url, name = None, from_version = None, revision = None, products = []):
     """Returns a JSON string describing a Swift package.
+
+    See the Swift Package Manager documentation for information on the various
+    requirement specifications.
+
+    https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html#package-dependency
 
     Args:
         url: A `string` representing the URL for the package repository.
         products: A `list` of `string` values representing the names of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
         from_version: A `string` representing a valid "from" SPM version.
-                      https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html#package-dependency
+        revision: Optional. A commit hash (`string`).
 
     Returns:
         A JSON `string` representing a Swift package.
     """
-    pkg = _create_pkg(url, name = name, from_version = from_version, products = products)
+    pkg = _create_pkg(url, name = name, from_version = from_version, revision = revision, products = products)
     return json.encode(pkg)
 
 def _from_json(json_str):
