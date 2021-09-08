@@ -315,13 +315,11 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
             # Look for the product in a package with the same name.
             ref_pkg_desc = pkg_descs_dict.get(by_name)
             if ref_pkg_desc != None:
-                # product_refs.append(refs.create_product_ref([by_name, ref_pkg_desc["name"], None]))
                 product_refs.append(refs.create(ref_types.product, ref_pkg_desc["name"], by_name))
                 continue
 
             ref_pkg_desc = _find_pkg_desc_by_product(pkg_descs_dict, by_name)
             if ref_pkg_desc != None:
-                # product_refs.append(refs.create_product_ref([by_name, ref_pkg_desc["name"], None]))
                 product_refs.append(refs.create(ref_types.product, ref_pkg_desc["name"], by_name))
                 continue
 
@@ -331,11 +329,6 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
                 continue
 
             fail("byName Resolution: Could not find a package with the product or target named %s." % (by_name))
-
-            # if ref_pkg_desc == None:
-            #     fail("byName Resolution: Could not find a package name %s. Only support >=5.2 byName resolution." % (by_name))
-            # product_refs.append(refs.create_product_ref([by_name, by_name, None]))
-            # continue
 
         target_values = dep.get("target")
         if target_values != None:
@@ -410,12 +403,6 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
                 continue
             dep_prd_refs, dep_trgt_refs = _gather_deps_for_target(pkg_descs_dict, target_ref)
 
-            # DEBUG BEGIN
-            print("*** CHUCK target_ref: ", target_ref)
-            print("*** CHUCK dep_prd_refs: ", dep_prd_refs)
-            print("*** CHUCK dep_trgt_refs: ", dep_trgt_refs)
-
-            # DEBUG END
             target_deps_dict[target_ref] = dep_trgt_refs + dep_prd_refs
             for product_ref in dep_prd_refs:
                 # If we have not resolved the product_ref, add it to the list for evaluation
