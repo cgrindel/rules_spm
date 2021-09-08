@@ -318,11 +318,13 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
                 product_refs.append(refs.create(ref_types.product, ref_pkg_desc["name"], by_name))
                 continue
 
+            # Look for a package that has a product with the name
             ref_pkg_desc = _find_pkg_desc_by_product(pkg_descs_dict, by_name)
             if ref_pkg_desc != None:
                 product_refs.append(refs.create(ref_types.product, ref_pkg_desc["name"], by_name))
                 continue
 
+            # Look for a package that has a target with the name
             ref_pkg_desc = _find_pkg_desc_by_target(pkg_descs_dict, by_name)
             if ref_pkg_desc != None:
                 target_refs.append(refs.create(ref_types.target, ref_pkg_desc["name"], by_name))
