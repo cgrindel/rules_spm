@@ -38,5 +38,10 @@ spm_repositories(
             from_version = "1.0.0",
             products = ["Logging"],
         ),
+        spm_pkg(
+            "https://github.com/realm/SwiftLint.git",
+            from_version = "0.0.0",
+            products = ["swiftlint"],
+        ),
     ],
 )

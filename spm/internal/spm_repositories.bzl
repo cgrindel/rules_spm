@@ -517,6 +517,21 @@ def _configure_spm_repository(repository_ctx, pkgs):
     # Create Bazel targets for every declared product and any of its transitive
     # dependencies
     declared_product_refs = packages.get_product_refs(pkgs)
+
+    # DEBUG BEGIN
+    pkg_descs_dict_json = json.encode_indent(pkg_descs_dict, indent = "  ")
+    repository_ctx.file("pkg_descs.json", content = pkg_descs_dict_json, executable = False)
+
+    # print("*** CHUCK pkg_descs_dict_json:\n", pkg_descs_dict_json)
+    # print("*** CHUCK pkg_descs_dict: ")
+    # for idx, item in enumerate(pkg_descs_dict):
+    #     print("*** CHUCK", idx, ":", item)
+
+    # print("*** CHUCK pkg_descs_dict: ")
+    # for key in pkg_descs_dict:
+    #     print("*** CHUCK", key, ":", pkg_descs_dict[key])
+
+    # DEBUG END
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
     for pkg_name in pkg_descs_dict:
         _generate_bazel_pkg(
