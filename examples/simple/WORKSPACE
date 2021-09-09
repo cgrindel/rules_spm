@@ -40,17 +40,3 @@ spm_repositories(
         ),
     ],
 )
-
-spm_repositories(
-    name = "swift_utils",
-    dependencies = [
-        spm_pkg(
-            "https://github.com/realm/SwiftLint.git",
-            from_version = "0.0.0",
-            products = ["swiftlint"],
-        ),
-    ],
-    platforms = [
-        ".macOS(.v10_12)",
-    ],
-)
