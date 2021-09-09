@@ -21,3 +21,12 @@ alias(
     name = "swiftlint",
     actual = "@swift_utils//SwiftLint:swiftlint",
 )
+
+sh_test(
+    name = "swiftlint_test",
+    srcs = ["swiftlint_test.sh"],
+    data = [
+        ":swiftlint",
+    ],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
