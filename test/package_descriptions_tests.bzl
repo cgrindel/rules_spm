@@ -70,7 +70,10 @@ is_library_target_test = unittest.make(_is_library_target_test)
 def _is_executable_target_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    target = {"type": "library"}
+    asserts.false(env, pds.is_executable_target(target))
+    target["type"] = "executable"
+    asserts.true(env, pds.is_executable_target(target))
 
     return unittest.end(env)
 
