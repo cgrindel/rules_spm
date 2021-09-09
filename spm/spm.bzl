@@ -8,16 +8,16 @@ load(
     _spm_repositories = "spm_repositories",
 )
 load(
-    "//spm/internal:spm_swift_module.bzl",
-    _spm_swift_module = "spm_swift_module",
+    "//spm/internal:spm_swift_library.bzl",
+    _spm_swift_library = "spm_swift_library",
 )
 load(
-    "//spm/internal:spm_clang_module.bzl",
-    _spm_clang_module = "spm_clang_module",
+    "//spm/internal:spm_clang_library.bzl",
+    _spm_clang_library = "spm_clang_library",
 )
 load(
-    "//spm/internal:spm_system_library_module.bzl",
-    _spm_system_library_module = "spm_system_library_module",
+    "//spm/internal:spm_system_library.bzl",
+    _spm_system_library = "spm_system_library",
 )
 load(
     "//spm/internal:spm_archive.bzl",
@@ -30,7 +30,7 @@ spm_pkg = _spm_pkg
 
 # Regular Rules and Macros
 spm_package = _spm_package
-spm_swift_module = _spm_swift_module
-spm_clang_module = _spm_clang_module
-spm_system_library_module = _spm_system_library_module
+spm_swift_library = _spm_swift_library
+spm_clang_library = _spm_clang_library
+spm_system_library = _spm_system_library
 spm_archive = _spm_archive

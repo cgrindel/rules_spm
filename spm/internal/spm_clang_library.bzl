@@ -1,29 +1,18 @@
-load(
-    "@build_bazel_rules_swift//swift:swift.bzl",
-    "swift_c_module",
-)
 load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
+load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 
-def spm_system_library_module(name, packages, deps = None, visibility = None):
-    """Exposes a system library module as defined in a dependent Swift package.
+def spm_clang_library(name, packages, deps = None, visibility = None):
+    """Exposes a clang module as defined in a dependent Swift package.
 
     Args:
         name: The Bazel target name.
         packages: A target that outputs an SPMPackagesInfo provider (e.g.
                   `spm_package`).
-        deps: Dependencies appropriate for the `swift_c_module` which defines
+        deps: Dependencies appropriate for the `objc_library` which defines
               the target.
         visibility: Target visibility.
     """
     module_name = name
-
-    modulemap_files_name = "%s_modulemap" % (name)
-    spm_filegroup(
-        name = modulemap_files_name,
-        packages = packages,
-        module_name = module_name,
-        file_type = "modulemap",
-    )
 
     hdr_files_name = "%s_hdrs" % (name)
     spm_filegroup(
@@ -38,28 +27,20 @@ def spm_system_library_module(name, packages, deps = None, visibility = None):
         name = src_files_name,
         packages = packages,
         module_name = module_name,
-        file_type = "c_files",
+        file_type = "o_files",
     )
 
-    cc_lib_name = "%s_cc_lib" % (name)
     native.cc_library(
-        name = cc_lib_name,
+        name = name,
         hdrs = [
             ":%s" % (hdr_files_name),
         ],
         srcs = [
             ":%s" % (src_files_name),
         ],
-        tags = ["swift_module=%s" % (name)],
-        deps = deps,
-    )
-
-    swift_c_module(
-        name = name,
-        deps = [
-            ":%s" % (cc_lib_name),
+        tags = [
+            "swift_module=%s" % (module_name),
         ],
-        module_map = ":%s" % (modulemap_files_name),
-        module_name = name,
+        deps = deps,
         visibility = visibility,
     )

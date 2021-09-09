@@ -71,8 +71,8 @@ def _find_and_delete_files(repository_ctx, path, name):
 
 # MARK: - Module Declaration Functions
 
-_spm_swift_module_tpl = """
-spm_swift_module(
+_spm_swift_library_tpl = """
+spm_swift_library(
     name = "%s",
     packages = "@%s//:build",
     deps = [
@@ -82,8 +82,8 @@ spm_swift_module(
 )
 """
 
-_spm_clang_module_tpl = """
-spm_clang_module(
+_spm_clang_library_tpl = """
+spm_clang_library(
     name = "%s",
     packages = "@%s//:build",
     deps = [
@@ -93,8 +93,8 @@ spm_clang_module(
 )
 """
 
-_spm_system_library_module_tpl = """
-spm_system_library_module(
+_spm_system_library_tpl = """
+spm_system_library(
     name = "%s",
     packages = "@%s//:build",
     deps = [
@@ -107,9 +107,9 @@ spm_system_library_module(
 _bazel_pkg_hdr = """
 load(
     "@cgrindel_rules_spm//spm:spm.bzl", 
-    "spm_swift_module", 
-    "spm_clang_module",
-    "spm_system_library_module",
+    "spm_swift_library", 
+    "spm_clang_library",
+    "spm_system_library",
 )
 """
 
@@ -135,8 +135,8 @@ def _create_deps_str(pkg_name, target_deps):
     deps = ["        \"%s\"," % (label) for label in target_labels]
     return "\n".join(deps)
 
-def _create_spm_swift_module_decl(repository_ctx, pkg_name, target, target_deps):
-    """Returns the spm_swift_module declaration for this Swift target.
+def _create_spm_swift_library_decl(repository_ctx, pkg_name, target, target_deps):
+    """Returns the spm_swift_library declaration for this Swift target.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
@@ -146,14 +146,14 @@ def _create_spm_swift_module_decl(repository_ctx, pkg_name, target, target_deps)
                      references.
 
     Returns:
-        A `string` representing an `spm_swift_module` declaration.
+        A `string` representing an `spm_swift_library` declaration.
     """
     module_name = target["name"]
     deps_str = _create_deps_str(pkg_name, target_deps)
-    return _spm_swift_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
+    return _spm_swift_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
-def _create_spm_clang_module_decl(repository_ctx, pkg_name, target, target_deps):
-    """Returns the spm_clang_module declaration for this clang target.
+def _create_spm_clang_library_decl(repository_ctx, pkg_name, target, target_deps):
+    """Returns the spm_clang_library declaration for this clang target.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
@@ -163,14 +163,14 @@ def _create_spm_clang_module_decl(repository_ctx, pkg_name, target, target_deps)
                      references.
 
     Returns:
-        A `string` representing an `spm_clang_module` declaration.
+        A `string` representing an `spm_clang_library` declaration.
     """
     module_name = target["name"]
     deps_str = _create_deps_str(pkg_name, target_deps)
-    return _spm_clang_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
+    return _spm_clang_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
-def _create_spm_system_library_module_decl(repository_ctx, pkg_name, target, target_deps, pkg_root_path):
-    """Returns the spm_clang_module declaration for this clang target.
+def _create_spm_system_library_decl(repository_ctx, pkg_name, target, target_deps, pkg_root_path):
+    """Returns the spm_clang_library declaration for this clang target.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
@@ -182,13 +182,13 @@ def _create_spm_system_library_module_decl(repository_ctx, pkg_name, target, tar
                        which defines the target.
 
     Returns:
-        A `string` representing an `spm_clang_module` declaration.
+        A `string` representing an `spm_clang_library` declaration.
     """
     module_name = target["name"]
     src_path = paths.join(pkg_root_path, target["path"])
     module_paths = _list_files_under(repository_ctx, src_path)
     deps_str = _create_deps_str(pkg_name, target_deps)
-    return _spm_system_library_module_tpl % (module_name, repository_ctx.attr.name, deps_str)
+    return _spm_system_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
 def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hdrs_dict, pkg_root_path):
     """Generate a Bazel package for the specified Swift package.
@@ -216,27 +216,36 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
         rtype, pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
         if pds.is_clang_target(target):
-            module_decls.append(_create_spm_clang_module_decl(
+            module_decls.append(_create_spm_clang_library_decl(
                 repository_ctx,
                 pkg_name,
                 target,
                 target_deps,
             ))
         elif pds.is_swift_target(target):
-            module_decls.append(_create_spm_swift_module_decl(
-                repository_ctx,
-                pkg_name,
-                target,
-                target_deps,
-            ))
+            if pds.is_library_target(target):
+                module_decls.append(_create_spm_swift_library_decl(
+                    repository_ctx,
+                    pkg_name,
+                    target,
+                    target_deps,
+                ))
+            elif pds.is_executable_target(target):
+                pass
+            else:
+                fail("Unrecognized Swift target type. %s" % (target))
+
         elif pds.is_system_library_target(target):
-            module_decls.append(_create_spm_system_library_module_decl(
-                repository_ctx,
-                pkg_name,
-                target,
-                target_deps,
-                pkg_root_path,
-            ))
+            if pds.is_library_target(target):
+                module_decls.append(_create_spm_system_library_decl(
+                    repository_ctx,
+                    pkg_name,
+                    target,
+                    target_deps,
+                    pkg_root_path,
+                ))
+            else:
+                fail("Unrecognized clang target type. %s" % (target))
         else:
             fail("Unrecognized target type. %s" % (target))
 
