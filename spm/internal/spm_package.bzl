@@ -56,10 +56,7 @@ def _declare_swift_executable_target_files(ctx, target, build_config_path):
 
     return providers.swift_module(
         module_name = module_name,
-        o_files = [],
-        swiftdoc = None,
-        swiftmodule = None,
-        swiftsourceinfo = None,
+        executable = executable,
         all_outputs = [executable],
     )
 

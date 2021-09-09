@@ -71,6 +71,14 @@ def _find_and_delete_files(repository_ctx, path, name):
 
 # MARK: - Module Declaration Functions
 
+_spm_swift_binary_tpl = """
+spm_swift_binary(
+    name = "{module_name}",
+    packages = "@{repo_name}//:build",
+    visibility = ["//visibility:public"],
+)
+"""
+
 _spm_swift_library_tpl = """
 spm_swift_library(
     name = "%s",
@@ -107,8 +115,9 @@ spm_system_library(
 _bazel_pkg_hdr = """
 load(
     "@cgrindel_rules_spm//spm:spm.bzl", 
-    "spm_swift_library", 
     "spm_clang_library",
+    "spm_swift_binary", 
+    "spm_swift_library", 
     "spm_system_library",
 )
 """
@@ -134,6 +143,23 @@ def _create_deps_str(pkg_name, target_deps):
 
     deps = ["        \"%s\"," % (label) for label in target_labels]
     return "\n".join(deps)
+
+def _create_spm_swift_binary_decl(repository_ctx, pkg_name, target):
+    """Returns the spm_swift_library declaration for this Swift target.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        pkg_name: The name of the Swift package as a `string`.
+        target: A target `dict` from a package description JSON.
+
+    Returns:
+        A `string` representing an `spm_swift_library` declaration.
+    """
+    module_name = target["name"]
+    return _spm_swift_binary_tpl.format(
+        repo_name = repository_ctx.attr.name,
+        module_name = module_name,
+    )
 
 def _create_spm_swift_library_decl(repository_ctx, pkg_name, target, target_deps):
     """Returns the spm_swift_library declaration for this Swift target.
@@ -231,7 +257,11 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
                     target_deps,
                 ))
             elif pds.is_executable_target(target):
-                pass
+                module_decls.append(_create_spm_swift_binary_decl(
+                    repository_ctx,
+                    pkg_name,
+                    target,
+                ))
             else:
                 fail("Unrecognized Swift target type. %s" % (target))
 

@@ -12,6 +12,10 @@ load(
     _spm_swift_library = "spm_swift_library",
 )
 load(
+    "//spm/internal:spm_swift_binary.bzl",
+    _spm_swift_binary = "spm_swift_binary",
+)
+load(
     "//spm/internal:spm_clang_library.bzl",
     _spm_clang_library = "spm_clang_library",
 )
@@ -30,6 +34,7 @@ spm_pkg = _spm_pkg
 
 # Regular Rules and Macros
 spm_package = _spm_package
+spm_swift_binary = _spm_swift_binary
 spm_swift_library = _spm_swift_library
 spm_clang_library = _spm_clang_library
 spm_system_library = _spm_system_library

@@ -16,7 +16,7 @@ sh_test(
     deps = ["@bazel_tools//tools/bash/runfiles"],
 )
 
-# alias(
-#     name = "swiftlint",
-#     actual = "@swift_utils//SwiftLint:swiftlint",
-# )
+alias(
+    name = "swiftlint",
+    actual = "@swift_utils//SwiftLint:swiftlint",
+)

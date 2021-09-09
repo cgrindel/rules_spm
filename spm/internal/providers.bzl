@@ -7,7 +7,7 @@ SPMBuildInfo = provider(
         "sdk_name": "A string representing the name of the SDK",
         "target_triple": "A string representing the target platform as a triple.",
         "spm_platform_info": "An `SpmPlatformInfo` describing the target platform.",
-        "swift_executable": "The path for the `swift` executable."
+        "swift_executable": "The path for the `swift` executable.",
     },
 )
 
@@ -17,7 +17,7 @@ SPMPlatformInfo = provider(
         "os": "The OS designation as understood by SPM.",
         "arch": "The architecture designation as understood by SPM.",
         "vendor": "The vendor designation as understood by SPM.",
-        "abi": "The abi destination as understood by SPM."
+        "abi": "The abi destination as understood by SPM.",
     },
 )
 
@@ -40,7 +40,14 @@ SPMPackageInfo = provider(
     },
 )
 
-def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourceinfo, all_outputs):
+def _create_swift_module(
+        module_name,
+        o_files = [],
+        swiftdoc = None,
+        swiftmodule = None,
+        swiftsourceinfo = None,
+        executable = None,
+        all_outputs = []):
     """Creates a value representing the Swift module that is built from a package.
 
     Args:
@@ -49,6 +56,7 @@ def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourc
         swiftdoc: The .swiftdoc file that is built by SPM.
         swiftmodule: The .swiftmodule file that is built by SPM.
         swiftsourceinfo: The .swiftsourceinfo file that is built by SPM.
+        executable: The executable if the target is executable.
         all_outputs: All of the output files that are declared for the module.
 
     Returns:
@@ -61,6 +69,7 @@ def _create_swift_module(module_name, o_files, swiftdoc, swiftmodule, swiftsourc
         swiftmodule = swiftmodule,
         swiftsourceinfo = swiftsourceinfo,
         all_outputs = all_outputs,
+        executable = executable,
     )
 
 def _create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
