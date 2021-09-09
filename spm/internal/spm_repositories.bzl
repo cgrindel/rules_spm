@@ -601,19 +601,6 @@ def _configure_spm_repository(repository_ctx, pkgs):
 def _spm_repositories_impl(repository_ctx):
     pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
 
-    # DEBUG BEGIN
-    print("*** CHUCK repository_ctx.attr.name: ", repository_ctx.attr.name)
-    print("*** CHUCK pkgs: ")
-    for idx, item in enumerate(pkgs):
-        print("*** CHUCK", idx, ":", item)
-
-    exec_result = repository_ctx.execute(
-        ["pwd"],
-        quiet = True,
-    )
-    print("*** CHUCK exec_result.stdout: ", exec_result.stdout)
-    # DEBUG END
-
     # Generate Package.swift
     _generate_package_swift_file(repository_ctx, pkgs)
 
