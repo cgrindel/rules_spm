@@ -50,30 +50,18 @@ def _list_directories_under(repository_ctx, path, max_depth = None):
     return [p for p in paths if p != path]
 
 def _find_and_delete_files(repository_ctx, path, name):
-    # find_args = ["find", path, "-type", "f", "-name", "'%s'" % (name)]
-    # rm_args = ["rm", "-f", "-v"]
-    # all_args = find_args + ["|"] + rm_args
-    # find_args = ["find", path, "-type", "f", "-name", "'%s'" % (name)]
-    # find_args = ["find", path]
+    """Finds files with the specified name under the specified path and 
+    deletes them.
 
-    # WORK
-    # find_args = ["find", path, "-name", "%s" % (name)]
-    # find_args = ["find", path, "-name", name]
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+        path: A path `string` value.
+        name: A file basename as a `string`.
+    """
     find_args = ["find", path, "-type", "f", "-name", name]
-
     rm_args = ["-delete"]
-
-    # rm_args = []
     all_args = find_args + rm_args
     exec_result = repository_ctx.execute(all_args, quiet = True)
-
-    # DEBUG BEGIN
-    print("*** CHUCK _find_and_delete_files path: ", path)
-    print("*** CHUCK _find_and_delete_files name: ", name)
-    print("*** CHUCK _find_and_delete_files all_args: ", all_args)
-    print("*** CHUCK _find_and_delete_files exec_result.stdout: ", exec_result.stdout)
-
-    # DEBUG END
     if exec_result.return_code != 0:
         fail("Failed to remove files named {name} under {path}. stderr:\n{stderr}".format(
             name = name,
@@ -519,7 +507,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
     # Remove any BUILD or BUILD.bazel files in the fetched repos. The presence
     # of these files will prevent glob() from finding the source files because
     # Bazel will consider the directories with the BUILD/BUILD.bazel files to
-    # legitimate packages. See glob() documentation for more details:
+    # be legitimate packages. See glob() documentation for more details:
     # https://docs.bazel.build/versions/main/be/functions.html#glob
     _find_and_delete_files(repository_ctx, spm_common.checkouts_path, name = "BUILD")
     _find_and_delete_files(repository_ctx, spm_common.checkouts_path, name = "BUILD.bazel")
