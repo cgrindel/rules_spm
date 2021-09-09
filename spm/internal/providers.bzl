@@ -72,7 +72,12 @@ def _create_swift_module(
         executable = executable,
     )
 
-def _create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
+def _create_clang_module(
+        module_name,
+        o_files = [],
+        hdrs = [],
+        modulemap = None,
+        all_outputs = []):
     """Creates a value representing the Clang module that is built from a package.
 
     Args:
@@ -92,7 +97,12 @@ def _create_clang_module(module_name, o_files, hdrs, modulemap, all_outputs):
         all_outputs = all_outputs,
     )
 
-def _create_system_library_module(module_name, c_files, hdrs, modulemap, all_outputs):
+def _create_system_library_module(
+        module_name,
+        c_files = [],
+        hdrs = [],
+        modulemap = None,
+        all_outputs = []):
     """Creates a value representing the system library module that is built from a package.
 
     Args:
