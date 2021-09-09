@@ -11,12 +11,6 @@ source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
   { echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
 # --- end runfiles.bash initialization v2 ---
 
-err_msg() {
-  local msg="$1"
-  echo >&2 "${msg}"
-  exit 1
-}
-
 swiftlint="$(rlocation "swift_utils/SwiftLint/swiftlint")"
 
 # NOTE: An `illegal instruction: 4` error occurs when we attempt to lint inside of this test. All
