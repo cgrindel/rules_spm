@@ -175,22 +175,30 @@ def _gather_package_build_info(
         ref_type, pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
 
-        if pds.is_swift_module(target):
-            swift_module_info = _declare_swift_target_files(ctx, target, build_config_path)
-            swift_modules.append(swift_module_info)
-            build_outs.extend(swift_module_info.all_outputs)
+        if pds.is_swift_target(target):
+            if pds.is_library_target(target):
+                swift_module_info = _declare_swift_target_files(ctx, target, build_config_path)
+                swift_modules.append(swift_module_info)
+                build_outs.extend(swift_module_info.all_outputs)
+            elif pds.is_executable_target(target):
+                fail("IMPLEMENT ME: %s" % (target))
+            else:
+                fail("Unrecognized Swift target type. %s" % (target))
 
-        elif pds.is_clang_module(target):
-            clang_module_info = _declare_clang_target_files(
-                ctx,
-                target,
-                build_config_path,
-                clang_custom_infos_dict[target["name"]],
-            )
-            clang_modules.append(clang_module_info)
-            build_outs.extend(clang_module_info.all_outputs)
+        elif pds.is_clang_target(target):
+            if pds.is_library_target(target):
+                clang_module_info = _declare_clang_target_files(
+                    ctx,
+                    target,
+                    build_config_path,
+                    clang_custom_infos_dict[target["name"]],
+                )
+                clang_modules.append(clang_module_info)
+                build_outs.extend(clang_module_info.all_outputs)
+            else:
+                fail("Unrecognized clang target type. %s" % (target))
 
-        elif pds.is_system_library_module(target):
+        elif pds.is_system_library_target(target):
             system_library_module_info = _declare_system_library_target_files(
                 ctx,
                 pname,

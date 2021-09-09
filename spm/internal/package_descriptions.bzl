@@ -177,8 +177,18 @@ def _is_library_target(target):
     Returns:
         A boolean indicating whether the target is a library target.
     """
-    target_type = target["type"]
-    return target_type == target_types.library
+    return target["type"] == target_types.library
+
+def _is_executable_target(target):
+    """Returns True if the specified target is an executable target. Otherwise False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is an executable target.
+    """
+    return target["type"] == target_types.executable
 
 def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
@@ -192,7 +202,7 @@ def _library_targets(pkg_desc):
     targets = pkg_desc["targets"]
     return [t for t in targets if _is_library_target(t)]
 
-def _is_system_library_module(target):
+def _is_system_library_target(target):
     """Returns True if the specified target is a clang module. Otherwise, False.
 
     Args:
@@ -204,7 +214,7 @@ def _is_system_library_module(target):
     module_type = target["module_type"]
     return module_type == module_types.system_library
 
-def _is_clang_module(target):
+def _is_clang_target(target):
     """Returns True if the specified target is a clang module. Otherwise, False.
 
     Args:
@@ -216,7 +226,7 @@ def _is_clang_module(target):
     module_type = target["module_type"]
     return module_type == module_types.clang
 
-def _is_swift_module(target):
+def _is_swift_target(target):
     """Returns True if the specified target is a swift module. Otherwise, False.
 
     Args:
@@ -480,6 +490,7 @@ def _find_pkg_desc_by_target(pkg_descs_dict, target_name):
 # MARK: - Namespace
 
 target_types = struct(
+    executable = "executable",
     library = "library",
     system = "system-target",
 )
@@ -498,10 +509,11 @@ package_descriptions = struct(
     library_products = _library_products,
     # Target Functions
     is_library_target = _is_library_target,
+    is_executable_target = _is_executable_target,
     library_targets = _library_targets,
-    is_system_library_module = _is_system_library_module,
-    is_clang_module = _is_clang_module,
-    is_swift_module = _is_swift_module,
+    is_system_library_target = _is_system_library_target,
+    is_clang_target = _is_clang_target,
+    is_swift_target = _is_swift_target,
     get_target = _get_target,
     # Dependency Functions
     dependency_name = _dependency_name,
