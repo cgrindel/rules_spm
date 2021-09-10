@@ -82,6 +82,22 @@ def _copy_pkg(
         from_version = None,
         revision = None,
         products = None):
+    """Create a copy of the provided package replacing any of the argument 
+    values that are not None.
+
+    Args:
+        pkg: A `struct` representing a Swift package.
+        url: Optional. A `string` representing the URL for the package repository.
+        path: Optional. A local path `string` to the package repository.
+        products: Optional. jA `list` of `string` values representing the names
+                  of the products to be used.
+        name: Optional. The name (`string`) to be used for the package in Package.swift.
+        from_version: Optional. A `string` representing a valid "from" SPM version.
+        revision: Optional. A commit hash (`string`).
+
+    Returns:
+        A `struct` representing a Swift package.
+    """
     return _create_pkg(
         url = url if url != None else pkg.url,
         path = path if path != None else pkg.path,
@@ -178,12 +194,6 @@ def _get_product_refs(pkgs):
     """
     return [refs.create(ref_types.product, pkg.name, prd) for pkg in pkgs for prd in pkg.products]
 
-def _create_local_package(name, path):
-    return struct(
-        name = name,
-        path = path,
-    )
-
 # MARK: - Namespace
 
 packages = struct(
@@ -194,5 +204,4 @@ packages = struct(
     from_json = _from_json,
     get_pkg = _get_pkg,
     get_product_refs = _get_product_refs,
-    local_package = _create_local_package,
 )
