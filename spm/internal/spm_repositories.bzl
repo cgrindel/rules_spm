@@ -608,28 +608,34 @@ def _prepare_local_package(repository_ctx, pkg):
         path = paths.join(repo_root, path)
 
     # repository_ctx.symlink(path, "local_repos/%s" % (paths.basename(path)))
-    return packages.local_package(
-        name = pkg.name,
-        path = path,
-    )
+    # return packages.local_package(
+    #     name = pkg.name,
+    #     path = path,
+    # )
+    return packages.copy(pkg, path = path)
 
 def _spm_repositories_impl(repository_ctx):
-    pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
+    orig_pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
 
     # Prepare local packages
     # local_pkgs = [p for p in pkgs if p.path != None]
     # for pkg in local_pkgs:
     #     _prepare_local_package(repository_ctx, pkg)
-    local_pkgs_dict = dict()
-    for pkg in pkgs:
-        if pkg.path == None:
-            continue
-        local_pkgs_dict[pkg.name] = _prepare_local_package(repository_ctx, pkg)
+    # local_pkgs_dict = dict()
+    # for pkg in pkgs:
+    #     if pkg.path == None:
+    #         continue
+    #     local_pkgs_dict[pkg.name] = _prepare_local_package(repository_ctx, pkg)
+    pkgs = []
+    for pkg in orig_pkgs:
+        if pkg.path != None:
+            pkg = _prepare_local_package(repository_ctx, pkg)
+        pkgs.append(pkg)
 
     # DEBUG BEGIN
-    print("*** CHUCK local_pkgs_dict: ")
-    for key in local_pkgs_dict:
-        print("*** CHUCK", key, ":", local_pkgs_dict[key])
+    print("*** CHUCK pkgs: ")
+    for idx, item in enumerate(pkgs):
+        print("*** CHUCK", idx, ":", item)
 
     # DEBUG END
 

@@ -74,6 +74,23 @@ def _create_pkg(
         products = products,
     )
 
+def _copy_pkg(
+        pkg,
+        url = None,
+        path = None,
+        name = None,
+        from_version = None,
+        revision = None,
+        products = None):
+    return _create_pkg(
+        url = url if url != None else pkg.url,
+        path = path if path != None else pkg.path,
+        name = name if name != None else pkg.name,
+        from_version = from_version if from_version != None else pkg.from_version,
+        revision = revision if revision != None else pkg.revision,
+        products = products if products != None else pkg.products,
+    )
+
 # MARK: - Package JSON Functions
 
 def _to_json(
@@ -172,6 +189,7 @@ def _create_local_package(name, path):
 packages = struct(
     create_name = _create_name,
     create = _create_pkg,
+    copy = _copy_pkg,
     pkg_json = _to_json,
     from_json = _from_json,
     get_pkg = _get_pkg,
