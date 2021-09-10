@@ -598,8 +598,17 @@ def _configure_spm_repository(repository_ctx, pkgs):
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
 
+def _prepare_local_package(repository_ctx, pkgs):
+    # TODO: IMPLEMENT ME!
+    pass
+
 def _spm_repositories_impl(repository_ctx):
     pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
+
+    # Prepare local packages
+    local_pkgs = [p for p in pkgs if p.path != None]
+    for pkg in local_pkgs:
+        _prepare_local_package(repository_ctx, pkg)
 
     # Generate Package.swift
     _generate_package_swift_file(repository_ctx, pkgs)
