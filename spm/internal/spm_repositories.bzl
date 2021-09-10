@@ -598,17 +598,40 @@ def _configure_spm_repository(repository_ctx, pkgs):
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
 
-def _prepare_local_package(repository_ctx, pkgs):
-    # TODO: IMPLEMENT ME!
-    pass
+def _prepare_local_package(repository_ctx, pkg):
+    if repository_ctx.attr.workspace_file == "":
+        fail("Need to specify the `workspace_file` attribute when using local packages. ")
+    repo_root = str(repository_ctx.path(repository_ctx.attr.workspace_file).dirname)
+
+    path = pkg.path
+    if not paths.is_absolute(path):
+        path = paths.join(repo_root, path)
+
+    # repository_ctx.symlink(path, "local_repos/%s" % (paths.basename(path)))
+    return packages.local_package(
+        name = pkg.name,
+        path = path,
+    )
 
 def _spm_repositories_impl(repository_ctx):
     pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
 
     # Prepare local packages
-    local_pkgs = [p for p in pkgs if p.path != None]
-    for pkg in local_pkgs:
-        _prepare_local_package(repository_ctx, pkg)
+    # local_pkgs = [p for p in pkgs if p.path != None]
+    # for pkg in local_pkgs:
+    #     _prepare_local_package(repository_ctx, pkg)
+    local_pkgs_dict = dict()
+    for pkg in pkgs:
+        if pkg.path == None:
+            continue
+        local_pkgs_dict[pkg.name] = _prepare_local_package(repository_ctx, pkg)
+
+    # DEBUG BEGIN
+    print("*** CHUCK local_pkgs_dict: ")
+    for key in local_pkgs_dict:
+        print("*** CHUCK", key, ":", local_pkgs_dict[key])
+
+    # DEBUG END
 
     # Generate Package.swift
     _generate_package_swift_file(repository_ctx, pkgs)
@@ -642,6 +665,12 @@ spm_repositories = repository_rule(
             doc = """\
             The platforms to declare in the placeholder/uber Swift package. \
             (e.g. .macOS(.v10_15))\
+            """,
+        ),
+        "workspace_file": attr.label(
+            doc = """\
+            If using any local packages, this attribute needs to be set to the value \
+            `//:WORKSPACE`.\
             """,
         ),
         "_package_swift_tpl": attr.label(

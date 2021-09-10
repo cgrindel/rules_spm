@@ -40,20 +40,20 @@ spm_repositories(
     name = "swift_pkgs",
     dependencies = [
         spm_pkg(
-            "https://github.com/apple/swift-log.git",
             from_version = "1.0.0",
             products = ["Logging"],
+            url = "https://github.com/apple/swift-log.git",
         ),
         spm_pkg(
-            "https://github.com/apple/swift-nio.git",
             from_version = "2.0.0",
             products = ["NIO"],
+            url = "https://github.com/apple/swift-nio.git",
         ),
         spm_pkg(
-            "https://github.com/cgrindel/rules_spm_example_pkg_with_deps.git",
             name = "foo-kit",
-            from_version = "0.0.0",
+            path = "third-party/foo-kit",
             products = ["FooKit"],
         ),
     ],
+    workspace_file = "//:WORKSPACE",
 )

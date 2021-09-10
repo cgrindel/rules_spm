@@ -56,13 +56,14 @@ def _create_pkg(
     if len(products) == 0:
         fail("A list of product names from the package must be provided.")
 
-    dep_requirements = [from_version, revision]
-    specified_dep_reqs = [d for d in dep_requirements if d != None]
-    specified_dep_reqs_cnt = len(specified_dep_reqs)
-    if specified_dep_reqs_cnt < 1:
-        fail("A package requirement (e.g. from_version, revision) must be specified.")
-    if specified_dep_reqs_cnt > 1:
-        fail("Only a single package requirement (e.g. from_version, revision) can be specified.")
+    if url != None:
+        dep_requirements = [from_version, revision]
+        specified_dep_reqs = [d for d in dep_requirements if d != None]
+        specified_dep_reqs_cnt = len(specified_dep_reqs)
+        if specified_dep_reqs_cnt < 1:
+            fail("A package requirement (e.g. from_version, revision) must be specified.")
+        if specified_dep_reqs_cnt > 1:
+            fail("Only a single package requirement (e.g. from_version, revision) can be specified.")
 
     return struct(
         url = url,
@@ -160,6 +161,12 @@ def _get_product_refs(pkgs):
     """
     return [refs.create(ref_types.product, pkg.name, prd) for pkg in pkgs for prd in pkg.products]
 
+def _create_local_package(name, path):
+    return struct(
+        name = name,
+        path = path,
+    )
+
 # MARK: - Namespace
 
 packages = struct(
@@ -169,4 +176,5 @@ packages = struct(
     from_json = _from_json,
     get_pkg = _get_pkg,
     get_product_refs = _get_product_refs,
+    local_package = _create_local_package,
 )
