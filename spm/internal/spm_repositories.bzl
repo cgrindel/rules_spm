@@ -275,7 +275,7 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
                     pkg_root_path,
                 ))
             else:
-                fail("Unrecognized clang target type. %s" % (target))
+                fail("Unrecognized system target type. %s" % (target))
         else:
             fail("Unrecognized target type. %s" % (target))
 
