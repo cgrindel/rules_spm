@@ -611,19 +611,16 @@ def _configure_spm_repository(repository_ctx, pkgs):
     _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
 
 def _prepare_local_package(repository_ctx, pkg):
-    if repository_ctx.attr.workspace_file == "":
-        fail("Need to specify the `workspace_file` attribute when using local packages. ")
-    repo_root = str(repository_ctx.path(repository_ctx.attr.workspace_file).dirname)
-
     path = pkg.path
     if not paths.is_absolute(path):
+        if repository_ctx.attr.workspace_file == "":
+            fail("""\
+                 Need to specify the `workspace_file` attribute when using \
+                 relative paths for local packages.\
+                 """)
+        repo_root = str(repository_ctx.path(repository_ctx.attr.workspace_file).dirname)
         path = paths.join(repo_root, path)
 
-    # repository_ctx.symlink(path, "local_repos/%s" % (paths.basename(path)))
-    # return packages.local_package(
-    #     name = pkg.name,
-    #     path = path,
-    # )
     return packages.copy(pkg, path = path)
 
 def _spm_repositories_impl(repository_ctx):
