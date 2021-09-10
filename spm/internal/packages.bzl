@@ -19,7 +19,13 @@ def _create_name(url):
     repo_name, ext = paths.split_extension(basename)
     return repo_name
 
-def _create_pkg(url, name = None, from_version = None, revision = None, products = []):
+def _create_pkg(
+        url = None,
+        path = None,
+        name = None,
+        from_version = None,
+        revision = None,
+        products = []):
     """Create a Swift package dependency struct.
 
     See the Swift Package Manager documentation for information on the various
@@ -29,6 +35,7 @@ def _create_pkg(url, name = None, from_version = None, revision = None, products
 
     Args:
         url: A `string` representing the URL for the package repository.
+        path: A local path `string` to the package repository.
         products: A `list` of `string` values representing the names of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
         from_version: Optional. A `string` representing a valid "from" SPM version.
@@ -37,10 +44,18 @@ def _create_pkg(url, name = None, from_version = None, revision = None, products
     Returns:
         A `struct` representing a Swift package.
     """
+    specified_locations = [l for l in [url, path] if l != None]
+    specified_locations_cnt = len(specified_locations)
+    if specified_locations_cnt < 1:
+        fail("Need to specify a url or path to the package.")
+    if specified_locations_cnt > 1:
+        fail("Only a single location (e.g. url, path) can be specified.")
+
     if name == None:
-        name = _create_name(url)
+        name = _create_name(specified_locations[0])
     if len(products) == 0:
         fail("A list of product names from the package must be provided.")
+
     dep_requirements = [from_version, revision]
     specified_dep_reqs = [d for d in dep_requirements if d != None]
     specified_dep_reqs_cnt = len(specified_dep_reqs)
@@ -51,6 +66,7 @@ def _create_pkg(url, name = None, from_version = None, revision = None, products
 
     return struct(
         url = url,
+        path = path,
         name = name,
         from_version = from_version,
         revision = revision,
@@ -59,7 +75,13 @@ def _create_pkg(url, name = None, from_version = None, revision = None, products
 
 # MARK: - Package JSON Functions
 
-def _to_json(url, name = None, from_version = None, revision = None, products = []):
+def _to_json(
+        url = None,
+        path = None,
+        name = None,
+        from_version = None,
+        revision = None,
+        products = []):
     """Returns a JSON string describing a Swift package.
 
     See the Swift Package Manager documentation for information on the various
@@ -69,6 +91,7 @@ def _to_json(url, name = None, from_version = None, revision = None, products = 
 
     Args:
         url: A `string` representing the URL for the package repository.
+        path: A local path `string` to the package repository.
         products: A `list` of `string` values representing the names of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
         from_version: Optional. A `string` representing a valid "from" SPM version.
@@ -77,7 +100,14 @@ def _to_json(url, name = None, from_version = None, revision = None, products = 
     Returns:
         A JSON `string` representing a Swift package.
     """
-    pkg = _create_pkg(url, name = name, from_version = from_version, revision = revision, products = products)
+    pkg = _create_pkg(
+        url = url,
+        path = path,
+        name = name,
+        from_version = from_version,
+        revision = revision,
+        products = products,
+    )
     return json.encode(pkg)
 
 def _from_json(json_str):

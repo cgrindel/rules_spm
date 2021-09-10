@@ -16,31 +16,46 @@ def _create_test(ctx):
     env = unittest.begin(ctx)
 
     url = "https://github.com/foo/bar.git"
+    path = "/path/to/foo/bar"
     from_version = "1.0.0"
+    products = ["Foo", "Bar"]
 
-    actual = packages.create(url, from_version = from_version, products = ["Foo", "Bar"])
+    actual = packages.create(url = url, from_version = from_version, products = products)
     expected = struct(
         url = url,
+        path = None,
         name = packages.create_name(url),
         from_version = from_version,
         revision = None,
-        products = ["Foo", "Bar"],
+        products = products,
+    )
+    asserts.equals(env, expected, actual)
+
+    actual = packages.create(path = path, from_version = from_version, products = products)
+    expected = struct(
+        url = None,
+        path = path,
+        name = packages.create_name(path),
+        from_version = from_version,
+        revision = None,
+        products = products,
     )
     asserts.equals(env, expected, actual)
 
     name = "howdy-bob"
     actual = packages.create(
-        url,
-        name = name,
-        from_version = from_version,
-        products = ["Foo", "Bar"],
-    )
-    expected = struct(
         url = url,
         name = name,
         from_version = from_version,
+        products = products,
+    )
+    expected = struct(
+        url = url,
+        path = None,
+        name = name,
+        from_version = from_version,
         revision = None,
-        products = ["Foo", "Bar"],
+        products = products,
     )
     asserts.equals(env, expected, actual)
 
@@ -50,14 +65,15 @@ def _create_test(ctx):
         url,
         name = name,
         revision = revision,
-        products = ["Foo", "Bar"],
+        products = products,
     )
     expected = struct(
         url = url,
+        path = None,
         name = name,
         from_version = None,
         revision = revision,
-        products = ["Foo", "Bar"],
+        products = products,
     )
     asserts.equals(env, expected, actual)
 
