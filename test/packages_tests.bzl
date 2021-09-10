@@ -81,6 +81,15 @@ def _create_test(ctx):
 
 create_test = unittest.make(_create_test)
 
+def _copy_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+copy_test = unittest.make(_copy_test)
+
 def _json_roundtrip_test(ctx):
     env = unittest.begin(ctx)
 
@@ -146,6 +155,7 @@ def packages_test_suite():
         "packages_tests",
         create_name_test,
         create_test,
+        copy_test,
         json_roundtrip_test,
         get_pkg_test,
         get_product_refs_test,

@@ -452,6 +452,10 @@ def _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkg
 
 # MARK: - Package.swift Generation
 
+_local_package_tpl = """\
+.package(name: "{name}", path: "{path}")\
+"""
+
 _package_from_tpl = """\
 .package(name: "{name}", url: "{url}", from: "{version}")\
 """
@@ -479,19 +483,27 @@ def _generate_spm_package_dep(pkg):
     Returns:
         A `string` suitable to be added as an SPM package dependency.
     """
-    if pkg.from_version:
-        return _package_from_tpl.format(
+    if pkg.path != None:
+        return _local_package_tpl.format(
             name = pkg.name,
-            url = pkg.url,
-            version = pkg.from_version,
+            path = pkg.path,
         )
-    if pkg.revision:
-        return _package_revision_tpl.format(
-            name = pkg.name,
-            url = pkg.url,
-            revision = pkg.revision,
-        )
-    fail("Unrecognized package requirement. %s" % (pkg))
+    if pkg.url != None:
+        if pkg.from_version:
+            return _package_from_tpl.format(
+                name = pkg.name,
+                url = pkg.url,
+                version = pkg.from_version,
+            )
+        if pkg.revision:
+            return _package_revision_tpl.format(
+                name = pkg.name,
+                url = pkg.url,
+                revision = pkg.revision,
+            )
+        fail("Missing package requirement (e.g. from_version, revision). %s" % (pkg))
+
+    fail("Missing package location (e.g. url, path). %s" % (pkg))
 
 def _generate_package_swift_file(repository_ctx, pkgs):
     """Generate a Package.swift file which will be used to fetch and build the 
@@ -618,14 +630,6 @@ def _spm_repositories_impl(repository_ctx):
     orig_pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
 
     # Prepare local packages
-    # local_pkgs = [p for p in pkgs if p.path != None]
-    # for pkg in local_pkgs:
-    #     _prepare_local_package(repository_ctx, pkg)
-    # local_pkgs_dict = dict()
-    # for pkg in pkgs:
-    #     if pkg.path == None:
-    #         continue
-    #     local_pkgs_dict[pkg.name] = _prepare_local_package(repository_ctx, pkg)
     pkgs = []
     for pkg in orig_pkgs:
         if pkg.path != None:

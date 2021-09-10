@@ -51,7 +51,7 @@ spm_repositories(
         ),
         spm_pkg(
             name = "foo-kit",
-            path = "third-party/foo-kit",
+            path = "third_party/foo-kit",
             products = ["FooKit"],
         ),
     ],
