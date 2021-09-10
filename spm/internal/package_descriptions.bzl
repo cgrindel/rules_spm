@@ -190,6 +190,17 @@ def _is_executable_target(target):
     """
     return target["type"] == target_types.executable
 
+def _is_system_target(target):
+    """Returns True if the specified target is a library target. Otherwise False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a library target.
+    """
+    return target["type"] == target_types.system
+
 def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
 
@@ -510,6 +521,7 @@ package_descriptions = struct(
     # Target Functions
     is_library_target = _is_library_target,
     is_executable_target = _is_executable_target,
+    is_system_target = _is_system_target,
     library_targets = _library_targets,
     is_system_library_target = _is_system_library_target,
     is_clang_target = _is_clang_target,

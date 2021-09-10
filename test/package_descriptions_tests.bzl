@@ -79,6 +79,18 @@ def _is_executable_target_test(ctx):
 
 is_executable_target_test = unittest.make(_is_executable_target_test)
 
+def _is_system_target_test(ctx):
+    env = unittest.begin(ctx)
+
+    target = {"type": "library"}
+    asserts.false(env, pds.is_system_target(target))
+    target["type"] = "system-target"
+    asserts.true(env, pds.is_system_target(target))
+
+    return unittest.end(env)
+
+is_system_target_test = unittest.make(_is_system_target_test)
+
 def _library_targets_test(ctx):
     env = unittest.begin(ctx)
 
@@ -283,6 +295,7 @@ def package_descriptions_test_suite():
         library_products_test,
         is_library_target_test,
         is_executable_target_test,
+        is_system_target_test,
         library_targets_test,
         dependency_name_test,
         is_system_library_target_test,

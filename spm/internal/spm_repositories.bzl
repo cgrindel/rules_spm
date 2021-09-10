@@ -266,7 +266,7 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
                 fail("Unrecognized Swift target type. %s" % (target))
 
         elif pds.is_system_library_target(target):
-            if pds.is_library_target(target):
+            if pds.is_system_target(target):
                 module_decls.append(_create_spm_system_library_decl(
                     repository_ctx,
                     pkg_name,
