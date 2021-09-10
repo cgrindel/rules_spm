@@ -6,11 +6,11 @@ def _swift_module_test(ctx):
 
     result = providers.swift_module(
         "MyModule",
-        ["first.o", "second.o"],
-        "MyModule.swiftdoc",
-        "MyModule.swiftmodule",
-        "MyModule.swiftsourceinfo",
-        ["all"],
+        o_files = ["first.o", "second.o"],
+        swiftdoc = "MyModule.swiftdoc",
+        swiftmodule = "MyModule.swiftmodule",
+        swiftsourceinfo = "MyModule.swiftsourceinfo",
+        all_outputs = ["all"],
     )
     expected = struct(
         module_name = "MyModule",
@@ -18,6 +18,23 @@ def _swift_module_test(ctx):
         swiftdoc = "MyModule.swiftdoc",
         swiftmodule = "MyModule.swiftmodule",
         swiftsourceinfo = "MyModule.swiftsourceinfo",
+        executable = None,
+        all_outputs = ["all"],
+    )
+    asserts.equals(env, expected, result)
+
+    result = providers.swift_module(
+        "MyExecutable",
+        executable = "my_executable",
+        all_outputs = ["all"],
+    )
+    expected = struct(
+        module_name = "MyExecutable",
+        o_files = [],
+        swiftdoc = None,
+        swiftmodule = None,
+        swiftsourceinfo = None,
+        executable = "my_executable",
         all_outputs = ["all"],
     )
     asserts.equals(env, expected, result)

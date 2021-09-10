@@ -46,6 +46,12 @@ jobs:
         cd examples/simple_revision
         bazelisk test //...
 
+    - name: Test Simple with External Binary Example
+      shell: bash
+      run: |
+        cd examples/simple_with_binary
+        bazelisk test //...
+
     - name: Test Package With Shared Deps Example
       shell: bash
       run: |

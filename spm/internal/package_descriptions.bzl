@@ -10,7 +10,7 @@ load(":references.bzl", ref_types = "reference_types", refs = "references")
 
 # MARK: - Helper Functions
 
-def _find_in_list_of_dicts(items, key, value, item_type = None):
+def _find_in_list_of_dicts(items, key, value, item_type = None, fail_if_not_found = True):
     """Retrieves the dict value from a list of items that have a specified
     key value.
 
@@ -21,6 +21,9 @@ def _find_in_list_of_dicts(items, key, value, item_type = None):
     for item in items:
         if item[key] == value:
             return item
+
+    if not fail_if_not_found:
+        return None
 
     if item_type == None:
         item_type = "item"
@@ -151,7 +154,7 @@ def _library_products(pkg_desc):
     """
     return [p for p in pkg_desc["products"] if _is_library_product(p)]
 
-def _get_product(pkg_desc, product_name):
+def _get_product(pkg_desc, product_name, fail_if_not_found = True):
     """Returns the product with the specified product name.
 
     Args:
@@ -161,7 +164,7 @@ def _get_product(pkg_desc, product_name):
     Returns:
         A `dict` representing the desired product.
     """
-    return _find_in_list_of_dicts(pkg_desc["products"], "name", product_name)
+    return _find_in_list_of_dicts(pkg_desc["products"], "name", product_name, fail_if_not_found = fail_if_not_found)
 
 # MARK: - Target Functions
 
@@ -174,8 +177,29 @@ def _is_library_target(target):
     Returns:
         A boolean indicating whether the target is a library target.
     """
-    target_type = target["type"]
-    return target_type == target_types.library
+    return target["type"] == target_types.library
+
+def _is_executable_target(target):
+    """Returns True if the specified target is an executable target. Otherwise False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is an executable target.
+    """
+    return target["type"] == target_types.executable
+
+def _is_system_target(target):
+    """Returns True if the specified target is a library target. Otherwise False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a library target.
+    """
+    return target["type"] == target_types.system
 
 def _library_targets(pkg_desc):
     """Returns a list of the library targets in the package.
@@ -189,7 +213,7 @@ def _library_targets(pkg_desc):
     targets = pkg_desc["targets"]
     return [t for t in targets if _is_library_target(t)]
 
-def _is_system_library_module(target):
+def _is_system_library_target(target):
     """Returns True if the specified target is a clang module. Otherwise, False.
 
     Args:
@@ -201,7 +225,7 @@ def _is_system_library_module(target):
     module_type = target["module_type"]
     return module_type == module_types.system_library
 
-def _is_clang_module(target):
+def _is_clang_target(target):
     """Returns True if the specified target is a clang module. Otherwise, False.
 
     Args:
@@ -213,7 +237,7 @@ def _is_clang_module(target):
     module_type = target["module_type"]
     return module_type == module_types.clang
 
-def _is_swift_module(target):
+def _is_swift_target(target):
     """Returns True if the specified target is a swift module. Otherwise, False.
 
     Args:
@@ -224,7 +248,7 @@ def _is_swift_module(target):
     """
     return target["module_type"] == module_types.swift
 
-def _get_target(pkg_desc, name):
+def _get_target(pkg_desc, name, fail_if_not_found = True):
     """Returns the target with the specified name from a package description.
 
     Args:
@@ -234,7 +258,7 @@ def _get_target(pkg_desc, name):
     Returns:
         A `dict` representing a target as represented in a package description.
     """
-    return _find_in_list_of_dicts(pkg_desc["targets"], "name", name)
+    return _find_in_list_of_dicts(pkg_desc["targets"], "name", name, fail_if_not_found = fail_if_not_found)
 
 # MARK: - Package Dependency Functions
 
@@ -304,9 +328,31 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
             continue
         by_name_values = dep.get("byName")
         if by_name_values != None:
-            dep_target_ref = refs.create_target_ref(pkg_name, by_name_values)
-            target_refs.append(dep_target_ref)
-            continue
+            # byName references
+            # Tool Version < 5.2: can be product with the name from any package.
+            # Tool Version >= 5.2: must be a product in a package with the same name.
+            by_name = by_name_values[0]
+
+            # Look for the product in a package with the same name.
+            ref_pkg_desc = pkg_descs_dict.get(by_name)
+            if ref_pkg_desc != None:
+                product_refs.append(refs.create(ref_types.product, ref_pkg_desc["name"], by_name))
+                continue
+
+            # Look for a package that has a product with the name
+            ref_pkg_desc = _find_pkg_desc_by_product(pkg_descs_dict, by_name)
+            if ref_pkg_desc != None:
+                product_refs.append(refs.create(ref_types.product, ref_pkg_desc["name"], by_name))
+                continue
+
+            # Look for a package that has a target with the name
+            ref_pkg_desc = _find_pkg_desc_by_target(pkg_descs_dict, by_name)
+            if ref_pkg_desc != None:
+                target_refs.append(refs.create(ref_types.target, ref_pkg_desc["name"], by_name))
+                continue
+
+            fail("byName Resolution: Could not find a package with the product or target named %s." % (by_name))
+
         target_values = dep.get("target")
         if target_values != None:
             dep_target_ref = refs.create_target_ref(pkg_name, target_values)
@@ -317,7 +363,7 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
     return product_refs, target_refs
 
 def _get_product_target_refs(pkg_descs_dict, product_ref):
-    """Returns the target refernces that are directly associated with the 
+    """Returns the target references that are directly associated with the 
     specified product.
 
     Args:
@@ -330,7 +376,7 @@ def _get_product_target_refs(pkg_descs_dict, product_ref):
     Returns:
         A `list` of target reference `string` values.
     """
-    ref_typ, pkg_name, product_name = refs.split(product_ref)
+    ref_type, pkg_name, product_name = refs.split(product_ref)
     pkg_desc = pkg_descs_dict[pkg_name]
     product = _get_product(pkg_desc, product_name)
     return [refs.create(ref_types.target, pkg_name, t) for t in product["targets"]]
@@ -365,6 +411,7 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
         # Collect the targets that are referenced by the products
         for product_ref in product_refs_to_eval:
             prd_target_refs = _get_product_target_refs(pkg_descs_dict, product_ref)
+
             product_deps_dict[product_ref] = prd_target_refs
             for target_ref in prd_target_refs:
                 if target_deps_dict.get(target_ref) == None:
@@ -378,6 +425,7 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
             if target_deps_dict.get(target_ref) != None:
                 continue
             dep_prd_refs, dep_trgt_refs = _gather_deps_for_target(pkg_descs_dict, target_ref)
+
             target_deps_dict[target_ref] = dep_trgt_refs + dep_prd_refs
             for product_ref in dep_prd_refs:
                 # If we have not resolved the product_ref, add it to the list for evaluation
@@ -410,9 +458,50 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
 
     return resolved_targets_dict
 
+def _find_pkg_desc_by_product(pkg_descs_dict, product_name):
+    """Find the package description which has a product with the specified 
+    name.
+
+    Args:
+        pkg_descs_dict: A `dict` where the keys are the package names and the
+                        values are package description `struct` values as
+                        returned by `package_descriptions.get()`.
+        product_name: The name of a product as a `string`.
+
+    Returns:
+        Returns the package description that has the product or None.
+    """
+    for pkg_name in pkg_descs_dict:
+        pkg_desc = pkg_descs_dict[pkg_name]
+        product = _get_product(pkg_desc, product_name, fail_if_not_found = False)
+        if product != None:
+            return pkg_desc
+    return None
+
+def _find_pkg_desc_by_target(pkg_descs_dict, target_name):
+    """Find the package description which has a target with the specified 
+    name.
+
+    Args:
+        pkg_descs_dict: A `dict` where the keys are the package names and the
+                        values are package description `struct` values as
+                        returned by `package_descriptions.get()`.
+        target_name: The name of a target as a `string`.
+
+    Returns:
+        Returns the package description that has the target or None.
+    """
+    for pkg_name in pkg_descs_dict:
+        pkg_desc = pkg_descs_dict[pkg_name]
+        target = _get_target(pkg_desc, target_name, fail_if_not_found = False)
+        if target != None:
+            return pkg_desc
+    return None
+
 # MARK: - Namespace
 
 target_types = struct(
+    executable = "executable",
     library = "library",
     system = "system-target",
 )
@@ -431,10 +520,12 @@ package_descriptions = struct(
     library_products = _library_products,
     # Target Functions
     is_library_target = _is_library_target,
+    is_executable_target = _is_executable_target,
+    is_system_target = _is_system_target,
     library_targets = _library_targets,
-    is_system_library_module = _is_system_library_module,
-    is_clang_module = _is_clang_module,
-    is_swift_module = _is_swift_module,
+    is_system_library_target = _is_system_library_target,
+    is_clang_target = _is_clang_target,
+    is_swift_target = _is_swift_target,
     get_target = _get_target,
     # Dependency Functions
     dependency_name = _dependency_name,
