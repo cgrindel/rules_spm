@@ -115,9 +115,14 @@ spm_system_library(
 _bazel_pkg_hdr = """
 load(
     "@cgrindel_rules_spm//spm:spm.bzl", 
+<<<<<<< HEAD
     "spm_clang_library",
     "spm_swift_binary", 
     "spm_swift_library", 
+=======
+    "spm_swift_library", 
+    "spm_clang_library",
+>>>>>>> a28a6fb (Renamed stuff. Old stuff works.)
     "spm_system_library",
 )
 """
