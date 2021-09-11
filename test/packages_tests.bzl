@@ -84,7 +84,68 @@ create_test = unittest.make(_create_test)
 def _copy_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    url = "https://github.com/foo/bar.git"
+    path = "/path/to/foo/bar"
+    name = "hello"
+    from_version = "1.0.0"
+    products = ["Foo", "Bar"]
+
+    pkg = packages.create(
+        url = url,
+        name = name,
+        from_version = from_version,
+        products = products,
+    )
+
+    actual = packages.copy(pkg, url = "foo")
+    expected = packages.create(
+        url = "foo",
+        name = name,
+        from_version = from_version,
+        products = products,
+    )
+    asserts.equals(env, expected, actual)
+
+    actual = packages.copy(pkg, name = "foo")
+    expected = packages.create(
+        url = url,
+        name = "foo",
+        from_version = from_version,
+        products = products,
+    )
+    asserts.equals(env, expected, actual)
+
+    actual = packages.copy(pkg, from_version = "1.2.3")
+    expected = packages.create(
+        url = url,
+        name = name,
+        from_version = "1.2.3",
+        products = products,
+    )
+    asserts.equals(env, expected, actual)
+
+    actual = packages.copy(pkg, products = ["Chicken"])
+    expected = packages.create(
+        url = url,
+        name = name,
+        from_version = from_version,
+        products = ["Chicken"],
+    )
+    asserts.equals(env, expected, actual)
+
+    pkg = packages.create(
+        path = path,
+        name = name,
+        products = products,
+    )
+
+    actual = packages.copy(pkg, path = "/another/path")
+    expected = packages.create(
+        path = "/another/path",
+        name = name,
+        products = products,
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
