@@ -52,10 +52,10 @@ jobs:
         cd examples/simple_with_binary
         bazelisk test //...
 
-    - name: Test Package With Shared Deps Example
+    - name: Test Local Package Example
       shell: bash
       run: |
-        cd examples/package_with_shared_deps
+        cd examples/local_package
         bazelisk test //...
 
     - name: Test Vapor Example
@@ -129,11 +129,12 @@ jobs:
         cd examples/simple_revision
         bazelisk test //...
 
-    - name: Test Package With Shared Deps Example
+    - name: Test Local Package Example
       shell: bash
       run: |
-        cd examples/package_with_shared_deps
+        cd examples/local_package
         bazelisk test //...
+
 
     - name: Test Vapor Example
       shell: bash

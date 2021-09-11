@@ -452,6 +452,10 @@ def _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkg
 
 # MARK: - Package.swift Generation
 
+_local_package_tpl = """\
+.package(name: "{name}", path: "{path}")\
+"""
+
 _package_from_tpl = """\
 .package(name: "{name}", url: "{url}", from: "{version}")\
 """
@@ -479,19 +483,27 @@ def _generate_spm_package_dep(pkg):
     Returns:
         A `string` suitable to be added as an SPM package dependency.
     """
-    if pkg.from_version:
-        return _package_from_tpl.format(
+    if pkg.path != None:
+        return _local_package_tpl.format(
             name = pkg.name,
-            url = pkg.url,
-            version = pkg.from_version,
+            path = pkg.path,
         )
-    if pkg.revision:
-        return _package_revision_tpl.format(
-            name = pkg.name,
-            url = pkg.url,
-            revision = pkg.revision,
-        )
-    fail("Unrecognized package requirement. %s" % (pkg))
+    if pkg.url != None:
+        if pkg.from_version:
+            return _package_from_tpl.format(
+                name = pkg.name,
+                url = pkg.url,
+                version = pkg.from_version,
+            )
+        if pkg.revision:
+            return _package_revision_tpl.format(
+                name = pkg.name,
+                url = pkg.url,
+                revision = pkg.revision,
+            )
+        fail("Missing package requirement (e.g. from_version, revision). %s" % (pkg))
+
+    fail("Missing package location (e.g. url, path). %s" % (pkg))
 
 def _generate_package_swift_file(repository_ctx, pkgs):
     """Generate a Package.swift file which will be used to fetch and build the 
@@ -557,11 +569,15 @@ def _configure_spm_repository(repository_ctx, pkgs):
     root_pkg_desc = pds.get(repository_ctx)
     pkg_descs_dict[pds.root_pkg_name] = root_pkg_desc
 
+    # Find the location for all of the dependent packages.
     fetched_pkg_paths = _list_directories_under(
         repository_ctx,
         spm_common.checkouts_path,
         max_depth = 1,
     )
+    local_pkg_paths = [p.path for p in pkgs if p.path != None]
+    fetched_pkg_paths = fetched_pkg_paths + local_pkg_paths
+
     for pkg_path in fetched_pkg_paths:
         dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
         dep_name = dep_pkg_desc["name"]
@@ -598,8 +614,28 @@ def _configure_spm_repository(repository_ctx, pkgs):
     # Write BUILD.bazel file.
     _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
 
+def _prepare_local_package(repository_ctx, pkg):
+    path = pkg.path
+    if not paths.is_absolute(path):
+        if repository_ctx.attr.workspace_file == "":
+            fail("""\
+                 Need to specify the `workspace_file` attribute when using \
+                 relative paths for local packages.\
+                 """)
+        repo_root = str(repository_ctx.path(repository_ctx.attr.workspace_file).dirname)
+        path = paths.join(repo_root, path)
+
+    return packages.copy(pkg, path = path)
+
 def _spm_repositories_impl(repository_ctx):
-    pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
+    orig_pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
+
+    # Prepare local packages
+    pkgs = []
+    for pkg in orig_pkgs:
+        if pkg.path != None:
+            pkg = _prepare_local_package(repository_ctx, pkg)
+        pkgs.append(pkg)
 
     # Generate Package.swift
     _generate_package_swift_file(repository_ctx, pkgs)
@@ -633,6 +669,12 @@ spm_repositories = repository_rule(
             doc = """\
             The platforms to declare in the placeholder/uber Swift package. \
             (e.g. .macOS(.v10_15))\
+            """,
+        ),
+        "workspace_file": attr.label(
+            doc = """\
+            If using any local packages, this attribute needs to be set to the value \
+            `//:WORKSPACE`.\
             """,
         ),
         "_package_swift_tpl": attr.label(
