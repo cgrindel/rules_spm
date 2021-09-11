@@ -51,7 +51,6 @@ spm_repositories(
         ),
         # Reference to a local package.
         spm_pkg(
-            name = "foo-kit",
             path = "third_party/foo-kit",
             products = ["FooKit"],
         ),
