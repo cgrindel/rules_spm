@@ -569,11 +569,21 @@ def _configure_spm_repository(repository_ctx, pkgs):
     root_pkg_desc = pds.get(repository_ctx)
     pkg_descs_dict[pds.root_pkg_name] = root_pkg_desc
 
+    # Find the location for all of the dependent packages.
     fetched_pkg_paths = _list_directories_under(
         repository_ctx,
         spm_common.checkouts_path,
         max_depth = 1,
     )
+    local_pkg_paths = [p.path for p in pkgs if p.path != None]
+    fetched_pkg_paths = fetched_pkg_paths + local_pkg_paths
+
+    # DEBUG BEGIN
+    print("*** CHUCK fetched_pkg_paths: ")
+    for idx, item in enumerate(fetched_pkg_paths):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
     for pkg_path in fetched_pkg_paths:
         dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
         dep_name = dep_pkg_desc["name"]
