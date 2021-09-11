@@ -578,12 +578,6 @@ def _configure_spm_repository(repository_ctx, pkgs):
     local_pkg_paths = [p.path for p in pkgs if p.path != None]
     fetched_pkg_paths = fetched_pkg_paths + local_pkg_paths
 
-    # DEBUG BEGIN
-    print("*** CHUCK fetched_pkg_paths: ")
-    for idx, item in enumerate(fetched_pkg_paths):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
     for pkg_path in fetched_pkg_paths:
         dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
         dep_name = dep_pkg_desc["name"]
@@ -642,13 +636,6 @@ def _spm_repositories_impl(repository_ctx):
         if pkg.path != None:
             pkg = _prepare_local_package(repository_ctx, pkg)
         pkgs.append(pkg)
-
-    # DEBUG BEGIN
-    print("*** CHUCK pkgs: ")
-    for idx, item in enumerate(pkgs):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
 
     # Generate Package.swift
     _generate_package_swift_file(repository_ctx, pkgs)
