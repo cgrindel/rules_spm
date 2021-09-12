@@ -629,9 +629,9 @@ def _check_spm_version(repository_ctx):
     spm_ver = spm_versions.get(repository_ctx)
     if not versions.is_at_least(threshold = min_spm_ver, version = spm_ver):
         fail("""\
-        `rules_spm` requires that Swift Package Manager be version %s or \
-        higher. Found version %s installed.\
-        """ % (min_spm_ver, spm_ver))
+`rules_spm` requires that Swift Package Manager be version %s or \
+higher. Found version %s installed.\
+""" % (min_spm_ver, spm_ver))
 
 def _spm_repositories_impl(repository_ctx):
     # Check for minimum version of SPM
