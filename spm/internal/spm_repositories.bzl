@@ -5,6 +5,7 @@ load(":packages.bzl", "packages")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
 load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:versions.bzl", "versions")
 
 # MARK: - File Listing Functions
 
@@ -622,7 +623,17 @@ def _prepare_local_package(repository_ctx, pkg):
 
     return packages.copy(pkg, path = path)
 
+def _check_spm_version(repository_ctx):
+    version_result = repository_ctx.execute(["swift", "package", "--version"])
+    if version_result.return_code != 0:
+        fail("Failed to retrieve the version for Swift Package Manager. %s" % (version_result.stderr))
+
+    # Need to parse the version number Swift Package Manager - Swift 5.4.0
+
 def _spm_repositories_impl(repository_ctx):
+    # Check for minimum version of SPM
+    _check_spm_version(repository_ctx)
+
     orig_pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
 
     # Prepare local packages

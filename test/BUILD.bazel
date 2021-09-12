@@ -6,6 +6,7 @@ load(":references_tests.bzl", "references_test_suite")
 load(":platforms_tests.bzl", "platforms_test_suite")
 load(":swift_toolchains_tests.bzl", "swift_toolchains_test_suite")
 load(":spm_package_info_utils_tests.bzl", "spm_package_info_utils_test_suite")
+load(":spm_versions_tests.bzl", "spm_versions_test_suite")
 
 package_descriptions_test_suite()
 
@@ -22,3 +23,5 @@ platforms_test_suite()
 swift_toolchains_test_suite()
 
 spm_package_info_utils_test_suite()
+
+spm_versions_test_suite()
