@@ -4,7 +4,9 @@ load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
+load(":spm_versions.bzl", "spm_versions")
 load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:versions.bzl", "versions")
 
 # MARK: - File Listing Functions
 
@@ -622,7 +624,19 @@ def _prepare_local_package(repository_ctx, pkg):
 
     return packages.copy(pkg, path = path)
 
+def _check_spm_version(repository_ctx):
+    min_spm_ver = "5.4.0"
+    spm_ver = spm_versions.get(repository_ctx)
+    if not versions.is_at_least(threshold = min_spm_ver, version = spm_ver):
+        fail("""\
+`rules_spm` requires that Swift Package Manager be version %s or \
+higher. Found version %s installed.\
+""" % (min_spm_ver, spm_ver))
+
 def _spm_repositories_impl(repository_ctx):
+    # Check for minimum version of SPM
+    _check_spm_version(repository_ctx)
+
     orig_pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
 
     # Prepare local packages
