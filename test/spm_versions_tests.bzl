@@ -1,9 +1,12 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//spm/internal:spm_versions.bzl", "spm_versions")
 
 def _extract_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    raw_str = "Swift Package Manager - Swift 5.4.0"
+    actual = spm_versions.extract(raw_str)
+    asserts.equals(env, "5.4.0", actual)
 
     return unittest.end(env)
 

@@ -11,3 +11,8 @@ def _get_version(repository_ctx):
         fail("Failed to retrieve the version for Swift Package Manager. %s" % (version_result.stderr))
 
     return _extract_version(version_result.stdout)
+
+spm_versions = struct(
+    extract = _extract_version,
+    get = _get_version,
+)
