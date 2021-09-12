@@ -55,6 +55,4 @@ spm_repositories(
             products = ["FooKit"],
         ),
     ],
-    # If using relative paths, one must provide the `workspace_file`.
-    workspace_file = "//:WORKSPACE",
 )

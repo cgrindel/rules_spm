@@ -4,8 +4,9 @@ This example demonstrates the use of a local Swift package.
 
 ## Local Package with Absolute Path
 
-To reference a local Swift package with an absolute path, one needs to specify the `path` and the
-`products`.
+To reference a local Swift package, one needs to specify the `path` and the `products` in the
+`spm_pkg` declaration. The `path` value can be an absolute path or a relative path. The relative
+path is resolved realtive to the root of the Bazel workspace.
 
 ```python
 spm_repositories(
@@ -17,29 +18,6 @@ spm_repositories(
             products = ["FooKit"],
         ),
     ],
-)
-```
-
-## Local Package with Relative Path
-
-To reference a local Swift package with a relative path, the package reference specifies the `path`
-and the `products`. In addition, the `workspace_file` attribute must be provided on the
-`spm_repositories` declaration.  Specifically, it must be `workspace_file = "//:WORKSPACE"`. This
-allows the rule to find the `WORKSPACE` file which is used to evaluate the relative path in the
-`spm_pkg` declaration.
-
-```python
-spm_repositories(
-    name = "swift_pkgs",
-    dependencies = [
-        # Reference to a local package.
-        spm_pkg(
-            path = "third_party/foo-kit",
-            products = ["FooKit"],
-        ),
-    ],
-    # If using relative paths, one must provide the `workspace_file`.
-    workspace_file = "//:WORKSPACE",
 )
 ```
 
