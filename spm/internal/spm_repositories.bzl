@@ -617,12 +617,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
 def _prepare_local_package(repository_ctx, pkg):
     path = pkg.path
     if not paths.is_absolute(path):
-        if repository_ctx.attr.workspace_file == "":
-            fail("""\
-                 Need to specify the `workspace_file` attribute when using \
-                 relative paths for local packages.\
-                 """)
-        repo_root = str(repository_ctx.path(repository_ctx.attr.workspace_file).dirname)
+        repo_root = str(repository_ctx.path(repository_ctx.attr._workspace_file).dirname)
         path = paths.join(repo_root, path)
 
     return packages.copy(pkg, path = path)
@@ -671,10 +666,11 @@ spm_repositories = repository_rule(
             (e.g. .macOS(.v10_15))\
             """,
         ),
-        "workspace_file": attr.label(
+        "_workspace_file": attr.label(
+            default = "@//:WORKSPACE",
             doc = """\
-            If using any local packages, this attribute needs to be set to the value \
-            `//:WORKSPACE`.\
+            The value of this label helps the rule find the root of the Bazel \
+            workspace for local path resolution.\
             """,
         ),
         "_package_swift_tpl": attr.label(
