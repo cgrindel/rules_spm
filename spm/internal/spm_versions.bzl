@@ -8,8 +8,9 @@ def _extract_version(version):
 def _get_version(repository_ctx):
     version_result = repository_ctx.execute(["swift", "package", "--version"])
     if version_result.return_code != 0:
-        fail("Failed to retrieve the version for Swift Package Manager. %s" % (version_result.stderr))
-
+        fail("Failed to retrieve the version for Swift Package Manager. %s" % (
+            version_result.stderr
+        ))
     return _extract_version(version_result.stdout)
 
 spm_versions = struct(
