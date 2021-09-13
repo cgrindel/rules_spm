@@ -27,22 +27,35 @@ load(
     "//spm/internal:spm_archive.bzl",
     _spm_archive = "spm_archive",
 )
+load(
+    "//spm/internal:providers.bzl",
+    _SPMBuildInfo = "SPMBuildInfo",
+    _SPMPackageInfo = "SPMPackageInfo",
+    _SPMPackagesInfo = "SPMPackagesInfo",
+    _SPMPlatformInfo = "SPMPlatformInfo",
+)
 # load(
 #     "//spm/internal:package_descriptions.bzl",
 #     _package_descriptions = "package_descriptions",
 # )
 
-# Repository Rules
+# Workspce Rules
 spm_repositories = _spm_repositories
 spm_pkg = _spm_pkg
 
-# Regular Rules and Macros
+# Build Rules and Macros
 spm_package = _spm_package
 spm_swift_binary = _spm_swift_binary
 spm_swift_library = _spm_swift_library
 spm_clang_library = _spm_clang_library
 spm_system_library = _spm_system_library
 spm_archive = _spm_archive
+
+# Providers
+SPMBuildInfo = _SPMBuildInfo
+SPMPlatformInfo = _SPMPlatformInfo
+SPMPackagesInfo = _SPMPackagesInfo
+SPMPackageInfo = _SPMPackageInfo
 
 # API
 # package_descriptions = _package_descriptions

@@ -27,12 +27,12 @@ _DOC_SRCS = {
         "spm_swift_library",
         "spm_system_library",
     ],
-    # "providers": [
-    #     "SPMBuildInfo",
-    #     "SPMPackageInfo",
-    #     "SPMPackagesInfo",
-    #     "SPMPlatformInfo",
-    # ],
+    "providers": [
+        "SPMBuildInfo",
+        "SPMPackageInfo",
+        "SPMPackagesInfo",
+        "SPMPlatformInfo",
+    ],
     "workspace_rules": [
         "spm_repositories",
         "spm_pkg",
@@ -53,19 +53,22 @@ _DOC_SRCS = {
 #     ],
 # )
 
-# write_file(
-#     name = "providers_header",
-#     out = "providers_header.vm",
-#     content = [
-#         "<!-- Generated with Stardoc, Do Not Edit! -->",
-#         "# Providers",
-#         "",
-#         "On this page:",
-#         "",
-#     ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["providers"]] + [
-#         "",
-#     ],
-# )
+write_file(
+    name = "providers_header",
+    out = "providers_header.vm",
+    content = [
+        "<!-- Generated with Stardoc, Do Not Edit! -->",
+        "# Providers",
+        "",
+        "The providers described below are used by the build rules to",
+        "facilitate the build and exposition of the Swift packages.",
+        "",
+        "On this page:",
+        "",
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["providers"]] + [
+        "",
+    ],
+)
 
 write_file(
     name = "build_rules_header",
