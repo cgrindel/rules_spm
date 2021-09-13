@@ -76,8 +76,7 @@ def _retrieve_package_description(repository_ctx, working_directory = ""):
     return _parse_json(describe_result.stdout)
 
 def _get_package_description(repository_ctx, working_directory = ""):
-    """Returns a dict representing the merge of a package's description and 
-    it's dump (dump-package) information.
+    """Returns a dict representing the merge of a package's description and it's dump (dump-package) information.
 
     Args:
         repository_ctx: A `repository_ctx`.
@@ -130,8 +129,7 @@ def _get_package_description(repository_ctx, working_directory = ""):
 # MARK: - Product Functions
 
 def _is_library_product(product):
-    """Returns a boolean indicating whether the specified product dictionary
-    is a library product.
+    """Returns a boolean indicating whether the specified product dictionary is a library product.
 
     Args:
         product: A `dict` representing a product from package description
@@ -143,8 +141,7 @@ def _is_library_product(product):
     return "library" in product["type"]
 
 def _library_products(pkg_desc):
-    """Returns the library products defined in the provided package 
-    description.
+    """Returns the library products defined in the provided package description.
 
     Args:
         pkg_desc: A `dict` representing a package description.
@@ -363,8 +360,7 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
     return product_refs, target_refs
 
 def _get_product_target_refs(pkg_descs_dict, product_ref):
-    """Returns the target references that are directly associated with the 
-    specified product.
+    """Returns the target references that are directly associated with the specified product.
 
     Args:
         pkg_descs_dict: A `dict` where the keys are the package names and the
@@ -382,8 +378,7 @@ def _get_product_target_refs(pkg_descs_dict, product_ref):
     return [refs.create(ref_types.target, pkg_name, t) for t in product["targets"]]
 
 def _transitive_dependencies(pkg_descs_dict, product_refs):
-    """Returns all of the targets that are a transitive dependency for the 
-    specified products.
+    """Returns all of the targets that are a transitive dependency for the specified products.
 
     Args:
         pkg_descs_dict: A `dict` where the keys are the package names and the
@@ -459,8 +454,7 @@ def _transitive_dependencies(pkg_descs_dict, product_refs):
     return resolved_targets_dict
 
 def _find_pkg_desc_by_product(pkg_descs_dict, product_name):
-    """Find the package description which has a product with the specified 
-    name.
+    """Find the package description which has a product with the specified name.
 
     Args:
         pkg_descs_dict: A `dict` where the keys are the package names and the
@@ -479,8 +473,7 @@ def _find_pkg_desc_by_product(pkg_descs_dict, product_name):
     return None
 
 def _find_pkg_desc_by_target(pkg_descs_dict, target_name):
-    """Find the package description which has a target with the specified 
-    name.
+    """Find the package description which has a target with the specified name.
 
     Args:
         pkg_descs_dict: A `dict` where the keys are the package names and the

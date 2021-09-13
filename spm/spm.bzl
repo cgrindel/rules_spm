@@ -50,11 +50,10 @@ load(
     "//spm/internal:packages.bzl",
     _packages = "packages",
 )
-
-# load(
-#     "//spm/internal:package_descriptions.bzl",
-#     _package_descriptions = "package_descriptions",
-# )
+load(
+    "//spm/internal:package_descriptions.bzl",
+    _package_descriptions = "package_descriptions",
+)
 load(
     "//spm/internal:providers.bzl",
     _providers = "providers",
@@ -101,7 +100,7 @@ spm_package_info_utils = _spm_package_info_utils
 spm_versions = _spm_versions
 packages = _packages
 
-# package_descriptions = _package_descriptions
+package_descriptions = _package_descriptions
 providers = _providers
 platforms = _platforms
 references = _references
