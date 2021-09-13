@@ -141,13 +141,31 @@ _DOC_SRCS = {
 #     data = [file + ".md_" for file in _DOC_SRCS.keys()],
 # )
 
+# DEBUG BEGIN
+# stardoc(
+#     name = "foo_doc",
+#     out = "foo_doc.md",
+#     input = "//spm:foo.bzl",
+#     # symbol_names = [
+#     #     "spm_repositories",
+#     #     "spm_pkg",
+#     #     "spm_package",
+#     #     "spm_swift_binary"
+#     # ],
+#     deps = [
+#         "//spm",
+#     ],
+# )
+# DEBUG END
+
 stardoc(
-    name = "foo_doc",
-    out = "foo_doc.md",
-    input = "//spm:foo.bzl",
+    name = "spm_doc",
+    out = "spm_doc.md",
+    input = "//spm:spm.bzl",
     symbol_names = [
         "spm_repositories",
         "spm_pkg",
+        "spm_package",
     ],
     deps = [
         "//spm",

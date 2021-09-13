@@ -16,6 +16,7 @@ bzl_library(
     name = "foo",
     srcs = ["foo.bzl"],
     deps = [
+        "//spm/internal:spm_package",
         "//spm/internal:spm_repositories",
     ],
 )
