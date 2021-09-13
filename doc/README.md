@@ -2,7 +2,9 @@
 
 ## Workspace Rules and Functions
 
-The [workspace rules and functions](doc/workspace_rules.md) are the primary interface for `rules_spm`. 
+The [workspace rules and functions](doc/workspace_rules.md) are the primary interface for
+`rules_spm`. If you are just trying to leverage third-party Swift packages in your Bazel build,
+start [here](doc/workspace_rules.md).
 
 ## Behind the Scenes
 
