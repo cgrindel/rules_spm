@@ -1,4 +1,8 @@
 load(
+    "//spm/internal:spm_filegroup.bzl",
+    _spm_filegroup = "spm_filegroup",
+)
+load(
     "//spm/internal:spm_package.bzl",
     _spm_package = "spm_package",
 )
@@ -81,6 +85,7 @@ spm_pkg = _spm_pkg
 spm_rules_dependencies = _spm_rules_dependencies
 
 # Build Rules and Macros
+spm_filegroup = _spm_filegroup
 spm_package = _spm_package
 spm_swift_binary = _spm_swift_binary
 spm_swift_library = _spm_swift_library

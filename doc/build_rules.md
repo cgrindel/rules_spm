@@ -36,6 +36,28 @@ Combines object files (.o) into an archive file (.a).
 | <a id="spm_archive-o_files"></a>o_files |  The object files to be combined into the clang archive using the ar tool.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
 
 
+<a id="#spm_filegroup"></a>
+
+## spm_filegroup
+
+<pre>
+spm_filegroup(<a href="#spm_filegroup-name">name</a>, <a href="#spm_filegroup-file_type">file_type</a>, <a href="#spm_filegroup-module_name">module_name</a>, <a href="#spm_filegroup-package_name">package_name</a>, <a href="#spm_filegroup-packages">packages</a>)
+</pre>
+
+Exposes the specified type of file(s) from a rule that outputs an SPMPackagesInfo (e.g.  spm_package).
+
+**ATTRIBUTES**
+
+
+| Name  | Description | Type | Mandatory | Default |
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+| <a id="spm_filegroup-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
+| <a id="spm_filegroup-file_type"></a>file_type |  The type of file to expose about the module.   | String | required |  |
+| <a id="spm_filegroup-module_name"></a>module_name |  The name of the module in the SPM package to select for file exposition.   | String | required |  |
+| <a id="spm_filegroup-package_name"></a>package_name |  The name of the package that exports this module. If no value provided, it will be derived from the Bazel package name.   | String | optional | "" |
+| <a id="spm_filegroup-packages"></a>packages |  A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
+
+
 <a id="#spm_package"></a>
 
 ## spm_package
