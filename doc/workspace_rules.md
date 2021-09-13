@@ -1,7 +1,8 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # Workspace Rules
 
-
+The rules described below are used in your WORKSPACE file to declare
+the Swift packages that are dependencies of your project.
 
 On this page:
 

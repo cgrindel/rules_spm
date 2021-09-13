@@ -18,15 +18,15 @@ _DOC_SRCS = {
     #     "repositories",
     #     "repository_utils",
     # ],
-    # "private_rules": [
-    #     "spm_archive",
-    #     "spm_clang_library",
-    #     "spm_filegroup",
-    #     "spm_package",
-    #     "spm_swift_binary",
-    #     "spm_swift_library",
-    #     "spm_system_library",
-    # ],
+    "build_rules": [
+        "spm_archive",
+        "spm_clang_library",
+        "spm_filegroup",
+        "spm_package",
+        "spm_swift_binary",
+        "spm_swift_library",
+        "spm_system_library",
+    ],
     # "providers": [
     #     "SPMBuildInfo",
     #     "SPMPackageInfo",
@@ -67,19 +67,24 @@ _DOC_SRCS = {
 #     ],
 # )
 
-# write_file(
-#     name = "private_rules_header",
-#     out = "private_rules_header.vm",
-#     content = [
-#         "<!-- Generated with Stardoc, Do Not Edit! -->",
-#         "# Private Rules",
-#         # "${moduleDocstring}",
-#         "On this page:",
-#         "",
-#     ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["private_rules"]] + [
-#         "",
-#     ],
-# )
+write_file(
+    name = "build_rules_header",
+    out = "build_rules_header.vm",
+    content = [
+        "<!-- Generated with Stardoc, Do Not Edit! -->",
+        "# Build Rules",
+        "",
+        "The rules described below are used to build Swift",
+        "packages and make their outputs available as Bazel targets. Most",
+        "clients will not use these rules directly. They are an implementation",
+        "detail for [the workspace rules](doc/workspace_rules.md).",
+        "",
+        "On this page:",
+        "",
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["build_rules"]] + [
+        "",
+    ],
+)
 
 write_file(
     name = "workspace_rules_header",
@@ -88,7 +93,8 @@ write_file(
         "<!-- Generated with Stardoc, Do Not Edit! -->",
         "# Workspace Rules",
         "",
-        "",
+        "The rules described below are used in your WORKSPACE file to declare",
+        "the Swift packages that are dependencies of your project.",
         "",
         "On this page:",
         "",
