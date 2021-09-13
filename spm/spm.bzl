@@ -50,30 +50,32 @@ load(
     "//spm/internal:packages.bzl",
     _packages = "packages",
 )
+
 # load(
 #     "//spm/internal:package_descriptions.bzl",
 #     _package_descriptions = "package_descriptions",
 # )
-# load(
-#     "//spm/internal:providers.bzl",
-#     _providers = "providers",
-# )
-# load(
-#     "//spm/internal:platforms.bzl",
-#     _platforms = "platforms",
-# )
-# load(
-#     "//spm/internal:references.bzl",
-#     _references = "references",
-# )
+load(
+    "//spm/internal:providers.bzl",
+    _providers = "providers",
+)
+load(
+    "//spm/internal:platforms.bzl",
+    _platforms = "platforms",
+)
+load(
+    "//spm/internal:references.bzl",
+    _references = "references",
+)
+
 # load(
 #     "//spm/internal:repositories.bzl",
 #     _repositories = "repositories",
 # )
-# load(
-#     "//spm/internal:repository_utils.bzl",
-#     _repository_utils = "repository_utils",
-# )
+load(
+    "//spm/internal:repository_utils.bzl",
+    _repository_utils = "repository_utils",
+)
 
 # Workspce Rules
 spm_repositories = _spm_repositories
@@ -98,9 +100,11 @@ spm_common = _spm_common
 spm_package_info_utils = _spm_package_info_utils
 spm_versions = _spm_versions
 packages = _packages
+
 # package_descriptions = _package_descriptions
-# providers = _providers
-# platforms = _platforms
-# references = _references
+providers = _providers
+platforms = _platforms
+references = _references
+
 # repositories = _repositories
-# repository_utils = _repository_utils
+repository_utils = _repository_utils

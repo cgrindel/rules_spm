@@ -173,6 +173,268 @@ Returns a list of product references as declared in the specified packages list.
 | <a id="packages.get_product_refs-pkgs"></a>pkgs |  A <code>list</code> of package declarations (<code>struct</code>) as created by <code>packages.create()</code>, <code>packages.pkg_json()</code> or <code>spm_pkg()</code>.   |  none |
 
 
+<a id="#platforms.spm_os"></a>
+
+## platforms.spm_os
+
+<pre>
+platforms.spm_os(<a href="#platforms.spm_os-swift_os">swift_os</a>)
+</pre>
+
+Maps the Bazel OS value to a suitable SPM OS value.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="platforms.spm_os-swift_os"></a>swift_os |  <p align="center"> - </p>   |  none |
+
+
+<a id="#platforms.spm_arch"></a>
+
+## platforms.spm_arch
+
+<pre>
+platforms.spm_arch(<a href="#platforms.spm_arch-swift_cpu">swift_cpu</a>)
+</pre>
+
+Maps the Bazel architeture value to a suitable SPM architecture value.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="platforms.spm_arch-swift_cpu"></a>swift_cpu |  <p align="center"> - </p>   |  none |
+
+
+<a id="#platforms.spm_vendor"></a>
+
+## platforms.spm_vendor
+
+<pre>
+platforms.spm_vendor(<a href="#platforms.spm_vendor-swift_os">swift_os</a>)
+</pre>
+
+Maps the Bazel OS value to the corresponding SPM vendor value.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="platforms.spm_vendor-swift_os"></a>swift_os |  <p align="center"> - </p>   |  none |
+
+
+<a id="#providers.swift_module"></a>
+
+## providers.swift_module
+
+<pre>
+providers.swift_module(<a href="#providers.swift_module-module_name">module_name</a>, <a href="#providers.swift_module-o_files">o_files</a>, <a href="#providers.swift_module-swiftdoc">swiftdoc</a>, <a href="#providers.swift_module-swiftmodule">swiftmodule</a>, <a href="#providers.swift_module-swiftsourceinfo">swiftsourceinfo</a>, <a href="#providers.swift_module-executable">executable</a>,
+                       <a href="#providers.swift_module-all_outputs">all_outputs</a>)
+</pre>
+
+Creates a value representing the Swift module that is built from a package.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.swift_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
+| <a id="providers.swift_module-o_files"></a>o_files |  The Mach-O files that are built by SPM.   |  <code>[]</code> |
+| <a id="providers.swift_module-swiftdoc"></a>swiftdoc |  The .swiftdoc file that is built by SPM.   |  <code>None</code> |
+| <a id="providers.swift_module-swiftmodule"></a>swiftmodule |  The .swiftmodule file that is built by SPM.   |  <code>None</code> |
+| <a id="providers.swift_module-swiftsourceinfo"></a>swiftsourceinfo |  The .swiftsourceinfo file that is built by SPM.   |  <code>None</code> |
+| <a id="providers.swift_module-executable"></a>executable |  The executable if the target is executable.   |  <code>None</code> |
+| <a id="providers.swift_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+
+<a id="#providers.clang_module"></a>
+
+## providers.clang_module
+
+<pre>
+providers.clang_module(<a href="#providers.clang_module-module_name">module_name</a>, <a href="#providers.clang_module-o_files">o_files</a>, <a href="#providers.clang_module-hdrs">hdrs</a>, <a href="#providers.clang_module-modulemap">modulemap</a>, <a href="#providers.clang_module-all_outputs">all_outputs</a>)
+</pre>
+
+Creates a value representing the Clang module that is built from a package.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.clang_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
+| <a id="providers.clang_module-o_files"></a>o_files |  The Mach-O files that are built by SPM.   |  <code>[]</code> |
+| <a id="providers.clang_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
+| <a id="providers.clang_module-modulemap"></a>modulemap |  <p align="center"> - </p>   |  <code>None</code> |
+| <a id="providers.clang_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+
+<a id="#providers.system_library_module"></a>
+
+## providers.system_library_module
+
+<pre>
+providers.system_library_module(<a href="#providers.system_library_module-module_name">module_name</a>, <a href="#providers.system_library_module-c_files">c_files</a>, <a href="#providers.system_library_module-hdrs">hdrs</a>, <a href="#providers.system_library_module-modulemap">modulemap</a>, <a href="#providers.system_library_module-all_outputs">all_outputs</a>)
+</pre>
+
+Creates a value representing the system library module that is built from a package.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.system_library_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
+| <a id="providers.system_library_module-c_files"></a>c_files |  The C source files that are part of the system library definition.   |  <code>[]</code> |
+| <a id="providers.system_library_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
+| <a id="providers.system_library_module-modulemap"></a>modulemap |  The module.modulemap file for the system library module.   |  <code>None</code> |
+| <a id="providers.system_library_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+
+<a id="#providers.copy_info"></a>
+
+## providers.copy_info
+
+<pre>
+providers.copy_info(<a href="#providers.copy_info-src">src</a>, <a href="#providers.copy_info-dest">dest</a>)
+</pre>
+
+Creates a value describing a copy operation.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.copy_info-src"></a>src |  The source file.   |  none |
+| <a id="providers.copy_info-dest"></a>dest |  The destination file.   |  none |
+
+
+<a id="#references.create"></a>
+
+## references.create
+
+<pre>
+references.create(<a href="#references.create-ref_type">ref_type</a>, <a href="#references.create-pkg_name">pkg_name</a>, <a href="#references.create-name">name</a>)
+</pre>
+
+Creates a reference for the specified type.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="references.create-ref_type"></a>ref_type |  A <code>string</code> value. Must be one of the values in <code>reference_types</code>.   |  none |
+| <a id="references.create-pkg_name"></a>pkg_name |  The package name as a <code>string</code>.   |  none |
+| <a id="references.create-name"></a>name |  The name of the item as a <code>string</code>.   |  none |
+
+
+<a id="#references.split"></a>
+
+## references.split
+
+<pre>
+references.split(<a href="#references.split-ref_str">ref_str</a>)
+</pre>
+
+Splits a reference string into its parts.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="references.split-ref_str"></a>ref_str |  A valid reference <code>string</code>.   |  none |
+
+
+<a id="#references.create_target_ref"></a>
+
+## references.create_target_ref
+
+<pre>
+references.create_target_ref(<a href="#references.create_target_ref-pkg_name">pkg_name</a>, <a href="#references.create_target_ref-by_name_values">by_name_values</a>)
+</pre>
+
+Create a target reference from dependency values found in dump-package JSON values.
+
+Example byName ref:
+`{ "byName": [ "Logging", null ] }`
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="references.create_target_ref-pkg_name"></a>pkg_name |  The package name as a <code>string</code>.   |  none |
+| <a id="references.create_target_ref-by_name_values"></a>by_name_values |  A <code>list</code> of <code>string</code> values where the first item is the module name.   |  none |
+
+
+<a id="#references.create_product_ref"></a>
+
+## references.create_product_ref
+
+<pre>
+references.create_product_ref(<a href="#references.create_product_ref-product_values">product_values</a>)
+</pre>
+
+Create a product reference from dependency values found in dump-package JSON values.
+
+Example product ref:
+`{ "product": [ "NIO", "swift-nio", null ] }`
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="references.create_product_ref-product_values"></a>product_values |  A <code>list</code> of <code>string</code> values where the first item is the module name and the second is the package name.   |  none |
+
+
+<a id="#references.is_target_ref"></a>
+
+## references.is_target_ref
+
+<pre>
+references.is_target_ref(<a href="#references.is_target_ref-ref_str">ref_str</a>, <a href="#references.is_target_ref-for_pkg">for_pkg</a>)
+</pre>
+
+Returns a boolean indicating whether the reference string is a target reference.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="references.is_target_ref-ref_str"></a>ref_str |  A valid reference <code>string</code>.   |  none |
+| <a id="references.is_target_ref-for_pkg"></a>for_pkg |  Optional. A package name as a <code>string</code> value to include in the check.   |  <code>None</code> |
+
+
+<a id="#repository_utils.is_macos"></a>
+
+## repository_utils.is_macos
+
+<pre>
+repository_utils.is_macos(<a href="#repository_utils.is_macos-repository_ctx">repository_ctx</a>)
+</pre>
+
+Determines if the host is running MacOS.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="repository_utils.is_macos-repository_ctx"></a>repository_ctx |  A <code>repository_ctx</code> instance.   |  none |
+
+
 <a id="#spm_common.create_clang_hdrs_key"></a>
 
 ## spm_common.create_clang_hdrs_key
