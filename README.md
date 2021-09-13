@@ -10,7 +10,7 @@ Manager](https://swift.org/package-manager/), then make the outputs available to
 
 ## Reference Documentation
 
-[Click here](doc/) for reference documentation for the rules and other definitions in this repository.
+[Click here](/doc) for reference documentation for the rules and other definitions in this repository.
 
 ## Prerequisites
 
