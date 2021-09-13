@@ -1,6 +1,6 @@
-load("@build_bazel_rules_swift//swift:swift.bzl", "swift_import")
-load(":spm_filegroup.bzl", "spm_filegroup")
 load(":spm_archive.bzl", "spm_archive")
+load(":spm_filegroup.bzl", "spm_filegroup")
+load("@build_bazel_rules_swift//swift:swift.bzl", "swift_import")
 
 def spm_swift_library(name, packages, deps = None, visibility = None):
     """Exposes a Swift module as defined in a dependent Swift package.

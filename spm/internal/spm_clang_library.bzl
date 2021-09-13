@@ -1,4 +1,4 @@
-load("//spm/internal:spm_filegroup.bzl", "spm_filegroup")
+load(":spm_filegroup.bzl", "spm_filegroup")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 
 def spm_clang_library(name, packages, deps = None, visibility = None):

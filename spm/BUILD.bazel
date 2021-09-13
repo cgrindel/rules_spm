@@ -11,6 +11,12 @@ bzl_library(
     name = "spm",
     srcs = ["spm.bzl"],
     deps = [
+        "//spm/internal:spm_archive",
+        "//spm/internal:spm_clang_library",
         "//spm/internal:spm_package",
+        "//spm/internal:spm_repositories",
+        "//spm/internal:spm_swift_binary",
+        "//spm/internal:spm_swift_library",
+        "//spm/internal:spm_system_library",
     ],
 )

@@ -1,6 +1,6 @@
+load(":spm_autoconfiguration.bzl", "spm_autoconfiguration")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
-load(":spm_autoconfiguration.bzl", "spm_autoconfiguration")
 
 def spm_rules_dependencies():
     maybe(
