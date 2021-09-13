@@ -1,7 +1,7 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # Providers
 
-The providers described below are used by [the build rules](doc/build_rules.md) to
+The providers described below are used by [the build rules](/doc/build_rules.md) to
 facilitate the build and exposition of the Swift packages.
 
 On this page:

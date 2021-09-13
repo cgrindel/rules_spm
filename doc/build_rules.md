@@ -4,7 +4,7 @@
 The rules described below are used to build Swift
 packages and make their outputs available as Bazel targets. Most
 clients will not use these rules directly. They are an implementation
-detail for [the workspace rules](doc/workspace_rules.md).
+detail for [the workspace rules](/doc/workspace_rules.md).
 
 On this page:
 

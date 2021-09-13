@@ -1,8 +1,8 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # Build API
 
-The APIs described below are used by [the workspace rules](doc/workspace_rules.md) and
-[the build rules](doc/build_rules.md) to facilitate the build and exposition of the
+The APIs described below are used by [the workspace rules](/doc/workspace_rules.md) and
+[the build rules](/doc/build_rules.md) to facilitate the build and exposition of the
 Swift packages.
 
 On this page:
