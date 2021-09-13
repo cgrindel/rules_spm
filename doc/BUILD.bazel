@@ -27,12 +27,12 @@ _DOC_SRCS = {
     #     "spm_swift_library",
     #     "spm_system_library",
     # ],
-    "providers": [
-        "SPMBuildInfo",
-        "SPMPackageInfo",
-        "SPMPackagesInfo",
-        "SPMPlatformInfo",
-    ],
+    # "providers": [
+    #     "SPMBuildInfo",
+    #     "SPMPackageInfo",
+    #     "SPMPackagesInfo",
+    #     "SPMPlatformInfo",
+    # ],
     "rules": [
         "spm_repositories",
         "spm_pkg",
@@ -53,19 +53,19 @@ _DOC_SRCS = {
 #     ],
 # )
 
-write_file(
-    name = "providers_header",
-    out = "providers_header.vm",
-    content = [
-        "<!-- Generated with Stardoc, Do Not Edit! -->",
-        "# Providers",
-        "",
-        "On this page:",
-        "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["providers"]] + [
-        "",
-    ],
-)
+# write_file(
+#     name = "providers_header",
+#     out = "providers_header.vm",
+#     content = [
+#         "<!-- Generated with Stardoc, Do Not Edit! -->",
+#         "# Providers",
+#         "",
+#         "On this page:",
+#         "",
+#     ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["providers"]] + [
+#         "",
+#     ],
+# )
 
 # write_file(
 #     name = "private_rules_header",
@@ -81,62 +81,75 @@ write_file(
 #     ],
 # )
 
-write_file(
-    name = "rules_header",
-    out = "rules_header.vm",
-    content = [
-        "<!-- Generated with Stardoc, Do Not Edit! -->",
-        "# Rules",
-        # "${moduleDocstring}",
-        "On this page:",
-        "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["rules"]] + [
-        "",
+# write_file(
+#     name = "rules_header",
+#     out = "rules_header.vm",
+#     content = [
+#         "<!-- Generated with Stardoc, Do Not Edit! -->",
+#         "# Rules",
+#         # "${moduleDocstring}",
+#         "On this page:",
+#         "",
+#     ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["rules"]] + [
+#         "",
+#     ],
+# )
+
+# [
+#     stardoc(
+#         name = file + "_doc",
+#         out = file + ".md_",
+#         header_template = file + "_header.vm",
+#         input = "//spm:spm.bzl",
+#         symbol_names = symbols,
+#         deps = ["//spm"],
+#     )
+#     for [
+#         file,
+#         symbols,
+#     ] in _DOC_SRCS.items()
+# ]
+
+# # To make these tests pass, run
+# # bazel run //doc:update
+# [
+#     diff_test(
+#         name = "test_" + file,
+#         file1 = file + ".md_",
+#         file2 = file + ".md",
+#     )
+#     for file in _DOC_SRCS.keys()
+# ]
+
+# write_file(
+#     name = "gen_update",
+#     out = "update.sh",
+#     content = [
+#         "#!/usr/bin/env bash",
+#         "cd $BUILD_WORKSPACE_DIRECTORY",
+#     ] + [
+#         "cp -fv bazel-bin/doc/{0}.md_ doc/{0}.md".format(
+#             file,
+#         )
+#         for file in _DOC_SRCS.keys()
+#     ],
+# )
+
+# sh_binary(
+#     name = "update",
+#     srcs = ["update.sh"],
+#     data = [file + ".md_" for file in _DOC_SRCS.keys()],
+# )
+
+stardoc(
+    name = "foo_doc",
+    out = "foo_doc.md",
+    input = "//spm:foo.bzl",
+    symbol_names = [
+        "spm_repositories",
+        "spm_pkg",
     ],
-)
-
-[
-    stardoc(
-        name = file + "_doc",
-        out = file + ".md_",
-        header_template = file + "_header.vm",
-        input = "//spm:spm.bzl",
-        symbol_names = symbols,
-        deps = ["//spm"],
-    )
-    for [
-        file,
-        symbols,
-    ] in _DOC_SRCS.items()
-]
-
-# To make these tests pass, run
-# bazel run //doc:update
-[
-    diff_test(
-        name = "test_" + file,
-        file1 = file + ".md_",
-        file2 = file + ".md",
-    )
-    for file in _DOC_SRCS.keys()
-]
-
-write_file(
-    name = "gen_update",
-    out = "update.sh",
-    content = [
-        "#!/usr/bin/env bash",
-        "cd $BUILD_WORKSPACE_DIRECTORY",
-    ] + [
-        "cp -fv bazel-bin/doc/{0}.md_ doc/{0}.md".format(
-            file,
-        )
-        for file in _DOC_SRCS.keys()
+    deps = [
+        "//spm",
     ],
-)
-
-sh_binary(
-    name = "update",
-    srcs = ["update.sh"],
-    data = [file + ".md_" for file in _DOC_SRCS.keys()],
 )

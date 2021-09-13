@@ -11,6 +11,16 @@ bzl_library(
     ],
 )
 
+# DEBUG BEGIN
+bzl_library(
+    name = "foo",
+    srcs = ["foo.bzl"],
+    deps = [
+        "//spm/internal:spm_repositories",
+    ],
+)
+# DEBUG END
+
 bzl_library(
     name = "spm",
     srcs = ["spm.bzl"],
