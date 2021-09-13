@@ -13,8 +13,7 @@ def _create_clang_hdrs_key(pkg_name, target_name):
     return "%s/%s" % (pkg_name, target_name)
 
 def _split_clang_hdrs_key(key):
-    """Returns the package name and the target name from a clang headers 
-    dictionary key.
+    """Returns the package name and the target name from a clang headers dictionary key.
 
     Args:
         key: A `string` representing a clange headers key.

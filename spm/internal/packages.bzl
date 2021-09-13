@@ -82,8 +82,7 @@ def _copy_pkg(
         from_version = None,
         revision = None,
         products = None):
-    """Create a copy of the provided package replacing any of the argument 
-    values that are not None.
+    """Create a copy of the provided package replacing any of the argument values that are not None.
 
     Args:
         pkg: A `struct` representing a Swift package.

@@ -5,7 +5,7 @@ load(
 load(":spm_filegroup.bzl", "spm_filegroup")
 
 def spm_system_library(name, packages, deps = None, visibility = None):
-    """Exposes a system library module as defined in a dependent Swift package.
+    """Exposes a system library module as defined in a Swift package.
 
     Args:
         name: The Bazel target name.

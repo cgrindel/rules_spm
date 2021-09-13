@@ -32,8 +32,7 @@ def _split_ref(ref_str):
     return (ref_type, parts[0], parts[1])
 
 def _create_target_ref(pkg_name, by_name_values):
-    """Create a target reference from dependency values found in 
-    dump-package JSON values.
+    """Create a target reference from dependency values found in dump-package JSON values.
 
     Example byName ref:
     `{ "byName": [ "Logging", null ] }`
@@ -52,8 +51,7 @@ def _create_target_ref(pkg_name, by_name_values):
     return _create_ref(reference_types.target, pkg_name, target_name)
 
 def _create_product_ref(product_values):
-    """Create a product reference from dependency values found in dump-package
-    JSON values.
+    """Create a product reference from dependency values found in dump-package JSON values.
 
     Example product ref:
     `{ "product": [ "NIO", "swift-nio", null ] }`
@@ -72,8 +70,7 @@ def _create_product_ref(product_values):
     return _create_ref(reference_types.product, pkg_name, product_name)
 
 def _is_target_ref(ref_str, for_pkg = None):
-    """Returns a boolean indicating whether the reference string is a target
-    reference.
+    """Returns a boolean indicating whether the reference string is a target reference.
 
     Args:
        ref_str: A valid reference `string`.

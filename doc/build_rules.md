@@ -24,8 +24,8 @@ On this page:
 spm_archive(<a href="#spm_archive-name">name</a>, <a href="#spm_archive-o_files">o_files</a>)
 </pre>
 
-    Combines object files (.o) into an archive file (.a).
-    
+Combines object files (.o) into an archive file (.a).
+
 
 **ATTRIBUTES**
 
@@ -55,7 +55,7 @@ Builds the specified Swift package.
 | <a id="spm_package-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
 | <a id="spm_package-clang_module_headers"></a>clang_module_headers |  A <code>dict</code> where the keys are target names and the values are public header paths.   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -> List of strings</a> | optional | {} |
 | <a id="spm_package-configuration"></a>configuration |  The configuration to use when executing swift build (e.g. debug, release).   | String | optional | "release" |
-| <a id="spm_package-dependencies_json"></a>dependencies_json |  "        JSON string describing the dependencies to expose        (e.g. see dependencies in spm_repositories)   | String | required |  |
+| <a id="spm_package-dependencies_json"></a>dependencies_json |  "JSON string describing the dependencies to expose (e.g. see dependencies in spm_repositories)   | String | required |  |
 | <a id="spm_package-package_descriptions_json"></a>package_descriptions_json |  JSON string which describes the package (i.e. swift package describe --type json).   | String | required |  |
 | <a id="spm_package-package_path"></a>package_path |  Directory which contains the Package.swift (i.e. swift build --package-path VALUE).   | String | optional | "" |
 | <a id="spm_package-srcs"></a>srcs |  -   | <a href="https://bazel.build/docs/build-ref.html#labels">List of labels</a> | required |  |
@@ -69,7 +69,7 @@ Builds the specified Swift package.
 spm_swift_binary(<a href="#spm_swift_binary-name">name</a>, <a href="#spm_swift_binary-module_name">module_name</a>, <a href="#spm_swift_binary-package_name">package_name</a>, <a href="#spm_swift_binary-packages">packages</a>)
 </pre>
 
-Builds the specified Swift package.
+Exposes a Swift binary from a Swift package.
 
 **ATTRIBUTES**
 
@@ -77,8 +77,8 @@ Builds the specified Swift package.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="spm_swift_binary-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
-| <a id="spm_swift_binary-module_name"></a>module_name |  The name of the executable module in the SPM package. If no value             is provided, it will be derived from the name attribute.   | String | optional | "" |
-| <a id="spm_swift_binary-package_name"></a>package_name |  The name of the package that exports this module. If no value              provided, it will be derived from the Bazel package name.   | String | optional | "" |
+| <a id="spm_swift_binary-module_name"></a>module_name |  The name of the executable module in the SPM package. If no value is provided, it will be derived from the name attribute.   | String | optional | "" |
+| <a id="spm_swift_binary-package_name"></a>package_name |  The name of the package that exports this module. If no value  provided, it will be derived from the Bazel package name.   | String | optional | "" |
 | <a id="spm_swift_binary-packages"></a>packages |  A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
 
 
@@ -111,7 +111,7 @@ Exposes a clang module as defined in a dependent Swift package.
 spm_swift_library(<a href="#spm_swift_library-name">name</a>, <a href="#spm_swift_library-packages">packages</a>, <a href="#spm_swift_library-deps">deps</a>, <a href="#spm_swift_library-visibility">visibility</a>)
 </pre>
 
-Exposes a Swift module as defined in a dependent Swift package.
+Exposes a Swift module as defined in a Swift package.
 
 **PARAMETERS**
 
@@ -132,7 +132,7 @@ Exposes a Swift module as defined in a dependent Swift package.
 spm_system_library(<a href="#spm_system_library-name">name</a>, <a href="#spm_system_library-packages">packages</a>, <a href="#spm_system_library-deps">deps</a>, <a href="#spm_system_library-visibility">visibility</a>)
 </pre>
 
-Exposes a system library module as defined in a dependent Swift package.
+Exposes a system library module as defined in a Swift package.
 
 **PARAMETERS**
 

@@ -10,8 +10,7 @@ def _get_sdk_name(platform):
     return platform.name_in_plist.lower()
 
 def _get_os_name(platform):
-    """Returns the OS name for the given platform. This value can be used 
-    when constructing target triplets.
+    """Returns the OS name for the given platform. This value can be used when constructing target triplets.
 
     Args:
         platform: The `apple_platform` value describing the target platform.
@@ -29,7 +28,7 @@ def _target_triple(arch, vendor, sys, abi = ""):
 
     Documentation:
         https://clang.llvm.org/docs/CrossCompilation.html#target-triple
-    
+
     Args:
         arch: A `string` representing the architecture. (e.g. `x86_64`,
               `arm64`)
@@ -38,7 +37,7 @@ def _target_triple(arch, vendor, sys, abi = ""):
         sys: A `string` representing the operating system. (e.g. `none`,
              `linux`, `darwin`)
         abi: Optional. A `string` representing the abi. (e.g. `gnu`, `android`)
-    
+
     Returns:
         A `string` representing a target triple.
     """

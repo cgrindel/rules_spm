@@ -41,8 +41,8 @@ spm_linux_toolchain = rule(
         ),
         "os": attr.string(
             doc = """\
-            The name of the operating system that this toolchain targets.
-            """,
+The name of the operating system that this toolchain targets.\
+""",
             mandatory = True,
         ),
         "vendor": attr.string(
@@ -58,4 +58,5 @@ spm_linux_toolchain = rule(
             default = "//spm/internal:exec_spm_build",
         ),
     },
+    doc = "Provides toolchain information for SPM builds on Linux.",
 )

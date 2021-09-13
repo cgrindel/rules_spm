@@ -54,20 +54,20 @@ spm_filegroup = rule(
             mandatory = True,
             providers = [[SPMPackagesInfo]],
             doc = """\
-            A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
-            """,
+A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
+""",
         ),
         "package_name": attr.string(
             doc = """\
-            The name of the package that exports this module. If no value 
-            provided, it will be derived from the Bazel package name.\
-            """,
+The name of the package that exports this module. If no value provided, it \
+will be derived from the Bazel package name.\
+""",
         ),
         "module_name": attr.string(
             mandatory = True,
             doc = """\
-            The name of the module in the SPM package to select for file exposition.\
-            """,
+The name of the module in the SPM package to select for file exposition.\
+""",
         ),
         "file_type": attr.string(
             mandatory = True,
@@ -82,12 +82,12 @@ spm_filegroup = rule(
                 "all",
             ],
             doc = """\
-            The type of file to expose about the module.
-            """,
+The type of file to expose about the module.\
+""",
         ),
     },
     doc = """\
-    Exposes the specified type of file(s) from a rule that outputs an SPMPackagesInfo (e.g. 
-    spm_package).
-    """,
+Exposes the specified type of file(s) from a rule that outputs an \
+SPMPackagesInfo (e.g.  spm_package).\
+""",
 )

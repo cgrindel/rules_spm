@@ -34,9 +34,45 @@ load(
     _SPMPackagesInfo = "SPMPackagesInfo",
     _SPMPlatformInfo = "SPMPlatformInfo",
 )
+load(
+    "//spm/internal:spm_common.bzl",
+    _spm_common = "spm_common",
+)
+load(
+    "//spm/internal:spm_package_info_utils.bzl",
+    _spm_package_info_utils = "spm_package_info_utils",
+)
+load(
+    "//spm/internal:spm_versions.bzl",
+    _spm_versions = "spm_versions",
+)
+load(
+    "//spm/internal:packages.bzl",
+    _packages = "packages",
+)
 # load(
 #     "//spm/internal:package_descriptions.bzl",
 #     _package_descriptions = "package_descriptions",
+# )
+# load(
+#     "//spm/internal:providers.bzl",
+#     _providers = "providers",
+# )
+# load(
+#     "//spm/internal:platforms.bzl",
+#     _platforms = "platforms",
+# )
+# load(
+#     "//spm/internal:references.bzl",
+#     _references = "references",
+# )
+# load(
+#     "//spm/internal:repositories.bzl",
+#     _repositories = "repositories",
+# )
+# load(
+#     "//spm/internal:repository_utils.bzl",
+#     _repository_utils = "repository_utils",
 # )
 
 # Workspce Rules
@@ -58,4 +94,13 @@ SPMPackagesInfo = _SPMPackagesInfo
 SPMPackageInfo = _SPMPackageInfo
 
 # API
+spm_common = _spm_common
+spm_package_info_utils = _spm_package_info_utils
+spm_versions = _spm_versions
+packages = _packages
 # package_descriptions = _package_descriptions
+# providers = _providers
+# platforms = _platforms
+# references = _references
+# repositories = _repositories
+# repository_utils = _repository_utils

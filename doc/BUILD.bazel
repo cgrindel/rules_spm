@@ -6,18 +6,18 @@ load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
 # https://github.com/bazelbuild/rules_swift/blob/021c11b1d578ffba547140eb24854cdfe74c794f/doc/BUILD.bazel#L3
 
 _DOC_SRCS = {
-    # "api": [
-    #     "spm_common",
-    #     "spm_package_info_utils",
-    #     "spm_versions",
-    #     "packages",
-    #     "package_descriptions",
-    #     "providers",
-    #     "platforms",
-    #     "references",
-    #     "repositories",
-    #     "repository_utils",
-    # ],
+    "api": [
+        "spm_common",
+        "spm_package_info_utils",
+        "spm_versions",
+        "packages",
+        "package_descriptions",
+        "providers",
+        "platforms",
+        "references",
+        "repositories",
+        "repository_utils",
+    ],
     "build_rules": [
         "spm_archive",
         "spm_clang_library",
@@ -39,19 +39,23 @@ _DOC_SRCS = {
     ],
 }
 
-# write_file(
-#     name = "api_header",
-#     out = "api_header.vm",
-#     content = [
-#         "<!-- Generated with Stardoc, Do Not Edit! -->",
-#         "# Build API",
-#         "",
-#         "On this page:",
-#         "",
-#     ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["api"]] + [
-#         "",
-#     ],
-# )
+write_file(
+    name = "api_header",
+    out = "api_header.vm",
+    content = [
+        "<!-- Generated with Stardoc, Do Not Edit! -->",
+        "# Build API",
+        "",
+        "The APIs described below are used by [the workspace rules](doc/workspace_rules.md) and",
+        "[the build rules](doc/build_rules.md) to facilitate the build and exposition of the",
+        "Swift packages.",
+        "",
+        "On this page:",
+        "",
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["api"]] + [
+        "",
+    ],
+)
 
 write_file(
     name = "providers_header",
@@ -60,7 +64,7 @@ write_file(
         "<!-- Generated with Stardoc, Do Not Edit! -->",
         "# Providers",
         "",
-        "The providers described below are used by the build rules to",
+        "The providers described below are used by [the build rules](doc/build_rules.md) to",
         "facilitate the build and exposition of the Swift packages.",
         "",
         "On this page:",
@@ -151,17 +155,3 @@ sh_binary(
     srcs = ["update.sh"],
     data = [file + ".md_" for file in _DOC_SRCS.keys()],
 )
-
-# stardoc(
-#     name = "spm_doc",
-#     out = "spm_doc.md",
-#     input = "//spm:spm.bzl",
-#     symbol_names = [
-#         "spm_repositories",
-#         "spm_pkg",
-#         "spm_package",
-#     ],
-#     deps = [
-#         "//spm",
-#     ],
-# )

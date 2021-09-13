@@ -79,21 +79,21 @@ spm_archive = rule(
             mandatory = True,
             allow_files = True,
             doc = """\
-            The object files to be combined into the clang archive using the ar tool.
-            """,
+The object files to be combined into the clang archive using the ar tool.
+""",
         ),
         "_cc_toolchain": attr.label(
             default = Label("@bazel_tools//tools/cpp:current_cc_toolchain"),
             doc = """\
-            The C++ toolchain from which other tools needed by the Swift toolchain (such as
-            `clang` and `ar`) will be retrieved.
-            """,
+The C++ toolchain from which other tools needed by the Swift toolchain (such as
+`clang` and `ar`) will be retrieved.
+""",
         ),
     },
     fragments = ["cpp"],
     toolchains = ["@bazel_tools//tools/cpp:toolchain_type"],
     incompatible_use_toolchain_transition = True,
     doc = """\
-    Combines object files (.o) into an archive file (.a).
-    """,
+Combines object files (.o) into an archive file (.a).
+""",
 )

@@ -68,4 +68,5 @@ spm_xcode_toolchain = rule(
             ),
         ),
     },
+    doc = "Provides toolchain information for SPM builds using Xcode.",
 )
