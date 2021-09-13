@@ -33,7 +33,7 @@ _DOC_SRCS = {
     #     "SPMPackagesInfo",
     #     "SPMPlatformInfo",
     # ],
-    "rules": [
+    "workspace_rules": [
         "spm_repositories",
         "spm_pkg",
     ],
@@ -82,15 +82,17 @@ _DOC_SRCS = {
 # )
 
 write_file(
-    name = "rules_header",
-    out = "rules_header.vm",
+    name = "workspace_rules_header",
+    out = "workspace_rules_header.vm",
     content = [
         "<!-- Generated with Stardoc, Do Not Edit! -->",
-        "# Rules",
-        # "${moduleDocstring}",
+        "# Workspace Rules",
+        "",
+        "",
+        "",
         "On this page:",
         "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["rules"]] + [
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["workspace_rules"]] + [
         "",
     ],
 )

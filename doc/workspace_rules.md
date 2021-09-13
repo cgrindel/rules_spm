@@ -1,5 +1,8 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# Rules
+# Workspace Rules
+
+
+
 On this page:
 
   * [spm_repositories](#spm_repositories)
