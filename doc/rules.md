@@ -13,8 +13,8 @@ On this page:
 spm_repositories(<a href="#spm_repositories-name">name</a>, <a href="#spm_repositories-dependencies">dependencies</a>, <a href="#spm_repositories-platforms">platforms</a>, <a href="#spm_repositories-repo_mapping">repo_mapping</a>, <a href="#spm_repositories-swift_version">swift_version</a>)
 </pre>
 
-    Used to fetch and prepare external Swift package manager packages for the build.
-    
+Used to fetch and prepare external Swift package manager packages for the build.
+
 
 **ATTRIBUTES**
 
@@ -23,7 +23,7 @@ spm_repositories(<a href="#spm_repositories-name">name</a>, <a href="#spm_reposi
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="spm_repositories-name"></a>name |  A unique name for this repository.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
 | <a id="spm_repositories-dependencies"></a>dependencies |  List of JSON strings specifying the SPM packages to load.   | List of strings | required |  |
-| <a id="spm_repositories-platforms"></a>platforms |  The platforms to declare in the placeholder/uber Swift package.             (e.g. .macOS(.v10_15))   | List of strings | optional | [] |
+| <a id="spm_repositories-platforms"></a>platforms |  The platforms to declare in the placeholder/uber Swift package. (e.g. .macOS(.v10_15))   | List of strings | optional | [] |
 | <a id="spm_repositories-repo_mapping"></a>repo_mapping |  A dictionary from local repository name to global repository name. This allows controls over workspace dependency resolution for dependencies of this repository.&lt;p&gt;For example, an entry <code>"@foo": "@bar"</code> declares that, for any time this repository depends on <code>@foo</code> (such as a dependency on <code>@foo//some:target</code>, it should actually resolve that dependency within globally-declared <code>@bar</code> (<code>@bar//some:target</code>).   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -> String</a> | required |  |
 | <a id="spm_repositories-swift_version"></a>swift_version |  The version of Swift that will be declared in the placeholder/uber Swift package.   | String | optional | "5.3" |
 

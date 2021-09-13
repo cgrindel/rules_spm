@@ -671,21 +671,21 @@ spm_repositories = repository_rule(
         "swift_version": attr.string(
             default = "5.3",
             doc = """\
-            The version of Swift that will be declared in the placeholder/uber Swift package.\
-            """,
+The version of Swift that will be declared in the placeholder/uber Swift package.\
+""",
         ),
         "platforms": attr.string_list(
             doc = """\
-            The platforms to declare in the placeholder/uber Swift package. \
-            (e.g. .macOS(.v10_15))\
-            """,
+The platforms to declare in the placeholder/uber Swift package. \
+(e.g. .macOS(.v10_15))\
+""",
         ),
         "_workspace_file": attr.label(
             default = "@//:WORKSPACE",
             doc = """\
-            The value of this label helps the rule find the root of the Bazel \
-            workspace for local path resolution.\
-            """,
+The value of this label helps the rule find the root of the Bazel \
+workspace for local path resolution.\
+""",
         ),
         "_package_swift_tpl": attr.label(
             default = "//spm/internal:Package.swift.tpl",
@@ -695,8 +695,8 @@ spm_repositories = repository_rule(
         ),
     },
     doc = """\
-    Used to fetch and prepare external Swift package manager packages for the build.
-    """,
+Used to fetch and prepare external Swift package manager packages for the build.
+""",
 )
 
 spm_pkg = packages.pkg_json
