@@ -15,7 +15,6 @@ On this page:
   * [providers](#providers)
   * [platforms](#platforms)
   * [references](#references)
-  * [repositories](#repositories)
   * [repository_utils](#repository_utils)
 
 <a id="#package_descriptions.parse_json"></a>

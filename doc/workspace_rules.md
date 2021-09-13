@@ -1,13 +1,15 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # Workspace Rules
 
-The rules described below are used in your WORKSPACE file to declare
-the Swift packages that are dependencies of your project.
+The rules and functions described below are used in your WORKSPACE file to
+confgure `rules_spm` and to declare the Swift packages that are dependencies
+of your project.
 
 On this page:
 
   * [spm_repositories](#spm_repositories)
   * [spm_pkg](#spm_pkg)
+  * [spm_rules_dependencies](#spm_rules_dependencies)
 
 <a id="#spm_repositories"></a>
 
@@ -59,5 +61,17 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="spm_pkg-from_version"></a>from_version |  Optional. A <code>string</code> representing a valid "from" SPM version.   |  <code>None</code> |
 | <a id="spm_pkg-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="spm_pkg-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |
+
+
+<a id="#spm_rules_dependencies"></a>
+
+## spm_rules_dependencies
+
+<pre>
+spm_rules_dependencies()
+</pre>
+
+Loads the dependencies for `rules_spm`.
+
 
 

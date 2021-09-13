@@ -15,7 +15,6 @@ _DOC_SRCS = {
         "providers",
         "platforms",
         "references",
-        "repositories",
         "repository_utils",
     ],
     "build_rules": [
@@ -36,6 +35,7 @@ _DOC_SRCS = {
     "workspace_rules": [
         "spm_repositories",
         "spm_pkg",
+        "spm_rules_dependencies",
     ],
 }
 
@@ -100,8 +100,9 @@ write_file(
         "<!-- Generated with Stardoc, Do Not Edit! -->",
         "# Workspace Rules",
         "",
-        "The rules described below are used in your WORKSPACE file to declare",
-        "the Swift packages that are dependencies of your project.",
+        "The rules and functions described below are used in your WORKSPACE file to",
+        "confgure `rules_spm` and to declare the Swift packages that are dependencies",
+        "of your project.",
         "",
         "On this page:",
         "",

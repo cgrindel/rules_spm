@@ -66,19 +66,19 @@ load(
     "//spm/internal:references.bzl",
     _references = "references",
 )
-
-# load(
-#     "//spm/internal:repositories.bzl",
-#     _repositories = "repositories",
-# )
+load(
+    "//spm/internal:repositories.bzl",
+    _spm_rules_dependencies = "spm_rules_dependencies",
+)
 load(
     "//spm/internal:repository_utils.bzl",
     _repository_utils = "repository_utils",
 )
 
-# Workspce Rules
+# Workspce Rules and Functions
 spm_repositories = _spm_repositories
 spm_pkg = _spm_pkg
+spm_rules_dependencies = _spm_rules_dependencies
 
 # Build Rules and Macros
 spm_package = _spm_package
@@ -99,11 +99,8 @@ spm_common = _spm_common
 spm_package_info_utils = _spm_package_info_utils
 spm_versions = _spm_versions
 packages = _packages
-
 package_descriptions = _package_descriptions
 providers = _providers
 platforms = _platforms
 references = _references
-
-# repositories = _repositories
 repository_utils = _repository_utils
