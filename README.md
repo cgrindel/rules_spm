@@ -58,8 +58,9 @@ EOF
 This approach was necessary to successfully execute the examples on an Ubuntu runner using Github
 actions. See the [Github workflow](.github/workflows/bazel.yml) for more details.
 
+<a id="#quickstart"></a>
 
-## Quick Start
+## Quickstart
 
 The following provides a quick introduction on how to use the rules in this repository. Also, check
 out the [examples directory](examples/) for more information.

@@ -4,7 +4,7 @@
 
 The [workspace rules and functions](/doc/workspace_rules.md) are the primary interface for
 `rules_spm`. If you are just trying to leverage third-party Swift packages in your Bazel build,
-start [here](/doc/workspace_rules.md).
+check out [the quickstart](/README.md#quickstart) and review [the workspace rules](/doc/workspace_rules.md).
 
 ## Behind the Scenes
 
