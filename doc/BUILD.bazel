@@ -6,6 +6,8 @@ load(":doc_providers.bzl", "doc_providers")
 # Lovingly inspired by
 # https://github.com/bazelbuild/rules_swift/blob/021c11b1d578ffba547140eb24854cdfe74c794f/doc/BUILD.bazel#L3
 
+# MARK: - Documentation Declarations
+
 _API_SRCS = [
     "spm_common",
     "spm_package_info_utils",
@@ -18,7 +20,7 @@ _API_SRCS = [
     "repository_utils",
 ]
 
-_DOC_SRCS = {
+_DOC_WITH_SYMBOLS = {
     "build_rules": [
         "spm_archive",
         "spm_clang_library",
@@ -49,7 +51,7 @@ _DOC_PROVIDERS = [
     for [
         name,
         symbols,
-    ] in _DOC_SRCS.items()
+    ] in _DOC_WITH_SYMBOLS.items()
 ] + [
     doc_providers.create(
         name = "api",
@@ -61,6 +63,8 @@ _DOC_PROVIDERS = [
     )
     for name in _API_SRCS
 ]
+
+# MARK: - Special Case api.md
 
 # Write the api.md_ file as a special case.
 write_file(
@@ -81,6 +85,8 @@ write_file(
     ],
 )
 
+# MARK: - Headers
+
 write_file(
     name = "providers_header",
     out = "providers_header.vm",
@@ -93,7 +99,7 @@ write_file(
         "",
         "On this page:",
         "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["providers"]] + [
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["providers"]] + [
         "",
     ],
 )
@@ -112,7 +118,7 @@ write_file(
         "",
         "On this page:",
         "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["build_rules"]] + [
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["build_rules"]] + [
         "",
     ],
 )
@@ -130,10 +136,12 @@ write_file(
         "",
         "On this page:",
         "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["workspace_rules"]] + [
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["workspace_rules"]] + [
         "",
     ],
 )
+
+# MARK: - Stardoc Declarations
 
 [
     stardoc(
@@ -148,6 +156,8 @@ write_file(
     if doc_prov.is_stardoc
 ]
 
+# MARK: - Doc Diff Tests
+
 # To make these tests pass, run
 # bazel run //doc:update
 [
@@ -158,6 +168,8 @@ write_file(
     )
     for doc_prov in _DOC_PROVIDERS
 ]
+
+# MARK: - Update Doc
 
 write_file(
     name = "gen_update",
