@@ -1,22 +1,36 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
+load(":doc_providers.bzl", "doc_providers")
 
 # Lovingly inspired by
 # https://github.com/bazelbuild/rules_swift/blob/021c11b1d578ffba547140eb24854cdfe74c794f/doc/BUILD.bazel#L3
 
+_API_SRCS = [
+    "spm_common",
+    "spm_package_info_utils",
+    "spm_versions",
+    "packages",
+    "package_descriptions",
+    "providers",
+    "platforms",
+    "references",
+    "repository_utils",
+]
+
 _DOC_SRCS = {
-    "api": [
-        "spm_common",
-        "spm_package_info_utils",
-        "spm_versions",
-        "packages",
-        "package_descriptions",
-        "providers",
-        "platforms",
-        "references",
-        "repository_utils",
-    ],
+    # "api": [],
+    # "api": [
+    #     "spm_common",
+    #     "spm_package_info_utils",
+    #     "spm_versions",
+    #     "packages",
+    #     "package_descriptions",
+    #     "providers",
+    #     "platforms",
+    #     "references",
+    #     "repository_utils",
+    # ],
     "build_rules": [
         "spm_archive",
         "spm_clang_library",
@@ -39,9 +53,31 @@ _DOC_SRCS = {
     ],
 }
 
+_DOC_PROVIDERS = [
+    doc_providers.create_with_symbols(
+        name = name,
+        symbols = symbols,
+    )
+    for [
+        name,
+        symbols,
+    ] in _DOC_SRCS.items()
+] + [
+    doc_providers.create(
+        name = "api",
+        is_stardoc = False,
+    ),
+] + [
+    doc_providers.create_api(
+        name = name,
+    )
+    for name in _API_SRCS
+]
+
+# Write the api.md_ file as a special case.
 write_file(
-    name = "api_header",
-    out = "api_header.vm",
+    name = "api_doc",
+    out = "api.md_",
     content = [
         "<!-- Generated with Stardoc, Do Not Edit! -->",
         "# Build API",
@@ -52,7 +88,7 @@ write_file(
         "",
         "On this page:",
         "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_SRCS["api"]] + [
+    ] + ["  * [{0}](/doc/{0}.md)".format(r) for r in _API_SRCS] + [
         "",
     ],
 )
@@ -111,31 +147,94 @@ write_file(
     ],
 )
 
+# Non-API Stardoc Declarations
+# [
+#     stardoc(
+#         name = file + "_doc",
+#         out = file + ".md_",
+#         header_template = file + "_header.vm",
+#         input = "//spm:spm.bzl",
+#         symbol_names = symbols,
+#         deps = ["//spm"],
+#     )
+#     for [
+#         file,
+#         symbols,
+#     ] in _DOC_SRCS.items()
+# ]
+
+# # API Stardoc Declarations
+# [
+#     stardoc(
+#         name = file + "_api_doc",
+#         out = file + "_api.md_",
+#         input = "//spm:spm.bzl",
+#         symbol_names = [file],
+#         deps = ["//spm"],
+#     )
+#     for file in _API_SRCS
+# ]
+
 [
     stardoc(
-        name = file + "_doc",
-        out = file + ".md_",
-        header_template = file + "_header.vm",
+        name = doc_prov.name,
+        out = doc_prov.out_basename,
+        header_template = doc_prov.header,
         input = "//spm:spm.bzl",
-        symbol_names = symbols,
+        symbol_names = doc_prov.symbols,
         deps = ["//spm"],
     )
-    for [
-        file,
-        symbols,
-    ] in _DOC_SRCS.items()
+    for doc_prov in _DOC_PROVIDERS
+    if doc_prov.is_stardoc
 ]
 
 # To make these tests pass, run
 # bazel run //doc:update
 [
     diff_test(
-        name = "test_" + file,
-        file1 = file + ".md_",
-        file2 = file + ".md",
+        name = "test_" + doc_prov.name,
+        file1 = doc_prov.out_basename,
+        file2 = doc_prov.doc_basename,
     )
-    for file in _DOC_SRCS.keys()
+    for doc_prov in _DOC_PROVIDERS
 ]
+# [
+#     diff_test(
+#         name = "test_" + file,
+#         file1 = file + ".md_",
+#         file2 = file + ".md",
+#     )
+#     for file in _DOC_SRCS.keys() + ["api"] + _API_SRCS
+# ]
+
+# write_file(
+#     name = "gen_update",
+#     out = "update.sh",
+#     content = [
+#         "#!/usr/bin/env bash",
+#         "cd $BUILD_WORKSPACE_DIRECTORY",
+#     ] + [
+#         "cp -fv bazel-bin/doc/{0}.md_ doc/{0}.md".format(
+#             file,
+#         )
+#         for file in _DOC_SRCS.keys()
+#     ] + [
+#         "cp -fv bazel-bin/doc/{0}_api.md_ doc/{0}_api.md".format(
+#             file,
+#         )
+#         for file in _API_SRCS
+#     ],
+# )
+
+# _doc_files = [file + ".md_" for file in _DOC_SRCS.keys()]
+
+# _api_doc_files = [file + "_api.md_" for file in _API_SRCS]
+
+# sh_binary(
+#     name = "update",
+#     srcs = ["update.sh"],
+#     data = _doc_files + _api_doc_files,
+# )
 
 write_file(
     name = "gen_update",
@@ -144,15 +243,16 @@ write_file(
         "#!/usr/bin/env bash",
         "cd $BUILD_WORKSPACE_DIRECTORY",
     ] + [
-        "cp -fv bazel-bin/doc/{0}.md_ doc/{0}.md".format(
-            file,
+        "cp -fv bazel-bin/doc/{0} doc/{1}".format(
+            doc_prov.out_basename,
+            doc_prov.doc_basename,
         )
-        for file in _DOC_SRCS.keys()
+        for doc_prov in _DOC_PROVIDERS
     ],
 )
 
 sh_binary(
     name = "update",
     srcs = ["update.sh"],
-    data = [file + ".md_" for file in _DOC_SRCS.keys()],
+    data = [doc_prov.out_basename for doc_prov in _DOC_PROVIDERS],
 )
