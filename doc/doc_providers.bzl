@@ -76,8 +76,6 @@ def _create_api(name):
     """
     api_name = name + "_api"
     return _create(name = api_name, symbols = [name])
-    # input = "//spm/internal:%s.bzl" % (name)
-    # return _create(name = api_name, input = input)
 
 doc_providers = struct(
     create = _create,
