@@ -11,8 +11,7 @@ load("@bazel_skylib//lib:paths.bzl", "paths")
 # MARK: - Swift Module Info
 
 def _declare_swift_library_target_files(ctx, target, build_config_path):
-    """Declares the outputs for a Swift module and returns a struct value 
-    describing the Swift module.
+    """Declares the outputs for a Swift module and returns a struct value describing the Swift module.
 
     Args:
         ctx: A `ctx` instance.
@@ -67,8 +66,7 @@ def _declare_clang_library_target_files(
         target,
         build_config_path,
         clang_custom_info):
-    """Declares the outputs for a clang module and returns a struct value 
-    describing the clang module.
+    """Declares the outputs for a clang module and returns a struct value describing the clang module.
 
     Args:
         ctx: A `ctx` instance.
@@ -241,8 +239,7 @@ def _gather_package_build_info(
 # MARK: - Clang Target Customization
 
 def _create_clang_custom_info(target_name, hdrs = [], modulemap = None):
-    """Creates a struct value representing the customization info for a clange
-    target.
+    """Creates a struct value representing the customization info for a clange target.
 
     Args:
         target_name: The target name as a `string`.
@@ -517,9 +514,9 @@ _attrs = {
     "dependencies_json": attr.string(
         mandatory = True,
         doc = """"\
-        JSON string describing the dependencies to expose\
-        (e.g. see dependencies in spm_repositories)\
-        """,
+JSON string describing the dependencies to expose (e.g. see dependencies in \
+spm_repositories)\
+""",
     ),
     "package_path": attr.string(
         doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",

@@ -52,8 +52,7 @@ def _list_directories_under(repository_ctx, path, max_depth = None):
     return [p for p in paths if p != path]
 
 def _find_and_delete_files(repository_ctx, path, name):
-    """Finds files with the specified name under the specified path and 
-    deletes them.
+    """Finds files with the specified name under the specified path and deletes them.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
@@ -287,8 +286,7 @@ def _generate_bazel_pkg(repository_ctx, pkg_desc, dep_target_refs_dict, clang_hd
 # MARK: - Clang Custom Headers Functions
 
 def _is_modulemap_path(path):
-    """Determines whether the specified path is to a public `module.modulemap` 
-    file.
+    """Determines whether the specified path is to a public `module.modulemap` file.
 
     Args:
         path: A path `string`.
@@ -382,8 +380,7 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
 # MARK: - Root BUILD.bazel Generation
 
 def _create_hdrs_str(hdr_paths):
-    """Creates a headers string suitable for injection into a BUILD.bazel 
-    template.
+    """Creates a headers string suitable for injection into a BUILD.bazel template.
 
     Args:
         hdr_paths: A `list` of path `string` values.
@@ -427,8 +424,7 @@ def _create_clang_module_headers(hdrs_dict):
     return "\n".join(entries)
 
 def _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs):
-    """Generates a BUILD.bazel file for the directory from which all external
-    SPM packages will be made available.
+    """Generates a BUILD.bazel file for the directory from which all external SPM packages will be made available.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
@@ -508,8 +504,7 @@ def _generate_spm_package_dep(pkg):
     fail("Missing package location (e.g. url, path). %s" % (pkg))
 
 def _generate_package_swift_file(repository_ctx, pkgs):
-    """Generate a Package.swift file which will be used to fetch and build the 
-    external SPM packages.
+    """Generate a Package.swift file which will be used to fetch and build the external SPM packages.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
@@ -539,8 +534,7 @@ def _generate_package_swift_file(repository_ctx, pkgs):
 # MARK: - Rule Implementation
 
 def _configure_spm_repository(repository_ctx, pkgs):
-    """Fetches the external SPM packages, prepares them for a future build step 
-    and defines Bazel targets.
+    """Fetches the external SPM packages, prepares them for a future build step and defines Bazel targets.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
@@ -671,21 +665,21 @@ spm_repositories = repository_rule(
         "swift_version": attr.string(
             default = "5.3",
             doc = """\
-            The version of Swift that will be declared in the placeholder/uber Swift package.\
-            """,
+The version of Swift that will be declared in the placeholder/uber Swift package.\
+""",
         ),
         "platforms": attr.string_list(
             doc = """\
-            The platforms to declare in the placeholder/uber Swift package. \
-            (e.g. .macOS(.v10_15))\
-            """,
+The platforms to declare in the placeholder/uber Swift package. \
+(e.g. .macOS(.v10_15))\
+""",
         ),
         "_workspace_file": attr.label(
             default = "@//:WORKSPACE",
             doc = """\
-            The value of this label helps the rule find the root of the Bazel \
-            workspace for local path resolution.\
-            """,
+The value of this label helps the rule find the root of the Bazel \
+workspace for local path resolution.\
+""",
         ),
         "_package_swift_tpl": attr.label(
             default = "//spm/internal:Package.swift.tpl",
@@ -695,8 +689,8 @@ spm_repositories = repository_rule(
         ),
     },
     doc = """\
-    Used to fetch and prepare external Swift package manager packages for the build.
-    """,
+Used to fetch and prepare external Swift package manager packages for the build.
+""",
 )
 
 spm_pkg = packages.pkg_json

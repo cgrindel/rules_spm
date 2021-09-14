@@ -50,21 +50,21 @@ spm_swift_binary = rule(
             mandatory = True,
             providers = [[SPMPackagesInfo]],
             doc = """\
-            A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
-            """,
+A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
+""",
         ),
         "package_name": attr.string(
             doc = """\
-            The name of the package that exports this module. If no value 
-            provided, it will be derived from the Bazel package name.\
-            """,
+The name of the package that exports this module. If no value 
+provided, it will be derived from the Bazel package name.\
+""",
         ),
         "module_name": attr.string(
             doc = """\
-            The name of the executable module in the SPM package. If no value
-            is provided, it will be derived from the name attribute.\
-            """,
+The name of the executable module in the SPM package. If no value
+is provided, it will be derived from the name attribute.\
+""",
         ),
     },
-    doc = "Builds the specified Swift package.",
+    doc = "Exposes a Swift binary from a Swift package.",
 )

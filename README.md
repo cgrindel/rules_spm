@@ -8,6 +8,10 @@ rules in this repository build the external Swift packages with [Swift Package
 Manager](https://swift.org/package-manager/), then make the outputs available to Bazel rules.
 
 
+## Reference Documentation
+
+[Click here](/doc) for reference documentation for the rules and other definitions in this repository.
+
 ## Prerequisites
 
 ### Mac OS
@@ -54,8 +58,9 @@ EOF
 This approach was necessary to successfully execute the examples on an Ubuntu runner using Github
 actions. See the [Github workflow](.github/workflows/bazel.yml) for more details.
 
+<a id="#quickstart"></a>
 
-## Quick Start
+## Quickstart
 
 The following provides a quick introduction on how to use the rules in this repository. Also, check
 out the [examples directory](examples/) for more information.

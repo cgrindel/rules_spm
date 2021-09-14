@@ -1,5 +1,5 @@
-load(":tokens.bzl", "reserved_words_set", "tokens")
 load(":character_sets.bzl", "character_sets")
+load(":tokens.bzl", "reserved_words_set", "tokens")
 load("@bazel_skylib//lib:sets.bzl", "sets")
 
 def _tokenizer_result(tokens, errors = []):

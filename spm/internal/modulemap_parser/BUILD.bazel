@@ -1,10 +1,100 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
 bzl_library(
-    name = "errors",
-    srcs = ["errors.bzl"],
+    name = "character_sets",
+    srcs = ["character_sets.bzl"],
     visibility = ["//spm:__subpackages__"],
-    deps = [],
+    deps = [
+        "@bazel_skylib//lib:sets",
+    ],
+)
+
+bzl_library(
+    name = "collect_export_declaration",
+    srcs = ["collect_export_declaration.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collection_results",
+        ":declarations",
+        ":errors",
+        ":tokens",
+    ],
+)
+
+bzl_library(
+    name = "collect_extern_module",
+    srcs = ["collect_extern_module.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collection_results",
+        ":declarations",
+        ":tokens",
+    ],
+)
+
+bzl_library(
+    name = "collect_header_declaration",
+    srcs = ["collect_header_declaration.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collection_results",
+        ":declarations",
+        ":errors",
+        ":tokens",
+    ],
+)
+
+bzl_library(
+    name = "collect_link_declaration",
+    srcs = ["collect_link_declaration.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collection_results",
+        ":declarations",
+        ":errors",
+        ":tokens",
+    ],
+)
+
+bzl_library(
+    name = "collect_module",
+    srcs = ["collect_module.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collect_module_members",
+        ":collection_results",
+        ":declarations",
+        ":errors",
+        ":tokens",
+    ],
+)
+
+bzl_library(
+    name = "collect_module_members",
+    srcs = ["collect_module_members.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collect_export_declaration",
+        ":collect_header_declaration",
+        ":collect_link_declaration",
+        ":collect_umbrella_dir_declaration",
+        ":collection_results",
+        ":errors",
+        ":tokens",
+        "@bazel_skylib//lib:sets",
+    ],
+)
+
+bzl_library(
+    name = "collect_umbrella_dir_declaration",
+    srcs = ["collect_umbrella_dir_declaration.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collection_results",
+        ":declarations",
+        ":errors",
+        ":tokens",
+    ],
 )
 
 bzl_library(
@@ -15,11 +105,30 @@ bzl_library(
 )
 
 bzl_library(
-    name = "tokens",
-    srcs = ["tokens.bzl"],
+    name = "declarations",
+    srcs = ["declarations.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "errors",
+    srcs = ["errors.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [],
+)
+
+bzl_library(
+    name = "parser",
+    srcs = ["parser.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
+        ":collect_extern_module",
+        ":collect_module",
+        ":collection_results",
+        ":declarations",
         ":errors",
+        ":tokenizer",
+        ":tokens",
     ],
 )
 
@@ -28,17 +137,21 @@ bzl_library(
     srcs = ["tokenizer.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
+        ":character_sets",
         ":tokens",
+        "@bazel_skylib//lib:sets",
     ],
 )
 
 bzl_library(
-    name = "parser",
-    srcs = ["parser.bzl"],
+    name = "tokens",
+    srcs = ["tokens.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
         ":errors",
-        ":tokenizer",
-        ":tokens",
+        "@bazel_skylib//lib:partial",
+        "@bazel_skylib//lib:sets",
+        "@bazel_skylib//lib:structs",
+        "@bazel_skylib//lib:types",
     ],
 )

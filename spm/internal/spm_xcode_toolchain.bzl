@@ -1,6 +1,6 @@
 load(":platforms.bzl", "platforms")
-load(":swift_toolchains.bzl", "swift_toolchains")
 load(":providers.bzl", "SPMBuildInfo", "SPMPlatformInfo")
+load(":swift_toolchains.bzl", "swift_toolchains")
 
 # MARK: - Macos Toolchain
 
@@ -68,4 +68,5 @@ spm_xcode_toolchain = rule(
             ),
         ),
     },
+    doc = "Provides toolchain information for SPM builds using Xcode.",
 )

@@ -5,15 +5,243 @@ exports_files(
     visibility = ["//visibility:public"],
 )
 
+# External Libraries
+
+bzl_library(
+    name = "bazel_tools_cpp_toolchain_utils",
+    srcs = ["@bazel_tools//tools/cpp:toolchain_utils.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "bazel_tools_repo_http",
+    srcs = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "bazel_tools_repo_utils",
+    srcs = ["@bazel_tools//tools/build_defs/repo:utils.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "rules_cc_action_names",
+    srcs = ["@rules_cc//cc:action_names.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+# Package Libraries
+
+bzl_library(
+    name = "package_descriptions",
+    srcs = ["package_descriptions.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":packages",
+        ":references",
+        "@bazel_skylib//lib:paths",
+        "@bazel_skylib//lib:sets",
+    ],
+)
+
+bzl_library(
+    name = "packages",
+    srcs = ["packages.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":references",
+        "@bazel_skylib//lib:paths",
+        "@bazel_skylib//lib:types",
+    ],
+)
+
+bzl_library(
+    name = "platforms",
+    srcs = ["platforms.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "providers",
+    srcs = ["providers.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "references",
+    srcs = ["references.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":bazel_tools_repo_http",
+        ":bazel_tools_repo_utils",
+        ":spm_autoconfiguration",
+    ],
+)
+
+bzl_library(
+    name = "repository_utils",
+    srcs = ["repository_utils.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "spm_archive",
+    srcs = ["spm_archive.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":bazel_tools_cpp_toolchain_utils",
+        ":rules_cc_action_names",
+    ],
+)
+
+bzl_library(
+    name = "spm_autoconfiguration",
+    srcs = ["spm_autoconfiguration.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":repository_utils",
+    ],
+)
+
+bzl_library(
+    name = "spm_clang_library",
+    srcs = ["spm_clang_library.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":package_descriptions",
+        ":spm_filegroup",
+    ],
+)
+
+bzl_library(
+    name = "spm_common",
+    srcs = ["spm_common.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        "@bazel_skylib//lib:paths",
+    ],
+)
+
+bzl_library(
+    name = "spm_filegroup",
+    srcs = ["spm_filegroup.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":providers",
+        ":spm_package_info_utils",
+        "@bazel_skylib//lib:paths",
+    ],
+)
+
+bzl_library(
+    name = "spm_linux_toolchain",
+    srcs = ["spm_linux_toolchain.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":providers",
+        ":swift_toolchains",
+    ],
+)
+
 bzl_library(
     name = "spm_package",
     srcs = ["spm_package.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":package_descriptions",
+        ":packages",
+        ":platforms",
+        ":providers",
+        ":references",
+        ":spm_common",
+        ":swift_toolchains",
+        "@bazel_skylib//lib:dicts",
+        "@bazel_skylib//lib:paths",
+    ],
+)
+
+bzl_library(
+    name = "spm_package_info_utils",
+    srcs = ["spm_package_info_utils.bzl"],
     visibility = ["//spm:__subpackages__"],
 )
 
 bzl_library(
     name = "spm_repositories",
     srcs = ["spm_repositories.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":package_descriptions",
+        ":packages",
+        ":references",
+        ":spm_common",
+        ":spm_versions",
+        "//spm/internal/modulemap_parser:declarations",
+        "//spm/internal/modulemap_parser:parser",
+        "@bazel_skylib//lib:paths",
+        "@bazel_skylib//lib:versions",
+    ],
+)
+
+bzl_library(
+    name = "spm_swift_binary",
+    srcs = ["spm_swift_binary.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":providers",
+        ":spm_package_info_utils",
+        "@bazel_skylib//lib:paths",
+    ],
+)
+
+bzl_library(
+    name = "spm_swift_library",
+    srcs = ["spm_swift_library.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":spm_archive",
+        ":spm_filegroup",
+        "@build_bazel_rules_swift//swift",
+    ],
+)
+
+bzl_library(
+    name = "spm_system_library",
+    srcs = ["spm_system_library.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":spm_filegroup",
+        "@build_bazel_rules_swift//swift",
+    ],
+)
+
+bzl_library(
+    name = "spm_versions",
+    srcs = ["spm_versions.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "spm_xcode_toolchain",
+    srcs = ["spm_xcode_toolchain.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":platforms",
+        ":providers",
+        ":swift_toolchains",
+    ],
+)
+
+bzl_library(
+    name = "swift_toolchains",
+    srcs = ["swift_toolchains.bzl"],
     visibility = ["//spm:__subpackages__"],
 )
 

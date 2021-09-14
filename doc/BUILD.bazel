@@ -1,0 +1,210 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
+load(":doc_providers.bzl", "doc_providers")
+
+# Lovingly inspired by
+# https://github.com/bazelbuild/rules_swift/blob/021c11b1d578ffba547140eb24854cdfe74c794f/doc/BUILD.bazel#L3
+
+# MARK: - Documentation Declarations
+
+_API_SRCS = [
+    "spm_common",
+    "spm_package_info_utils",
+    "spm_versions",
+    "packages",
+    "package_descriptions",
+    "providers",
+    "platforms",
+    "references",
+    "repository_utils",
+]
+
+_DOC_WITH_SYMBOLS = {
+    "build_rules": [
+        "spm_archive",
+        "spm_clang_library",
+        "spm_filegroup",
+        "spm_package",
+        "spm_swift_binary",
+        "spm_swift_library",
+        "spm_system_library",
+    ],
+    "providers": [
+        "SPMBuildInfo",
+        "SPMPackageInfo",
+        "SPMPackagesInfo",
+        "SPMPlatformInfo",
+    ],
+    "workspace_rules": [
+        "spm_repositories",
+        "spm_pkg",
+        "spm_rules_dependencies",
+    ],
+}
+
+_API_DOC_PROVIDERS = [
+    doc_providers.create_api(
+        name = name,
+    )
+    for name in _API_SRCS
+]
+
+_ALL_DOC_PROVIDERS = [
+    doc_providers.create_with_symbols(
+        name = name,
+        symbols = symbols,
+    )
+    for [
+        name,
+        symbols,
+    ] in _DOC_WITH_SYMBOLS.items()
+] + [
+    doc_providers.create(
+        name = "api",
+        is_stardoc = False,
+    ),
+] + _API_DOC_PROVIDERS
+
+# MARK: - Special Case api.md
+
+# Write the api.md_ file as a special case.
+write_file(
+    name = "api_doc",
+    out = "api.md_",
+    content = [
+        "<!-- Generated with Stardoc, Do Not Edit! -->",
+        "# Build API",
+        "",
+        "The APIs described below are used by [the workspace rules](/doc/workspace_rules.md) and",
+        "[the build rules](/doc/build_rules.md) to facilitate the build and exposition of the",
+        "Swift packages.",
+        "",
+        "On this page:",
+        "",
+    ] + ["  * [{0}](/doc/{0}.md)".format(r) for r in _API_SRCS] + [
+        "",
+    ],
+)
+
+# MARK: - Headers
+
+write_file(
+    name = "providers_header",
+    out = "providers_header.vm",
+    content = [
+        "<!-- Generated with Stardoc, Do Not Edit! -->",
+        "# Providers",
+        "",
+        "The providers described below are used by [the build rules](/doc/build_rules.md) to",
+        "facilitate the build and exposition of the Swift packages.",
+        "",
+        "On this page:",
+        "",
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["providers"]] + [
+        "",
+    ],
+)
+
+write_file(
+    name = "build_rules_header",
+    out = "build_rules_header.vm",
+    content = [
+        "<!-- Generated with Stardoc, Do Not Edit! -->",
+        "# Build Rules",
+        "",
+        "The rules described below are used to build Swift",
+        "packages and make their outputs available as Bazel targets. Most",
+        "clients will not use these rules directly. They are an implementation",
+        "detail for [the workspace rules](/doc/workspace_rules.md).",
+        "",
+        "On this page:",
+        "",
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["build_rules"]] + [
+        "",
+    ],
+)
+
+write_file(
+    name = "workspace_rules_header",
+    out = "workspace_rules_header.vm",
+    content = [
+        "<!-- Generated with Stardoc, Do Not Edit! -->",
+        "# Workspace Rules",
+        "",
+        "The rules and functions described below are used in your WORKSPACE file to",
+        "confgure `rules_spm` and to declare the Swift packages that are dependencies",
+        "of your project.",
+        "",
+        "On this page:",
+        "",
+    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["workspace_rules"]] + [
+        "",
+    ],
+)
+
+[
+    write_file(
+        name = doc_prov.header_label,
+        out = doc_prov.header_basename,
+        content = [
+            "<!-- Generated with Stardoc, Do Not Edit! -->",
+            # The `-4` is truncating `_api`
+            "# `{name}` API".format(name = doc_prov.name[:-4]),
+            "",
+        ],
+    )
+    for doc_prov in _API_DOC_PROVIDERS
+    if doc_prov.is_stardoc
+]
+
+# MARK: - Stardoc Declarations
+
+[
+    stardoc(
+        name = doc_prov.name,
+        out = doc_prov.out_basename,
+        header_template = doc_prov.header_basename,
+        input = "//spm:spm.bzl",
+        symbol_names = doc_prov.symbols,
+        deps = ["//spm"],
+    )
+    for doc_prov in _ALL_DOC_PROVIDERS
+    if doc_prov.is_stardoc
+]
+
+# MARK: - Doc Diff Tests
+
+# To make these tests pass, run
+# bazel run //doc:update
+[
+    diff_test(
+        name = "test_" + doc_prov.name,
+        file1 = doc_prov.out_basename,
+        file2 = doc_prov.doc_basename,
+    )
+    for doc_prov in _ALL_DOC_PROVIDERS
+]
+
+# MARK: - Update Doc
+
+write_file(
+    name = "gen_update",
+    out = "update.sh",
+    content = [
+        "#!/usr/bin/env bash",
+        "cd $BUILD_WORKSPACE_DIRECTORY",
+    ] + [
+        "cp -fv bazel-bin/doc/{0} doc/{1}".format(
+            doc_prov.out_basename,
+            doc_prov.doc_basename,
+        )
+        for doc_prov in _ALL_DOC_PROVIDERS
+    ],
+)
+
+sh_binary(
+    name = "update",
+    srcs = ["update.sh"],
+    data = [doc_prov.out_basename for doc_prov in _ALL_DOC_PROVIDERS],
+)
