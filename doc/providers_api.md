@@ -1,4 +1,5 @@
-<!-- Generated with Stardoc: http://skydoc.bazel.build -->
+<!-- Generated with Stardoc, Do Not Edit! -->
+# `providers` API
 
 <a id="#providers.swift_module"></a>
 

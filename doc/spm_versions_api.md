@@ -1,4 +1,5 @@
-<!-- Generated with Stardoc: http://skydoc.bazel.build -->
+<!-- Generated with Stardoc, Do Not Edit! -->
+# `spm_versions` API
 
 <a id="#spm_versions.extract"></a>
 

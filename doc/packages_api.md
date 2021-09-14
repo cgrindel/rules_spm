@@ -1,4 +1,5 @@
-<!-- Generated with Stardoc: http://skydoc.bazel.build -->
+<!-- Generated with Stardoc, Do Not Edit! -->
+# `packages` API
 
 <a id="#packages.create_name"></a>
 

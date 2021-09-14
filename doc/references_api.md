@@ -1,4 +1,5 @@
-<!-- Generated with Stardoc: http://skydoc.bazel.build -->
+<!-- Generated with Stardoc, Do Not Edit! -->
+# `references` API
 
 <a id="#references.create"></a>
 

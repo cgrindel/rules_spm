@@ -3,7 +3,8 @@ def _create(
         doc_label = None,
         out_basename = None,
         doc_basename = None,
-        header = None,
+        header_label = None,
+        header_basename = None,
         symbols = None,
         is_stardoc = True,
         input = "//spm:spm.bzl"):
@@ -18,8 +19,10 @@ def _create(
                       output file.
         doc_basename: Optional. A `string` which is the basename for the
                       final documentation file.
-        header: Optional. The basename (`string`) of the header file, if
-                one is being used.
+        header_label: Optional. A `string` which is the header label name,
+                      if the header is being generated.
+        header_basename: Optional. The basename (`string`) of the header
+                        filename file, if one is being used.
         symbols: Optional. A `list` of symbol names that should be included
                  in the documentation.
         is_stardoc: A `bool` indicating whether a `stardoc` declaration should
@@ -36,13 +39,16 @@ def _create(
         out_basename = name + ".md_"
     if doc_basename == None:
         doc_basename = name + ".md"
+    if header_basename == None and header_label != None:
+        header_basename = header_label + ".vm"
 
     return struct(
         name = name,
         doc_label = doc_label,
         out_basename = out_basename,
         doc_basename = doc_basename,
-        header = header,
+        header_label = header_label,
+        header_basename = header_basename,
         symbols = symbols,
         is_stardoc = is_stardoc,
         input = input,
@@ -61,7 +67,7 @@ def _create_with_symbols(name, symbols = []):
     """
     return _create(
         name = name,
-        header = name + "_header.vm",
+        header_label = name + "_header",
         symbols = symbols,
     )
 
@@ -75,7 +81,11 @@ def _create_api(name):
       A `struct` representing a documentation provider.
     """
     api_name = name + "_api"
-    return _create(name = api_name, symbols = [name])
+    return _create(
+        name = api_name,
+        header_label = api_name + "_header",
+        symbols = [name],
+    )
 
 doc_providers = struct(
     create = _create,

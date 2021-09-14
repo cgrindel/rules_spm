@@ -143,13 +143,27 @@ write_file(
     ],
 )
 
+[
+    write_file(
+        name = doc_prov.header_label,
+        out = doc_prov.header_basename,
+        content = [
+            "<!-- Generated with Stardoc, Do Not Edit! -->",
+            "# `{name}` API".format(name = doc_prov.name[:-4]),
+            "",
+        ],
+    )
+    for doc_prov in _API_DOC_PROVIDERS
+    if doc_prov.is_stardoc
+]
+
 # MARK: - Stardoc Declarations
 
 [
     stardoc(
         name = doc_prov.name,
         out = doc_prov.out_basename,
-        header_template = doc_prov.header,
+        header_template = doc_prov.header_basename,
         input = "//spm:spm.bzl",
         symbol_names = doc_prov.symbols,
         deps = ["//spm"],

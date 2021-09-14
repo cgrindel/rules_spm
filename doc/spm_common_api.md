@@ -1,4 +1,5 @@
-<!-- Generated with Stardoc: http://skydoc.bazel.build -->
+<!-- Generated with Stardoc, Do Not Edit! -->
+# `spm_common` API
 
 <a id="#spm_common.create_clang_hdrs_key"></a>
 

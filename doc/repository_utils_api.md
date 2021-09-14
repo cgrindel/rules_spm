@@ -1,4 +1,5 @@
-<!-- Generated with Stardoc: http://skydoc.bazel.build -->
+<!-- Generated with Stardoc, Do Not Edit! -->
+# `repository_utils` API
 
 <a id="#repository_utils.is_macos"></a>
 
