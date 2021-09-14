@@ -19,18 +19,6 @@ _API_SRCS = [
 ]
 
 _DOC_SRCS = {
-    # "api": [],
-    # "api": [
-    #     "spm_common",
-    #     "spm_package_info_utils",
-    #     "spm_versions",
-    #     "packages",
-    #     "package_descriptions",
-    #     "providers",
-    #     "platforms",
-    #     "references",
-    #     "repository_utils",
-    # ],
     "build_rules": [
         "spm_archive",
         "spm_clang_library",
@@ -147,34 +135,6 @@ write_file(
     ],
 )
 
-# Non-API Stardoc Declarations
-# [
-#     stardoc(
-#         name = file + "_doc",
-#         out = file + ".md_",
-#         header_template = file + "_header.vm",
-#         input = "//spm:spm.bzl",
-#         symbol_names = symbols,
-#         deps = ["//spm"],
-#     )
-#     for [
-#         file,
-#         symbols,
-#     ] in _DOC_SRCS.items()
-# ]
-
-# # API Stardoc Declarations
-# [
-#     stardoc(
-#         name = file + "_api_doc",
-#         out = file + "_api.md_",
-#         input = "//spm:spm.bzl",
-#         symbol_names = [file],
-#         deps = ["//spm"],
-#     )
-#     for file in _API_SRCS
-# ]
-
 [
     stardoc(
         name = doc_prov.name,
@@ -198,43 +158,6 @@ write_file(
     )
     for doc_prov in _DOC_PROVIDERS
 ]
-# [
-#     diff_test(
-#         name = "test_" + file,
-#         file1 = file + ".md_",
-#         file2 = file + ".md",
-#     )
-#     for file in _DOC_SRCS.keys() + ["api"] + _API_SRCS
-# ]
-
-# write_file(
-#     name = "gen_update",
-#     out = "update.sh",
-#     content = [
-#         "#!/usr/bin/env bash",
-#         "cd $BUILD_WORKSPACE_DIRECTORY",
-#     ] + [
-#         "cp -fv bazel-bin/doc/{0}.md_ doc/{0}.md".format(
-#             file,
-#         )
-#         for file in _DOC_SRCS.keys()
-#     ] + [
-#         "cp -fv bazel-bin/doc/{0}_api.md_ doc/{0}_api.md".format(
-#             file,
-#         )
-#         for file in _API_SRCS
-#     ],
-# )
-
-# _doc_files = [file + ".md_" for file in _DOC_SRCS.keys()]
-
-# _api_doc_files = [file + "_api.md_" for file in _API_SRCS]
-
-# sh_binary(
-#     name = "update",
-#     srcs = ["update.sh"],
-#     data = _doc_files + _api_doc_files,
-# )
 
 write_file(
     name = "gen_update",
