@@ -149,6 +149,7 @@ write_file(
         out = doc_prov.header_basename,
         content = [
             "<!-- Generated with Stardoc, Do Not Edit! -->",
+            # The `-4` is truncating `_api`
             "# `{name}` API".format(name = doc_prov.name[:-4]),
             "",
         ],
