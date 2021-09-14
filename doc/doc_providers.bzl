@@ -6,6 +6,27 @@ def _create(
         header = None,
         symbols = None,
         is_stardoc = True):
+    """Create a documentation provider.
+
+    Args:
+        name: A `string` which identifies the doc output. If no `symbols`
+              are provided, all of the symbols which are defined in the
+              corresponding `.bzl` file are documented.
+        doc_label: Optional. A `string` which is the doc label name.
+        out_basename: Optional. A `string` which is the basename for the
+                      output file.
+        doc_basename: Optional. A `string` which is the basename for the
+                      final documentation file.
+        header: Optional. The basename (`string`) of the header file, if
+                one is being used.
+        symbols: Optional. A `list` of symbol names that should be included
+                 in the documentation.
+        is_stardoc: A `bool` indicating whether a `stardoc` declaration should
+                    be created.
+
+    Returns:
+      A `struct` representing a documentation provider.
+    """
     if doc_label == None:
         doc_label = name + "_doc"
     if out_basename == None:
@@ -24,6 +45,16 @@ def _create(
     )
 
 def _create_with_symbols(name, symbols = []):
+    """Create a documentation provider using a list of symbols and appropriate defaults.
+
+    Args:
+        name: A `string` which identifies the doc output.
+        symbols: A `list` of symbol names that should be included
+                 in the documentation.
+
+    Returns:
+      A `struct` representing a documentation provider.
+    """
     return _create(
         name = name,
         header = name + "_header.vm",
@@ -31,9 +62,15 @@ def _create_with_symbols(name, symbols = []):
     )
 
 def _create_api(name):
-    api_name = name + "_api"
+    """Create a documentation provider for an API file/struct.
 
-    # return _create(name = api_name, header = api_name + "_header.vm")
+    Args:
+        name: A `string` which identifies the doc output.
+
+    Returns:
+      A `struct` representing a documentation provider.
+    """
+    api_name = name + "_api"
     return _create(name = api_name)
 
 doc_providers = struct(
