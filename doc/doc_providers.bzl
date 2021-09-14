@@ -5,7 +5,8 @@ def _create(
         doc_basename = None,
         header = None,
         symbols = None,
-        is_stardoc = True):
+        is_stardoc = True,
+        input = "//spm:spm.bzl"):
     """Create a documentation provider.
 
     Args:
@@ -23,6 +24,8 @@ def _create(
                  in the documentation.
         is_stardoc: A `bool` indicating whether a `stardoc` declaration should
                     be created.
+        input: A `string` representing the input label provided to the
+               `stardoc` declaration.
 
     Returns:
       A `struct` representing a documentation provider.
@@ -42,6 +45,7 @@ def _create(
         header = header,
         symbols = symbols,
         is_stardoc = is_stardoc,
+        input = input,
     )
 
 def _create_with_symbols(name, symbols = []):
@@ -71,7 +75,9 @@ def _create_api(name):
       A `struct` representing a documentation provider.
     """
     api_name = name + "_api"
-    return _create(name = api_name)
+    return _create(name = api_name, symbols = [name])
+    # input = "//spm/internal:%s.bzl" % (name)
+    # return _create(name = api_name, input = input)
 
 doc_providers = struct(
     create = _create,
