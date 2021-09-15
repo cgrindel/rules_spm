@@ -1,6 +1,47 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # `providers` API
 
+<a id="#providers.clang_module"></a>
+
+## providers.clang_module
+
+<pre>
+providers.clang_module(<a href="#providers.clang_module-module_name">module_name</a>, <a href="#providers.clang_module-o_files">o_files</a>, <a href="#providers.clang_module-hdrs">hdrs</a>, <a href="#providers.clang_module-modulemap">modulemap</a>, <a href="#providers.clang_module-all_outputs">all_outputs</a>)
+</pre>
+
+Creates a value representing the Clang module that is built from a package.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.clang_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
+| <a id="providers.clang_module-o_files"></a>o_files |  The Mach-O files that are built by SPM.   |  <code>[]</code> |
+| <a id="providers.clang_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
+| <a id="providers.clang_module-modulemap"></a>modulemap |  <p align="center"> - </p>   |  <code>None</code> |
+| <a id="providers.clang_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+
+<a id="#providers.copy_info"></a>
+
+## providers.copy_info
+
+<pre>
+providers.copy_info(<a href="#providers.copy_info-src">src</a>, <a href="#providers.copy_info-dest">dest</a>)
+</pre>
+
+Creates a value describing a copy operation.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.copy_info-src"></a>src |  The source file.   |  none |
+| <a id="providers.copy_info-dest"></a>dest |  The destination file.   |  none |
+
+
 <a id="#providers.swift_module"></a>
 
 ## providers.swift_module
@@ -26,28 +67,6 @@ Creates a value representing the Swift module that is built from a package.
 | <a id="providers.swift_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
 
 
-<a id="#providers.clang_module"></a>
-
-## providers.clang_module
-
-<pre>
-providers.clang_module(<a href="#providers.clang_module-module_name">module_name</a>, <a href="#providers.clang_module-o_files">o_files</a>, <a href="#providers.clang_module-hdrs">hdrs</a>, <a href="#providers.clang_module-modulemap">modulemap</a>, <a href="#providers.clang_module-all_outputs">all_outputs</a>)
-</pre>
-
-Creates a value representing the Clang module that is built from a package.
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="providers.clang_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
-| <a id="providers.clang_module-o_files"></a>o_files |  The Mach-O files that are built by SPM.   |  <code>[]</code> |
-| <a id="providers.clang_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
-| <a id="providers.clang_module-modulemap"></a>modulemap |  <p align="center"> - </p>   |  <code>None</code> |
-| <a id="providers.clang_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
-
-
 <a id="#providers.system_library_module"></a>
 
 ## providers.system_library_module
@@ -68,24 +87,5 @@ Creates a value representing the system library module that is built from a pack
 | <a id="providers.system_library_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
 | <a id="providers.system_library_module-modulemap"></a>modulemap |  The module.modulemap file for the system library module.   |  <code>None</code> |
 | <a id="providers.system_library_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
-
-
-<a id="#providers.copy_info"></a>
-
-## providers.copy_info
-
-<pre>
-providers.copy_info(<a href="#providers.copy_info-src">src</a>, <a href="#providers.copy_info-dest">dest</a>)
-</pre>
-
-Creates a value describing a copy operation.
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="providers.copy_info-src"></a>src |  The source file.   |  none |
-| <a id="providers.copy_info-dest"></a>dest |  The destination file.   |  none |
 
 

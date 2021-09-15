@@ -34,6 +34,12 @@ bzl_library(
 # Package Libraries
 
 bzl_library(
+    name = "actions",
+    srcs = ["actions.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
     name = "package_descriptions",
     srcs = ["package_descriptions.bzl"],
     visibility = ["//spm:__subpackages__"],
@@ -66,6 +72,9 @@ bzl_library(
     name = "providers",
     srcs = ["providers.bzl"],
     visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":actions",
+    ],
 )
 
 bzl_library(
@@ -155,6 +164,7 @@ bzl_library(
     srcs = ["spm_package.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
+        ":actions",
         ":package_descriptions",
         ":packages",
         ":platforms",
