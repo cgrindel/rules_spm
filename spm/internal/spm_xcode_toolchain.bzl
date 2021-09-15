@@ -1,3 +1,4 @@
+load(":actions.bzl", "action_names", "actions")
 load(":platforms.bzl", "platforms")
 load(":providers.bzl", "SPMPlatformInfo", "SPMToolchainInfo")
 load(":swift_toolchains.bzl", "swift_toolchains")
@@ -21,11 +22,9 @@ def _create_spm_platform_info(swift_cpu, swift_os):
         abi = None,
     )
 
-def _create_build_tool_config(ctx, xcode_config, target_triple, sdk_name = None):
+def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuration, sdk_name = None):
     swift_worker = ctx.executable._swift_worker
 
-    # TODO: Can be `release` or `debug`. How should this be configured?
-    spm_configuration = "release"
     args = [
         "--swift",
         swift_worker,
@@ -34,7 +33,7 @@ def _create_build_tool_config(ctx, xcode_config, target_triple, sdk_name = None)
         "--target_triple",
         target_triple,
     ]
-    if spm_toolchain_info.sdk_name:
+    if sdk_name:
         args.extend(["--sdk_name", sdk_name])
 
     env = apple_common.apple_host_system_env(xcode_config)
@@ -79,18 +78,22 @@ def _spm_xcode_toolchain(ctx):
     target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
     sdk_name = swift_toolchains.sdk_name(platform)
 
+    # TODO: Can be `release` or `debug`. How should this be configured?
+    spm_configuration = "release"
+
     exec_os = "macosx"
     tool_configs = {
         action_names.BUILD: _create_build_tool_config(
             ctx = ctx,
             xcode_config = xcode_config,
             target_triple = target_triple,
+            spm_configuration = spm_configuration,
             sdk_name = sdk_name,
         ),
     }
 
     spm_toolchain_info = SPMToolchainInfo(
-        sdk_name = sdk_name,
+        spm_configuration = spm_configuration,
         target_triple = target_triple,
         spm_platform_info = _create_spm_platform_info(cpu, exec_os),
         tool_configs = tool_configs,

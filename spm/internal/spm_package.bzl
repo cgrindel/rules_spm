@@ -425,7 +425,7 @@ def _get_build_config_path(ctx):
     return paths.join(
         spm_common.build_dirname,
         arch_vendor_os,
-        ctx.attr.configuration,
+        spm_toolchain_info.spm_configuration,
     )
 
 def _spm_package_impl(ctx):
