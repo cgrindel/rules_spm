@@ -365,7 +365,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     run_args = ctx.actions.args()
     run_args.add_all([
         "--swift",
-        spm_build_info.swift_executable,
+        spm_build_info.swift_worker,
+        # spm_build_info.swift_executable,
         "--build-config",
         ctx.attr.configuration,
         "--package-path",
@@ -387,6 +388,7 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         outputs = all_build_outs,
         arguments = [run_args],
         executable = spm_build_info.build_tool,
+        tools = [spm_build_info.swift_worker],
         # Recommended for all rules.
         # See for details: https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036
         use_default_shell_env = True,

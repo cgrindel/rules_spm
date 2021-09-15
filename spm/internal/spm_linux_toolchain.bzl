@@ -23,7 +23,7 @@ def _spm_linux_toolchain(ctx):
         sdk_name = None,
         target_triple = target_triple,
         spm_platform_info = spm_platform_info,
-        swift_executable = ctx.attr.swift_executable,
+        swift_worker = ctx.attr._swift_worker,
     )
 
     return [spm_build_info]
@@ -31,9 +31,17 @@ def _spm_linux_toolchain(ctx):
 spm_linux_toolchain = rule(
     implementation = _spm_linux_toolchain,
     attrs = {
-        "swift_executable": attr.string(
-            mandatory = True,
-            doc = "Path to `swift` executable.",
+        "_swift_worker": attr.label(
+            cfg = "host",
+            allow_files = True,
+            default = Label(
+                "@build_bazel_rules_swift//tools/worker",
+            ),
+            doc = """\
+An executable that wraps Swift compiler invocations and also provides support
+for incremental compilation using a persistent mode.
+""",
+            executable = True,
         ),
         "arch": attr.string(
             doc = "The name of the architecture that this toolchain targets.",

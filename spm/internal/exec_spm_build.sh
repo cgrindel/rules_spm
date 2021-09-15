@@ -6,7 +6,7 @@ args=()
 while (("$#")); do
   case "${1}" in
     "--swift")
-      swift_exec="${2}"
+      worker_exec="${2}"
       shift 2
       ;;
     "--build-config")
@@ -40,6 +40,11 @@ while (("$#")); do
   esac
 done
 
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  DEVELOPER_DIR: ${DEVELOPER_DIR:-}" 
+echo >&2 "*** CHUCK:  worker_exec: ${worker_exec}" 
+"${worker_exec}" xcodebuild -version >&2
+# DEBUG END
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
@@ -67,7 +72,8 @@ if [[ -n "${sdk_name:-}" ]]; then
 fi
 
 # Execute the SPM build
-"${swift_exec}" build "${build_args[@]}"
+# "${worker_exec}" build "${build_args[@]}"
+"${worker_exec}" swift build "${build_args[@]}"
 
 # Replace the specified files with the provided ones
 idx=0

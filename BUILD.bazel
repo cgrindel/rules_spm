@@ -1,0 +1,46 @@
+# xcode_version(
+#   name = 'version12_5_1_12E507',
+#   version = '12.5.1.12E507',
+#   aliases = ['12.5' ,'12.5.1' ,'12.5.1.12E507'],
+#   default_ios_sdk_version = '14.5',
+#   default_tvos_sdk_version = '14.5',
+#   default_macos_sdk_version = '11.3',
+#   default_watchos_sdk_version = '7.4',
+# )
+
+# xcode_version(
+#   name = 'version12_4_0_12D4e',
+#   version = '12.4.0.12D4e',
+#   aliases = ['12.4.0.12D4e' ,'12.4' ,'12' ,'12.4.0'],
+#   default_ios_sdk_version = '14.4',
+#   default_tvos_sdk_version = '14.3',
+#   default_macos_sdk_version = '11.1',
+#   default_watchos_sdk_version = '7.2',
+# )
+
+# xcode_config(
+#     name = "host_xcodes",
+#     default = ":version12_5_1_12E507",
+#     versions = [
+#         ":version12_5_1_12E507",
+#         ":version12_4_0_12D4e",
+#     ],
+# )
+
+xcode_version(
+    name = "version12_4_0_12D4e",
+    aliases = ["12D4e"],
+    default_ios_sdk_version = "14.4",
+    default_macos_sdk_version = "11.1",
+    default_tvos_sdk_version = "14.3",
+    default_watchos_sdk_version = "7.2",
+    version = "12.4.0.12D4e",
+)
+
+xcode_config(
+    name = "host_xcodes",
+    default = ":version12_4_0_12D4e",
+    versions = [
+        ":version12_4_0_12D4e",
+    ],
+)

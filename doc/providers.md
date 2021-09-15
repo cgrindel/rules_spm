@@ -16,7 +16,7 @@ On this page:
 ## SPMBuildInfo
 
 <pre>
-SPMBuildInfo(<a href="#SPMBuildInfo-build_tool">build_tool</a>, <a href="#SPMBuildInfo-sdk_name">sdk_name</a>, <a href="#SPMBuildInfo-target_triple">target_triple</a>, <a href="#SPMBuildInfo-spm_platform_info">spm_platform_info</a>, <a href="#SPMBuildInfo-swift_executable">swift_executable</a>)
+SPMBuildInfo(<a href="#SPMBuildInfo-build_tool">build_tool</a>, <a href="#SPMBuildInfo-sdk_name">sdk_name</a>, <a href="#SPMBuildInfo-target_triple">target_triple</a>, <a href="#SPMBuildInfo-spm_platform_info">spm_platform_info</a>, <a href="#SPMBuildInfo-swift_worker">swift_worker</a>)
 </pre>
 
 Information about how to invoke the Swift package manager.
@@ -30,7 +30,7 @@ Information about how to invoke the Swift package manager.
 | <a id="SPMBuildInfo-sdk_name"></a>sdk_name |  A string representing the name of the SDK    |
 | <a id="SPMBuildInfo-target_triple"></a>target_triple |  A string representing the target platform as a triple.    |
 | <a id="SPMBuildInfo-spm_platform_info"></a>spm_platform_info |  An <code>SpmPlatformInfo</code> describing the target platform.    |
-| <a id="SPMBuildInfo-swift_executable"></a>swift_executable |  The path for the <code>swift</code> executable.    |
+| <a id="SPMBuildInfo-swift_worker"></a>swift_worker |  The path for the <code>swift</code> worker.    |
 
 
 <a id="#SPMPackageInfo"></a>
