@@ -56,19 +56,20 @@ def _spm_xcode_toolchain(ctx):
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
 
     # DEBUG BEGIN
+
     # print("*** CHUCK xcode_config.execution_info(): ")
     # for key in xcode_config.execution_info():
     #     print("*** CHUCK", key, ":", xcode_config.execution_info()[key])
 
-    apple_toolchain = apple_common.apple_toolchain()
-    print("*** CHUCK apple_toolchain.developer_dir(): ", apple_toolchain.developer_dir())
-    print("*** CHUCK apple_toolchain.platform_developer_framework_dir(apple_fragment): ", apple_toolchain.platform_developer_framework_dir(apple_fragment))
-    print("*** CHUCK apple_toolchain.sdk_dir(): ", apple_toolchain.sdk_dir())
+    # apple_toolchain = apple_common.apple_toolchain()
+    # print("*** CHUCK apple_toolchain.developer_dir(): ", apple_toolchain.developer_dir())
+    # print("*** CHUCK apple_toolchain.platform_developer_framework_dir(apple_fragment): ", apple_toolchain.platform_developer_framework_dir(apple_fragment))
+    # print("*** CHUCK apple_toolchain.sdk_dir(): ", apple_toolchain.sdk_dir())
 
-    print("*** CHUCK xcode_config.xcode_version(): ", xcode_config.xcode_version())
-    print("*** CHUCK apple_common.apple_host_system_env(xcode_config): ")
-    for key in apple_common.apple_host_system_env(xcode_config):
-        print("*** CHUCK", key, ":", apple_common.apple_host_system_env(xcode_config)[key])
+    # print("*** CHUCK xcode_config.xcode_version(): ", xcode_config.xcode_version())
+    # print("*** CHUCK apple_common.apple_host_system_env(xcode_config): ")
+    # for key in apple_common.apple_host_system_env(xcode_config):
+    #     print("*** CHUCK", key, ":", apple_common.apple_host_system_env(xcode_config)[key])
 
     # DEBUG END
 

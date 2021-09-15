@@ -377,15 +377,21 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         run_args.add_all([ci.src, ci.dest])
         all_build_outs.append(ci.dest)
 
+    # DEBUG BEGIN
+    print("*** CHUCK tool_config: ", tool_config)
+    # DEBUG END
+
     ctx.actions.run(
         inputs = ctx.files.srcs + build_inputs,
         outputs = all_build_outs,
         arguments = [run_args],
         executable = tool_config.executable,
+        env = tool_config.env,
+        execution_requirements = tool_config.execution_requirements,
         tools = tool_config.additional_tools,
-        # Recommended for all rules.
-        # See for details: https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036
-        use_default_shell_env = True,
+        # # Recommended for all rules.
+        # # See for details: https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036
+        # use_default_shell_env = True,
         progress_message = "Building Swift package (%s) for %s using SPM." % (
             ctx.attr.package_path,
             spm_toolchain_info.target_triple,

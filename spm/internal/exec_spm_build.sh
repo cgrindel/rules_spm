@@ -41,9 +41,11 @@ while (("$#")); do
 done
 
 # DEBUG BEGIN
-echo >&2 "*** CHUCK:  DEVELOPER_DIR: ${DEVELOPER_DIR:-}" 
 echo >&2 "*** CHUCK:  worker_exec: ${worker_exec}" 
-"${worker_exec}" xcodebuild -version >&2
+# "${worker_exec}" xcodebuild -version >&2
+echo >&2 "*** CHUCK:  XCODE_VERSION_OVERRIDE: ${XCODE_VERSION_OVERRIDE:-}" 
+env >&2
+
 # DEBUG END
 
 # The SPM deps that were fetched are in a directory in the source area with the
