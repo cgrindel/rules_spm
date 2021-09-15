@@ -1,5 +1,5 @@
 load(":platforms.bzl", "platforms")
-load(":providers.bzl", "SPMBuildInfo", "SPMPlatformInfo")
+load(":providers.bzl", "SPMPlatformInfo", "SPMToolchainInfo")
 load(":swift_toolchains.bzl", "swift_toolchains")
 
 # MARK: - Macos Toolchain
@@ -19,6 +19,31 @@ def _create_spm_platform_info(swift_cpu, swift_os):
         arch = platforms.spm_arch(swift_cpu),
         vendor = platforms.spm_vendor(swift_os),
         abi = None,
+    )
+
+def _create_build_tool_config(ctx, xcode_config, target_triple, sdk_name = None):
+    swift_worker = ctx.executable._swift_worker
+
+    # TODO: Can be `release` or `debug`. How should this be configured?
+    spm_configuration = "release"
+    args = [
+        "--swift",
+        swift_worker,
+        "--build-config",
+        spm_configuration,
+        "--target_triple",
+        target_triple,
+    ]
+    if spm_toolchain_info.sdk_name:
+        args.extend(["--sdk_name", sdk_name])
+
+    env = apple_common.apple_host_system_env(xcode_config)
+    return actions.tool_config(
+        executable = ctx.executable._build_tool,
+        additional_tools = [swift_worker],
+        args = args,
+        env = env,
+        execution_requirements = xcode_config.execution_info(),
     )
 
 # This was heavily inspired by
@@ -55,16 +80,23 @@ def _spm_xcode_toolchain(ctx):
     sdk_name = swift_toolchains.sdk_name(platform)
 
     exec_os = "macosx"
+    tool_configs = {
+        action_names.BUILD: _create_build_tool_config(
+            ctx = ctx,
+            xcode_config = xcode_config,
+            target_triple = target_triple,
+            sdk_name = sdk_name,
+        ),
+    }
 
-    spm_build_info = SPMBuildInfo(
-        build_tool = ctx.executable._build_tool,
+    spm_toolchain_info = SPMToolchainInfo(
         sdk_name = sdk_name,
         target_triple = target_triple,
         spm_platform_info = _create_spm_platform_info(cpu, exec_os),
-        swift_worker = ctx.executable._swift_worker,
+        tool_configs = tool_configs,
     )
 
-    return [spm_build_info]
+    return [spm_toolchain_info]
 
 spm_xcode_toolchain = rule(
     implementation = _spm_xcode_toolchain,

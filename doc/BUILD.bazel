@@ -31,10 +31,10 @@ _DOC_WITH_SYMBOLS = {
         "spm_system_library",
     ],
     "providers": [
-        "SPMBuildInfo",
         "SPMPackageInfo",
         "SPMPackagesInfo",
         "SPMPlatformInfo",
+        "SPMToolchainInfo",
     ],
     "workspace_rules": [
         "spm_repositories",

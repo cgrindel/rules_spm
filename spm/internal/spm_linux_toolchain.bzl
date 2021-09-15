@@ -1,4 +1,4 @@
-load(":providers.bzl", "SPMBuildInfo", "SPMPlatformInfo")
+load(":providers.bzl", "SPMPlatformInfo", "SPMToolchainInfo")
 load(":swift_toolchains.bzl", "swift_toolchains")
 
 # GH050: Update the non-Xcode toolchain to conform to the Bazel toolchains? Get the target OS
@@ -18,7 +18,7 @@ def _spm_linux_toolchain(ctx):
         abi = ctx.attr.abi,
     )
 
-    spm_build_info = SPMBuildInfo(
+    spm_build_info = SPMToolchainInfo(
         build_tool = ctx.executable._build_tool,
         sdk_name = None,
         target_triple = target_triple,

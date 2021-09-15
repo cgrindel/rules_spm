@@ -6,32 +6,10 @@ facilitate the build and exposition of the Swift packages.
 
 On this page:
 
-  * [SPMBuildInfo](#SPMBuildInfo)
   * [SPMPackageInfo](#SPMPackageInfo)
   * [SPMPackagesInfo](#SPMPackagesInfo)
   * [SPMPlatformInfo](#SPMPlatformInfo)
-
-<a id="#SPMBuildInfo"></a>
-
-## SPMBuildInfo
-
-<pre>
-SPMBuildInfo(<a href="#SPMBuildInfo-build_tool">build_tool</a>, <a href="#SPMBuildInfo-sdk_name">sdk_name</a>, <a href="#SPMBuildInfo-target_triple">target_triple</a>, <a href="#SPMBuildInfo-spm_platform_info">spm_platform_info</a>, <a href="#SPMBuildInfo-swift_worker">swift_worker</a>)
-</pre>
-
-Information about how to invoke the Swift package manager.
-
-**FIELDS**
-
-
-| Name  | Description |
-| :------------- | :------------- |
-| <a id="SPMBuildInfo-build_tool"></a>build_tool |  The executable that will be used to build the Swift package.    |
-| <a id="SPMBuildInfo-sdk_name"></a>sdk_name |  A string representing the name of the SDK    |
-| <a id="SPMBuildInfo-target_triple"></a>target_triple |  A string representing the target platform as a triple.    |
-| <a id="SPMBuildInfo-spm_platform_info"></a>spm_platform_info |  An <code>SpmPlatformInfo</code> describing the target platform.    |
-| <a id="SPMBuildInfo-swift_worker"></a>swift_worker |  The path for the <code>swift</code> worker.    |
-
+  * [SPMToolchainInfo](#SPMToolchainInfo)
 
 <a id="#SPMPackageInfo"></a>
 
@@ -91,5 +69,26 @@ SPM designations for the architecture, OS and vendor.
 | <a id="SPMPlatformInfo-arch"></a>arch |  The architecture designation as understood by SPM.    |
 | <a id="SPMPlatformInfo-vendor"></a>vendor |  The vendor designation as understood by SPM.    |
 | <a id="SPMPlatformInfo-abi"></a>abi |  The abi destination as understood by SPM.    |
+
+
+<a id="#SPMToolchainInfo"></a>
+
+## SPMToolchainInfo
+
+<pre>
+SPMToolchainInfo(<a href="#SPMToolchainInfo-sdk_name">sdk_name</a>, <a href="#SPMToolchainInfo-target_triple">target_triple</a>, <a href="#SPMToolchainInfo-spm_platform_info">spm_platform_info</a>, <a href="#SPMToolchainInfo-tool_configs">tool_configs</a>)
+</pre>
+
+Information about how to invoke tools like the Swift package manager.
+
+**FIELDS**
+
+
+| Name  | Description |
+| :------------- | :------------- |
+| <a id="SPMToolchainInfo-sdk_name"></a>sdk_name |  A string representing the name of the SDK    |
+| <a id="SPMToolchainInfo-target_triple"></a>target_triple |  A string representing the target platform as a triple.    |
+| <a id="SPMToolchainInfo-spm_platform_info"></a>spm_platform_info |  An <code>SpmPlatformInfo</code> describing the target platform.    |
+| <a id="SPMToolchainInfo-tool_configs"></a>tool_configs |  A <code>dict</code> of configuration structs where the key is an action name (<code>action_names</code>) and the value is a <code>struct</code> as returned by <code>actions.tool_config()</code>.    |
 
 

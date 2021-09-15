@@ -1,7 +1,8 @@
+load(":actions.bzl", "action_names")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":platforms.bzl", "platforms")
-load(":providers.bzl", "SPMBuildInfo", "SPMPackageInfo", "SPMPackagesInfo", "SPMPlatformInfo", "providers")
+load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "SPMPlatformInfo", "SPMToolchainInfo", "providers")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
 load(":spm_common.bzl", "spm_common")
 load(":swift_toolchains.bzl", "swift_toolchains")
@@ -353,7 +354,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
     """
 
     # SPM Toolchain Info
-    spm_build_info = _get_spm_build_info(ctx)
+    spm_toolchain_info = _get_spm_toolchain_info(ctx)
+    tool_config = spm_toolchain_info.tool_configs[action_names.BUILD]
 
     build_output_dir = ctx.actions.declare_directory(spm_common.build_dirname)
 
@@ -363,21 +365,13 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         all_build_outs.extend(pbi.build_outs)
 
     run_args = ctx.actions.args()
+    run_args.add_all(tool_config.args)
     run_args.add_all([
-        "--swift",
-        spm_build_info.swift_worker,
-        # spm_build_info.swift_executable,
-        "--build-config",
-        ctx.attr.configuration,
         "--package-path",
         ctx.attr.package_path,
         "--build-path",
         build_output_dir.path,
-        "--target_triple",
-        spm_build_info.target_triple,
     ])
-    if spm_build_info.sdk_name:
-        run_args.add_all(["--sdk_name", spm_build_info.sdk_name])
 
     for ci in copy_infos:
         run_args.add_all([ci.src, ci.dest])
@@ -387,14 +381,14 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         inputs = ctx.files.srcs + build_inputs,
         outputs = all_build_outs,
         arguments = [run_args],
-        executable = spm_build_info.build_tool,
-        tools = [spm_build_info.swift_worker],
+        executable = tool_config.executable,
+        tools = tool_config.additional_tools,
         # Recommended for all rules.
         # See for details: https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036
         use_default_shell_env = True,
         progress_message = "Building Swift package (%s) for %s using SPM." % (
             ctx.attr.package_path,
-            spm_build_info.target_triple,
+            spm_toolchain_info.target_triple,
         ),
     )
 
@@ -402,8 +396,8 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
 
 # MARK: - Toolchain Info
 
-def _get_spm_build_info(ctx):
-    return ctx.attr._toolchain[SPMBuildInfo]
+def _get_spm_toolchain_info(ctx):
+    return ctx.attr._toolchain[SPMToolchainInfo]
 
 # MARK: - Rule Implementation
 
@@ -420,8 +414,8 @@ def _get_build_config_path(ctx):
     #
     # See: https://clang.llvm.org/docs/CrossCompilation.html#target-triple
     # Example arch-vendor-os: "x86_64-apple-macosx"
-    spm_build_info = _get_spm_build_info(ctx)
-    spm_platform_info = spm_build_info.spm_platform_info
+    spm_toolchain_info = _get_spm_toolchain_info(ctx)
+    spm_platform_info = spm_toolchain_info.spm_platform_info
     arch_vendor_os = swift_toolchains.target_triple(
         arch = spm_platform_info.arch,
         vendor = spm_platform_info.vendor,
@@ -504,11 +498,11 @@ _attrs = {
         allow_files = True,
         mandatory = True,
     ),
-    "configuration": attr.string(
-        default = "release",
-        values = ["release", "debug"],
-        doc = "The configuration to use when executing swift build (e.g. debug, release).",
-    ),
+    # "configuration": attr.string(
+    #     default = "release",
+    #     values = ["release", "debug"],
+    #     doc = "The configuration to use when executing swift build (e.g. debug, release).",
+    # ),
     "package_descriptions_json": attr.string(
         mandatory = True,
         doc = "JSON string which describes the package (i.e. swift package describe --type json).",
@@ -532,7 +526,7 @@ spm_repositories)\
     ),
     "_toolchain": attr.label(
         default = Label("@cgrindel_rules_spm_local_config//:toolchain"),
-        providers = [[SPMBuildInfo]],
+        providers = [[SPMToolchainInfo]],
     ),
 }
 
