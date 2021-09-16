@@ -28,8 +28,6 @@ def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuratio
     args = [
         "--swift",
         swift_worker,
-        # "--target_triple",
-        # target_triple,
     ]
     if sdk_name:
         args.extend(["--sdk_name", sdk_name])
@@ -89,31 +87,13 @@ def _spm_xcode_toolchain(ctx):
     platform = apple_fragment.single_arch_platform
     xcode_config = ctx.attr._xcode_config[apple_common.XcodeVersionConfig]
 
-    # DEBUG BEGIN
-
-    # print("*** CHUCK xcode_config.execution_info(): ")
-    # for key in xcode_config.execution_info():
-    #     print("*** CHUCK", key, ":", xcode_config.execution_info()[key])
-
-    # apple_toolchain = apple_common.apple_toolchain()
-    # print("*** CHUCK apple_toolchain.developer_dir(): ", apple_toolchain.developer_dir())
-    # print("*** CHUCK apple_toolchain.platform_developer_framework_dir(apple_fragment): ", apple_toolchain.platform_developer_framework_dir(apple_fragment))
-    # print("*** CHUCK apple_toolchain.sdk_dir(): ", apple_toolchain.sdk_dir())
-
-    # print("*** CHUCK xcode_config.xcode_version(): ", xcode_config.xcode_version())
-    # print("*** CHUCK apple_common.apple_host_system_env(xcode_config): ")
-    # for key in apple_common.apple_host_system_env(xcode_config):
-    #     print("*** CHUCK", key, ":", apple_common.apple_host_system_env(xcode_config)[key])
-
-    # DEBUG END
-
     target_os_version = xcode_config.minimum_os_for_platform_type(
         platform.platform_type,
     )
     target_triple = swift_toolchains.apple_target_triple(cpu, platform, target_os_version)
     sdk_name = swift_toolchains.sdk_name(platform)
 
-    # TODO: Can be `release` or `debug`. How should this be configured?
+    # GH073: Can be `release` or `debug`. Provide a means for configuring this value.
     spm_configuration = "release"
 
     exec_os = "macosx"
@@ -140,10 +120,6 @@ spm_xcode_toolchain = rule(
     implementation = _spm_xcode_toolchain,
     fragments = ["apple"],
     attrs = {
-        # "git": attr.string(
-        #     mandatory = True,
-        #     doc = "The path to `git`.",
-        # ),
         "_spm_utilities": attr.label(
             cfg = "host",
             allow_files = True,
