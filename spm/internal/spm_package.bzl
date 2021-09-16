@@ -385,9 +385,10 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         env = tool_config.env,
         execution_requirements = tool_config.execution_requirements,
         tools = tool_config.additional_tools,
-        # # Recommended for all rules.
-        # # See for details: https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036
-        # use_default_shell_env = True,
+        # Need to ensure that use_default_shell_env is False so that env variables can be
+        # passed along.
+        # See for details: https://github.com/bazelbuild/bazel/issues/12049#issuecomment-696501036
+        use_default_shell_env = False,
         progress_message = "Building Swift package (%s) for %s using SPM." % (
             ctx.attr.package_path,
             spm_toolchain_info.target_triple,
