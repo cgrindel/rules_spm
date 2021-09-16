@@ -76,7 +76,7 @@ SPM designations for the architecture, OS and vendor.
 ## SPMToolchainInfo
 
 <pre>
-SPMToolchainInfo(<a href="#SPMToolchainInfo-sdk_name">sdk_name</a>, <a href="#SPMToolchainInfo-target_triple">target_triple</a>, <a href="#SPMToolchainInfo-spm_platform_info">spm_platform_info</a>, <a href="#SPMToolchainInfo-tool_configs">tool_configs</a>)
+SPMToolchainInfo(<a href="#SPMToolchainInfo-spm_configuration">spm_configuration</a>, <a href="#SPMToolchainInfo-target_triple">target_triple</a>, <a href="#SPMToolchainInfo-spm_platform_info">spm_platform_info</a>, <a href="#SPMToolchainInfo-tool_configs">tool_configs</a>)
 </pre>
 
 Information about how to invoke tools like the Swift package manager.
@@ -86,7 +86,7 @@ Information about how to invoke tools like the Swift package manager.
 
 | Name  | Description |
 | :------------- | :------------- |
-| <a id="SPMToolchainInfo-sdk_name"></a>sdk_name |  A string representing the name of the SDK    |
+| <a id="SPMToolchainInfo-spm_configuration"></a>spm_configuration |  The SPM build configuration as a <code>string</code>. Values: <code>release</code> or <code>debug</code>    |
 | <a id="SPMToolchainInfo-target_triple"></a>target_triple |  A string representing the target platform as a triple.    |
 | <a id="SPMToolchainInfo-spm_platform_info"></a>spm_platform_info |  An <code>SpmPlatformInfo</code> describing the target platform.    |
 | <a id="SPMToolchainInfo-tool_configs"></a>tool_configs |  A <code>dict</code> of configuration structs where the key is an action name (<code>action_names</code>) and the value is a <code>struct</code> as returned by <code>actions.tool_config()</code>.    |
