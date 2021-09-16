@@ -2,7 +2,9 @@
 
 set -euo pipefail
 
-build_args=()
+spm_build_args=()
+swiftc_build_args=()
+cc_build_args=()
 spm_utilities=()
 args=()
 while (("$#")); do
@@ -19,10 +21,10 @@ while (("$#")); do
       build_path="${2}"
       shift 2
       ;;
-    "--target_triple")
-      target_triple="${2}"
-      shift 2
-      ;;
+    # "--target_triple")
+    #   target_triple="${2}"
+    #   shift 2
+    #   ;;
     "--sdk_name")
       sdk_name="${2}"
       shift 2
@@ -32,7 +34,15 @@ while (("$#")); do
       shift 2
       ;;
     "-Xspm")
-      build_args+=("${2}")
+      spm_build_args+=("${2}")
+      shift 2
+      ;;
+    "-Xswiftc")
+      swiftc_build_args+=("${2}")
+      shift 2
+      ;;
+    "-Xcc")
+      cc_build_args+=("${2}")
       shift 2
       ;;
     -*)
@@ -62,19 +72,25 @@ fetched_dir="${package_path}/$(basename "${build_path}")"
 # copy the contents of the source directory not the actual directory.
 cp -R -L "${fetched_dir}/." "${build_path}" 
 
-build_args+=(--package-path "${package_path}")
-build_args+=(--build-path "${build_path}")
-build_args+=(-Xswiftc "-target" -Xswiftc "${target_triple}")
-build_args+=(-Xcc "-target" -Xcc "${target_triple}")
+spm_build_args+=(--package-path "${package_path}")
+spm_build_args+=(--build-path "${build_path}")
+
+for swiftc_arg in "${swiftc_build_args[@]}" ; do
+  spm_build_args+=(-Xswiftc "${swiftc_arg}")
+done
+
+for cc_arg in "${cc_build_args[@]}" ; do
+  spm_build_args+=(-Xcc "${cc_arg}")
+done
 
 if [[ -n "${sdk_name:-}" ]]; then
   # NOTE: This will only succeed when Xcode is installed.
   sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
-  build_args+=(-Xswiftc "-sdk" -Xswiftc "${sdk_path}")
+  spm_build_args+=(-Xswiftc "-sdk" -Xswiftc "${sdk_path}")
 fi
 
 # Execute the SPM build
-"${worker_exec}" swift build "${build_args[@]}"
+"${worker_exec}" swift build "${spm_build_args[@]}"
 
 # Replace the specified files with the provided ones
 idx=0
