@@ -21,10 +21,6 @@ while (("$#")); do
       build_path="${2}"
       shift 2
       ;;
-    # "--target_triple")
-    #   target_triple="${2}"
-    #   shift 2
-    #   ;;
     "--sdk_name")
       sdk_name="${2}"
       shift 2
