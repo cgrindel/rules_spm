@@ -16,7 +16,11 @@ sh_test(
     deps = ["@bazel_tools//tools/bash/runfiles"],
 )
 
-# DEBUG BEGIN
+# Used to test building with a different version of Xcode. In this case, this
+# is not the latest version of Xcode. Run the following to test with this
+# version:
+#
+#    bazel test --xcode_version_config=//:host_xcodes //...
 
 xcode_version(
     name = "version12_4_0_12D4e",
@@ -35,5 +39,3 @@ xcode_config(
         ":version12_4_0_12D4e",
     ],
 )
-
-# DEBUG END
