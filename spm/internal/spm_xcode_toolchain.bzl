@@ -28,8 +28,8 @@ def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuratio
     args = [
         "--swift",
         swift_worker,
-        "--target_triple",
-        target_triple,
+        # "--target_triple",
+        # target_triple,
     ]
     if sdk_name:
         args.extend(["--sdk_name", sdk_name])
@@ -43,6 +43,9 @@ def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuratio
     if _is_xcode_at_least_version(xcode_config, "12.5"):
         args.extend(["-Xspm", "--manifest-cache", "-Xspm", "none"])
         args.extend(["-Xspm", "--disable-repository-cache"])
+
+    args.extend(["-Xswiftc", "-target", "-Xswiftc", target_triple])
+    args.extend(["-Xcc", "-target", "-Xcc", target_triple])
 
     env = apple_common.apple_host_system_env(xcode_config)
     return actions.tool_config(
