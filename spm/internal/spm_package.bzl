@@ -377,10 +377,6 @@ def _build_all_pkgs(ctx, pkg_build_infos_dict, copy_infos, build_inputs):
         run_args.add_all([ci.src, ci.dest])
         all_build_outs.append(ci.dest)
 
-    # DEBUG BEGIN
-    print("*** CHUCK tool_config: ", tool_config)
-    # DEBUG END
-
     ctx.actions.run(
         inputs = ctx.files.srcs + build_inputs,
         outputs = all_build_outs,
