@@ -4,6 +4,7 @@ set -euo pipefail
 
 swift_exec="swift"
 add_swift_bin_to_path="FALSE"
+
 spm_build_args=()
 swiftc_build_args=()
 cc_build_args=()
@@ -71,25 +72,6 @@ done
 if [[ "${add_swift_bin_to_path}" == "TRUE" ]]; then
   export PATH="$(dirname "${swift_exec}"):${PATH}"
 fi
-
-# DEBUG BEGIN
-echo >&2 "*** CHUCK:  worker_exec: ${worker_exec}" 
-echo >&2 "*** CHUCK:  swift_exec: ${swift_exec}" 
-echo >&2 "*** CHUCK:  PATH: ${PATH}" 
-
-# DOES NOT WORK
-# /home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin/swift-package \
-#   --sdk  /home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin \
-#   --version
-
-# DOES WORK
-# real_swift=/home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin/swift
-# export PATH="$(dirname "${real_swift}"):${PATH}"
-# echo >&2 "*** CHUCK:  PATH: ${PATH}" 
-# "${real_swift}" package --version
-# swift_exec=/home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin/swift
-
-# DEBUG END
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
