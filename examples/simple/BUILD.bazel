@@ -21,6 +21,9 @@ sh_test(
 # version:
 #
 #    bazel test --xcode_version_config=//:host_xcodes //...
+#
+# For more information on how this all works, see
+# https://www.smileykeith.com/2021/03/08/locking-xcode-in-bazel/
 
 xcode_version(
     name = "version12_4_0_12D4e",
