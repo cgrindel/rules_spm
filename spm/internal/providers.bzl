@@ -3,14 +3,11 @@
 SPMToolchainInfo = provider(
     doc = "Information about how to invoke tools like the Swift package manager.",
     fields = {
-        # "build_tool": "The executable that will be used to build the Swift package.",
-        # "sdk_name": "A string representing the name of the SDK",
         "spm_configuration": """\
 The SPM build configuration as a `string`. Values: `release` or `debug`\
 """,
         "target_triple": "A string representing the target platform as a triple.",
         "spm_platform_info": "An `SpmPlatformInfo` describing the target platform.",
-        # "swift_worker": "The path for the `swift` worker.",
         "tool_configs": """\
 A `dict` of configuration structs where the key is an action name \
 (`action_names`) and the value is a `struct` as returned by \
