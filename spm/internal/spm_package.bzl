@@ -501,11 +501,6 @@ _attrs = {
         allow_files = True,
         mandatory = True,
     ),
-    # "configuration": attr.string(
-    #     default = "release",
-    #     values = ["release", "debug"],
-    #     doc = "The configuration to use when executing swift build (e.g. debug, release).",
-    # ),
     "package_descriptions_json": attr.string(
         mandatory = True,
         doc = "JSON string which describes the package (i.e. swift package describe --type json).",
