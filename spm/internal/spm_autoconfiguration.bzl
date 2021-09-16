@@ -24,20 +24,32 @@ spm_linux_toolchain(
 """,
     )
 
+_SPM_UTILITIES_DIRNAME = "spm_utilities"
+_SPM_UTILITIES = ["git"]
+
 def _create_xcode_toolchain(repository_ctx):
     """Creates BUILD targets for the SPM toolchain on macOS using Xcode.
 
     Args:
       repository_ctx: The repository rule context.
     """
-    git = repository_ctx.which("git")
-    if not git:
-        fail("Could not find `git`.")
 
-    spm_utilities_dirname = "spm_utilities"
-    repository_ctx.symlink(git, spm_utilities_dirname + "/git")
+    # Create symlinks for all of the utilities that need to be available for
+    # SPM.
+    for spm_utility in _SPM_UTILITIES:
+        util_path = repository_ctx.which(spm_utility)
+        if not util_path:
+            fail("Could not find `%s`." % (spm_utility))
+
+        # NOTE: We could not use the skylib `paths` library, because it was not
+        # loaded yet.
+        repository_ctx.symlink(util_path, "{dir}/{util}".format(
+            dir = _SPM_UTILITIES_DIRNAME,
+            util = spm_utility,
+        ))
+
     repository_ctx.file(
-        spm_utilities_dirname + "/BUILD.bazel",
+        _SPM_UTILITIES_DIRNAME + "/BUILD.bazel",
         """
 package(default_visibility = ["//visibility:public"])
 
