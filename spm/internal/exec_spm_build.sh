@@ -68,7 +68,8 @@ for path_dir in "${path_dirs[@]}" ; do
   export PATH="${abs_path_dir}:${PATH}"
 done
 
-# If a swift executable was specified, make sure that the directory is in the PATH.
+# One some platforms, the Swift bin directory needs to in the PATH for Swift
+# operations to succeed.
 if [[ "${add_swift_bin_to_path}" == "TRUE" ]]; then
   export PATH="$(dirname "${swift_exec}"):${PATH}"
 fi
