@@ -28,22 +28,53 @@ def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuratio
     args = [
         "--swift",
         swift_worker,
-        "--build-config",
-        spm_configuration,
         "--target_triple",
         target_triple,
     ]
     if sdk_name:
         args.extend(["--sdk_name", sdk_name])
 
+    for spm_utility in ctx.files._spm_utilities:
+        args.extend(["--spm_utility", spm_utility])
+
+    args.extend(["-Xspm", "--disable-sandbox"])
+    args.extend(["-Xspm", "--configuration", "-Xspm", spm_configuration])
+
+    if _is_xcode_at_least_version(xcode_config, "12.5"):
+        args.extend(["-Xspm", "--manifest-cache", "-Xspm", "none"])
+        args.extend(["-Xspm", "--disable-repository-cache"])
+
     env = apple_common.apple_host_system_env(xcode_config)
     return actions.tool_config(
         executable = ctx.executable._build_tool,
-        additional_tools = [swift_worker],
+        additional_tools = [swift_worker] + ctx.files._spm_utilities,
         args = args,
         env = env,
         execution_requirements = xcode_config.execution_info(),
     )
+
+# This was heavily inspired by
+# https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L573
+def _is_xcode_at_least_version(xcode_config, desired_version):
+    """Returns True if we are building with at least the given Xcode version.
+
+    Args:
+        xcode_config: The `apple_common.XcodeVersionConfig` provider.
+        desired_version: The minimum desired Xcode version, as a dotted version
+            string.
+
+    Returns:
+        True if the current target is being built with a version of Xcode at
+        least as high as the given version.
+    """
+    current_version = xcode_config.xcode_version()
+    if not current_version:
+        fail("Could not determine Xcode version at all. This likely means " +
+             "Xcode isn't available; if you think this is a mistake, please " +
+             "file an issue.")
+
+    desired_version_value = apple_common.dotted_version(desired_version)
+    return current_version >= desired_version_value
 
 # This was heavily inspired by
 # https://github.com/bazelbuild/rules_swift/blob/master/swift/internal/xcode_swift_toolchain.bzl#L638
@@ -106,6 +137,20 @@ spm_xcode_toolchain = rule(
     implementation = _spm_xcode_toolchain,
     fragments = ["apple"],
     attrs = {
+        # "git": attr.string(
+        #     mandatory = True,
+        #     doc = "The path to `git`.",
+        # ),
+        "_spm_utilities": attr.label(
+            cfg = "host",
+            allow_files = True,
+            default = Label(
+                "@cgrindel_rules_spm_local_config//spm_utilities:all_utilities",
+            ),
+            doc = """\
+The location for the utilities that are required by SPM.\
+""",
+        ),
         "_swift_worker": attr.label(
             cfg = "host",
             allow_files = True,

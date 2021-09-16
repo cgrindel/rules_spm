@@ -30,6 +30,23 @@ def _create_xcode_toolchain(repository_ctx):
     Args:
       repository_ctx: The repository rule context.
     """
+    git = repository_ctx.which("git")
+    if not git:
+        fail("Could not find `git`.")
+
+    spm_utilities_dirname = "spm_utilities"
+    repository_ctx.symlink(git, spm_utilities_dirname + "/git")
+    repository_ctx.file(
+        spm_utilities_dirname + "/BUILD.bazel",
+        """
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all_utilities",
+    srcs = glob(["*"], exclude = ["BUILD.bazel"]),
+)
+""",
+    )
 
     repository_ctx.file(
         "BUILD.bazel",
