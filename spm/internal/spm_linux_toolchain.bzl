@@ -19,9 +19,12 @@ Could not parse the version number for Swift package manager. {version}\
 
 def _create_build_tool_config(ctx, target_triple, spm_configuration):
     swift_worker = ctx.executable._swift_worker
+    swift_exec = ctx.attr.swift_exec
     args = [
-        "--swift",
+        "--worker",
         swift_worker,
+        "--swift",
+        swift_exec
     ]
 
     for spm_utility in ctx.files._spm_utilities:
@@ -102,10 +105,16 @@ The name of the operating system that this toolchain targets.\
         "abi": attr.string(
             doc = "The abi for the system being targetd.",
         ),
+        "swift_exec": attr.string(
+            mandatory = True,
+            doc = """\
+The path to the Swift executable.\
+""",
+        ),
         "spm_version": attr.string(
             mandatory = True,
             doc = """\
-The version number for Swift package manager. It is the value returned from
+The version number for Swift package manager. It is the value returned from \
 `swift package --version`.\
 """,
         ),

@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+swift_exec="swift"
+add_swift_bin_to_path="FALSE"
 spm_build_args=()
 swiftc_build_args=()
 cc_build_args=()
@@ -9,9 +11,14 @@ spm_utilities=()
 args=()
 while (("$#")); do
   case "${1}" in
-    "--swift")
+    "--worker")
       worker_exec="${2}"
       shift 2
+      ;;
+    "--swift")
+      swift_exec="${2}"
+      shift 2
+      add_swift_bin_to_path="TRUE"
       ;;
     "--package-path")
       package_path="${2}"
@@ -56,8 +63,33 @@ done
 # hold the utilities are in the PATH.
 path_dirs=$(for util in "${spm_utilities[@]}"; do echo "$(dirname "${util}")"; done | sort -u)
 for path_dir in "${path_dirs[@]}" ; do
-  export PATH="${path_dir}:${PATH}"
+  abs_path_dir=$(cd "${path_dir}" && pwd)
+  export PATH="${abs_path_dir}:${PATH}"
 done
+
+# If a swift executable was specified, make sure that the directory is in the PATH.
+if [[ "${add_swift_bin_to_path}" == "TRUE" ]]; then
+  export PATH="$(dirname "${swift_exec}"):${PATH}"
+fi
+
+# DEBUG BEGIN
+echo >&2 "*** CHUCK:  worker_exec: ${worker_exec}" 
+echo >&2 "*** CHUCK:  swift_exec: ${swift_exec}" 
+echo >&2 "*** CHUCK:  PATH: ${PATH}" 
+
+# DOES NOT WORK
+# /home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin/swift-package \
+#   --sdk  /home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin \
+#   --version
+
+# DOES WORK
+# real_swift=/home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin/swift
+# export PATH="$(dirname "${real_swift}"):${PATH}"
+# echo >&2 "*** CHUCK:  PATH: ${PATH}" 
+# "${real_swift}" package --version
+# swift_exec=/home/chuck/swift-5.4.2-RELEASE-ubuntu20.04/usr/bin/swift
+
+# DEBUG END
 
 # The SPM deps that were fetched are in a directory in the source area with the
 # same basename as the build_path.
@@ -86,7 +118,7 @@ if [[ -n "${sdk_name:-}" ]]; then
 fi
 
 # Execute the SPM build
-"${worker_exec}" swift build "${spm_build_args[@]}"
+"${worker_exec}" "${swift_exec}" build "${spm_build_args[@]}"
 
 # Replace the specified files with the provided ones
 idx=0

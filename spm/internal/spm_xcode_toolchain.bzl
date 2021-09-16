@@ -26,7 +26,7 @@ def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuratio
     swift_worker = ctx.executable._swift_worker
 
     args = [
-        "--swift",
+        "--worker",
         swift_worker,
     ]
     if sdk_name:

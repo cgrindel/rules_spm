@@ -5,13 +5,14 @@ load(":spm_versions.bzl", "spm_versions")
 
 _SPM_UTILITIES_DIRNAME = "spm_utilities"
 _XCODE_SPM_UTILITIES = ["git"]
-_LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES + ["swift"]
+_LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES 
+# _LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES + ["swift"]
 
 
 def _prepare_spm_utilities(repository_ctx, utilities):
     # Create symlinks for all of the utilities that need to be available for
     # SPM.
-    for spm_utility in _XCODE_SPM_UTILITIES:
+    for spm_utility in utilities:
         util_path = repository_ctx.which(spm_utility)
         if not util_path:
             fail("Could not find `%s`." % (spm_utility))
@@ -41,6 +42,7 @@ filegroup(
 def _create_linux_toolchain(repository_ctx):
     _prepare_spm_utilities(repository_ctx, _LINUX_SPM_UTILITIES)
 
+    swift_exec = repository_ctx.which("swift")
     spm_version = spm_versions.get(repository_ctx)
 
     # GH051: Do a better job figuring out what the target parameters should
@@ -66,6 +68,7 @@ spm_linux_toolchain(
     os = "{os}",
     vendor = "{vendor}",
     abi = "{abi}",
+    swift_exec = "{swift_exec}",
     spm_version = "{spm_version}",
 )
 """.format(
@@ -73,6 +76,7 @@ spm_linux_toolchain(
         os = os,
         vendor = vendor,
         abi = abi,
+        swift_exec = swift_exec,
         spm_version = spm_version,
     ),
     )
