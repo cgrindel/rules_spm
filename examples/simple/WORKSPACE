@@ -3,11 +3,6 @@ workspace(name = "simple_example")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 local_repository(
-    name = "build_bazel_rules_swift",
-    path = "/Users/chuck/code/bazelbuild/rules_swift",
-)
-
-local_repository(
     name = "cgrindel_rules_spm",
     path = "../..",
 )
