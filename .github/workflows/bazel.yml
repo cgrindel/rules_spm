@@ -34,11 +34,17 @@ jobs:
       run: |
         bazelisk build //... 
 
-    - name: Test Simple Example
+    - name: Test Simple Example with Default Xcode
       shell: bash
       run: |
         cd examples/simple
         bazelisk test //...
+
+    - name: Test Simple Example with Older Xcode
+      shell: bash
+      run: |
+        cd examples/simple
+        bazelisk test --xcode_version_config=//:host_xcodes //...
 
     - name: Test Simple Example Using Revision
       shell: bash
