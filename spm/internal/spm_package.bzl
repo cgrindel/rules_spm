@@ -214,6 +214,7 @@ def _gather_package_build_info(
                 swift_modules.append(swift_module_info)
                 build_outs.extend(swift_module_info.all_outputs)
             elif pds.is_executable_target(target):
+                # Executable targets are declared by product, not by SPM target.
                 pass
 
             else:
