@@ -63,8 +63,8 @@ Exposes the specified type of file(s) from a rule that outputs an SPMPackagesInf
 ## spm_package
 
 <pre>
-spm_package(<a href="#spm_package-name">name</a>, <a href="#spm_package-clang_module_headers">clang_module_headers</a>, <a href="#spm_package-configuration">configuration</a>, <a href="#spm_package-dependencies_json">dependencies_json</a>, <a href="#spm_package-package_descriptions_json">package_descriptions_json</a>,
-            <a href="#spm_package-package_path">package_path</a>, <a href="#spm_package-srcs">srcs</a>)
+spm_package(<a href="#spm_package-name">name</a>, <a href="#spm_package-clang_module_headers">clang_module_headers</a>, <a href="#spm_package-dependencies_json">dependencies_json</a>, <a href="#spm_package-package_descriptions_json">package_descriptions_json</a>, <a href="#spm_package-package_path">package_path</a>,
+            <a href="#spm_package-srcs">srcs</a>)
 </pre>
 
 Builds the specified Swift package.
@@ -76,7 +76,6 @@ Builds the specified Swift package.
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="spm_package-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
 | <a id="spm_package-clang_module_headers"></a>clang_module_headers |  A <code>dict</code> where the keys are target names and the values are public header paths.   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -> List of strings</a> | optional | {} |
-| <a id="spm_package-configuration"></a>configuration |  The configuration to use when executing swift build (e.g. debug, release).   | String | optional | "release" |
 | <a id="spm_package-dependencies_json"></a>dependencies_json |  "JSON string describing the dependencies to expose (e.g. see dependencies in spm_repositories)   | String | required |  |
 | <a id="spm_package-package_descriptions_json"></a>package_descriptions_json |  JSON string which describes the package (i.e. swift package describe --type json).   | String | required |  |
 | <a id="spm_package-package_path"></a>package_path |  Directory which contains the Package.swift (i.e. swift build --package-path VALUE).   | String | optional | "" |

@@ -33,10 +33,10 @@ load(
 )
 load(
     "//spm/internal:providers.bzl",
-    _SPMBuildInfo = "SPMBuildInfo",
     _SPMPackageInfo = "SPMPackageInfo",
     _SPMPackagesInfo = "SPMPackagesInfo",
     _SPMPlatformInfo = "SPMPlatformInfo",
+    _SPMToolchainInfo = "SPMToolchainInfo",
 )
 load(
     "//spm/internal:spm_common.bzl",
@@ -78,6 +78,10 @@ load(
     "//spm/internal:repository_utils.bzl",
     _repository_utils = "repository_utils",
 )
+load(
+    "//spm/internal:actions.bzl",
+    _actions = "actions",
+)
 
 # Workspce Rules and Functions
 spm_repositories = _spm_repositories
@@ -94,7 +98,7 @@ spm_system_library = _spm_system_library
 spm_archive = _spm_archive
 
 # Providers
-SPMBuildInfo = _SPMBuildInfo
+SPMToolchainInfo = _SPMToolchainInfo
 SPMPlatformInfo = _SPMPlatformInfo
 SPMPackagesInfo = _SPMPackagesInfo
 SPMPackageInfo = _SPMPackageInfo
@@ -109,3 +113,4 @@ providers = _providers
 platforms = _platforms
 references = _references
 repository_utils = _repository_utils
+actions = _actions

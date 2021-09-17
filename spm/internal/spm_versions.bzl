@@ -15,7 +15,7 @@ def _extract_version(version):
     for i in range(len(version)):
         c = version[i]
         if c.isdigit():
-            return version[i:]
+            return version[i:].strip()
 
 def _get_version(repository_ctx):
     """Returns the semantic version for Swit Package Manager.

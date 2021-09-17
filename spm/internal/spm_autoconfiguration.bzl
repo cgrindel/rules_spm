@@ -1,12 +1,55 @@
 load(":repository_utils.bzl", "repository_utils")
+load(":spm_versions.bzl", "spm_versions")
+
+# MARK: - SPM Utilities
+
+_SPM_UTILITIES_DIRNAME = "spm_utilities"
+_XCODE_SPM_UTILITIES = ["git"]
+_LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES 
+
+
+def _prepare_spm_utilities(repository_ctx, utilities):
+    # Create symlinks for all of the utilities that need to be available for
+    # SPM.
+    for spm_utility in utilities:
+        util_path = repository_ctx.which(spm_utility)
+        if not util_path:
+            fail("Could not find `%s`." % (spm_utility))
+
+        # NOTE: We could not use the skylib `paths` library, because it was not
+        # loaded yet.
+        repository_ctx.symlink(util_path, "{dir}/{util}".format(
+            dir = _SPM_UTILITIES_DIRNAME,
+            util = spm_utility,
+        ))
+
+    # Write BUILD.bazel file for the utilities.
+    repository_ctx.file(
+        _SPM_UTILITIES_DIRNAME + "/BUILD.bazel",
+        """
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all_utilities",
+    srcs = glob(["*"], exclude = ["BUILD.bazel"]),
+)
+""",
+    )
+
+# MARK: - Linux Toolchain
 
 def _create_linux_toolchain(repository_ctx):
-    path_to_swift = repository_ctx.which("swift")
-    if not path_to_swift:
-        fail("Could not find `swift` in $PATH.")
+    _prepare_spm_utilities(repository_ctx, _LINUX_SPM_UTILITIES)
 
-    # GH051: Do a better job figuring out what the target parameters should 
+    swift_exec = repository_ctx.which("swift")
+    spm_version = spm_versions.get(repository_ctx)
+
+    # GH051: Do a better job figuring out what the target parameters should
     # be.
+    arch = "x86_64"
+    os = "linux"
+    vendor = "unknown"
+    abi = "gnu"
 
     repository_ctx.file(
         "BUILD.bazel",
@@ -20,16 +63,24 @@ package(default_visibility = ["//visibility:public"])
 
 spm_linux_toolchain(
     name = "toolchain",
-    arch = "x86_64",
-    os = "linux",
-    vendor = "unknown",
-    abi = "gnu",
-    swift_executable = "{swift}",
+    arch = "{arch}",
+    os = "{os}",
+    vendor = "{vendor}",
+    abi = "{abi}",
+    swift_exec = "{swift_exec}",
+    spm_version = "{spm_version}",
 )
 """.format(
-            swift = path_to_swift,
-        ),
+        arch = arch,
+        os = os,
+        vendor = vendor,
+        abi = abi,
+        swift_exec = swift_exec,
+        spm_version = spm_version,
+    ),
     )
+
+# MARK: - Xcode Toolchain
 
 def _create_xcode_toolchain(repository_ctx):
     """Creates BUILD targets for the SPM toolchain on macOS using Xcode.
@@ -37,14 +88,7 @@ def _create_xcode_toolchain(repository_ctx):
     Args:
       repository_ctx: The repository rule context.
     """
-
-    # Not sure if there is a difference between using `which swift` vs
-    # `xcrun --find swift`. Also, if one wants to use a custom toolchain/swift
-    # this will need to be smarter.
-    path_to_swift = repository_ctx.which("swift")
-    if not path_to_swift:
-        fail("Could not find `swift` in $PATH.")
-
+    _prepare_spm_utilities(repository_ctx, _XCODE_SPM_UTILITIES)
     repository_ctx.file(
         "BUILD.bazel",
         """
@@ -57,11 +101,8 @@ package(default_visibility = ["//visibility:public"])
 
 spm_xcode_toolchain(
     name = "toolchain",
-    swift_executable = "{swift}",
 )
-""".format(
-            swift = path_to_swift,
-        ),
+""",
     )
 
 def _spm_autoconfiguration_impl(repository_ctx):
