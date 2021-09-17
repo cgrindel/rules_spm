@@ -75,9 +75,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "cgrindel_rules_spm",
-    sha256 = "7da0cdd70faee3bcb2796fb79bcfd9f47f394ff17f65a187bd2023bfe0647bc7",
-    strip_prefix = "rules_spm-0.5.0",
-    urls = ["https://github.com/cgrindel/rules_spm/archive/v0.5.0.tar.gz"],
+    sha256 = "761496f290fcf28ee1e606c3e3fcbfeae37f1c5e5e07a5e5420f58f44407516a",
+    strip_prefix = "rules_spm-0.5.1",
+    urls = ["https://github.com/cgrindel/rules_spm/archive/v0.5.1.tar.gz"],
 )
 
 load(
