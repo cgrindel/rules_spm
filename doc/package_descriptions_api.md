@@ -285,3 +285,60 @@ Returns all of the targets that are a transitive dependency for the specified pr
 | <a id="package_descriptions.transitive_dependencies-product_refs"></a>product_refs |  A <code>list</code> of reference <code>string</code> values as created by <code>references.create_product_ref()</code>.   |  none |
 
 
+<a id="#package_descriptions.is_executable_product"></a>
+
+## package_descriptions.is_executable_product
+
+<pre>
+package_descriptions.is_executable_product(<a href="#package_descriptions.is_executable_product-product">product</a>)
+</pre>
+
+Returns a boolean indicating whether the specified product dictionary is an executable product.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="package_descriptions.is_executable_product-product"></a>product |  A <code>dict</code> representing a product from package description JSON.   |  none |
+
+
+<a id="#package_descriptions.get_product"></a>
+
+## package_descriptions.get_product
+
+<pre>
+package_descriptions.get_product(<a href="#package_descriptions.get_product-pkg_desc">pkg_desc</a>, <a href="#package_descriptions.get_product-product_name">product_name</a>, <a href="#package_descriptions.get_product-fail_if_not_found">fail_if_not_found</a>)
+</pre>
+
+Returns the product with the specified product name.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="package_descriptions.get_product-pkg_desc"></a>pkg_desc |  A <code>dict</code> representing a package description.   |  none |
+| <a id="package_descriptions.get_product-product_name"></a>product_name |  The product name as a <code>string</code>.   |  none |
+| <a id="package_descriptions.get_product-fail_if_not_found"></a>fail_if_not_found |  <p align="center"> - </p>   |  <code>True</code> |
+
+
+<a id="#package_descriptions.get_product_from_ref"></a>
+
+## package_descriptions.get_product_from_ref
+
+<pre>
+package_descriptions.get_product_from_ref(<a href="#package_descriptions.get_product_from_ref-pkg_descs_dict">pkg_descs_dict</a>, <a href="#package_descriptions.get_product_from_ref-product_ref">product_ref</a>)
+</pre>
+
+Returns the product for the provided reference.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="package_descriptions.get_product_from_ref-pkg_descs_dict"></a>pkg_descs_dict |  A <code>dict</code> where the keys are the package names and the values are package description <code>struct</code> values as returned by <code>package_descriptions.get()</code>.   |  none |
+| <a id="package_descriptions.get_product_from_ref-product_ref"></a>product_ref |  A reference <code>string</code> as created by <code>references.create_product_ref()</code>.   |  none |
+
+

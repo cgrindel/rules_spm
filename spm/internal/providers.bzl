@@ -46,7 +46,7 @@ SPMPackageInfo = provider(
     },
 )
 
-def _create_swift_binary(name, executable, all_outputs):
+def _create_swift_binary(name, executable = None, all_outputs = []):
     """Creates a value representing a Swift binary that is built from a package.
 
     Args:
