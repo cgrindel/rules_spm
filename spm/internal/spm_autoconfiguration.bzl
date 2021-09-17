@@ -6,7 +6,6 @@ load(":spm_versions.bzl", "spm_versions")
 _SPM_UTILITIES_DIRNAME = "spm_utilities"
 _XCODE_SPM_UTILITIES = ["git"]
 _LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES 
-# _LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES + ["swift"]
 
 
 def _prepare_spm_utilities(repository_ctx, utilities):
