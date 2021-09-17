@@ -39,11 +39,29 @@ SPMPackageInfo = provider(
     doc = "Describes the information about an SPM package.",
     fields = {
         "name": "Name of the Swift package.",
+        "swift_binaries": "A `list` of values returned from `providers.swift_binary`.",
         "swift_modules": "A `list` of values returned from `providers.swift_module`.",
         "clang_modules": "A `list` of values returned from `providers.clang_module`.",
         "system_library_modules": "`List` of values returned from `providers.system_library_module`.",
     },
 )
+
+def _create_swift_binary(name, executable, all_outputs):
+    """Creates a value representing a Swift binary that is built from a package.
+
+    Args:
+        name: Name of the Swift binary.
+        executable: The executable.
+        all_outputs: All of the output files that are declared for the module.
+
+    Returns:
+        A struct which provides info about a Swift binary built by SPM.
+    """
+    return struct(
+        name = name,
+        executable = executable,
+        all_outputs = all_outputs,
+    )
 
 def _create_swift_module(
         module_name,
@@ -149,6 +167,7 @@ def _create_copy_info(src, dest):
 providers = struct(
     clang_module = _create_clang_module,
     copy_info = _create_copy_info,
+    swift_binary = _create_swift_binary,
     swift_module = _create_swift_module,
     system_library_module = _create_system_library_module,
 )

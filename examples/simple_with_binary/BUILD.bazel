@@ -30,3 +30,19 @@ sh_test(
     ],
     deps = ["@bazel_tools//tools/bash/runfiles"],
 )
+
+# Make sure that the binary is referenced. Otherwise, Bazel won't build it.
+alias(
+    name = "swiftformat",
+    actual = "@swift_utils//SwiftFormat:swiftformat",
+)
+
+# TODO: IMPLEMENT ME!
+# sh_test(
+#     name = "swiftlint_test",
+#     srcs = ["swiftlint_test.sh"],
+#     data = [
+#         ":swiftlint",
+#     ],
+#     deps = ["@bazel_tools//tools/bash/runfiles"],
+# )
