@@ -233,6 +233,8 @@ def _generate_bazel_pkg(
                          public header path `string` values and the keys are
                          a `string` created by
                          `spm_common.create_clang_hdrs_key()`.
+        exec_products: A `list` of product `dict` from the package description
+                       that are executable.
         pkg_root_path: A path `string` specifying the location of the package
                        which defines the target.
     """
@@ -617,14 +619,6 @@ def _configure_spm_repository(repository_ctx, pkgs):
         if pds.is_executable_product(product):
             exec_products.append(product)
             exec_products_dict[pkg_name] = exec_products
-
-    # DEBUG BEGIN
-    print("*** CHUCK declared_product_refs: ", declared_product_refs)
-    print("*** CHUCK exec_products_dict: ")
-    for key in exec_products_dict:
-        print("*** CHUCK", key, ":", exec_products_dict[key])
-
-    # DEBUG END
 
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
     for pkg_name in pkg_descs_dict:
