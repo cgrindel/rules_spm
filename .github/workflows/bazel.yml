@@ -94,7 +94,6 @@ jobs:
         common --config=ci
         EOF
 
-    # TODO: Remove this if we don't need it any longer.
     - name: Bazel Config for Linux
       shell: bash
       run: |
