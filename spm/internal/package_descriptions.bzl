@@ -175,23 +175,6 @@ def _get_product(pkg_desc, product_name, fail_if_not_found = True):
     """
     return _find_in_list_of_dicts(pkg_desc["products"], "name", product_name, fail_if_not_found = fail_if_not_found)
 
-def _get_product_from_ref(pkg_descs_dict, product_ref):
-    """Returns the product for the provided reference.
-
-    Args:
-        pkg_descs_dict: A `dict` where the keys are the package names and the
-                        values are package description `struct` values as
-                        returned by `package_descriptions.get()`.
-        product_ref: A reference `string` as created by
-                    `references.create_product_ref()`.
-
-    Returns:
-        A `dict` representing the desired product.
-    """
-    ref_type, pkg_name, product_name = refs.split(product_ref)
-    pkg_desc = pkg_descs_dict[pkg_name]
-    return _get_product(pkg_desc, product_name)
-
 # MARK: - Target Functions
 
 def _is_library_target(target):
@@ -402,7 +385,8 @@ def _get_product_target_refs(pkg_descs_dict, product_ref):
         A `list` of target reference `string` values.
     """
     ref_type, pkg_name, product_name = refs.split(product_ref)
-    product = _get_product_from_ref(pkg_descs_dict, product_ref)
+    pkg_desc = pkg_descs_dict[pkg_name]
+    product = _get_product(pkg_desc, product_name)
     return [refs.create(ref_types.target, pkg_name, t) for t in product["targets"]]
 
 def _transitive_dependencies(pkg_descs_dict, product_refs):
