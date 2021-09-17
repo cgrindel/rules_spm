@@ -37,12 +37,11 @@ alias(
     actual = "@swift_utils//SwiftFormat:swiftformat",
 )
 
-# TODO: IMPLEMENT ME!
-# sh_test(
-#     name = "swiftlint_test",
-#     srcs = ["swiftlint_test.sh"],
-#     data = [
-#         ":swiftlint",
-#     ],
-#     deps = ["@bazel_tools//tools/bash/runfiles"],
-# )
+sh_test(
+    name = "swiftformat_test",
+    srcs = ["swiftformat_test.sh"],
+    data = [
+        ":swiftformat",
+    ],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
