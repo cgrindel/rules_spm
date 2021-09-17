@@ -239,11 +239,6 @@ def _generate_bazel_pkg(
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
 
-    # DEBUG BEGIN
-    # prds = [pds.get_product_from_ref()]
-    # exec_product_refs = [pr for pr in declared_product_refs if pds.is_]
-    # DEBUG END
-
     module_decls = []
 
     # Create a binary target for the executable products

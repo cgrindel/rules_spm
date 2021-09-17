@@ -17,6 +17,26 @@ def _parse_json_test(ctx):
 
 parse_json_test = unittest.make(_parse_json_test)
 
+def _get_product_test(ctx):
+    env = unittest.begin(ctx)
+
+    pkg_desc = {
+        "products": [
+            {"name": "Foo", "type": {"library": {}}},
+            {"name": "Chicken", "type": {"executable": None}},
+            {"name": "Bar", "type": {"library": {}}},
+        ],
+    }
+    result = pds.get_product(pkg_desc, "Foo")
+    asserts.equals(env, "Foo", result["name"])
+
+    result = pds.get_product(pkg_desc, "Chicken")
+    asserts.equals(env, "Chicken", result["name"])
+
+    return unittest.end(env)
+
+get_product_test = unittest.make(_get_product_test)
+
 def _is_executable_product_test(ctx):
     env = unittest.begin(ctx)
 
@@ -303,6 +323,7 @@ def package_descriptions_test_suite():
     unittest.suite(
         "package_description_tests",
         parse_json_test,
+        get_product_test,
         is_executable_product_test,
         is_library_product_test,
         library_products_test,

@@ -556,7 +556,6 @@ package_descriptions = struct(
     # Product Functions
     is_executable_product = _is_executable_product,
     get_product = _get_product,
-    get_product_from_ref = _get_product_from_ref,
     # Constants
     root_pkg_name = "_root",
 )

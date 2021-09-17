@@ -323,22 +323,3 @@ Returns the product with the specified product name.
 | <a id="package_descriptions.get_product-fail_if_not_found"></a>fail_if_not_found |  <p align="center"> - </p>   |  <code>True</code> |
 
 
-<a id="#package_descriptions.get_product_from_ref"></a>
-
-## package_descriptions.get_product_from_ref
-
-<pre>
-package_descriptions.get_product_from_ref(<a href="#package_descriptions.get_product_from_ref-pkg_descs_dict">pkg_descs_dict</a>, <a href="#package_descriptions.get_product_from_ref-product_ref">product_ref</a>)
-</pre>
-
-Returns the product for the provided reference.
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="package_descriptions.get_product_from_ref-pkg_descs_dict"></a>pkg_descs_dict |  A <code>dict</code> where the keys are the package names and the values are package description <code>struct</code> values as returned by <code>package_descriptions.get()</code>.   |  none |
-| <a id="package_descriptions.get_product_from_ref-product_ref"></a>product_ref |  A reference <code>string</code> as created by <code>references.create_product_ref()</code>.   |  none |
-
-
