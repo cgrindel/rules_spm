@@ -27,6 +27,9 @@ def _get_module_info(pkg_info, module_name):
         module a `struct` value as created by `providers.clang_module()` is
         returned.
     """
+    for binary in pkg_info.swift_binaries:
+        if binary.name == module_name:
+            return binary
     for module in pkg_info.swift_modules:
         if module.module_name == module_name:
             return module

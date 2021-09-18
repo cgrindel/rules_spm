@@ -128,6 +128,18 @@ def _get_package_description(repository_ctx, working_directory = ""):
 
 # MARK: - Product Functions
 
+def _is_executable_product(product):
+    """Returns a boolean indicating whether the specified product dictionary is an executable product.
+
+    Args:
+        product: A `dict` representing a product from package description
+                 JSON.
+
+    Returns:
+        A `bool` indicating whether the product is an executable.
+    """
+    return "executable" in product["type"]
+
 def _is_library_product(product):
     """Returns a boolean indicating whether the specified product dictionary is a library product.
 
@@ -525,6 +537,9 @@ package_descriptions = struct(
     dependency_repository_name = _dependency_repository_name,
     # Transitive Dependency Functions
     transitive_dependencies = _transitive_dependencies,
+    # Product Functions
+    is_executable_product = _is_executable_product,
+    get_product = _get_product,
     # Constants
     root_pkg_name = "_root",
 )

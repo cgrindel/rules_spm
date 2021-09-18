@@ -25,17 +25,17 @@ def _spm_swift_binary_impl(ctx):
         module_name = ctx.attr.name
 
     pkg_info = spm_package_info_utils.get(pkgs_info.packages, pkg_name)
-    module_info = spm_package_info_utils.get_module_info(pkg_info, module_name)
+    binary_info = spm_package_info_utils.get_module_info(pkg_info, module_name)
 
-    if module_info.executable == None:
+    if binary_info.executable == None:
         fail("The specified module (%s) is not executable." % (module_name))
 
     # Bazel will error if we try to return a file that we did not create as
     # the executable. So, we symlink it.
-    executable = ctx.actions.declare_file(module_info.executable.basename)
+    executable = ctx.actions.declare_file(binary_info.executable.basename)
     ctx.actions.symlink(
         output = executable,
-        target_file = module_info.executable,
+        target_file = binary_info.executable,
     )
 
     return [

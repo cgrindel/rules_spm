@@ -16,7 +16,7 @@ On this page:
 ## SPMPackageInfo
 
 <pre>
-SPMPackageInfo(<a href="#SPMPackageInfo-name">name</a>, <a href="#SPMPackageInfo-swift_modules">swift_modules</a>, <a href="#SPMPackageInfo-clang_modules">clang_modules</a>, <a href="#SPMPackageInfo-system_library_modules">system_library_modules</a>)
+SPMPackageInfo(<a href="#SPMPackageInfo-name">name</a>, <a href="#SPMPackageInfo-swift_binaries">swift_binaries</a>, <a href="#SPMPackageInfo-swift_modules">swift_modules</a>, <a href="#SPMPackageInfo-clang_modules">clang_modules</a>, <a href="#SPMPackageInfo-system_library_modules">system_library_modules</a>)
 </pre>
 
 Describes the information about an SPM package.
@@ -27,6 +27,7 @@ Describes the information about an SPM package.
 | Name  | Description |
 | :------------- | :------------- |
 | <a id="SPMPackageInfo-name"></a>name |  Name of the Swift package.    |
+| <a id="SPMPackageInfo-swift_binaries"></a>swift_binaries |  A <code>list</code> of values returned from <code>providers.swift_binary</code>.    |
 | <a id="SPMPackageInfo-swift_modules"></a>swift_modules |  A <code>list</code> of values returned from <code>providers.swift_module</code>.    |
 | <a id="SPMPackageInfo-clang_modules"></a>clang_modules |  A <code>list</code> of values returned from <code>providers.clang_module</code>.    |
 | <a id="SPMPackageInfo-system_library_modules"></a>system_library_modules |  <code>List</code> of values returned from <code>providers.system_library_module</code>.    |

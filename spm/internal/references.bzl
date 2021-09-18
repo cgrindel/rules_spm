@@ -86,6 +86,23 @@ def _is_target_ref(ref_str, for_pkg = None):
         starts_with_parts.extend([for_pkg, "/"])
     return ref_str.startswith("".join(starts_with_parts))
 
+def _is_product_ref(ref_str, for_pkg = None):
+    """Returns a boolean indicating whether the reference string is a product reference.
+
+    Args:
+       ref_str: A valid reference `string`.
+       for_pkg: Optional. A package name as a `string` value to include in
+                the check.
+
+    Returns:
+        A `bool` value indicating whether the reference string is a product
+        reference.
+    """
+    starts_with_parts = [reference_types.product, ":"]
+    if for_pkg != None:
+        starts_with_parts.extend([for_pkg, "/"])
+    return ref_str.startswith("".join(starts_with_parts))
+
 # MARK: - Namespace
 
 reference_types = struct(
@@ -99,4 +116,5 @@ references = struct(
     create_target_ref = _create_target_ref,
     create_product_ref = _create_product_ref,
     is_target_ref = _is_target_ref,
+    is_product_ref = _is_product_ref,
 )

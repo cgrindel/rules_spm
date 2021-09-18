@@ -48,14 +48,11 @@ def _declare_swift_library_target_files(ctx, target, build_config_path):
         all_outputs = all_build_outs,
     )
 
-def _declare_swift_executable_target_files(ctx, target, build_config_path):
-    target_name = target["name"]
-    module_name = target["name"]
-
-    executable = ctx.actions.declare_file("%s/%s" % (build_config_path, target_name))
-
-    return providers.swift_module(
-        module_name = module_name,
+def _declare_swift_executable_product_files(ctx, product, build_config_path):
+    product_name = product["name"]
+    executable = ctx.actions.declare_file("%s/%s" % (build_config_path, product_name))
+    return providers.swift_binary(
+        name = product_name,
         executable = executable,
         all_outputs = [executable],
     )
@@ -158,6 +155,7 @@ def _gather_package_build_info(
         build_config_path,
         clang_custom_infos_dict,
         pkg_desc,
+        product_refs,
         target_refs):
     """Gathers build information for a Swift package.
 
@@ -168,6 +166,7 @@ def _gather_package_build_info(
                                  for this package and the values are a `list`
                                  of public headers.
         pkg_desc: A `dict` representing the package descprtion JSON.
+        product_refs: A `list` of product references (`string`) for this package.
         target_refs: A `list` of target references (`string`) that are
                      dependencies for the package.
 
@@ -176,10 +175,29 @@ def _gather_package_build_info(
         the build information for the Swift package.
     """
     build_outs = []
+    swift_binaries = []
     swift_modules = []
     clang_modules = []
     system_library_modules = []
     pkg_name = pkg_desc["name"]
+
+    # Collect the executable products
+    exec_products = []
+    for product_ref in product_refs:
+        ref_type, pkg_name, product_name = refs.split(product_ref)
+        product = pds.get_product(pkg_desc, product_name)
+        if pds.is_executable_product(product):
+            exec_products.append(product)
+
+    # Declare the outputs for all of the Swift binaries
+    for product in exec_products:
+        swift_binary_info = _declare_swift_executable_product_files(
+            ctx,
+            product,
+            build_config_path,
+        )
+        swift_binaries.append(swift_binary_info)
+        build_outs.extend(swift_binary_info.all_outputs)
 
     # Declare outputs for the targets that will be used
     for target_ref in target_refs:
@@ -196,13 +214,9 @@ def _gather_package_build_info(
                 swift_modules.append(swift_module_info)
                 build_outs.extend(swift_module_info.all_outputs)
             elif pds.is_executable_target(target):
-                swift_module_info = _declare_swift_executable_target_files(
-                    ctx,
-                    target,
-                    build_config_path,
-                )
-                swift_modules.append(swift_module_info)
-                build_outs.extend(swift_module_info.all_outputs)
+                # Executable targets are declared by product, not by SPM target.
+                pass
+
             else:
                 fail("Unrecognized Swift target type. %s" % (target))
 
@@ -230,6 +244,7 @@ def _gather_package_build_info(
 
     pkg_info = SPMPackageInfo(
         name = pkg_name,
+        swift_binaries = swift_binaries,
         swift_modules = swift_modules,
         clang_modules = clang_modules,
         system_library_modules = system_library_modules,
@@ -478,11 +493,13 @@ def _spm_package_impl(ctx):
             continue
         pkg_desc = pkg_descs_dict[pkg_name]
         clang_custom_infos_dict = pkg_clang_custom_infos_dict.get(pkg_name, default = {})
+        product_refs = [pr for pr in declared_product_refs if refs.is_product_ref(pr, for_pkg = pkg_name)]
         pkg_build_infos_dict[pkg_name] = _gather_package_build_info(
             ctx,
             build_config_path,
             clang_custom_infos_dict,
             pkg_desc,
+            product_refs,
             target_refs,
         )
 

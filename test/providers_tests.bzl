@@ -1,6 +1,25 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load("//spm/internal:providers.bzl", "providers")
 
+def _swift_binary_test(ctx):
+    env = unittest.begin(ctx)
+
+    result = providers.swift_binary(
+        "MyBinary",
+        executable = "exec",
+        all_outputs = ["all"],
+    )
+    expected = struct(
+        name = "MyBinary",
+        executable = "exec",
+        all_outputs = ["all"],
+    )
+    asserts.equals(env, expected, result)
+
+    return unittest.end(env)
+
+swift_binary_test = unittest.make(_swift_binary_test)
+
 def _swift_module_test(ctx):
     env = unittest.begin(ctx)
 
@@ -103,6 +122,7 @@ system_library_module_test = unittest.make(_system_library_module_test)
 def providers_test_suite():
     return unittest.suite(
         "providers_tests",
+        swift_binary_test,
         swift_module_test,
         clang_module_test,
         copy_info_test,

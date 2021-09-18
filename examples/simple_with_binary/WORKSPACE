@@ -55,6 +55,13 @@ spm_repositories(
             from_version = "0.0.0",
             products = ["swiftlint"],
         ),
+        spm_pkg(
+            "https://github.com/nicklockwood/SwiftFormat.git",
+            from_version = "0.0.0",
+            products = [
+                "swiftformat",
+            ],
+        ),
     ],
     platforms = [
         ".macOS(.v10_12)",

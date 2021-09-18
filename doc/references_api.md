@@ -103,3 +103,22 @@ Returns a boolean indicating whether the reference string is a target reference.
 | <a id="references.is_target_ref-for_pkg"></a>for_pkg |  Optional. A package name as a <code>string</code> value to include in the check.   |  <code>None</code> |
 
 
+<a id="#references.is_product_ref"></a>
+
+## references.is_product_ref
+
+<pre>
+references.is_product_ref(<a href="#references.is_product_ref-ref_str">ref_str</a>, <a href="#references.is_product_ref-for_pkg">for_pkg</a>)
+</pre>
+
+Returns a boolean indicating whether the reference string is a product reference.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="references.is_product_ref-ref_str"></a>ref_str |  A valid reference <code>string</code>.   |  none |
+| <a id="references.is_product_ref-for_pkg"></a>for_pkg |  Optional. A package name as a <code>string</code> value to include in the check.   |  <code>None</code> |
+
+

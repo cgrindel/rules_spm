@@ -30,3 +30,18 @@ sh_test(
     ],
     deps = ["@bazel_tools//tools/bash/runfiles"],
 )
+
+# Make sure that the binary is referenced. Otherwise, Bazel won't build it.
+alias(
+    name = "swiftformat",
+    actual = "@swift_utils//SwiftFormat:swiftformat",
+)
+
+sh_test(
+    name = "swiftformat_test",
+    srcs = ["swiftformat_test.sh"],
+    data = [
+        ":swiftformat",
+    ],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

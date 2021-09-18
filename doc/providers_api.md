@@ -42,6 +42,26 @@ Creates a value describing a copy operation.
 | <a id="providers.copy_info-dest"></a>dest |  The destination file.   |  none |
 
 
+<a id="#providers.swift_binary"></a>
+
+## providers.swift_binary
+
+<pre>
+providers.swift_binary(<a href="#providers.swift_binary-name">name</a>, <a href="#providers.swift_binary-executable">executable</a>, <a href="#providers.swift_binary-all_outputs">all_outputs</a>)
+</pre>
+
+Creates a value representing a Swift binary that is built from a package.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.swift_binary-name"></a>name |  Name of the Swift binary.   |  none |
+| <a id="providers.swift_binary-executable"></a>executable |  The executable.   |  <code>None</code> |
+| <a id="providers.swift_binary-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+
 <a id="#providers.swift_module"></a>
 
 ## providers.swift_module
