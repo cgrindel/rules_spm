@@ -599,7 +599,7 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     pkg_descs_dict = dict()
     clang_hdrs_dict = dict()
 
-    root_pkg_desc = pds.get(repository_ctx)
+    root_pkg_desc = pds.get(repository_ctx, env = env)
     pkg_descs_dict[pds.root_pkg_name] = root_pkg_desc
 
     # Find the location for all of the dependent packages.
@@ -612,7 +612,11 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     fetched_pkg_paths = fetched_pkg_paths + local_pkg_paths
 
     for pkg_path in fetched_pkg_paths:
-        dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
+        dep_pkg_desc = pds.get(
+            repository_ctx,
+            env = env,
+            working_directory = pkg_path,
+        )
         dep_name = dep_pkg_desc["name"]
         pkg_descs_dict[dep_name] = dep_pkg_desc
 

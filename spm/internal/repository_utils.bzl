@@ -10,7 +10,12 @@ def _is_macos(repository_ctx):
     os_name = repository_ctx.os.name.lower()
     return os_name.startswith("mac os")
 
-def _execute_spm_command(repository_ctx, arguments, env = {}, err_msg_tpl = None):
+def _execute_spm_command(
+        repository_ctx,
+        arguments,
+        env = {},
+        working_directory = "",
+        err_msg_tpl = None):
     """Executes a Swift package manager command and returns the stdout.
 
     If the command returns a non-zero return code, this function will fail.
@@ -20,6 +25,8 @@ def _execute_spm_command(repository_ctx, arguments, env = {}, err_msg_tpl = None
         arguments: A `list` of arguments which will be executed.
         env: A `dict` of environment variables that will be included in the
              command execution.
+        working_directory: Working directory for command execution. Can be
+                           relative to the repository root or absolute.
         err_msg_tpl: Optional. A `string` template which will be formatted with
                      the `exec_args` and `stderr` values.
 
@@ -30,7 +37,11 @@ def _execute_spm_command(repository_ctx, arguments, env = {}, err_msg_tpl = None
     if _is_macos(repository_ctx):
         exec_args.append("xcrun")
     exec_args.extend(arguments)
-    exec_result = repository_ctx.execute(exec_args, environment = env)
+    exec_result = repository_ctx.execute(
+        exec_args,
+        environment = env,
+        working_directory = working_directory,
+    )
     if exec_result.return_code != 0:
         if err_msg_tpl == None:
             err_msg_tpl = """\
