@@ -3,6 +3,7 @@ load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
+load(":repository_utils.bzl", "repository_utils")
 load(":spm_common.bzl", "spm_common")
 load(":spm_versions.bzl", "spm_versions")
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
@@ -569,7 +570,7 @@ def _generate_package_swift_file(repository_ctx, pkgs):
 
 # MARK: - Rule Implementation
 
-def _configure_spm_repository(repository_ctx, pkgs):
+def _configure_spm_repository(repository_ctx, pkgs, env):
     """Fetches the external SPM packages, prepares them for a future build step and defines Bazel targets.
 
     Args:
@@ -578,14 +579,14 @@ def _configure_spm_repository(repository_ctx, pkgs):
     """
 
     # Resolve/fetch the dependencies.
-    resolve_result = repository_ctx.execute(
+    resolve_out = repository_utils.exec_spm_command(
+        repository_ctx,
         ["swift", "package", "resolve", "--build-path", spm_common.build_dirname],
+        env = env,
+        err_msg_tpl = """\
+Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
+""",
     )
-    if resolve_result.return_code != 0:
-        fail("Resolution of SPM packages for %s failed.\n%s" % (
-            repository_ctx.attr.name,
-            resolve_result.stderr,
-        ))
 
     # Remove any BUILD or BUILD.bazel files in the fetched repos. The presence
     # of these files will prevent glob() from finding the source files because
@@ -702,7 +703,7 @@ def _spm_repositories_impl(repository_ctx):
     )
 
     # Configure the SPM package
-    _configure_spm_repository(repository_ctx, pkgs)
+    _configure_spm_repository(repository_ctx, pkgs, env)
 
 spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,

@@ -34,9 +34,13 @@ def _execute_spm_command(repository_ctx, arguments, env = {}, err_msg_tpl = None
     if exec_result.return_code != 0:
         if err_msg_tpl == None:
             err_msg_tpl = """\
-Failed to execute SPM command. args: {exec_args}\n{stderr}.\
+Failed to execute SPM command. name: {repo_name}, args: {exec_args}\n{stderr}.\
 """
-        fail(err_msg_tpl.format(exec_args = exec_args, stderr = exec_result.stderr))
+        fail(err_msg_tpl.format(
+            repo_name = repository_ctx.attr.name,
+            exec_args = exec_args,
+            stderr = exec_result.stderr,
+        ))
     return exec_result.stdout
 
 repository_utils = struct(
