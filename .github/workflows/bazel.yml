@@ -40,11 +40,37 @@ jobs:
         cd examples/simple
         bazelisk test //...
 
-    - name: Test Simple Example with Older Xcode
+    - name: Test Simple Example, Build with Older Xcode
       shell: bash
       run: |
         cd examples/simple
+        # Default Xcode has SPM 5.4 or later; build with Xcode that has SPM
+        # less than 5.4.
         bazelisk test --xcode_version_config=//:host_xcodes //...
+
+    - name: Test Simple Example, Default Xcode is Incompatible, Use DEVELOPER_DIR
+      shell: bash
+      run: |
+        cd examples/simple
+        current_xcode=$(xcode-select --print-path)
+        echo "current_xcode: ${current_xcode}"
+        # Switch default Xcode to SPM 5.3.
+        sudo xcode-select --switch /Applications/Xcode_12.4.app
+        # Use DEVELOPER_DIR to specify the current Xcode
+        export DEVELOPER_DIR="${current_xcode}"
+        bazelisk test //...
+        sudo xcode-select --switch "${current_xcode}"
+
+    - name: Test Simple Example, Default Xcode is Incompatible, Use env attribute to set DEVELOPER_DIR
+      shell: bash
+      run: |
+        cd examples/simple_with_dev_dir
+        current_xcode=$(xcode-select --print-path)
+        # Switch default Xcode to SPM 5.3.
+        sudo xcode-select --switch /Applications/Xcode_12.4.app
+        # The DEVELOPER_DIR value is specified as an env attribute on spm_repositories.
+        bazelisk test //...
+        sudo xcode-select --switch "${current_xcode}"
 
     - name: Test Simple Example Using Revision
       shell: bash
