@@ -40,8 +40,9 @@ spm_repositories(
         ),
     ],
     env = {
-        # If you are testing this locally, set this value to a valid Xcode path.
-        # "DEVELOPER_DIR": "/Applications/Xcode_12.5.1.app",
-        "DEVELOPER_DIR": "/Applications/Xcode.app",
+        # If you are testing this locally, set this value to a valid Xcode
+        # path. This value is valid for the Github action runner host for
+        # macos-11.
+        "DEVELOPER_DIR": "/Applications/Xcode_12.5.1.app",
     },
 )
