@@ -1,3 +1,5 @@
+load(":repository_utils.bzl", "repository_utils")
+
 def _extract_version(version):
     """From a raw version string, extract the semantic version number.
 
@@ -17,7 +19,7 @@ def _extract_version(version):
         if c.isdigit():
             return version[i:].strip()
 
-def _get_version(repository_ctx):
+def _get_version(repository_ctx, env = {}):
     """Returns the semantic version for Swit Package Manager.
 
     This is equivalent to running `swift package --version` and returning
@@ -25,16 +27,32 @@ def _get_version(repository_ctx):
 
     Args:
         repository_ctx: A `repository_ctx` instance.
+        env: A `dict` of environment variables that are used in the evaluation
+             of the SPM version.
 
     Returns:
         A `string` representing the semantic version for Swift Package Manager.
     """
-    version_result = repository_ctx.execute(["swift", "package", "--version"])
-    if version_result.return_code != 0:
-        fail("Failed to retrieve the version for Swift Package Manager. %s" % (
-            version_result.stderr
-        ))
-    return _extract_version(version_result.stdout)
+    exec_out = repository_utils.exec_spm_command(
+        repository_ctx,
+        ["swift", "package", "--version"],
+        env = env,
+    )
+    # version_result = repository_ctx.execute(
+    #     ["swift", "package", "--version"],
+    #     environment = env,
+    # )
+    # if version_result.return_code != 0:
+    #     fail("Failed to retrieve the version for Swift Package Manager. %s" % (
+    #         version_result.stderr
+    #     ))
+
+    # DEBUG BEGIN
+    print("*** CHUCK _get_version env: ", env)
+    print("*** CHUCK exec_out: ", exec_out)
+
+    # DEBUG END
+    return _extract_version(exec_out)
 
 spm_versions = struct(
     extract = _extract_version,
