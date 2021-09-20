@@ -38,20 +38,6 @@ def _get_version(repository_ctx, env = {}):
         ["swift", "package", "--version"],
         env = env,
     )
-    # version_result = repository_ctx.execute(
-    #     ["swift", "package", "--version"],
-    #     environment = env,
-    # )
-    # if version_result.return_code != 0:
-    #     fail("Failed to retrieve the version for Swift Package Manager. %s" % (
-    #         version_result.stderr
-    #     ))
-
-    # DEBUG BEGIN
-    print("*** CHUCK _get_version env: ", env)
-    print("*** CHUCK exec_out: ", exec_out)
-
-    # DEBUG END
     return _extract_version(exec_out)
 
 spm_versions = struct(
