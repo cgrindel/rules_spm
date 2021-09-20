@@ -49,6 +49,8 @@ def _retrieve_package_dump(repository_ctx, env = {}, working_directory = ""):
 
     Args:
         repository_ctx: A `repository_ctx`.
+        env: A `dict` of environment variables that will be included in the
+             command execution.
         working_directory: A `string` specifying the directory for the SPM package.
 
     Returns:
@@ -67,6 +69,8 @@ def _retrieve_package_description(repository_ctx, env = {}, working_directory = 
 
     Args:
         repository_ctx: A `repository_ctx`.
+        env: A `dict` of environment variables that will be included in the
+             command execution.
         working_directory: A `string` specifying the directory for the SPM package.
 
     Returns:
@@ -85,6 +89,8 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
 
     Args:
         repository_ctx: A `repository_ctx`.
+        env: A `dict` of environment variables that will be included in the
+             command execution.
         working_directory: A `string` specifying the directory for the SPM package.
 
     Returns:
