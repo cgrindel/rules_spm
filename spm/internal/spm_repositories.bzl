@@ -3,10 +3,34 @@ load("//spm/internal/modulemap_parser:parser.bzl", "parser")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
+load(":repository_utils.bzl", "repository_utils")
 load(":spm_common.bzl", "spm_common")
 load(":spm_versions.bzl", "spm_versions")
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//lib:versions.bzl", "versions")
+
+# MARK: - Environment Variables
+
+_DEVELOPER_DIR_ENV = "DEVELOPER_DIR"
+
+def _get_exec_env(repository_ctx):
+    """Creates a `dict` of environment variables which will be past to all execution environments for this rule.
+
+    Args:
+        repository_ctx: A `repository_ctx` instance.
+
+    Returns:
+        A `dict` of environment variables which will be used for execution environments for this rule.
+    """
+
+    # If the DEVELOPER_DIR is specified in the environment, it will override
+    # the value which may be specified in the env attribute.
+    env = dicts.add(repository_ctx.attr.env)
+    dev_dir = repository_ctx.os.environ.get(_DEVELOPER_DIR_ENV)
+    if dev_dir:
+        env[_DEVELOPER_DIR_ENV] = dev_dir
+    return env
 
 # MARK: - File Listing Functions
 
@@ -546,7 +570,7 @@ def _generate_package_swift_file(repository_ctx, pkgs):
 
 # MARK: - Rule Implementation
 
-def _configure_spm_repository(repository_ctx, pkgs):
+def _configure_spm_repository(repository_ctx, pkgs, env):
     """Fetches the external SPM packages, prepares them for a future build step and defines Bazel targets.
 
     Args:
@@ -555,14 +579,14 @@ def _configure_spm_repository(repository_ctx, pkgs):
     """
 
     # Resolve/fetch the dependencies.
-    resolve_result = repository_ctx.execute(
+    resolve_out = repository_utils.exec_spm_command(
+        repository_ctx,
         ["swift", "package", "resolve", "--build-path", spm_common.build_dirname],
+        env = env,
+        err_msg_tpl = """\
+Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
+""",
     )
-    if resolve_result.return_code != 0:
-        fail("Resolution of SPM packages for %s failed.\n%s" % (
-            repository_ctx.attr.name,
-            resolve_result.stderr,
-        ))
 
     # Remove any BUILD or BUILD.bazel files in the fetched repos. The presence
     # of these files will prevent glob() from finding the source files because
@@ -575,7 +599,7 @@ def _configure_spm_repository(repository_ctx, pkgs):
     pkg_descs_dict = dict()
     clang_hdrs_dict = dict()
 
-    root_pkg_desc = pds.get(repository_ctx)
+    root_pkg_desc = pds.get(repository_ctx, env = env)
     pkg_descs_dict[pds.root_pkg_name] = root_pkg_desc
 
     # Find the location for all of the dependent packages.
@@ -588,7 +612,11 @@ def _configure_spm_repository(repository_ctx, pkgs):
     fetched_pkg_paths = fetched_pkg_paths + local_pkg_paths
 
     for pkg_path in fetched_pkg_paths:
-        dep_pkg_desc = pds.get(repository_ctx, working_directory = pkg_path)
+        dep_pkg_desc = pds.get(
+            repository_ctx,
+            env = env,
+            working_directory = pkg_path,
+        )
         dep_name = dep_pkg_desc["name"]
         pkg_descs_dict[dep_name] = dep_pkg_desc
 
@@ -642,9 +670,9 @@ def _prepare_local_package(repository_ctx, pkg):
 
     return packages.copy(pkg, path = path)
 
-def _check_spm_version(repository_ctx):
+def _check_spm_version(repository_ctx, env = {}):
     min_spm_ver = "5.4.0"
-    spm_ver = spm_versions.get(repository_ctx)
+    spm_ver = spm_versions.get(repository_ctx, env = env)
     if not versions.is_at_least(threshold = min_spm_ver, version = spm_ver):
         fail("""\
 `rules_spm` requires that Swift Package Manager be version %s or \
@@ -652,8 +680,10 @@ higher. Found version %s installed.\
 """ % (min_spm_ver, spm_ver))
 
 def _spm_repositories_impl(repository_ctx):
+    env = _get_exec_env(repository_ctx)
+
     # Check for minimum version of SPM
-    _check_spm_version(repository_ctx)
+    _check_spm_version(repository_ctx, env = env)
 
     orig_pkgs = [packages.from_json(j) for j in repository_ctx.attr.dependencies]
 
@@ -677,7 +707,7 @@ def _spm_repositories_impl(repository_ctx):
     )
 
     # Configure the SPM package
-    _configure_spm_repository(repository_ctx, pkgs)
+    _configure_spm_repository(repository_ctx, pkgs, env)
 
 spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
@@ -696,6 +726,13 @@ The version of Swift that will be declared in the placeholder/uber Swift package
             doc = """\
 The platforms to declare in the placeholder/uber Swift package. \
 (e.g. .macOS(.v10_15))\
+""",
+        ),
+        "env": attr.string_dict(
+            doc = """\
+Environment variables that will be passed to the execution environments for \
+this repository rule. (e.g. SPM version check, SPM dependency resolution, SPM \
+package description generation)\
 """,
         ),
         "_workspace_file": attr.label(

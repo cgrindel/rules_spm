@@ -28,7 +28,7 @@ Output: `5.4.0`
 ## spm_versions.get
 
 <pre>
-spm_versions.get(<a href="#spm_versions.get-repository_ctx">repository_ctx</a>)
+spm_versions.get(<a href="#spm_versions.get-repository_ctx">repository_ctx</a>, <a href="#spm_versions.get-env">env</a>)
 </pre>
 
 Returns the semantic version for Swit Package Manager.
@@ -43,5 +43,6 @@ the semantic version.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="spm_versions.get-repository_ctx"></a>repository_ctx |  A <code>repository_ctx</code> instance.   |  none |
+| <a id="spm_versions.get-env"></a>env |  A <code>dict</code> of environment variables that are used in the evaluation of the SPM version.   |  <code>{}</code> |
 
 
