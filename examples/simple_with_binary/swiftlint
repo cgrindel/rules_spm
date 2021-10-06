@@ -8,21 +8,6 @@ source "${script_dir}/shared.sh"
 
 target_name=$(basename "$0")
 target="//:${target_name}"
-exec_script="${script_dir}/_exec_${target_name}"
+exec_script_name="_exec_${target_name}"
 
-execute_target "${exec_script}" "${target}" "${@:-}"
-
-# # Generate Bazel's script for the binary, if it does not exist
-# [ ! -f "${exec_script}" ] && gen_exec_script "${exec_script}" "${target}"
-
-# # Find the executable
-# binary=$(get_exec_binary "${exec_script}")
-
-# # If the binary does not exist, generate the script which will build the binary
-# if [[ ! -f "${binary}" ]]; then
-#   gen_exec_script "${exec_script}" "${target}"
-#   binary=$(get_exec_binary "${exec_script}")
-# fi
-
-# # Execute the command
-# "${binary}" "${@:-}"
+execute_target "${exec_script_name}" "${target}" "${@:-}"

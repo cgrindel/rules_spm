@@ -2,6 +2,16 @@
 
 # Shared shell script code
 
+# Find the temporary directory.
+find_tmp_dir() {
+  local tmp_dirs=("${TMPDIR:-}" "${TMP:-}" /var/tmp /tmp)
+  local ret_val=""
+  for tmp_dir in "${tmp_dirs[@]}" ; do
+    [ -d "${tmp_dir}" ] && ret_val="${tmp_dir}" && break
+  done
+  echo "${ret_val}"
+}
+
 # Generates a Bazel execution script for the provided target.
 # 
 # Args:
@@ -40,9 +50,12 @@ get_exec_binary() {
 # Returns:
 #   None.
 execute_target() {
-  local exec_script="${1}"
+  local exec_script_name="${1}"
   local target="${2}"
   shift 2
+
+  local tmp_dir=$(find_tmp_dir)
+  local exec_script="${tmp_dir}/${exec_script_name}"
 
   # Generate Bazel's script for the binary, if it does not exist
   [ ! -f "${exec_script}" ] && gen_exec_script "${exec_script}" "${target}"
