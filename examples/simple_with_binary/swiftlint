@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+
+script_dir=$(cd `dirname "$0"` && pwd)
+
+source "${script_dir}/shared.sh"
+
+target_name=$(basename "$0")
+target="//:${target_name}"
+exec_script_name="_exec_${target_name}"
+
+execute_target "${exec_script_name}" "${target}" "${@:-}"
