@@ -54,7 +54,6 @@ _API_DOC_PROVIDERS = [
 
 _ALL_DOC_PROVIDERS = [
     doc_providers.create_with_symbols(
-        # name = name,
         name = name + "_overview",
         stardoc_input = "//spm:spm.bzl",
         symbols = symbols,
