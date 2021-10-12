@@ -1,5 +1,5 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# `pack` API
+# `packages` API
 
 
 <a id="#packages.create_name"></a>

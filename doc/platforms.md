@@ -1,5 +1,5 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# `platf` API
+# `platforms` API
 
 
 <a id="#platforms.spm_os"></a>

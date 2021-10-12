@@ -128,13 +128,15 @@ write_header(
     ],
 )
 
+# Write the API headers
 [
     write_header(
         name = doc_prov.header_label,
         out = doc_prov.header_basename,
         header_content = [
             # The `-4` is truncating `_api`
-            "# `{name}` API".format(name = doc_prov.name[:-4]),
+            # "# `{name}` API".format(name = doc_prov.name[:-4]),
+            "# `{name}` API".format(name = doc_prov.name),
         ],
     )
     for doc_prov in _API_DOC_PROVIDERS

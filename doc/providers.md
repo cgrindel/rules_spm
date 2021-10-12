@@ -1,5 +1,5 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# `provi` API
+# `providers` API
 
 
 <a id="#providers.clang_module"></a>

@@ -1,5 +1,5 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# `spm_vers` API
+# `spm_versions` API
 
 
 <a id="#spm_versions.extract"></a>
