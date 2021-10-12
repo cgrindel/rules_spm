@@ -6,10 +6,10 @@ facilitate the build and exposition of the Swift packages.
 
 On this page:
 
-  * [SPMPackageInfo](#SPMPackageInfo
-  * [SPMPackagesInfo](#SPMPackagesInfo
-  * [SPMPlatformInfo](#SPMPlatformInfo
-  * [SPMToolchainInfo](#SPMToolchainInfo
+  * [SPMPackageInfo](#SPMPackageInfo)
+  * [SPMPackagesInfo](#SPMPackagesInfo)
+  * [SPMPlatformInfo](#SPMPlatformInfo)
+  * [SPMToolchainInfo](#SPMToolchainInfo)
 
 
 <a id="#SPMPackageInfo"></a>
