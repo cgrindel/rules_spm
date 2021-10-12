@@ -1,8 +1,5 @@
 load("@cgrindel_bazel_doc//lib:write_header.bzl", "write_header")
 load("@cgrindel_bazel_doc//lib:providers.bzl", doc_providers = "providers")
-load("@cgrindel_bazel_doc//lib:stardoc_for_prov.bzl", "stardoc_for_provs")
-load("@cgrindel_bazel_doc//lib:diff_test_for_provs.bzl", "diff_test_for_provs")
-load("@cgrindel_bazel_doc//lib:update_doc.bzl", "update_doc")
 load("@cgrindel_bazel_doc//lib:write_doc.bzl", "write_doc")
 load("@cgrindel_bazel_doc//lib:doc_utilities.bzl", "doc_utilities")
 load("@cgrindel_bazel_doc//lib:doc_for_provs.bzl", "doc_for_provs")
