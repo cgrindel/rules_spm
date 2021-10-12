@@ -5,6 +5,7 @@ load("@cgrindel_bazel_doc//lib:diff_test_for_provs.bzl", "diff_test_for_provs")
 load("@cgrindel_bazel_doc//lib:update_doc.bzl", "update_doc")
 load("@cgrindel_bazel_doc//lib:write_doc.bzl", "write_doc")
 load("@cgrindel_bazel_doc//lib:doc_utilities.bzl", "doc_utilities")
+load("@cgrindel_bazel_doc//lib:doc_for_provs.bzl", "doc_for_provs")
 
 # Lovingly inspired by
 # https://github.com/bazelbuild/rules_swift/blob/021c11b1d578ffba547140eb24854cdfe74c794f/doc/BUILD.bazel#L3
@@ -50,6 +51,7 @@ _API_DOC_PROVIDERS = [
     doc_providers.create_api(
         name = name,
         stardoc_input = "//spm:spm.bzl",
+        deps = ["//spm"],
     )
     for name in _API_SRCS
 ]
@@ -59,6 +61,7 @@ _ALL_DOC_PROVIDERS = [
         name = name,
         stardoc_input = "//spm:spm.bzl",
         symbols = symbols,
+        deps = ["//spm"],
     )
     for [
         name,
@@ -69,6 +72,7 @@ _ALL_DOC_PROVIDERS = [
         name = "api",
         is_stardoc = False,
         stardoc_input = "//spm:spm.bzl",
+        deps = ["//spm"],
     ),
 ] + _API_DOC_PROVIDERS
 
@@ -147,19 +151,4 @@ write_header(
     if doc_prov.is_stardoc
 ]
 
-# MARK: - Stardoc Declarations
-
-stardoc_for_provs(
-    doc_provs = _ALL_DOC_PROVIDERS,
-    deps = ["//spm"],
-)
-
-# MARK: - Doc Diff Tests
-
-# To make these tests pass, run
-# bazel run //doc:update
-diff_test_for_provs(doc_provs = _ALL_DOC_PROVIDERS)
-
-# MARK: - Update Doc
-
-update_doc(doc_provs = _ALL_DOC_PROVIDERS)
+doc_for_provs(doc_provs = _ALL_DOC_PROVIDERS)
