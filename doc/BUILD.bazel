@@ -1,7 +1,6 @@
 load("@cgrindel_bazel_doc//lib:write_header.bzl", "write_header")
 load("@cgrindel_bazel_doc//lib:providers.bzl", doc_providers = "providers")
-load("@cgrindel_bazel_doc//lib:write_doc.bzl", "write_doc")
-load("@cgrindel_bazel_doc//lib:doc_utilities.bzl", "doc_utilities")
+load("@cgrindel_bazel_doc//lib:write_file_list.bzl", "write_file_list")
 load("@cgrindel_bazel_doc//lib:doc_for_provs.bzl", "doc_for_provs")
 
 # Lovingly inspired by
@@ -55,7 +54,8 @@ _API_DOC_PROVIDERS = [
 
 _ALL_DOC_PROVIDERS = [
     doc_providers.create_with_symbols(
-        name = name,
+        # name = name,
+        name = name + "_overview",
         stardoc_input = "//spm:spm.bzl",
         symbols = symbols,
         deps = ["//spm"],
@@ -76,23 +76,16 @@ _ALL_DOC_PROVIDERS = [
 # MARK: - Special Case api.md
 
 # Write the api.md_ file as a special case.
-write_doc(
+write_file_list(
     name = "api_doc",
     out = "api.md_",
-    content = [
+    doc_provs = _API_DOC_PROVIDERS,
+    header_content = [
         "# Build API",
         "",
-        "The APIs described below are used by [the workspace rules](/doc/workspace_rules.md) and",
-        "[the build rules](/doc/build_rules.md) to facilitate the build and exposition of the",
+        "The APIs described below are used by [the workspace rules](/doc/workspace_rules_overview.md) and",
+        "[the build rules](/doc/build_rules_overview.md) to facilitate the build and exposition of the",
         "Swift packages.",
-        "",
-    ] + [
-        doc_utilities.toc_entry(
-            r,
-            "/doc/{0}.md".format(r),
-        )
-        for r in _API_SRCS
-    ] + [
         "",
     ],
 )
@@ -100,18 +93,18 @@ write_doc(
 # MARK: - Headers
 
 write_header(
-    name = "providers_header",
+    name = "providers_overview_header",
     doc_provs = _DOC_WITH_SYMBOLS["providers"],
     header_content = [
         "# Providers",
         "",
-        "The providers described below are used by [the build rules](/doc/build_rules.md) to",
+        "The providers described below are used by [the build rules](/doc/build_rules_overview.md) to",
         "facilitate the build and exposition of the Swift packages.",
     ],
 )
 
 write_header(
-    name = "build_rules_header",
+    name = "build_rules_overview_header",
     doc_provs = _DOC_WITH_SYMBOLS["build_rules"],
     header_content = [
         "# Build Rules",
@@ -119,12 +112,12 @@ write_header(
         "The rules described below are used to build Swift",
         "packages and make their outputs available as Bazel targets. Most",
         "clients will not use these rules directly. They are an implementation",
-        "detail for [the workspace rules](/doc/workspace_rules.md).",
+        "detail for [the workspace rules](/doc/workspace_rules_overview.md).",
     ],
 )
 
 write_header(
-    name = "workspace_rules_header",
+    name = "workspace_rules_overview_header",
     doc_provs = _DOC_WITH_SYMBOLS["workspace_rules"],
     header_content = [
         "# Workspace Rules",

@@ -1,5 +1,5 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# `package_descriptions` API
+# `package_descript` API
 
 
 <a id="#package_descriptions.parse_json"></a>

@@ -1,5 +1,5 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# `repository_utils` API
+# `repository_u` API
 
 
 <a id="#repository_utils.is_macos"></a>

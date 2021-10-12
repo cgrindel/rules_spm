@@ -1,5 +1,5 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# `references` API
+# `refere` API
 
 
 <a id="#references.create"></a>

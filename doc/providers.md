@@ -1,96 +1,132 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
-# Providers
-
-The providers described below are used by [the build rules](/doc/build_rules.md) to
-facilitate the build and exposition of the Swift packages.
-
-On this page:
-
-  * [SPMPackageInfo](#SPMPackageInfo)
-  * [SPMPackagesInfo](#SPMPackagesInfo)
-  * [SPMPlatformInfo](#SPMPlatformInfo)
-  * [SPMToolchainInfo](#SPMToolchainInfo)
+# `provi` API
 
 
-<a id="#SPMPackageInfo"></a>
+<a id="#providers.clang_module"></a>
 
-## SPMPackageInfo
+## providers.clang_module
 
 <pre>
-SPMPackageInfo(<a href="#SPMPackageInfo-name">name</a>, <a href="#SPMPackageInfo-swift_binaries">swift_binaries</a>, <a href="#SPMPackageInfo-swift_modules">swift_modules</a>, <a href="#SPMPackageInfo-clang_modules">clang_modules</a>, <a href="#SPMPackageInfo-system_library_modules">system_library_modules</a>)
+providers.clang_module(<a href="#providers.clang_module-module_name">module_name</a>, <a href="#providers.clang_module-o_files">o_files</a>, <a href="#providers.clang_module-hdrs">hdrs</a>, <a href="#providers.clang_module-modulemap">modulemap</a>, <a href="#providers.clang_module-all_outputs">all_outputs</a>)
 </pre>
 
-Describes the information about an SPM package.
+Creates a value representing the Clang module that is built from a package.
 
-**FIELDS**
-
-
-| Name  | Description |
-| :------------- | :------------- |
-| <a id="SPMPackageInfo-name"></a>name |  Name of the Swift package.    |
-| <a id="SPMPackageInfo-swift_binaries"></a>swift_binaries |  A <code>list</code> of values returned from <code>providers.swift_binary</code>.    |
-| <a id="SPMPackageInfo-swift_modules"></a>swift_modules |  A <code>list</code> of values returned from <code>providers.swift_module</code>.    |
-| <a id="SPMPackageInfo-clang_modules"></a>clang_modules |  A <code>list</code> of values returned from <code>providers.clang_module</code>.    |
-| <a id="SPMPackageInfo-system_library_modules"></a>system_library_modules |  <code>List</code> of values returned from <code>providers.system_library_module</code>.    |
+**PARAMETERS**
 
 
-<a id="#SPMPackagesInfo"></a>
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.clang_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
+| <a id="providers.clang_module-o_files"></a>o_files |  The Mach-O files that are built by SPM.   |  <code>[]</code> |
+| <a id="providers.clang_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
+| <a id="providers.clang_module-modulemap"></a>modulemap |  <p align="center"> - </p>   |  <code>None</code> |
+| <a id="providers.clang_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
 
-## SPMPackagesInfo
+**RETURNS**
+
+A struct which provides info about a clang module build by SPM.
+
+
+<a id="#providers.copy_info"></a>
+
+## providers.copy_info
 
 <pre>
-SPMPackagesInfo(<a href="#SPMPackagesInfo-packages">packages</a>)
+providers.copy_info(<a href="#providers.copy_info-src">src</a>, <a href="#providers.copy_info-dest">dest</a>)
 </pre>
 
-Provides information about the dependent SPM packages.
+Creates a value describing a copy operation.
 
-**FIELDS**
-
-
-| Name  | Description |
-| :------------- | :------------- |
-| <a id="SPMPackagesInfo-packages"></a>packages |  A <code>list</code> of SPMPackageInfo representing the dependent packages.    |
+**PARAMETERS**
 
 
-<a id="#SPMPlatformInfo"></a>
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.copy_info-src"></a>src |  The source file.   |  none |
+| <a id="providers.copy_info-dest"></a>dest |  The destination file.   |  none |
 
-## SPMPlatformInfo
+**RETURNS**
+
+A struct describing a copy operation performed during the SPM build.
+
+
+<a id="#providers.swift_binary"></a>
+
+## providers.swift_binary
 
 <pre>
-SPMPlatformInfo(<a href="#SPMPlatformInfo-os">os</a>, <a href="#SPMPlatformInfo-arch">arch</a>, <a href="#SPMPlatformInfo-vendor">vendor</a>, <a href="#SPMPlatformInfo-abi">abi</a>)
+providers.swift_binary(<a href="#providers.swift_binary-name">name</a>, <a href="#providers.swift_binary-executable">executable</a>, <a href="#providers.swift_binary-all_outputs">all_outputs</a>)
 </pre>
 
-SPM designations for the architecture, OS and vendor.
+Creates a value representing a Swift binary that is built from a package.
 
-**FIELDS**
-
-
-| Name  | Description |
-| :------------- | :------------- |
-| <a id="SPMPlatformInfo-os"></a>os |  The OS designation as understood by SPM.    |
-| <a id="SPMPlatformInfo-arch"></a>arch |  The architecture designation as understood by SPM.    |
-| <a id="SPMPlatformInfo-vendor"></a>vendor |  The vendor designation as understood by SPM.    |
-| <a id="SPMPlatformInfo-abi"></a>abi |  The abi destination as understood by SPM.    |
+**PARAMETERS**
 
 
-<a id="#SPMToolchainInfo"></a>
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.swift_binary-name"></a>name |  Name of the Swift binary.   |  none |
+| <a id="providers.swift_binary-executable"></a>executable |  The executable.   |  <code>None</code> |
+| <a id="providers.swift_binary-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
 
-## SPMToolchainInfo
+**RETURNS**
+
+A struct which provides info about a Swift binary built by SPM.
+
+
+<a id="#providers.swift_module"></a>
+
+## providers.swift_module
 
 <pre>
-SPMToolchainInfo(<a href="#SPMToolchainInfo-spm_configuration">spm_configuration</a>, <a href="#SPMToolchainInfo-target_triple">target_triple</a>, <a href="#SPMToolchainInfo-spm_platform_info">spm_platform_info</a>, <a href="#SPMToolchainInfo-tool_configs">tool_configs</a>)
+providers.swift_module(<a href="#providers.swift_module-module_name">module_name</a>, <a href="#providers.swift_module-o_files">o_files</a>, <a href="#providers.swift_module-swiftdoc">swiftdoc</a>, <a href="#providers.swift_module-swiftmodule">swiftmodule</a>, <a href="#providers.swift_module-swiftsourceinfo">swiftsourceinfo</a>, <a href="#providers.swift_module-executable">executable</a>,
+                       <a href="#providers.swift_module-all_outputs">all_outputs</a>)
 </pre>
 
-Information about how to invoke tools like the Swift package manager.
+Creates a value representing the Swift module that is built from a package.
 
-**FIELDS**
+**PARAMETERS**
 
 
-| Name  | Description |
-| :------------- | :------------- |
-| <a id="SPMToolchainInfo-spm_configuration"></a>spm_configuration |  The SPM build configuration as a <code>string</code>. Values: <code>release</code> or <code>debug</code>    |
-| <a id="SPMToolchainInfo-target_triple"></a>target_triple |  A string representing the target platform as a triple.    |
-| <a id="SPMToolchainInfo-spm_platform_info"></a>spm_platform_info |  An <code>SpmPlatformInfo</code> describing the target platform.    |
-| <a id="SPMToolchainInfo-tool_configs"></a>tool_configs |  A <code>dict</code> of configuration structs where the key is an action name (<code>action_names</code>) and the value is a <code>struct</code> as returned by <code>actions.tool_config()</code>.    |
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.swift_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
+| <a id="providers.swift_module-o_files"></a>o_files |  The Mach-O files that are built by SPM.   |  <code>[]</code> |
+| <a id="providers.swift_module-swiftdoc"></a>swiftdoc |  The .swiftdoc file that is built by SPM.   |  <code>None</code> |
+| <a id="providers.swift_module-swiftmodule"></a>swiftmodule |  The .swiftmodule file that is built by SPM.   |  <code>None</code> |
+| <a id="providers.swift_module-swiftsourceinfo"></a>swiftsourceinfo |  The .swiftsourceinfo file that is built by SPM.   |  <code>None</code> |
+| <a id="providers.swift_module-executable"></a>executable |  The executable if the target is executable.   |  <code>None</code> |
+| <a id="providers.swift_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+**RETURNS**
+
+A struct which provides info about a Swift module built by SPM.
+
+
+<a id="#providers.system_library_module"></a>
+
+## providers.system_library_module
+
+<pre>
+providers.system_library_module(<a href="#providers.system_library_module-module_name">module_name</a>, <a href="#providers.system_library_module-c_files">c_files</a>, <a href="#providers.system_library_module-hdrs">hdrs</a>, <a href="#providers.system_library_module-modulemap">modulemap</a>, <a href="#providers.system_library_module-all_outputs">all_outputs</a>)
+</pre>
+
+Creates a value representing the system library module that is built from a package.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="providers.system_library_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
+| <a id="providers.system_library_module-c_files"></a>c_files |  The C source files that are part of the system library definition.   |  <code>[]</code> |
+| <a id="providers.system_library_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
+| <a id="providers.system_library_module-modulemap"></a>modulemap |  The module.modulemap file for the system library module.   |  <code>None</code> |
+| <a id="providers.system_library_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+**RETURNS**
+
+A struct which provides info about a system library module.
 
 
