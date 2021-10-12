@@ -44,16 +44,17 @@ _DOC_WITH_SYMBOLS = {
 }
 
 _API_DOC_PROVIDERS = [
-    doc_providers.create_api(
+    doc_providers.create(
         name = name,
         stardoc_input = "//spm:spm.bzl",
+        symbols = [name],
         deps = ["//spm"],
     )
     for name in _API_SRCS
 ]
 
 _ALL_DOC_PROVIDERS = [
-    doc_providers.create_with_symbols(
+    doc_providers.create(
         name = name + "_overview",
         stardoc_input = "//spm:spm.bzl",
         symbols = symbols,
