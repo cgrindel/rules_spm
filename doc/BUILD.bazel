@@ -85,8 +85,6 @@ write_file(
         "[the build rules](/doc/build_rules.md) to facilitate the build and exposition of the",
         "Swift packages.",
         "",
-        "On this page:",
-        "",
     ] + ["  * [{0}](/doc/{0}.md)".format(r) for r in _API_SRCS] + [
         "",
     ],
@@ -131,14 +129,12 @@ write_header(
 )
 
 [
-    write_file(
+    write_header(
         name = doc_prov.header_label,
         out = doc_prov.header_basename,
-        content = [
-            "<!-- Generated with Stardoc, Do Not Edit! -->",
+        header_content = [
             # The `-4` is truncating `_api`
             "# `{name}` API".format(name = doc_prov.name[:-4]),
-            "",
         ],
     )
     for doc_prov in _API_DOC_PROVIDERS

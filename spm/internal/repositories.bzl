@@ -21,14 +21,6 @@ def spm_rules_dependencies():
         url = "https://github.com/bazelbuild/rules_swift/releases/download/0.24.0/rules_swift.0.24.0.tar.gz",
     )
 
-    # maybe(
-    #     http_archive,
-    #     name = "io_bazel_stardoc",
-    #     sha256 = "a9aa31f46fb674f8089530acc80d3214b3e6c32102cd8d42246fdac3eb77f52f",
-    #     strip_prefix = "stardoc-03fc6d500fb2d6d21fa4fa241298356ab3950844",
-    #     urls = ["https://github.com/bazelbuild/stardoc/archive/03fc6d500fb2d6d21fa4fa241298356ab3950844.tar.gz"],  # HEAD as of 2021-09-13
-    # )
-
     maybe(
         native.local_repository,
         name = "cgrindel_bazel_doc",
