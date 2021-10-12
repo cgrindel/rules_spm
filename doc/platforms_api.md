@@ -18,6 +18,10 @@ Maps the Bazel OS value to a suitable SPM OS value.
 | :------------- | :------------- | :------------- |
 | <a id="platforms.spm_os-swift_os"></a>swift_os |  <p align="center"> - </p>   |  none |
 
+**RETURNS**
+
+A `string` representing the SPM OS value.
+
 
 <a id="#platforms.spm_arch"></a>
 
@@ -36,6 +40,10 @@ Maps the Bazel architeture value to a suitable SPM architecture value.
 | :------------- | :------------- | :------------- |
 | <a id="platforms.spm_arch-swift_cpu"></a>swift_cpu |  <p align="center"> - </p>   |  none |
 
+**RETURNS**
+
+A `string` representing the SPM architecture value.
+
 
 <a id="#platforms.spm_vendor"></a>
 
@@ -53,5 +61,9 @@ Maps the Bazel OS value to the corresponding SPM vendor value.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="platforms.spm_vendor-swift_os"></a>swift_os |  <p align="center"> - </p>   |  none |
+
+**RETURNS**
+
+A `string` representing the SPM vendor value.
 
 

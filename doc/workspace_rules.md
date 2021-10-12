@@ -63,6 +63,10 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="spm_pkg-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="spm_pkg-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |
 
+**RETURNS**
+
+A JSON `string` representing a Swift package.
+
 
 <a id="#spm_rules_dependencies"></a>
 

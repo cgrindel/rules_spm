@@ -19,6 +19,10 @@ Returns the `SPMPackageInfo` with the specified name from the list of `SPMPackag
 | <a id="spm_package_info_utils.get-pkg_infos"></a>pkg_infos |  A <code>list</code> of <code>SPMPackageInfo</code> values.   |  none |
 | <a id="spm_package_info_utils.get-pkg_name"></a>pkg_name |  A <code>string</code> representing the name of the desired <code>SPMPackageInfo</code>.   |  none |
 
+**RETURNS**
+
+An `SPMPackageInfo` value.
+
 
 <a id="#spm_package_info_utils.get_module_info"></a>
 
@@ -37,5 +41,12 @@ Returns the module information with the specified module name.
 | :------------- | :------------- | :------------- |
 | <a id="spm_package_info_utils.get_module_info-pkg_info"></a>pkg_info |  An <code>SPMPackageInfo</code> value.   |  none |
 | <a id="spm_package_info_utils.get_module_info-module_name"></a>module_name |  The module name <code>string</code>.   |  none |
+
+**RETURNS**
+
+If the module is a Swift module, a `struct` value as created by
+  `providers.swift_module()` is returend. If the module is a clang
+  module a `struct` value as created by `providers.clang_module()` is
+  returned.
 
 

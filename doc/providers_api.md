@@ -22,6 +22,10 @@ Creates a value representing the Clang module that is built from a package.
 | <a id="providers.clang_module-modulemap"></a>modulemap |  <p align="center"> - </p>   |  <code>None</code> |
 | <a id="providers.clang_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
 
+**RETURNS**
+
+A struct which provides info about a clang module build by SPM.
+
 
 <a id="#providers.copy_info"></a>
 
@@ -40,6 +44,10 @@ Creates a value describing a copy operation.
 | :------------- | :------------- | :------------- |
 | <a id="providers.copy_info-src"></a>src |  The source file.   |  none |
 | <a id="providers.copy_info-dest"></a>dest |  The destination file.   |  none |
+
+**RETURNS**
+
+A struct describing a copy operation performed during the SPM build.
 
 
 <a id="#providers.swift_binary"></a>
@@ -60,6 +68,10 @@ Creates a value representing a Swift binary that is built from a package.
 | <a id="providers.swift_binary-name"></a>name |  Name of the Swift binary.   |  none |
 | <a id="providers.swift_binary-executable"></a>executable |  The executable.   |  <code>None</code> |
 | <a id="providers.swift_binary-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+**RETURNS**
+
+A struct which provides info about a Swift binary built by SPM.
 
 
 <a id="#providers.swift_module"></a>
@@ -86,6 +98,10 @@ Creates a value representing the Swift module that is built from a package.
 | <a id="providers.swift_module-executable"></a>executable |  The executable if the target is executable.   |  <code>None</code> |
 | <a id="providers.swift_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
 
+**RETURNS**
+
+A struct which provides info about a Swift module built by SPM.
+
 
 <a id="#providers.system_library_module"></a>
 
@@ -107,5 +123,9 @@ Creates a value representing the system library module that is built from a pack
 | <a id="providers.system_library_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
 | <a id="providers.system_library_module-modulemap"></a>modulemap |  The module.modulemap file for the system library module.   |  <code>None</code> |
 | <a id="providers.system_library_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
+
+**RETURNS**
+
+A struct which provides info about a system library module.
 
 

@@ -1,7 +1,12 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
-load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
-load(":doc_providers.bzl", "doc_providers")
+
+# load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
+load("@cgrindel_bazel_doc//lib:write_header.bzl", "write_header")
+load("@cgrindel_bazel_doc//lib:providers.bzl", doc_providers = "providers")
+load("@cgrindel_bazel_doc//lib:stardoc_for_prov.bzl", "stardoc_for_provs")
+load("@cgrindel_bazel_doc//lib:diff_test_for_provs.bzl", "diff_test_for_provs")
+load("@cgrindel_bazel_doc//lib:update_doc.bzl", "update_doc")
 
 # Lovingly inspired by
 # https://github.com/bazelbuild/rules_swift/blob/021c11b1d578ffba547140eb24854cdfe74c794f/doc/BUILD.bazel#L3
@@ -89,57 +94,39 @@ write_file(
 
 # MARK: - Headers
 
-write_file(
+write_header(
     name = "providers_header",
-    out = "providers_header.vm",
-    content = [
-        "<!-- Generated with Stardoc, Do Not Edit! -->",
+    doc_provs = _DOC_WITH_SYMBOLS["providers"],
+    header_content = [
         "# Providers",
         "",
         "The providers described below are used by [the build rules](/doc/build_rules.md) to",
         "facilitate the build and exposition of the Swift packages.",
-        "",
-        "On this page:",
-        "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["providers"]] + [
-        "",
     ],
 )
 
-write_file(
+write_header(
     name = "build_rules_header",
-    out = "build_rules_header.vm",
-    content = [
-        "<!-- Generated with Stardoc, Do Not Edit! -->",
+    doc_provs = _DOC_WITH_SYMBOLS["build_rules"],
+    header_content = [
         "# Build Rules",
         "",
         "The rules described below are used to build Swift",
         "packages and make their outputs available as Bazel targets. Most",
         "clients will not use these rules directly. They are an implementation",
         "detail for [the workspace rules](/doc/workspace_rules.md).",
-        "",
-        "On this page:",
-        "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["build_rules"]] + [
-        "",
     ],
 )
 
-write_file(
+write_header(
     name = "workspace_rules_header",
-    out = "workspace_rules_header.vm",
-    content = [
-        "<!-- Generated with Stardoc, Do Not Edit! -->",
+    doc_provs = _DOC_WITH_SYMBOLS["workspace_rules"],
+    header_content = [
         "# Workspace Rules",
         "",
         "The rules and functions described below are used in your WORKSPACE file to",
         "confgure `rules_spm` and to declare the Swift packages that are dependencies",
         "of your project.",
-        "",
-        "On this page:",
-        "",
-    ] + ["  * [{0}](#{0})".format(r) for r in _DOC_WITH_SYMBOLS["workspace_rules"]] + [
-        "",
     ],
 )
 
@@ -160,51 +147,18 @@ write_file(
 
 # MARK: - Stardoc Declarations
 
-[
-    stardoc(
-        name = doc_prov.name,
-        out = doc_prov.out_basename,
-        header_template = doc_prov.header_basename,
-        input = "//spm:spm.bzl",
-        symbol_names = doc_prov.symbols,
-        deps = ["//spm"],
-    )
-    for doc_prov in _ALL_DOC_PROVIDERS
-    if doc_prov.is_stardoc
-]
+stardoc_for_provs(
+    doc_provs = _ALL_DOC_PROVIDERS,
+    stardoc_input = "//spm:spm.bzl",
+    deps = ["//spm"],
+)
 
 # MARK: - Doc Diff Tests
 
 # To make these tests pass, run
 # bazel run //doc:update
-[
-    diff_test(
-        name = "test_" + doc_prov.name,
-        file1 = doc_prov.out_basename,
-        file2 = doc_prov.doc_basename,
-    )
-    for doc_prov in _ALL_DOC_PROVIDERS
-]
+diff_test_for_provs(doc_provs = _ALL_DOC_PROVIDERS)
 
 # MARK: - Update Doc
 
-write_file(
-    name = "gen_update",
-    out = "update.sh",
-    content = [
-        "#!/usr/bin/env bash",
-        "cd $BUILD_WORKSPACE_DIRECTORY",
-    ] + [
-        "cp -fv bazel-bin/doc/{0} doc/{1}".format(
-            doc_prov.out_basename,
-            doc_prov.doc_basename,
-        )
-        for doc_prov in _ALL_DOC_PROVIDERS
-    ],
-)
-
-sh_binary(
-    name = "update",
-    srcs = ["update.sh"],
-    data = [doc_prov.out_basename for doc_prov in _ALL_DOC_PROVIDERS],
-)
+update_doc(doc_provs = _ALL_DOC_PROVIDERS)

@@ -21,3 +21,13 @@ load(
 )
 
 swift_rules_extra_dependencies()
+
+# MARK: - Documentation
+
+load("@cgrindel_bazel_doc//lib:deps.bzl", "bazel_doc_dependencies")
+
+bazel_doc_dependencies()
+
+load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
+
+stardoc_repositories()
