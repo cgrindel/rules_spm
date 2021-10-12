@@ -8,13 +8,14 @@ detail for [the workspace rules](/doc/workspace_rules.md).
 
 On this page:
 
-  * [spm_archive](#spm_archive)
-  * [spm_clang_library](#spm_clang_library)
-  * [spm_filegroup](#spm_filegroup)
-  * [spm_package](#spm_package)
-  * [spm_swift_binary](#spm_swift_binary)
-  * [spm_swift_library](#spm_swift_library)
-  * [spm_system_library](#spm_system_library)
+  * [spm_archive](#spm_archive
+  * [spm_clang_library](#spm_clang_library
+  * [spm_filegroup](#spm_filegroup
+  * [spm_package](#spm_package
+  * [spm_swift_binary](#spm_swift_binary
+  * [spm_swift_library](#spm_swift_library
+  * [spm_system_library](#spm_system_library
+
 
 <a id="#spm_archive"></a>
 

@@ -51,6 +51,7 @@ _DOC_WITH_SYMBOLS = {
 _API_DOC_PROVIDERS = [
     doc_providers.create_api(
         name = name,
+        stardoc_input = "//spm:spm.bzl",
     )
     for name in _API_SRCS
 ]
@@ -58,6 +59,7 @@ _API_DOC_PROVIDERS = [
 _ALL_DOC_PROVIDERS = [
     doc_providers.create_with_symbols(
         name = name,
+        stardoc_input = "//spm:spm.bzl",
         symbols = symbols,
     )
     for [
@@ -68,6 +70,7 @@ _ALL_DOC_PROVIDERS = [
     doc_providers.create(
         name = "api",
         is_stardoc = False,
+        stardoc_input = "//spm:spm.bzl",
     ),
 ] + _API_DOC_PROVIDERS
 
@@ -145,7 +148,6 @@ write_header(
 
 stardoc_for_provs(
     doc_provs = _ALL_DOC_PROVIDERS,
-    stardoc_input = "//spm:spm.bzl",
     deps = ["//spm"],
 )
 

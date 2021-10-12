@@ -7,9 +7,10 @@ of your project.
 
 On this page:
 
-  * [spm_repositories](#spm_repositories)
-  * [spm_pkg](#spm_pkg)
-  * [spm_rules_dependencies](#spm_rules_dependencies)
+  * [spm_repositories](#spm_repositories
+  * [spm_pkg](#spm_pkg
+  * [spm_rules_dependencies](#spm_rules_dependencies
+
 
 <a id="#spm_repositories"></a>
 
