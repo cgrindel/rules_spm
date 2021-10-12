@@ -24,7 +24,7 @@ swift_rules_extra_dependencies()
 
 # MARK: - Documentation
 
-load("@cgrindel_bazel_doc//lib:deps.bzl", "bazel_doc_dependencies")
+load("@cgrindel_bazel_doc//bazeldoc:deps.bzl", "bazel_doc_dependencies")
 
 bazel_doc_dependencies()
 
