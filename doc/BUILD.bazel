@@ -97,18 +97,17 @@ write_file_list(
 
 write_header(
     name = "providers_overview_header",
-    doc_provs = _DOC_WITH_SYMBOLS["providers"],
     header_content = [
         "# Providers",
         "",
         "The providers described below are used by [the build rules](/doc/build_rules_overview.md) to",
         "facilitate the build and exposition of the Swift packages.",
     ],
+    symbols = _DOC_WITH_SYMBOLS["providers"],
 )
 
 write_header(
     name = "build_rules_overview_header",
-    doc_provs = _DOC_WITH_SYMBOLS["build_rules"],
     header_content = [
         "# Build Rules",
         "",
@@ -117,11 +116,11 @@ write_header(
         "clients will not use these rules directly. They are an implementation",
         "detail for [the workspace rules](/doc/workspace_rules_overview.md).",
     ],
+    symbols = _DOC_WITH_SYMBOLS["build_rules"],
 )
 
 write_header(
     name = "workspace_rules_overview_header",
-    doc_provs = _DOC_WITH_SYMBOLS["workspace_rules"],
     header_content = [
         "# Workspace Rules",
         "",
@@ -129,6 +128,7 @@ write_header(
         "confgure `rules_spm` and to declare the Swift packages that are dependencies",
         "of your project.",
     ],
+    symbols = _DOC_WITH_SYMBOLS["workspace_rules"],
 )
 
 # Write the API headers
