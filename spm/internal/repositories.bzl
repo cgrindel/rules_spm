@@ -22,9 +22,11 @@ def spm_rules_dependencies():
     )
 
     maybe(
-        native.local_repository,
+        http_archive,
         name = "cgrindel_bazel_doc",
-        path = "/Users/chuck/code/cgrindel/bazel-doc",
+        sha256 = "bae4a0f41cc5cf89f26c779fc04379f09bb290b4910b2cf206c0372ad0c8aac7",
+        strip_prefix = "bazel-doc-0.1.0",
+        urls = ["https://github.com/cgrindel/bazel-doc/archive/v0.1.0.tar.gz"],
     )
 
     maybe(
