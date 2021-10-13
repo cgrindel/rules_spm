@@ -7,11 +7,11 @@ def spm_rules_dependencies():
     maybe(
         http_archive,
         name = "bazel_skylib",
-        sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.1.1/bazel-skylib-1.1.1.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.1.1/bazel-skylib-1.1.1.tar.gz",
         ],
+        sha256 = "c6966ec828da198c5d9adbaa94c05e3a1c7f21bd012a0b29ba8ddbccb2c93b0d",
     )
 
     maybe(
@@ -23,10 +23,10 @@ def spm_rules_dependencies():
 
     maybe(
         http_archive,
-        name = "io_bazel_stardoc",
-        sha256 = "a9aa31f46fb674f8089530acc80d3214b3e6c32102cd8d42246fdac3eb77f52f",
-        strip_prefix = "stardoc-03fc6d500fb2d6d21fa4fa241298356ab3950844",
-        urls = ["https://github.com/bazelbuild/stardoc/archive/03fc6d500fb2d6d21fa4fa241298356ab3950844.tar.gz"],  # HEAD as of 2021-09-13
+        name = "cgrindel_bazel_doc",
+        sha256 = "bae4a0f41cc5cf89f26c779fc04379f09bb290b4910b2cf206c0372ad0c8aac7",
+        strip_prefix = "bazel-doc-0.1.0",
+        urls = ["https://github.com/cgrindel/bazel-doc/archive/v0.1.0.tar.gz"],
     )
 
     maybe(

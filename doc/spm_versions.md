@@ -1,6 +1,7 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # `spm_versions` API
 
+
 <a id="#spm_versions.extract"></a>
 
 ## spm_versions.extract
@@ -21,6 +22,10 @@ Output: `5.4.0`
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="spm_versions.extract-version"></a>version |  A <code>string</code> which has the semantic version embedded at the end.   |  none |
+
+**RETURNS**
+
+A `string` representing the semantic version.
 
 
 <a id="#spm_versions.get"></a>
@@ -44,5 +49,9 @@ the semantic version.
 | :------------- | :------------- | :------------- |
 | <a id="spm_versions.get-repository_ctx"></a>repository_ctx |  A <code>repository_ctx</code> instance.   |  none |
 | <a id="spm_versions.get-env"></a>env |  A <code>dict</code> of environment variables that are used in the evaluation of the SPM version.   |  <code>{}</code> |
+
+**RETURNS**
+
+A `string` representing the semantic version for Swift Package Manager.
 
 

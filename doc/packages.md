@@ -1,6 +1,7 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # `packages` API
 
+
 <a id="#packages.create_name"></a>
 
 ## packages.create_name
@@ -17,6 +18,10 @@ Create a package name (i.e. repository name) from the provided URL.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="packages.create_name-url"></a>url |  A URL <code>string</code>.   |  none |
+
+**RETURNS**
+
+A package name `string`.
 
 
 <a id="#packages.create"></a>
@@ -47,6 +52,10 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="packages.create-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="packages.create-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |
 
+**RETURNS**
+
+A `struct` representing a Swift package.
+
 
 <a id="#packages.copy"></a>
 
@@ -70,6 +79,10 @@ Create a copy of the provided package replacing any of the argument values that 
 | <a id="packages.copy-from_version"></a>from_version |  Optional. A <code>string</code> representing a valid "from" SPM version.   |  <code>None</code> |
 | <a id="packages.copy-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="packages.copy-products"></a>products |  Optional. jA <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>None</code> |
+
+**RETURNS**
+
+A `struct` representing a Swift package.
 
 
 <a id="#packages.pkg_json"></a>
@@ -100,6 +113,10 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="packages.pkg_json-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="packages.pkg_json-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |
 
+**RETURNS**
+
+A JSON `string` representing a Swift package.
+
 
 <a id="#packages.from_json"></a>
 
@@ -117,6 +134,12 @@ Creates a package struct(s) as described in the provided JSON string.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="packages.from_json-json_str"></a>json_str |  A JSON <code>string</code> that describes a package as declared in the <code>dependencies</code> attribute for a <code>spm_repositories</code> rule.   |  none |
+
+**RETURNS**
+
+If the JSON represents a list of packages, a `list` of package `struct`
+  values are returned. Otherwise, a single package `struct` value is
+  returned. See `packages.create()` for more details on the struct.
 
 
 <a id="#packages.get_pkg"></a>
@@ -137,6 +160,11 @@ Returns the package declaration from a list of package declarations.
 | <a id="packages.get_pkg-pkgs"></a>pkgs |  A <code>list</code> of package declarations (<code>struct</code>) as created by <code>packages.create()</code>, <code>packages.pkg_json()</code> or <code>spm_pkg()</code>.   |  none |
 | <a id="packages.get_pkg-pkg_name"></a>pkg_name |  A <code>string</code> representing the name of the Swift package.   |  none |
 
+**RETURNS**
+
+A package declaration `struct` as created by
+  `packages.create()`, `packages.pkg_json()` or `spm_pkg()`.
+
 
 <a id="#packages.get_product_refs"></a>
 
@@ -154,5 +182,9 @@ Returns a list of product references as declared in the specified packages list.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="packages.get_product_refs-pkgs"></a>pkgs |  A <code>list</code> of package declarations (<code>struct</code>) as created by <code>packages.create()</code>, <code>packages.pkg_json()</code> or <code>spm_pkg()</code>.   |  none |
+
+**RETURNS**
+
+A `list` of product reference (`string`) values.
 
 

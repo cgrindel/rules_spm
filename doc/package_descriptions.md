@@ -1,6 +1,7 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # `package_descriptions` API
 
+
 <a id="#package_descriptions.parse_json"></a>
 
 ## package_descriptions.parse_json
@@ -17,6 +18,10 @@ Parses the JSON string and returns a dict representing the JSON structure.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.parse_json-json_str"></a>json_str |  <p align="center"> - </p>   |  none |
+
+**RETURNS**
+
+A dict which contains the information from the JSON string.
 
 
 <a id="#package_descriptions.get"></a>
@@ -38,6 +43,11 @@ Returns a dict representing the merge of a package's description and it's dump (
 | <a id="package_descriptions.get-env"></a>env |  A <code>dict</code> of environment variables that will be included in the command execution.   |  <code>{}</code> |
 | <a id="package_descriptions.get-working_directory"></a>working_directory |  A <code>string</code> specifying the directory for the SPM package.   |  <code>""</code> |
 
+**RETURNS**
+
+A `dict` representing information gathered from an SPM package
+  description and it's dump data.
+
 
 <a id="#package_descriptions.is_library_product"></a>
 
@@ -55,6 +65,10 @@ Returns a boolean indicating whether the specified product dictionary is a libra
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_library_product-product"></a>product |  A <code>dict</code> representing a product from package description JSON.   |  none |
+
+**RETURNS**
+
+A `bool` indicating whether the product is a library.
 
 
 <a id="#package_descriptions.library_products"></a>
@@ -74,6 +88,10 @@ Returns the library products defined in the provided package description.
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.library_products-pkg_desc"></a>pkg_desc |  A <code>dict</code> representing a package description.   |  none |
 
+**RETURNS**
+
+A `list` of product `dict` values as defined in a package description.
+
 
 <a id="#package_descriptions.is_library_target"></a>
 
@@ -91,6 +109,10 @@ Returns True if the specified target is a library target. Otherwise False.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_library_target-target"></a>target |  A target from the package description.   |  none |
+
+**RETURNS**
+
+A boolean indicating whether the target is a library target.
 
 
 <a id="#package_descriptions.is_executable_target"></a>
@@ -110,6 +132,10 @@ Returns True if the specified target is an executable target. Otherwise False.
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_executable_target-target"></a>target |  A target from the package description.   |  none |
 
+**RETURNS**
+
+A boolean indicating whether the target is an executable target.
+
 
 <a id="#package_descriptions.is_system_target"></a>
 
@@ -127,6 +153,10 @@ Returns True if the specified target is a library target. Otherwise False.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_system_target-target"></a>target |  A target from the package description.   |  none |
+
+**RETURNS**
+
+A boolean indicating whether the target is a library target.
 
 
 <a id="#package_descriptions.library_targets"></a>
@@ -146,6 +176,10 @@ Returns a list of the library targets in the package.
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.library_targets-pkg_desc"></a>pkg_desc |  The dict returned from the <code>parse_package_descrition_json</code>.   |  none |
 
+**RETURNS**
+
+A list of the library targets in the package.
+
 
 <a id="#package_descriptions.is_system_library_target"></a>
 
@@ -163,6 +197,10 @@ Returns True if the specified target is a clang module. Otherwise, False.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_system_library_target-target"></a>target |  A target from the package description.   |  none |
+
+**RETURNS**
+
+A boolean indicating whether the target is a clang module.
 
 
 <a id="#package_descriptions.is_clang_target"></a>
@@ -182,6 +220,10 @@ Returns True if the specified target is a clang module. Otherwise, False.
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_clang_target-target"></a>target |  A target from the package description.   |  none |
 
+**RETURNS**
+
+A boolean indicating whether the target is a clang module.
+
 
 <a id="#package_descriptions.is_swift_target"></a>
 
@@ -199,6 +241,10 @@ Returns True if the specified target is a swift module. Otherwise, False.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_swift_target-target"></a>target |  A target from the package description.   |  none |
+
+**RETURNS**
+
+A boolean indicating whether the target is a swift module.
 
 
 <a id="#package_descriptions.get_target"></a>
@@ -219,6 +265,10 @@ Returns the target with the specified name from a package description.
 | <a id="package_descriptions.get_target-pkg_desc"></a>pkg_desc |  A <code>dict</code> representing a package description.   |  none |
 | <a id="package_descriptions.get_target-name"></a>name |  A <code>string</code> represneting the name of the desired target.   |  none |
 | <a id="package_descriptions.get_target-fail_if_not_found"></a>fail_if_not_found |  <p align="center"> - </p>   |  <code>True</code> |
+
+**RETURNS**
+
+A `dict` representing a target as represented in a package description.
 
 
 <a id="#package_descriptions.dependency_name"></a>
@@ -241,6 +291,10 @@ name is returned.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.dependency_name-pkg_dep"></a>pkg_dep |  A <code>dict</code> representing a package dependency as defined in a package description JSON.   |  none |
+
+**RETURNS**
+
+The name of the package dependency as a `string`.
 
 
 <a id="#package_descriptions.dependency_repository_name"></a>
@@ -266,6 +320,10 @@ Repository Name: async-http-client
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.dependency_repository_name-pkg_dep"></a>pkg_dep |  A <code>dict</code> representing a package dependency as defined in a package description JSON.   |  none |
 
+**RETURNS**
+
+The repository name for the package dependency.
+
 
 <a id="#package_descriptions.transitive_dependencies"></a>
 
@@ -285,6 +343,11 @@ Returns all of the targets that are a transitive dependency for the specified pr
 | <a id="package_descriptions.transitive_dependencies-pkg_descs_dict"></a>pkg_descs_dict |  A <code>dict</code> where the keys are the package names and the values are package description <code>struct</code> values as returned by <code>package_descriptions.get()</code>.   |  none |
 | <a id="package_descriptions.transitive_dependencies-product_refs"></a>product_refs |  A <code>list</code> of reference <code>string</code> values as created by <code>references.create_product_ref()</code>.   |  none |
 
+**RETURNS**
+
+A `dict` where the keys are target reference values and the
+  values are a `list` of target references.
+
 
 <a id="#package_descriptions.is_executable_product"></a>
 
@@ -302,6 +365,10 @@ Returns a boolean indicating whether the specified product dictionary is an exec
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.is_executable_product-product"></a>product |  A <code>dict</code> representing a product from package description JSON.   |  none |
+
+**RETURNS**
+
+A `bool` indicating whether the product is an executable.
 
 
 <a id="#package_descriptions.get_product"></a>
@@ -322,5 +389,9 @@ Returns the product with the specified product name.
 | <a id="package_descriptions.get_product-pkg_desc"></a>pkg_desc |  A <code>dict</code> representing a package description.   |  none |
 | <a id="package_descriptions.get_product-product_name"></a>product_name |  The product name as a <code>string</code>.   |  none |
 | <a id="package_descriptions.get_product-fail_if_not_found"></a>fail_if_not_found |  <p align="center"> - </p>   |  <code>True</code> |
+
+**RETURNS**
+
+A `dict` representing the desired product.
 
 

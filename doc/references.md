@@ -1,6 +1,7 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # `references` API
 
+
 <a id="#references.create"></a>
 
 ## references.create
@@ -20,6 +21,10 @@ Creates a reference for the specified type.
 | <a id="references.create-pkg_name"></a>pkg_name |  The package name as a <code>string</code>.   |  none |
 | <a id="references.create-name"></a>name |  The name of the item as a <code>string</code>.   |  none |
 
+**RETURNS**
+
+A `string` that references an entity in a set of package descriptions.
+
 
 <a id="#references.split"></a>
 
@@ -37,6 +42,11 @@ Splits a reference string into its parts.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="references.split-ref_str"></a>ref_str |  A valid reference <code>string</code>.   |  none |
+
+**RETURNS**
+
+A `tuple` where the first item is the reference type, the second is
+  the package name, and the third is the item name.
 
 
 <a id="#references.create_target_ref"></a>
@@ -61,6 +71,10 @@ Example byName ref:
 | <a id="references.create_target_ref-pkg_name"></a>pkg_name |  The package name as a <code>string</code>.   |  none |
 | <a id="references.create_target_ref-by_name_values"></a>by_name_values |  A <code>list</code> of <code>string</code> values where the first item is the module name.   |  none |
 
+**RETURNS**
+
+A target reference `string` value.
+
 
 <a id="#references.create_product_ref"></a>
 
@@ -83,6 +97,10 @@ Example product ref:
 | :------------- | :------------- | :------------- |
 | <a id="references.create_product_ref-product_values"></a>product_values |  A <code>list</code> of <code>string</code> values where the first item is the module name and the second is the package name.   |  none |
 
+**RETURNS**
+
+A product reference `string` value.
+
 
 <a id="#references.is_target_ref"></a>
 
@@ -102,6 +120,11 @@ Returns a boolean indicating whether the reference string is a target reference.
 | <a id="references.is_target_ref-ref_str"></a>ref_str |  A valid reference <code>string</code>.   |  none |
 | <a id="references.is_target_ref-for_pkg"></a>for_pkg |  Optional. A package name as a <code>string</code> value to include in the check.   |  <code>None</code> |
 
+**RETURNS**
+
+A `bool` value indicating whether the reference string is a target
+  reference.
+
 
 <a id="#references.is_product_ref"></a>
 
@@ -120,5 +143,10 @@ Returns a boolean indicating whether the reference string is a product reference
 | :------------- | :------------- | :------------- |
 | <a id="references.is_product_ref-ref_str"></a>ref_str |  A valid reference <code>string</code>.   |  none |
 | <a id="references.is_product_ref-for_pkg"></a>for_pkg |  Optional. A package name as a <code>string</code> value to include in the check.   |  <code>None</code> |
+
+**RETURNS**
+
+A `bool` value indicating whether the reference string is a product
+  reference.
 
 

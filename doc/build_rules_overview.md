@@ -4,7 +4,7 @@
 The rules described below are used to build Swift
 packages and make their outputs available as Bazel targets. Most
 clients will not use these rules directly. They are an implementation
-detail for [the workspace rules](/doc/workspace_rules.md).
+detail for [the workspace rules](/doc/workspace_rules_overview.md).
 
 On this page:
 
@@ -15,6 +15,7 @@ On this page:
   * [spm_swift_binary](#spm_swift_binary)
   * [spm_swift_library](#spm_swift_library)
   * [spm_system_library](#spm_system_library)
+
 
 <a id="#spm_archive"></a>
 

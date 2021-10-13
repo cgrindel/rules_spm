@@ -1,6 +1,7 @@
 <!-- Generated with Stardoc, Do Not Edit! -->
 # `repository_utils` API
 
+
 <a id="#repository_utils.is_macos"></a>
 
 ## repository_utils.is_macos
@@ -17,6 +18,10 @@ Determines if the host is running MacOS.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="repository_utils.is_macos-repository_ctx"></a>repository_ctx |  A <code>repository_ctx</code> instance.   |  none |
+
+**RETURNS**
+
+A `bool` indicating whether the host is running MacOS.
 
 
 <a id="#repository_utils.exec_spm_command"></a>
@@ -42,5 +47,9 @@ If the command returns a non-zero return code, this function will fail.
 | <a id="repository_utils.exec_spm_command-env"></a>env |  A <code>dict</code> of environment variables that will be included in the command execution.   |  <code>{}</code> |
 | <a id="repository_utils.exec_spm_command-working_directory"></a>working_directory |  Working directory for command execution. Can be relative to the repository root or absolute.   |  <code>""</code> |
 | <a id="repository_utils.exec_spm_command-err_msg_tpl"></a>err_msg_tpl |  Optional. A <code>string</code> template which will be formatted with the <code>exec_args</code> and <code>stderr</code> values.   |  <code>None</code> |
+
+**RETURNS**
+
+A `string` representing the stdout of the command execution.
 
 

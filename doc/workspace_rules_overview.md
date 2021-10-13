@@ -11,6 +11,7 @@ On this page:
   * [spm_pkg](#spm_pkg)
   * [spm_rules_dependencies](#spm_rules_dependencies)
 
+
 <a id="#spm_repositories"></a>
 
 ## spm_repositories
@@ -62,6 +63,10 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="spm_pkg-from_version"></a>from_version |  Optional. A <code>string</code> representing a valid "from" SPM version.   |  <code>None</code> |
 | <a id="spm_pkg-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="spm_pkg-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |
+
+**RETURNS**
+
+A JSON `string` representing a Swift package.
 
 
 <a id="#spm_rules_dependencies"></a>
