@@ -30,6 +30,12 @@ def spm_rules_dependencies():
     )
 
     maybe(
+        native.local_repository,
+        name = "cgrindel_rules_bzlformat",
+        path = "/Users/chuck/code/cgrindel/rules_bzlformat",
+    )
+
+    maybe(
         spm_autoconfiguration,
         name = "cgrindel_rules_spm_local_config",
     )
