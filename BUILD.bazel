@@ -1,3 +1,0 @@
-load("@cgrindel_rules_bzlformat//bzlformat:bzlformat", "bzlformat_pkg")
-
-bzlformat_pkg()
