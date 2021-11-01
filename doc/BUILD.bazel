@@ -1,3 +1,4 @@
+load("@cgrindel_rules_bzlformat//bzlformat:bzlformat.bzl", "bzlformat_pkg")
 load(
     "@cgrindel_bazel_doc//bazeldoc:bazeldoc.bzl",
     "doc_for_provs",
@@ -145,3 +146,5 @@ write_header(
 ]
 
 doc_for_provs(doc_provs = _ALL_DOC_PROVIDERS)
+
+bzlformat_pkg(name = "bzlformat")
