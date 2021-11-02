@@ -30,9 +30,11 @@ def spm_rules_dependencies():
     )
 
     maybe(
-        native.local_repository,
+        http_archive,
         name = "cgrindel_rules_bzlformat",
-        path = "/Users/chuck/code/cgrindel/rules_bzlformat",
+        sha256 = "b45b392613092b42c4ee94051be104b990e3c8651dea17410dfd63b98957cd57",
+        strip_prefix = "rules_bzlformat-0.1.0",
+        urls = ["https://github.com/cgrindel/rules_bzlformat/archive/v0.1.0.tar.gz"],
     )
 
     maybe(
