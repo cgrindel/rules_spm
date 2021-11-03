@@ -7,6 +7,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 
+# simple_with_dev_dir
 pushd "${script_dir}"
 
 # Find Xcode 12.4
