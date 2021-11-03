@@ -48,7 +48,8 @@ jobs:
     #     fatal: not a git repository (or any of the parent directories): .git
     #
     # THOUGHTS:
-    # - 
+    # - I think that it might be related to this SPM issue:
+    #   https://github.com/apple/swift-package-manager/commit/f2dd6ce55446859975761be1d1c44e509e5bc309
     #
     # - name: Test Simple Example, Build with Older Xcode
     #   shell: bash
