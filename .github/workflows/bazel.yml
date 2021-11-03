@@ -34,7 +34,6 @@ jobs:
       run: |
         bazelisk build //... 
 
-    TODO: RESTORE ME
     - name: Test Simple Example with Default Xcode
       shell: bash
       run: |
@@ -50,6 +49,11 @@ jobs:
     # THOUGHTS:
     # - I think that it might be related to this SPM issue:
     #   https://github.com/apple/swift-package-manager/commit/f2dd6ce55446859975761be1d1c44e509e5bc309
+    # - Actually, it looks like this is happening because a git operation is trying to happen during a compile. This should not happen.
+    #   Instead, the fetch should have retrieved the repository during the loading phase.
+    # - If the problem is that the version of SPM that fetched the repo is different from the one compiling, which can happen because the fetch
+    #   happens in loading which is a sibling operation to the toolchain resolution, then we need to figure out a way to use the correct version.
+    #   The question is why does this not fail on my dev machine?
     #
     # - name: Test Simple Example, Build with Older Xcode
     #   shell: bash
