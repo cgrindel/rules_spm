@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Ensure that rules_spm will work with an older SPM version.
+
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
