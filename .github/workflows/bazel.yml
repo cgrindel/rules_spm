@@ -55,13 +55,7 @@ jobs:
     - name: Test Simple Example, Default Xcode is Incompatible, Use env attribute to set DEVELOPER_DIR
       shell: bash
       run: |
-        cd examples/simple_with_dev_dir
-        current_xcode=$(xcode-select --print-path)
-        # Switch default Xcode to SPM 5.3.
-        sudo xcode-select --switch /Applications/Xcode_12.4.app
-        # The DEVELOPER_DIR value is specified as an env attribute on spm_repositories.
-        bazelisk test //...
-        sudo xcode-select --switch "${current_xcode}"
+        ./examples/simple_with_dev_dir/do_incompatible_xcode_use_dev_dir_attr_test.sh
 
     - name: Test Simple Example Using Revision
       shell: bash
