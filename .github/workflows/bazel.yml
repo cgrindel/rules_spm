@@ -50,15 +50,7 @@ jobs:
     - name: Test Simple Example, Default Xcode is Incompatible, Use DEVELOPER_DIR
       shell: bash
       run: |
-        cd examples/simple
-        current_xcode=$(xcode-select --print-path)
-        echo "current_xcode: ${current_xcode}"
-        # Switch default Xcode to SPM 5.3.
-        sudo xcode-select --switch /Applications/Xcode_12.4.app
-        # Use DEVELOPER_DIR to specify the current Xcode
-        export DEVELOPER_DIR="${current_xcode}"
-        bazelisk test //...
-        sudo xcode-select --switch "${current_xcode}"
+        ./examples/simple/do_incompatible_xcode_use_dev_dir.sh
 
     - name: Test Simple Example, Default Xcode is Incompatible, Use env attribute to set DEVELOPER_DIR
       shell: bash
