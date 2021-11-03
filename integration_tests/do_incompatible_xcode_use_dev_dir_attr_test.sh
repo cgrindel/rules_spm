@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-# DEBUG BEGIN
-set -x
-# DEBUG END
-
 # Switch the default Xcode to be incompatible, then use DEVELOPER_DIR 
 # attribute on spm_repositories to specify the one that should be used.
 
@@ -30,7 +26,6 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 if [[ ! -z "${BUILD_WORKING_DIRECTORY}"  ]]; then
   workspace_root="${BUILD_WORKING_DIRECTORY}"
 else
-  # workspace_root="${script_dir}/.."
   workspace_root="$(cd "${script_dir}/.." > /dev/null && pwd)"
 fi
 

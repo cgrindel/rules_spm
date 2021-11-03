@@ -1,3 +1,14 @@
+# _SHARED_SCRIPTS=[""]
+
+sh_binary(
+    name = "simple_test",
+    srcs = ["do_bazel_test.sh"],
+    args = [
+        "--example",
+        "simple",
+    ],
+)
+
 sh_binary(
     name = "do_incompatible_xcode_use_dev_dir_attr_test",
     srcs = ["do_incompatible_xcode_use_dev_dir_attr_test.sh"],
