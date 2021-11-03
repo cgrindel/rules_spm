@@ -34,22 +34,23 @@ jobs:
       run: |
         bazelisk build //... 
 
-    # TODO: RESTORE ME
-    # - name: Test Simple Example with Default Xcode
-    #   shell: bash
-    #   run: |
-    #     cd examples/simple
-    #     bazelisk test //...
-
-    - name: Test Simple Example, Build with Older Xcode
+    TODO: RESTORE ME
+    - name: Test Simple Example with Default Xcode
       shell: bash
       run: |
         cd examples/simple
-        # Make sure that we are starting clean; seeing weird failures.
-        bazelisk clean --expunge
-        # Default Xcode has SPM 5.4 or later; build with Xcode that has SPM
-        # less than 5.4.
-        bazelisk test --xcode_version_config=//:host_xcodes //...
+        bazelisk test //...
+
+    # TODO: RESTORE ME
+    # - name: Test Simple Example, Build with Older Xcode
+    #   shell: bash
+    #   run: |
+    #     cd examples/simple
+    #     # Make sure that we are starting clean; seeing weird failures.
+    #     bazelisk clean --expunge
+    #     # Default Xcode has SPM 5.4 or later; build with Xcode that has SPM
+    #     # less than 5.4.
+    #     bazelisk test --xcode_version_config=//:host_xcodes //...
 
     - name: Test Simple Example, Default Xcode is Incompatible, Use DEVELOPER_DIR
       shell: bash
