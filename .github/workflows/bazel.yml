@@ -45,7 +45,7 @@ jobs:
       run: |
         cd examples/simple
         # Make sure that we are starting clean; seeing weird failures.
-        bazelisk clean
+        bazelisk clean --expunge
         # Default Xcode has SPM 5.4 or later; build with Xcode that has SPM
         # less than 5.4.
         bazelisk test --xcode_version_config=//:host_xcodes //...
