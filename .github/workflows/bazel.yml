@@ -34,11 +34,12 @@ jobs:
       run: |
         bazelisk build //... 
 
-    - name: Test Simple Example with Default Xcode
-      shell: bash
-      run: |
-        cd examples/simple
-        bazelisk test //...
+    # TODO: RESTORE ME
+    # - name: Test Simple Example with Default Xcode
+    #   shell: bash
+    #   run: |
+    #     cd examples/simple
+    #     bazelisk test //...
 
     - name: Test Simple Example, Build with Older Xcode
       shell: bash
