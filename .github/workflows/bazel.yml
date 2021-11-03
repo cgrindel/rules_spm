@@ -50,7 +50,7 @@ jobs:
     - name: Test Simple Example, Default Xcode is Incompatible, Use DEVELOPER_DIR
       shell: bash
       run: |
-        ./examples/simple/do_incompatible_xcode_use_dev_dir.sh
+        ./examples/simple/do_incompatible_xcode_use_dev_dir_test.sh
 
     - name: Test Simple Example, Default Xcode is Incompatible, Use env attribute to set DEVELOPER_DIR
       shell: bash
