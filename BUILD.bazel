@@ -12,3 +12,5 @@ updatesrc_update_all(
 )
 
 bzlformat_pkg(name = "bzlformat")
+
+exports_files([".bazelversion"])

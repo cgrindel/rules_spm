@@ -1,0 +1,9 @@
+genrule(
+    name = "current_version",
+    srcs = ["//:.bazelversion"],
+    outs = ["current_version.bzl"],
+    cmd = """\
+current_version="$$(cat $(location //:.bazelversion))"
+echo "CURRENT_VERSION = \\"$${current_version}\\"" > "$@"
+""",
+)
