@@ -40,20 +40,7 @@ jobs:
         cd examples/simple
         bazelisk test //...
 
-    # TODO: RESTORE ME
-    # ERROR:
-    # error: terminated(128): DEVELOPER_DIR=/Applications/Xcode_12.4.app/Contents/Developer __CF_USER_TEXT_ENCODING=0x1F5:0:0 TMPDIR=/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/ _=bazel-out/host/bin/external/build_bazel_rules_swift/tools/worker/worker GIT_SSH_COMMAND=ssh -oBatchMode=yes *** XCODE_VERSION_OVERRIDE=12.4.0.12D4e SDKROOT=/Applications/Xcode_12.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk SHLVL=1 PATH=/private/var/tmp/_bazel_runner/4bd0d8640a6b3aa42285e35d21688dd6/sandbox/darwin-sandbox/204/execroot/simple_example/external/cgrindel_rules_spm_local_config/spm_utilities:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:. GIT_TERMINAL_PROMPT=0 git -C /private/var/tmp/_bazel_runner/4bd0d8640a6b3aa42285e35d21688dd6/sandbox/darwin-sandbox/204/execroot/simple_example/bazel-out/darwin-fastbuild/bin/external/swift_pkgs/spm_build/repositories/swift-log-df1c07b5 remote update -p output:
-    # unable to restore state from /private/var/tmp/_bazel_runner/4bd0d8640a6b3aa42285e35d21688dd6/sandbox/darwin-sandbox/204/execroot/simple_example/bazel-out/darwin-fastbuild/bin/external/swift_pkgs/spm_build/workspace-state.json; missingKey("path")
-    #     fatal: not a git repository (or any of the parent directories): .git
-    #
-    # THOUGHTS:
-    # - I think that it might be related to this SPM issue:
-    #   https://github.com/apple/swift-package-manager/commit/f2dd6ce55446859975761be1d1c44e509e5bc309
-    # - Actually, it looks like this is happening because a git operation is trying to happen during a compile. This should not happen.
-    #   Instead, the fetch should have retrieved the repository during the loading phase.
-    # - If the problem is that the version of SPM that fetched the repo is different from the one compiling, which can happen because the fetch
-    #   happens in loading which is a sibling operation to the toolchain resolution, then we need to figure out a way to use the correct version.
-    #   The question is why does this not fail on my dev machine?
+    # GH088: Enable this test once the CI test failure is addressed.
     #
     # - name: Test Simple Example, Build with Older Xcode
     #   shell: bash
