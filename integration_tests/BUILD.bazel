@@ -26,13 +26,13 @@ sh_binary(
     srcs = ["do_incompatible_xcode_use_dev_dir_attr_test.sh"],
 )
 
-# sh_test(
-#     name = "incompatible_xcode_use_dev_dir_attr_test",
-#     srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
-#     data = [":do_incompatible_xcode_use_dev_dir_attr_test"],
-#     local = True,
-#     deps = ["@bazel_tools//tools/bash/runfiles"],
-# )
+sh_test(
+    name = "incompatible_xcode_use_dev_dir_attr_test",
+    srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
+    data = [":do_incompatible_xcode_use_dev_dir_attr_test"],
+    local = True,
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
 
 # sh_test(
 #     name = "incompatible_xcode_use_dev_dir_attr_test",
@@ -40,3 +40,8 @@ sh_binary(
 #     # data = ["//:simple_example"],
 #     local = True,
 # )
+
+# OPTIONS
+# 1. Use local attr
+# 2. Tar the example workspace and include it as data.
+# 3. Make the example workspace a dep of the parent and reference the files that way
