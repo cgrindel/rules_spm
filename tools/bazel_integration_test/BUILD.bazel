@@ -6,11 +6,19 @@ genrule(
     outs = ["current_bazel_version.bzl"],
     cmd = """\
 current_version="$$(cat $(location //:.bazelversion))"
-echo "CURRENT_VERSION = \\"$${current_version}\\"" > "$@"
+echo "CURRENT_BAZEL_VERSION = \\"$${current_version}\\"" > "$@"
 """,
 )
 
 bzl_library(
     name = "current_bazel_version",
     srcs = [":current_bazel_version_bzl"],
+)
+
+bzl_library(
+    name = "bazel_versions",
+    srcs = ["bazel_versions.bzl"],
+    deps = [
+        ":current_bazel_version",
+    ],
 )
