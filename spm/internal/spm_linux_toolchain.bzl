@@ -8,11 +8,12 @@ load(":swift_toolchains.bzl", "swift_toolchains")
 def _is_spm_at_least_version(ctx, desired_version):
     current_version = apple_common.dotted_version(ctx.attr.spm_version)
     if not current_version:
-        fail("""\
+        fail(
+            """\
 Could not parse the version number for Swift package manager. {version}\
 """.format(
-        version = ctx.attr.spm_version,
-    ),
+                version = ctx.attr.spm_version,
+            ),
         )
     desired_version_value = apple_common.dotted_version(desired_version)
     return current_version >= desired_version_value
@@ -24,7 +25,7 @@ def _create_build_tool_config(ctx, target_triple, spm_configuration):
         "--worker",
         swift_worker,
         "--swift",
-        swift_exec
+        swift_exec,
     ]
 
     for spm_utility in ctx.files._spm_utilities:

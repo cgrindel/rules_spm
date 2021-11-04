@@ -5,8 +5,7 @@ load(":spm_versions.bzl", "spm_versions")
 
 _SPM_UTILITIES_DIRNAME = "spm_utilities"
 _XCODE_SPM_UTILITIES = ["git"]
-_LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES 
-
+_LINUX_SPM_UTILITIES = _XCODE_SPM_UTILITIES
 
 def _prepare_spm_utilities(repository_ctx, utilities):
     # Create symlinks for all of the utilities that need to be available for
@@ -71,13 +70,13 @@ spm_linux_toolchain(
     spm_version = "{spm_version}",
 )
 """.format(
-        arch = arch,
-        os = os,
-        vendor = vendor,
-        abi = abi,
-        swift_exec = swift_exec,
-        spm_version = spm_version,
-    ),
+            arch = arch,
+            os = os,
+            vendor = vendor,
+            abi = abi,
+            swift_exec = swift_exec,
+            spm_version = spm_version,
+        ),
     )
 
 # MARK: - Xcode Toolchain

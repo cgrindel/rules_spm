@@ -16,6 +16,14 @@ load(
 
 spm_rules_dependencies()
 
+load("@cgrindel_rules_bzlformat//bzlformat:deps.bzl", "bzlformat_rules_dependencies")
+
+bzlformat_rules_dependencies()
+
+load("@cgrindel_bazel_starlib//:deps.bzl", "bazel_starlib_dependencies")
+
+bazel_starlib_dependencies()
+
 load(
     "@build_bazel_rules_swift//swift:repositories.bzl",
     "swift_rules_dependencies",
