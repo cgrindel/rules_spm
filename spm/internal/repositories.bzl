@@ -41,3 +41,12 @@ def spm_rules_dependencies():
         spm_autoconfiguration,
         name = "cgrindel_rules_spm_local_config",
     )
+
+    maybe(
+        http_archive,
+        name = "build_bazel_integration_testing",
+        url = "https://github.com/bazelbuild/bazel-integration-testing/archive/3a6136e8f6287b04043217d94d97ba17edcb7feb.zip",
+        type = "zip",
+        strip_prefix = "bazel-integration-testing-3a6136e8f6287b04043217d94d97ba17edcb7feb",
+        sha256 = "bfc43a94d42e08c89a26a4711ea396a0a594bd5d55394d76aae861b299628dca",
+    )
