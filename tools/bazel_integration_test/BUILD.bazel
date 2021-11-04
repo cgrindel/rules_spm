@@ -1,9 +1,16 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
 genrule(
-    name = "current_version",
+    name = "current_version_bzl",
     srcs = ["//:.bazelversion"],
     outs = ["current_version.bzl"],
     cmd = """\
 current_version="$$(cat $(location //:.bazelversion))"
 echo "CURRENT_VERSION = \\"$${current_version}\\"" > "$@"
 """,
+)
+
+bzl_library(
+    name = "current_version",
+    srcs = [":current_version_bzl"],
 )
