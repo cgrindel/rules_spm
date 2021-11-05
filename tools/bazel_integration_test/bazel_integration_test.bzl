@@ -1,7 +1,6 @@
 load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:select_file.bzl", "select_file")
-# load("@cgrindel_bazel_starlib//rules:filter_srcs.bzl", "filter_srcs")
 
 "Define a rule for running bazel test under Bazel"
 
@@ -72,12 +71,6 @@ def bazel_integration_test(
         srcs = workspace_files_name,
         subpath = paths.join(workspace_path, "WORKSPACE"),
     )
-    # filter_srcs(
-    #     name = bazel_wksp_file_name,
-    #     srcs = [workspace_files_name],
-    #     filename_ends_with = "WORKSPACE",
-    #     expected_count = 1,
-    # )
 
     # Prepare the Bazel commands
     bazel_cmd_args = []
