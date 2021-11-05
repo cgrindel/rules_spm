@@ -50,3 +50,11 @@ def spm_rules_dependencies():
         strip_prefix = "bazel-integration-testing-3a6136e8f6287b04043217d94d97ba17edcb7feb",
         sha256 = "bfc43a94d42e08c89a26a4711ea396a0a594bd5d55394d76aae861b299628dca",
     )
+
+    maybe(
+        http_archive,
+        name = "cgrindel_bazel_starlib",
+        sha256 = "1f5c6b13243a1a6f79742a8a0e883f7f4591f7890a388f87c8323f4242dc718d",
+        strip_prefix = "bazel-starlib-0.1.0",
+        urls = ["https://github.com/cgrindel/bazel-starlib/archive/v0.1.0.tar.gz"],
+    )

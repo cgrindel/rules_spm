@@ -19,3 +19,9 @@ bzl_library(
     srcs = ["bazel_versions.bzl"],
     visibility = ["//:__subpackages__"],
 )
+
+filegroup(
+    name = "shared_bazelrc_files",
+    srcs = glob(["*.bazelrc"]),
+    visibility = ["//:__subpackages__"],
+)

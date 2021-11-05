@@ -1,6 +1,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
 load("@bazel_skylib//rules:select_file.bzl", "select_file")
+load("@cgrindel_bazel_starlib//rules:filter_srcs.bzl", "filter_srcs")
 
 "Define a rule for running bazel test under Bazel"
 
@@ -31,22 +32,43 @@ def bazel_integration_test(
         **kwargs: additional attributes like timeout and visibility
     """
 
+    # if workspace_files == None:
+    #     workspace_files = name + "_sources"
+    #     if name.endswith("_example"):
+    #         workspace_path = name[:-len("_example")]
+    #     else:
+    #         workspace_path = name
+    #     native.filegroup(
+    #         name = workspace_files,
+    #         srcs = glob_workspace_files(workspace_path),
+    #     )
     if workspace_files == None:
-        workspace_files = name + "_sources"
         if name.endswith("_example"):
             workspace_path = name[:-len("_example")]
         else:
             workspace_path = name
-        native.filegroup(
-            name = workspace_files,
-            srcs = glob_workspace_files(workspace_path),
-        )
+        workspace_files = glob_workspace_files(workspace_path)
+
+    workspace_files_name = name + "_sources"
+    native.filegroup(
+        name = workspace_files_name,
+        srcs = workspace_files,
+    )
 
     bazel_bin_name = name + "_bazel_binary"
     select_file(
         name = bazel_bin_name,
         srcs = BAZEL_BINARY,
         subpath = "bazel",
+    )
+
+    bazel_wksp_file_name = name + "_bazel_workspace_file"
+    filter_srcs(
+        name = bazel_wksp_file_name,
+        # srcs = workspace_files,
+        srcs = [workspace_files_name],
+        filename_ends_with = "WORKSPACE",
+        expected_count = 1,
     )
 
     bazel_cmd_args = []
@@ -64,13 +86,15 @@ def bazel_integration_test(
         args = [
             "--bazel",
             "$(location :%s)" % (bazel_bin_name),
-        ] + bazel_cmd_args + [
-            "$(locations :%s)" % (workspace_files),
-        ],
+            "--workspace",
+            "$(location :%s)" % (bazel_wksp_file_name),
+        ] + bazel_cmd_args,
         data = [
             BAZEL_BINARY,
             bazel_bin_name,
-            workspace_files,
+            workspace_files_name,
+            # workspace_files,
+            bazel_wksp_file_name,
         ],
         **kwargs
     )

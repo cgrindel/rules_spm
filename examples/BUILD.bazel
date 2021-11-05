@@ -1,4 +1,8 @@
-load("//tools/bazel_integration_test:bazel_integration_test.bzl", "bazel_integration_test")
+load(
+    "//tools/bazel_integration_test:bazel_integration_test.bzl",
+    "bazel_integration_test",
+    "glob_workspace_files",
+)
 
 bazel_integration_test(
     name = "simple",
@@ -6,5 +10,8 @@ bazel_integration_test(
     bazel_cmds = [
         "info",
         "test //...",
+    ],
+    workspace_files = glob_workspace_files("simple") + [
+        "//:shared_bazelrc_files",
     ],
 )

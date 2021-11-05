@@ -2,44 +2,56 @@
 
 set -euo pipefail
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
+exit_on_error() {
+  local err_msg="${1:-}"
+  [[ -n "${err_msg}" ]] || err_msg="Unspecified error occurred."
+  echo >&2 "${err_msg}"
+  exit 1
+}
 
-# DEBUG BEGIN
-echo >&2 "*** CHUCK:  MADE IT" 
-# DEBUG END
+normalize_path() {
+  local path="${1}"
+  echo "$(cd "${path}" > /dev/null && pwd)"
+}
 
 bazel_cmds=()
-
-# DEBUG BEGIN
-workspace_files=()
-# DEBUG END
 
 # Process args
 while (("$#")); do
   case "${1}" in
     "--bazel")
-      bazel="${2}"
+      bazel_rel_path="${2}"
       shift 2
       ;;
     "--bazel_cmd")
       bazel_cmds+=("${2}")
       shift 2
       ;;
+    "--workspace")
+      workspace_path="${2}"
+      shift 2
+      ;;
     *)
-      workspace_files+=("${1}")
       shift 1
       ;;
   esac
 done
 
+[[ -n "${bazel_rel_path:-}" ]] || exit_on_error "Must specify the location of the Bazel binary."
+[[ -n "${workspace_path:-}" ]] || exit_on_error "Must specify the location of the workspace file."
+
+starting_path="$(pwd)"
+starting_path="${starting_path%%*( )}"
+bazel="${starting_path}/${bazel_rel_path}"
+
 # DEBUG BEGIN
 echo >&2 "*** CHUCK:  bazel: ${bazel}" 
-echo >&2 "*** CHUCK:  workspace_files" 
-for wfile in "${workspace_files[@]}" ; do
-  echo >&2 "  wfile: ${wfile}" 
-done
+echo >&2 "*** CHUCK:  workspace_path: ${workspace_path}" 
 tree
 # DEBUG END
+
+workspace_dir="$(dirname "${workspace_path}")"
+cd "${workspace_dir}"
 
 for cmd in "${bazel_cmds[@]}" ; do
   # Break the cmd string into parts
@@ -50,8 +62,3 @@ for cmd in "${bazel_cmds[@]}" ; do
   # DEBUG END
   "${bazel}" "${cmd_parts[@]}"
 done
-
-
-# DEBUG BEGIN
-exit 1
-# DEBUG END
