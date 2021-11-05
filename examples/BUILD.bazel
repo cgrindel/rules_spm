@@ -13,23 +13,33 @@ BAZEL_TEST_EXAMPLES = [
     "ios_sim",
 ]
 
+INTEGRATION_TESTS = [example + "_test" for example in BAZEL_TEST_EXAMPLES]
+
+INTEGRATION_TEST_TAGS = [
+    "exclusive",
+    "manual",
+]
+
+test_suite(
+    name = "integration_tests",
+    tags = INTEGRATION_TEST_TAGS,
+    tests = [test for test in INTEGRATION_TESTS],
+)
+
 # TODO: Make the name passed to the macro be the test name.
 # TODO: Add test_suite which references all of the integration tests.
 # TODO: Get the tests that have special setup working.
 
 [
     bazel_integration_test(
-        name = example,
+        name = example + "_test",
         bazel_cmds = [
             "info",
             "test //...",
         ],
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
-        tags = [
-            "exclusive",
-            "manual",
-        ],
+        tags = INTEGRATION_TEST_TAGS,
         workspace_files = glob_workspace_files(example) + [
             # The example workspaces reference the *.bazelrc files in the parent.
             "//:shared_bazelrc_files",
@@ -42,17 +52,3 @@ BAZEL_TEST_EXAMPLES = [
     )
     for example in BAZEL_TEST_EXAMPLES
 ]
-
-# bazel_integration_test(
-#     name = "simple",
-#     bazel_cmds = [
-#         "info",
-#         "test //...",
-#     ],
-#     # The test needs to be local due to the operations that rules_spm performs.
-#     local = True,
-#     workspace_files = glob_workspace_files("simple") + [
-#         "//:shared_bazelrc_files",
-#         "//:local_repository_files",
-#     ],
-# )

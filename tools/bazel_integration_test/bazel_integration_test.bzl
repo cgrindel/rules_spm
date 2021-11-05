@@ -41,8 +41,8 @@ def bazel_integration_test(
     """
 
     if workspace_path == None:
-        if name.endswith("_example"):
-            workspace_path = name[:-len("_example")]
+        if name.endswith("_test"):
+            workspace_path = name[:-len("_test")]
         else:
             workspace_path = name
 
@@ -77,13 +77,8 @@ def bazel_integration_test(
     for cmd in bazel_cmds:
         bazel_cmd_args.extend(["--bazel_cmd", "\"" + cmd + "\""])
 
-    # Declare the test target that will execute the integration test
-    if not name.endswith("_test"):
-        test_name = name + "_test"
-    else:
-        test_name = name
     native.sh_test(
-        name = test_name,
+        name = name,
         srcs = ["//tools/bazel_integration_test:integration_test_runner.sh"],
         args = [
             "--bazel",

@@ -41,3 +41,14 @@ filegroup(
     ],
     visibility = ["//:__subpackages__"],
 )
+
+test_suite(
+    name = "integration_tests",
+    tags = [
+        "exclusive",
+        "manual",
+    ],
+    tests = [
+        "//examples:integration_tests",
+    ],
+)
