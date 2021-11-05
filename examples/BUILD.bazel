@@ -13,6 +13,9 @@ BAZEL_TEST_EXAMPLES = [
     "ios_sim",
 ]
 
+# TODO: Make the name passed to the macro be the test name.
+# TODO: Add test_suite which references all of the integration tests.
+
 [
     bazel_integration_test(
         name = example,
@@ -22,9 +25,15 @@ BAZEL_TEST_EXAMPLES = [
         ],
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
-        tags = ["exclusive"],
+        tags = [
+            "exclusive",
+            "manual",
+        ],
         workspace_files = glob_workspace_files(example) + [
+            # The example workspaces reference the *.bazelrc files in the parent.
             "//:shared_bazelrc_files",
+            # The example workspaces use local_repository to reference the parent.
+            # This target collects all of the files needed to run.
             "//:local_repository_files",
         ],
     )
