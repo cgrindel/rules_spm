@@ -44,21 +44,12 @@ starting_path="$(pwd)"
 starting_path="${starting_path%%*( )}"
 bazel="${starting_path}/${bazel_rel_path}"
 
-# DEBUG BEGIN
-echo >&2 "*** CHUCK:  bazel: ${bazel}" 
-echo >&2 "*** CHUCK:  workspace_path: ${workspace_path}" 
-tree
-# DEBUG END
-
 workspace_dir="$(dirname "${workspace_path}")"
 cd "${workspace_dir}"
 
 for cmd in "${bazel_cmds[@]}" ; do
   # Break the cmd string into parts
   read -a cmd_parts <<< ${cmd}
-  # DEBUG BEGIN
-  echo >&2 "*** CHUCK:  cmd: ${cmd}" 
-  echo >&2 "*** CHUCK:  #cmd_parts[@]: ${#cmd_parts[@]}" 
-  # DEBUG END
+  # Execute the Bazel command
   "${bazel}" "${cmd_parts[@]}"
 done
