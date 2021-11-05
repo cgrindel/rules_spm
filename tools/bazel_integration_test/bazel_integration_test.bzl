@@ -1,5 +1,5 @@
-load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:select_file.bzl", "select_file")
 load("@cgrindel_bazel_starlib//rules:filter_srcs.bzl", "filter_srcs")
 
@@ -22,6 +22,7 @@ def bazel_integration_test(
         name,
         workspace_files = None,
         bazel_cmds = DEFAULT_BAZEL_CMDS,
+        timeout = "long",
         **kwargs):
     """Wrapper macro to set default srcs and run a py_test with config
     Args:
@@ -29,19 +30,12 @@ def bazel_integration_test(
         workspace_files: Optional. A `list` of files for the child workspace.
         bazel_cmds: A `list` of `string` values that represent arguments for
                     Bazel.
+        timeout: A valid Bazel timeout value.
+                 https://docs.bazel.build/versions/main/test-encyclopedia.html#role-of-the-test-runner
         **kwargs: additional attributes like timeout and visibility
     """
 
-    # if workspace_files == None:
-    #     workspace_files = name + "_sources"
-    #     if name.endswith("_example"):
-    #         workspace_path = name[:-len("_example")]
-    #     else:
-    #         workspace_path = name
-    #     native.filegroup(
-    #         name = workspace_files,
-    #         srcs = glob_workspace_files(workspace_path),
-    #     )
+    # Collect the workspace files into a filegroup
     if workspace_files == None:
         if name.endswith("_example"):
             workspace_path = name[:-len("_example")]
@@ -55,6 +49,7 @@ def bazel_integration_test(
         srcs = workspace_files,
     )
 
+    # Find the Bazel binary
     bazel_bin_name = name + "_bazel_binary"
     select_file(
         name = bazel_bin_name,
@@ -62,24 +57,25 @@ def bazel_integration_test(
         subpath = "bazel",
     )
 
+    # Find the Bazel WORKSPACE file for the target workspace
     bazel_wksp_file_name = name + "_bazel_workspace_file"
     filter_srcs(
         name = bazel_wksp_file_name,
-        # srcs = workspace_files,
         srcs = [workspace_files_name],
         filename_ends_with = "WORKSPACE",
         expected_count = 1,
     )
 
+    # Prepare the Bazel commands
     bazel_cmd_args = []
     for cmd in bazel_cmds:
         bazel_cmd_args.extend(["--bazel_cmd", "\"" + cmd + "\""])
 
+    # Declare the test target that will execute the integration test
     if not name.endswith("_test"):
         test_name = name + "_test"
     else:
         test_name = name
-
     native.sh_test(
         name = test_name,
         srcs = ["//tools/bazel_integration_test:integration_test_runner.sh"],
@@ -93,8 +89,8 @@ def bazel_integration_test(
             BAZEL_BINARY,
             bazel_bin_name,
             workspace_files_name,
-            # workspace_files,
             bazel_wksp_file_name,
         ],
+        timeout = timeout,
         **kwargs
     )

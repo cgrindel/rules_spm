@@ -6,7 +6,6 @@ load(
 
 bazel_integration_test(
     name = "simple",
-    timeout = "long",
     bazel_cmds = [
         "info",
         "test //...",
