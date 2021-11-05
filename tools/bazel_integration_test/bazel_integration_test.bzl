@@ -53,13 +53,20 @@ def bazel_integration_test(
     for cmd in bazel_cmds:
         bazel_cmd_args.extend(["--bazel_cmd", "\"" + cmd + "\""])
 
+    if not name.endswith("_test"):
+        test_name = name + "_test"
+    else:
+        test_name = name
+
     native.sh_test(
-        name = name,
+        name = test_name,
         srcs = ["//tools/bazel_integration_test:integration_test_runner.sh"],
         args = [
             "--bazel",
             "$(location :%s)" % (bazel_bin_name),
-        ] + bazel_cmd_args,
+        ] + bazel_cmd_args + [
+            "$(locations :%s)" % (workspace_files),
+        ],
         data = [
             BAZEL_BINARY,
             bazel_bin_name,

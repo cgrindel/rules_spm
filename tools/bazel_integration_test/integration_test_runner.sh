@@ -10,18 +10,23 @@ echo >&2 "*** CHUCK:  MADE IT"
 
 bazel_cmds=()
 
+# DEBUG BEGIN
+workspace_files=()
+# DEBUG END
+
 # Process args
 while (("$#")); do
   case "${1}" in
     "--bazel")
       bazel="${2}"
-      shift 1
+      shift 2
       ;;
     "--bazel_cmd")
       bazel_cmds+=("${2}")
-      shift 1
+      shift 2
       ;;
     *)
+      workspace_files+=("${1}")
       shift 1
       ;;
   esac
@@ -29,6 +34,10 @@ done
 
 # DEBUG BEGIN
 echo >&2 "*** CHUCK:  bazel: ${bazel}" 
+echo >&2 "*** CHUCK:  workspace_files" 
+for wfile in "${workspace_files[@]}" ; do
+  echo >&2 "  wfile: ${wfile}" 
+done
 tree
 # DEBUG END
 
