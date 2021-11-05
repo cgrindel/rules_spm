@@ -26,8 +26,7 @@ test_suite(
     tests = [test for test in INTEGRATION_TESTS],
 )
 
-# TODO: Make the name passed to the macro be the test name.
-# TODO: Add test_suite which references all of the integration tests.
+# TODO: Fix broken tests.
 # TODO: Get the tests that have special setup working.
 
 [
