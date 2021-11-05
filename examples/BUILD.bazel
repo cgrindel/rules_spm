@@ -10,6 +10,8 @@ bazel_integration_test(
         "info",
         "test //...",
     ],
+    # The test needs to be local due to the operations that rules_spm performs.
+    local = True,
     workspace_files = glob_workspace_files("simple") + [
         "//:shared_bazelrc_files",
         "//:local_repository_files",
