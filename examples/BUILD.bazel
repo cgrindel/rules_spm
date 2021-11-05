@@ -15,6 +15,7 @@ BAZEL_TEST_EXAMPLES = [
 
 # TODO: Make the name passed to the macro be the test name.
 # TODO: Add test_suite which references all of the integration tests.
+# TODO: Get the tests that have special setup working.
 
 [
     bazel_integration_test(
@@ -32,8 +33,10 @@ BAZEL_TEST_EXAMPLES = [
         workspace_files = glob_workspace_files(example) + [
             # The example workspaces reference the *.bazelrc files in the parent.
             "//:shared_bazelrc_files",
-            # The example workspaces use local_repository to reference the parent.
-            # This target collects all of the files needed to run.
+
+            # The example workspaces use local_repository to reference this
+            # workspace.  This target collects all of the files needed for
+            # rules_spm to work in the child workspaces.
             "//:local_repository_files",
         ],
     )
