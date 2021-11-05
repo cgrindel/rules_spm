@@ -1,5 +1,6 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
+load("@bazel_skylib//rules:select_file.bzl", "select_file")
 
 "Define a rule for running bazel test under Bazel"
 
@@ -92,11 +93,26 @@ def bazel_integration_test(name, workspace_files = None, **kwargs):
             srcs = glob_workspace_files(workspace_path),
         )
 
+    bazel_bin_name = name + "_bazel_binary"
+    select_file(
+        name = bazel_bin_name,
+        srcs = BAZEL_BINARY,
+        subpath = "bazel",
+    )
+
     native.sh_test(
         name = name,
         srcs = ["//tools/bazel_integration_test:integration_test_runner.sh"],
+        args = [
+            "--bazel",
+            "$(location :%s)" % (bazel_bin_name),
+            # "$(location :" + bazel_bin_name + ")",
+            # "$(location " + BAZEL_BINARY + ")",
+        ],
         data = [
-            BAZEL_BINARY,
+            # BAZEL_BINARY,
+            # ":bazel_binary",
+            bazel_bin_name,
             workspace_files,
         ],
         **kwargs
