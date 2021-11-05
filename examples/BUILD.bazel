@@ -12,5 +12,6 @@ bazel_integration_test(
     ],
     workspace_files = glob_workspace_files("simple") + [
         "//:shared_bazelrc_files",
+        "//:local_repository_files",
     ],
 )

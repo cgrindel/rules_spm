@@ -25,3 +25,15 @@ filegroup(
     srcs = glob(["*.bazelrc"]),
     visibility = ["//:__subpackages__"],
 )
+
+filegroup(
+    name = "local_repository_files",
+    srcs = [
+        "BUILD.bazel",
+        "WORKSPACE",
+        "//spm:all_files",
+        "//spm/internal:all_files",
+        "//spm/internal/modulemap_parser:all_files",
+    ],
+    visibility = ["//:__subpackages__"],
+)

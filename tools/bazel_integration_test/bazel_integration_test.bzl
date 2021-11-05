@@ -1,7 +1,7 @@
 load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:select_file.bzl", "select_file")
-load("@cgrindel_bazel_starlib//rules:filter_srcs.bzl", "filter_srcs")
+# load("@cgrindel_bazel_starlib//rules:filter_srcs.bzl", "filter_srcs")
 
 "Define a rule for running bazel test under Bazel"
 
@@ -20,6 +20,7 @@ DEFAULT_BAZEL_CMDS = ["info", "test //..."]
 
 def bazel_integration_test(
         name,
+        workspace_path = None,
         workspace_files = None,
         bazel_cmds = DEFAULT_BAZEL_CMDS,
         timeout = "long",
@@ -27,7 +28,12 @@ def bazel_integration_test(
     """Wrapper macro to set default srcs and run a py_test with config
     Args:
         name: name of the resulting py_test
+        workspace_path: Optional. A `string` specifying the path to the child
+                        workspace. If not specified, then it is derived from
+                        the name.
         workspace_files: Optional. A `list` of files for the child workspace.
+                         If not specified, then it is derived from the
+                         `workspace_path`.
         bazel_cmds: A `list` of `string` values that represent arguments for
                     Bazel.
         timeout: A valid Bazel timeout value.
@@ -35,12 +41,14 @@ def bazel_integration_test(
         **kwargs: additional attributes like timeout and visibility
     """
 
-    # Collect the workspace files into a filegroup
-    if workspace_files == None:
+    if workspace_path == None:
         if name.endswith("_example"):
             workspace_path = name[:-len("_example")]
         else:
             workspace_path = name
+
+    # Collect the workspace files into a filegroup
+    if workspace_files == None:
         workspace_files = glob_workspace_files(workspace_path)
 
     workspace_files_name = name + "_sources"
@@ -59,12 +67,17 @@ def bazel_integration_test(
 
     # Find the Bazel WORKSPACE file for the target workspace
     bazel_wksp_file_name = name + "_bazel_workspace_file"
-    filter_srcs(
+    select_file(
         name = bazel_wksp_file_name,
-        srcs = [workspace_files_name],
-        filename_ends_with = "WORKSPACE",
-        expected_count = 1,
+        srcs = workspace_files_name,
+        subpath = paths.join(workspace_path, "WORKSPACE"),
     )
+    # filter_srcs(
+    #     name = bazel_wksp_file_name,
+    #     srcs = [workspace_files_name],
+    #     filename_ends_with = "WORKSPACE",
+    #     expected_count = 1,
+    # )
 
     # Prepare the Bazel commands
     bazel_cmd_args = []
