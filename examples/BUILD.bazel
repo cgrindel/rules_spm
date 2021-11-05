@@ -3,4 +3,8 @@ load("//tools/bazel_integration_test:bazel_integration_test.bzl", "bazel_integra
 bazel_integration_test(
     name = "simple",
     timeout = "long",
+    bazel_cmds = [
+        "info",
+        "test //...",
+    ],
 )
