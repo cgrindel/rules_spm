@@ -9,3 +9,8 @@ bzl_library(
         "//:bazel_versions",
     ],
 )
+
+sh_binary(
+    name = "update_deleted_packages",
+    srcs = ["update_deleted_packages.sh"],
+)

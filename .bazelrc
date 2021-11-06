@@ -6,7 +6,6 @@
 build --deleted_packages=examples/ios_sim/Sources/Foo,examples/ios_sim/Tests/FooTests,examples/local_package,examples/simple,examples/simple_revision,examples/simple_with_binary,examples/simple_with_dev_dir,examples/vapor/Sources/App/Migrations,examples/vapor/Sources/App/Configuration,examples/vapor/Sources/App/Models,examples/vapor/Sources/Run,examples/vapor/Tests/AppTests
 query --deleted_packages=examples/ios_sim/Sources/Foo,examples/ios_sim/Tests/FooTests,examples/local_package,examples/simple,examples/simple_revision,examples/simple_with_binary,examples/simple_with_dev_dir,examples/vapor/Sources/App/Migrations,examples/vapor/Sources/App/Configuration,examples/vapor/Sources/App/Models,examples/vapor/Sources/Run,examples/vapor/Tests/AppTests
 
-
 # Import Shared settings
 import %workspace%/shared.bazelrc
 
