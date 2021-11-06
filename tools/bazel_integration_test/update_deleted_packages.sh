@@ -10,8 +10,8 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 
-if [[ -z "${BUILD_WORKING_DIRECTORY}"  ]]; then
-  workspace_root="$(cd "${script_dir}/.." > /dev/null && pwd)"
+if [[ -z "${BUILD_WORKING_DIRECTORY:-}"  ]]; then
+  workspace_root="$(cd "${script_dir}/../.." > /dev/null && pwd)"
 else
   workspace_root="${BUILD_WORKING_DIRECTORY}"
 fi
