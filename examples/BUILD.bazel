@@ -8,9 +8,11 @@ BAZEL_TEST_EXAMPLES = [
     "simple",
     "simple_revision",
     "simple_with_binary",
-    "local_package",
-    "vapor",
     "ios_sim",
+    # GH090: Disabled tests due to error:
+    # "Library not loaded: /usr/lib/swift/libswift_Concurrency.dylib"
+    # "local_package",
+    # "vapor",
 ]
 
 INTEGRATION_TESTS = [example + "_test" for example in BAZEL_TEST_EXAMPLES]
@@ -28,6 +30,7 @@ test_suite(
 
 # TODO: Fix broken tests.
 # TODO: Get the tests that have special setup working.
+#  - Consider moving the bazel_cmds to be a function that provides a runner?
 
 [
     bazel_integration_test(
