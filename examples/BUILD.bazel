@@ -15,6 +15,11 @@ BAZEL_TEST_EXAMPLES = [
     # "vapor",
 ]
 
+# Integration tests that require root access
+SUDO_INTEGRATION_TESTS = [
+    "incompatible_xcode_use_dev_dir_attr_test",
+]
+
 INTEGRATION_TESTS = [example + "_test" for example in BAZEL_TEST_EXAMPLES]
 
 INTEGRATION_TEST_TAGS = [
@@ -32,10 +37,27 @@ ADDITIONAL_WORKSPACE_FILES = [
     "//:local_repository_files",
 ]
 
+# Integration tests that do not require sudo
 test_suite(
-    name = "integration_tests",
+    name = "no_sudo_integration_tests",
     tags = INTEGRATION_TEST_TAGS,
     tests = [test for test in INTEGRATION_TESTS],
+)
+
+# Integration tests that do not require sudo
+test_suite(
+    name = "sudo_integration_tests",
+    tags = INTEGRATION_TEST_TAGS,
+    tests = [test for test in INTEGRATION_TESTS],
+)
+
+test_suite(
+    name = "all_integration_tests",
+    tags = INTEGRATION_TEST_TAGS,
+    tests = [
+        ":no_sudo_integration_tests",
+        ":sudo_integration_tests",
+    ],
 )
 
 # TODO: Get the tests that have special setup working.
@@ -62,7 +84,8 @@ bazel_integration_test(
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
-    test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
+    # test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
+    test_runner_srcs = ["do_incompatible_xcode_use_dev_dir_attr_test.sh"],
     workspace_files = glob_workspace_files("simple_with_dev_dir") +
                       ADDITIONAL_WORKSPACE_FILES,
     workspace_path = "simple_with_dev_dir",
