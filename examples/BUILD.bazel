@@ -100,6 +100,7 @@ bazel_integration_test(
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
+    target_compatible_with = ["@platforms//os:macos"],
     test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
     workspace_files = glob_workspace_files("simple_with_dev_dir") +
                       ADDITIONAL_WORKSPACE_FILES,
@@ -111,6 +112,7 @@ bazel_integration_test(
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
+    target_compatible_with = ["@platforms//os:macos"],
     test_runner_srcs = ["incompatible_xcode_use_dev_dir_env_test.sh"],
     workspace_files = glob_workspace_files("simple") +
                       ADDITIONAL_WORKSPACE_FILES,

@@ -86,27 +86,7 @@ jobs:
       run: |
         bazelisk build //... 
 
-    - name: Test Simple Example
+    - name: Execute Integration Tests
       shell: bash
       run: |
-        cd examples/simple
-        bazelisk test //...
-
-    - name: Test Simple Example Using Revision
-      shell: bash
-      run: |
-        cd examples/simple_revision
-        bazelisk test //...
-
-    - name: Test Local Package Example
-      shell: bash
-      run: |
-        cd examples/local_package
-        bazelisk test //...
-
-
-    - name: Test Vapor Example
-      shell: bash
-      run: |
-        cd examples/vapor
-        bazelisk test //...
+        bazelisk test //examples:all_integration_tests
