@@ -15,6 +15,8 @@ def glob_workspace_files(workspace_path):
         exclude = [paths.join(workspace_path, "bazel-*", "**")],
     )
 
+DEFAULT_TEST_RUNNER = "//tools/bazel_integration_test:integration_test_runner.sh"
+
 DEFAULT_BAZEL_CMDS = ["info", "test //..."]
 
 def bazel_integration_test(
@@ -22,9 +24,11 @@ def bazel_integration_test(
         workspace_path = None,
         workspace_files = None,
         bazel_cmds = DEFAULT_BAZEL_CMDS,
+        test_runner_srcs = [DEFAULT_TEST_RUNNER],
         timeout = "long",
         **kwargs):
-    """Wrapper macro to set default srcs and run a py_test with config
+    """Macro that defines a set of targets for a single Bazel integration test.
+
     Args:
         name: name of the resulting py_test
         workspace_path: Optional. A `string` specifying the path to the child
@@ -35,6 +39,8 @@ def bazel_integration_test(
                          `workspace_path`.
         bazel_cmds: A `list` of `string` values that represent arguments for
                     Bazel.
+        test_runner_srcs: A `list` of shell scripts that are used as the test
+                          runner.
         timeout: A valid Bazel timeout value.
                  https://docs.bazel.build/versions/main/test-encyclopedia.html#role-of-the-test-runner
         **kwargs: additional attributes like timeout and visibility
@@ -79,7 +85,7 @@ def bazel_integration_test(
 
     native.sh_test(
         name = name,
-        srcs = ["//tools/bazel_integration_test:integration_test_runner.sh"],
+        srcs = test_runner_srcs,
         args = [
             "--bazel",
             "$(location :%s)" % (bazel_bin_name),

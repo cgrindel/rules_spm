@@ -22,13 +22,22 @@ INTEGRATION_TEST_TAGS = [
     "manual",
 ]
 
+ADDITIONAL_WORKSPACE_FILES = [
+    # The example workspaces reference the *.bazelrc files in the parent.
+    "//:shared_bazelrc_files",
+
+    # The example workspaces use local_repository to reference this
+    # workspace.  This target collects all of the files needed for
+    # rules_spm to work in the child workspaces.
+    "//:local_repository_files",
+]
+
 test_suite(
     name = "integration_tests",
     tags = INTEGRATION_TEST_TAGS,
     tests = [test for test in INTEGRATION_TESTS],
 )
 
-# TODO: Fix broken tests.
 # TODO: Get the tests that have special setup working.
 #  - Consider moving the bazel_cmds to be a function that provides a runner?
 
@@ -42,15 +51,19 @@ test_suite(
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
-        workspace_files = glob_workspace_files(example) + [
-            # The example workspaces reference the *.bazelrc files in the parent.
-            "//:shared_bazelrc_files",
-
-            # The example workspaces use local_repository to reference this
-            # workspace.  This target collects all of the files needed for
-            # rules_spm to work in the child workspaces.
-            "//:local_repository_files",
-        ],
+        workspace_files = glob_workspace_files(example) +
+                          ADDITIONAL_WORKSPACE_FILES,
     )
     for example in BAZEL_TEST_EXAMPLES
 ]
+
+bazel_integration_test(
+    name = "incompatible_xcode_use_dev_dir_attr_test",
+    # The test needs to be local due to the operations that rules_spm performs.
+    local = True,
+    tags = INTEGRATION_TEST_TAGS,
+    test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
+    workspace_files = glob_workspace_files("simple_with_dev_dir") +
+                      ADDITIONAL_WORKSPACE_FILES,
+    workspace_path = "simple_with_dev_dir",
+)
