@@ -86,6 +86,9 @@ trap cleanup EXIT
 # sudo xcode-select --switch "${xcode_12_4_location}"
 xcode-select --switch "${xcode_12_4_location}"
 
+# Use DEVELOPER_DIR to specify the current Xcode
+export DEVELOPER_DIR="${current_xcode}"
+
 # END Custom test logic 
 
 # Execute the Bazel commands

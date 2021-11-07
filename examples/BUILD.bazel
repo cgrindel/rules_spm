@@ -26,6 +26,7 @@ NO_SUDO_INTEGRATION_TESTS = [
 # Integration tests that require root access
 SUDO_INTEGRATION_TESTS = [
     "incompatible_xcode_use_dev_dir_attr_test",
+    "incompatible_xcode_use_dev_dir_env_test",
 ]
 
 INTEGRATION_TEST_TAGS = [
@@ -75,10 +76,10 @@ test_suite(
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
-        target_compatible_with = select({
-            "@platforms//os:windows": ["@platforms//:incompatible"],
-            "//conditions:default": [],
-        }),
+        # target_compatible_with = select({
+        #     "@platforms//os:windows": ["@platforms//:incompatible"],
+        #     "//conditions:default": [],
+        # }),
         workspace_files = glob_workspace_files(example) +
                           ADDITIONAL_WORKSPACE_FILES,
     )
@@ -91,9 +92,7 @@ test_suite(
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
-        target_compatible_with = [
-            "@platforms//os:macos",
-        ],
+        target_compatible_with = ["@platforms//os:macos"],
         workspace_files = glob_workspace_files(example) +
                           ADDITIONAL_WORKSPACE_FILES,
     )
@@ -105,12 +104,27 @@ bazel_integration_test(
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
-    target_compatible_with = select({
-        "@platforms//os:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
+    # target_compatible_with = select({
+    #     "@platforms//os:windows": ["@platforms//:incompatible"],
+    #     "//conditions:default": [],
+    # }),
     test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
     workspace_files = glob_workspace_files("simple_with_dev_dir") +
                       ADDITIONAL_WORKSPACE_FILES,
     workspace_path = "simple_with_dev_dir",
+)
+
+bazel_integration_test(
+    name = "incompatible_xcode_use_dev_dir_env_test",
+    # The test needs to be local due to the operations that rules_spm performs.
+    local = True,
+    tags = INTEGRATION_TEST_TAGS,
+    # target_compatible_with = select({
+    #     "@platforms//os:windows": ["@platforms//:incompatible"],
+    #     "//conditions:default": [],
+    # }),
+    test_runner_srcs = ["incompatible_xcode_use_dev_dir_env_test.sh"],
+    workspace_files = glob_workspace_files("simple") +
+                      ADDITIONAL_WORKSPACE_FILES,
+    workspace_path = "simple",
 )
