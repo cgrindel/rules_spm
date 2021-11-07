@@ -69,9 +69,6 @@ test_suite(
     visibility = ["//:__subpackages__"],
 )
 
-# TODO: Get the tests that have special setup working.
-#  - Consider moving the bazel_cmds to be a function that provides a runner?
-
 [
     bazel_integration_test(
         name = example + "_test",

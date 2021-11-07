@@ -29,7 +29,6 @@ normalize_path() {
 
 starting_dir="$(pwd)"
 bazel_cmds=()
-clean=false
 
 # Process args
 while (("$#")); do
@@ -46,10 +45,6 @@ while (("$#")); do
       workspace_path="${2}"
       shift 2
       ;;
-    # "--clean")
-    #   clean=true
-    #   shift 1
-    #   ;;
     *)
       shift 1
       ;;
@@ -93,9 +88,6 @@ trap cleanup EXIT
 xcode-select --switch "${xcode_12_4_location}"
 
 # END Custom test logic 
-
-# # Perform a clean first, if specified.
-# [[ ${clean} = true ]] && "${bazel}" clean
 
 # Execute the Bazel commands
 for cmd in "${bazel_cmds[@]}" ; do
