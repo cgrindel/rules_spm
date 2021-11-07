@@ -4,23 +4,29 @@ load(
     "glob_workspace_files",
 )
 
-BAZEL_TEST_EXAMPLES = [
+ALL_OS_TEST_EXAMPLES = [
     "simple",
     "simple_revision",
     "simple_with_binary",
-    "ios_sim",
     # GH090: Disabled tests due to error:
     # "Library not loaded: /usr/lib/swift/libswift_Concurrency.dylib"
     # "local_package",
     # "vapor",
 ]
 
+MACOS_TEST_EXAMPLES = [
+    "ios_sim",
+]
+
+NO_SUDO_INTEGRATION_TESTS = [
+    example + "_test"
+    for example in ALL_OS_TEST_EXAMPLES + MACOS_TEST_EXAMPLES
+]
+
 # Integration tests that require root access
 SUDO_INTEGRATION_TESTS = [
     "incompatible_xcode_use_dev_dir_attr_test",
 ]
-
-INTEGRATION_TESTS = [example + "_test" for example in BAZEL_TEST_EXAMPLES]
 
 INTEGRATION_TEST_TAGS = [
     "exclusive",
@@ -41,14 +47,16 @@ ADDITIONAL_WORKSPACE_FILES = [
 test_suite(
     name = "no_sudo_integration_tests",
     tags = INTEGRATION_TEST_TAGS,
-    tests = [test for test in INTEGRATION_TESTS],
+    tests = [test for test in NO_SUDO_INTEGRATION_TESTS],
+    visibility = ["//:__subpackages__"],
 )
 
 # Integration tests that do not require sudo
 test_suite(
     name = "sudo_integration_tests",
     tags = INTEGRATION_TEST_TAGS,
-    tests = [test for test in INTEGRATION_TESTS],
+    tests = [test for test in SUDO_INTEGRATION_TESTS],
+    visibility = ["//:__subpackages__"],
 )
 
 test_suite(
@@ -58,6 +66,7 @@ test_suite(
         ":no_sudo_integration_tests",
         ":sudo_integration_tests",
     ],
+    visibility = ["//:__subpackages__"],
 )
 
 # TODO: Get the tests that have special setup working.
@@ -66,17 +75,32 @@ test_suite(
 [
     bazel_integration_test(
         name = example + "_test",
-        bazel_cmds = [
-            "info",
-            "test //...",
-        ],
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
+        target_compatible_with = select({
+            "@platforms//os:windows": ["@platforms//:incompatible"],
+            "//conditions:default": [],
+        }),
         workspace_files = glob_workspace_files(example) +
                           ADDITIONAL_WORKSPACE_FILES,
     )
-    for example in BAZEL_TEST_EXAMPLES
+    for example in ALL_OS_TEST_EXAMPLES
+]
+
+[
+    bazel_integration_test(
+        name = example + "_test",
+        # The test needs to be local due to the operations that rules_spm performs.
+        local = True,
+        tags = INTEGRATION_TEST_TAGS,
+        target_compatible_with = [
+            "@platforms//os:macos",
+        ],
+        workspace_files = glob_workspace_files(example) +
+                          ADDITIONAL_WORKSPACE_FILES,
+    )
+    for example in MACOS_TEST_EXAMPLES
 ]
 
 bazel_integration_test(
@@ -84,8 +108,11 @@ bazel_integration_test(
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
-    # test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
-    test_runner_srcs = ["do_incompatible_xcode_use_dev_dir_attr_test.sh"],
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
+    test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
     workspace_files = glob_workspace_files("simple_with_dev_dir") +
                       ADDITIONAL_WORKSPACE_FILES,
     workspace_path = "simple_with_dev_dir",

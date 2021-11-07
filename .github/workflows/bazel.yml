@@ -34,58 +34,10 @@ jobs:
       run: |
         bazelisk build //... 
 
-    - name: Test Simple Example with Default Xcode
+    - name: Execute Integration Tests
       shell: bash
       run: |
-        cd examples/simple
-        bazelisk test //...
-
-    # GH088: Enable this test once the CI test failure is addressed.
-    #
-    # - name: Test Simple Example, Build with Older Xcode
-    #   shell: bash
-    #   run: |
-    #     ./examples/simple/do_older_xcode_test.sh
-
-    - name: Test Simple Example, Default Xcode is Incompatible, Use DEVELOPER_DIR
-      shell: bash
-      run: |
-        ./examples/simple/do_incompatible_xcode_use_dev_dir_test.sh
-
-    - name: Test Simple Example, Default Xcode is Incompatible, Use env attribute to set DEVELOPER_DIR
-      shell: bash
-      run: |
-        ./examples/simple_with_dev_dir/do_incompatible_xcode_use_dev_dir_attr_test.sh
-
-    - name: Test Simple Example Using Revision
-      shell: bash
-      run: |
-        cd examples/simple_revision
-        bazelisk test //...
-
-    - name: Test Simple with External Binary Example
-      shell: bash
-      run: |
-        cd examples/simple_with_binary
-        bazelisk test //...
-
-    - name: Test Local Package Example
-      shell: bash
-      run: |
-        cd examples/local_package
-        bazelisk test //...
-
-    - name: Test Vapor Example
-      shell: bash
-      run: |
-        cd examples/vapor
-        bazelisk test //...
-
-    - name: Test iOS Simulator Example
-      shell: bash
-      run: |
-        cd examples/ios_sim
-        bazelisk test //...
+        bazelisk test //examples:all_integration_tests
 
   ubuntu_build:
 
