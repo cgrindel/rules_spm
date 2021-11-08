@@ -76,13 +76,13 @@ current_xcode=$(xcode-select --print-path)
 
 # Set trap for cleanup
 cleanup() {
-  xcode-select --switch "${current_xcode}"
+  sudo xcode-select --switch "${current_xcode}"
   cd "${starting_dir}"
 }
 trap cleanup EXIT
 
 # Switch default Xcode 12.4 which has SPM 5.3.
-xcode-select --switch "${xcode_12_4_location}"
+sudo xcode-select --switch "${xcode_12_4_location}"
 
 # END Custom test logic 
 
