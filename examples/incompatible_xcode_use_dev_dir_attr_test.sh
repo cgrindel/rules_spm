@@ -69,21 +69,19 @@ xcode_12_4_locations=("/Applications/Xcode-12.4.app"  "/Applications/Xcode_12.4.
 for path in "${xcode_12_4_locations[@]}" ; do
   [[ -d "${path}" ]] && xcode_12_4_location="${path}" && break
 done
-[[ -z "${xcode_12_4_location:-}" ]]  && echo >&2 "Could not find Xcode 12.4." && exit 1
+[[ -z "${xcode_12_4_location:-}" ]]  && exit_on_error "Could not find Xcode 12.4."
 
 # Identify the current default Xcode 
 current_xcode=$(xcode-select --print-path)
 
 # Set trap for cleanup
 cleanup() {
-  # sudo xcode-select --switch "${current_xcode}"
   xcode-select --switch "${current_xcode}"
   cd "${starting_dir}"
 }
 trap cleanup EXIT
 
 # Switch default Xcode 12.4 which has SPM 5.3.
-# sudo xcode-select --switch "${xcode_12_4_location}"
 xcode-select --switch "${xcode_12_4_location}"
 
 # END Custom test logic 
