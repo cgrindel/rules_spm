@@ -4,6 +4,8 @@ load(
     "glob_workspace_files",
 )
 
+# MARK: - Integration Test Names and Groupings
+
 ALL_OS_TEST_EXAMPLES = [
     "simple",
     "simple_revision",
@@ -30,6 +32,8 @@ SUDO_INTEGRATION_TESTS = [
     "incompatible_xcode_use_dev_dir_env_test",
 ]
 
+# MARK: - Shared Attribute Values
+
 INTEGRATION_TEST_TAGS = [
     "exclusive",
     "manual",
@@ -45,6 +49,8 @@ ADDITIONAL_WORKSPACE_FILES = [
     "//:local_repository_files",
 ]
 
+# MARK: - Test Suites
+
 # Integration tests that do not require sudo
 test_suite(
     name = "no_sudo_integration_tests",
@@ -53,7 +59,9 @@ test_suite(
     visibility = ["//:__subpackages__"],
 )
 
-# Integration tests that do not require sudo
+# Integration tests that require sudo.
+# Execute with sudo:
+#   sudo bazel test //examples:sudo_integration_tests
 test_suite(
     name = "sudo_integration_tests",
     tags = INTEGRATION_TEST_TAGS,
@@ -70,6 +78,8 @@ test_suite(
     ],
     visibility = ["//:__subpackages__"],
 )
+
+# MARK: - Integration Tests
 
 [
     bazel_integration_test(
