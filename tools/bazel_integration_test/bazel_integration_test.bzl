@@ -99,5 +99,10 @@ def bazel_integration_test(
             bazel_wksp_file_name,
         ],
         timeout = timeout,
+        env = select({
+            # Linux platforms require that CC be set to clang.
+            "@platforms//os:linux": {"CC": "clang"},
+            "//conditions:default": {},
+        }),
         **kwargs
     )

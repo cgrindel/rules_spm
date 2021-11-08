@@ -44,11 +44,6 @@ ADDITIONAL_WORKSPACE_FILES = [
     "//:local_repository_files",
 ]
 
-ENV_VARS = select({
-    "@platforms//os:linux": {"CC": "clang"},
-    "//conditions:default": {},
-})
-
 # Integration tests that do not require sudo
 test_suite(
     name = "no_sudo_integration_tests",
@@ -78,7 +73,6 @@ test_suite(
 [
     bazel_integration_test(
         name = example + "_test",
-        env = ENV_VARS,
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
@@ -91,7 +85,6 @@ test_suite(
 [
     bazel_integration_test(
         name = example + "_test",
-        env = ENV_VARS,
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
@@ -104,7 +97,6 @@ test_suite(
 
 bazel_integration_test(
     name = "incompatible_xcode_use_dev_dir_attr_test",
-    env = ENV_VARS,
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
@@ -117,7 +109,6 @@ bazel_integration_test(
 
 bazel_integration_test(
     name = "incompatible_xcode_use_dev_dir_env_test",
-    env = ENV_VARS,
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
