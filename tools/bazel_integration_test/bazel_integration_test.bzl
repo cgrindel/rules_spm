@@ -2,22 +2,33 @@ load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:select_file.bzl", "select_file")
 
-"Define a rule for running bazel test under Bazel"
+"""Macros that define a test target that is suitable for executing Bazel in \
+an integration test.
+"""
 
 # This was lovingly inspired by
 # https://github.com/bazelbuild/rules_python/blob/main/tools/bazel_integration_test/bazel_integration_test.bzl.
 
 BAZEL_BINARY = "@build_bazel_bazel_%s//:bazel_binary" % SUPPORTED_BAZEL_VERSIONS[0].replace(".", "_")
 
+DEFAULT_TEST_RUNNER = "//tools/bazel_integration_test:integration_test_runner.sh"
+
+DEFAULT_BAZEL_CMDS = ["info", "test //..."]
+
 def glob_workspace_files(workspace_path):
+    """Recursively globs the Bazel workspace files at the specified path.
+
+    Args:
+        workspace_path: A `string` representing the path to glob.
+
+    Returns:
+        A `list` of the files under the specified path ignoring certain Bazel
+        artifacts (e.g. `bazel-*`).
+    """
     return native.glob(
         [paths.join(workspace_path, "**", "*")],
         exclude = [paths.join(workspace_path, "bazel-*", "**")],
     )
-
-DEFAULT_TEST_RUNNER = "//tools/bazel_integration_test:integration_test_runner.sh"
-
-DEFAULT_BAZEL_CMDS = ["info", "test //..."]
 
 def bazel_integration_test(
         name,
