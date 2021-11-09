@@ -83,7 +83,7 @@ askpass=/usr/local/bin/askpass.sh
 ```
 
 Open a new terminal window or source your `~/.zshrc` in an existing terminal window to set the
-environment variable. To test that the utility, execute the following:
+environment variable. To test that the utility is called by `sudo`, execute the following:
 
 ```sh
 $ sudo -A echo "Hello"
