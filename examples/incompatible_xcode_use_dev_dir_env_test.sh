@@ -29,7 +29,7 @@ normalize_path() {
 
 do_sudo() {
   local sudo_flags=()
-  [[ ! -z "${SUDO_ASKPASS}" ]] && sudo_flags+=(--askpass)
+  [[ ! -z "${SUDO_ASKPASS:-}" ]] && sudo_flags+=(--askpass)
   sudo "${sudo_flags[@]:-}" "${@:-}"
 }
 
