@@ -27,6 +27,12 @@ normalize_path() {
   echo "${dirname}/${basename}"
 }
 
+do_sudo() {
+  local sudo_flags=()
+  [[ ! -z "${SUDO_ASKPASS}" ]] && sudo_flags+=(--askpass)
+  sudo "${sudo_flags[@]:-}" "${@:-}"
+}
+
 starting_dir="$(pwd)"
 bazel_cmds=()
 
@@ -76,13 +82,13 @@ current_xcode=$(xcode-select --print-path)
 
 # Set trap for cleanup
 cleanup() {
-  sudo xcode-select --switch "${current_xcode}"
+  do_sudo xcode-select --switch "${current_xcode}"
   cd "${starting_dir}"
 }
 trap cleanup EXIT
 
 # Switch default Xcode 12.4 which has SPM 5.3.
-sudo xcode-select --switch "${xcode_12_4_location}"
+do_sudo xcode-select --switch "${xcode_12_4_location}"
 
 # END Custom test logic 
 

@@ -110,10 +110,11 @@ def bazel_integration_test(
             bazel_wksp_file_name,
         ],
         timeout = timeout,
-        env = select({
-            # Linux platforms require that CC be set to clang.
-            "@platforms//os:linux": {"CC": "clang"},
-            "//conditions:default": {},
-        }),
+        # env = select({
+        #     # Linux platforms require that CC be set to clang.
+        #     "@platforms//os:linux": {"CC": "clang"},
+        #     "//conditions:default": {},
+        # }),
+        env_inherit = ["CC", "SUDO_ASKPASS"],
         **kwargs
     )
