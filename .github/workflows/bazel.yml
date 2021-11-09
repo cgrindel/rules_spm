@@ -34,18 +34,10 @@ jobs:
       run: |
         bazelisk build //... 
 
-    # TODO: FIX ME
-
-    # - name: Execute Integration Tests
-    #   shell: bash
-    #   run: |
-    #     bazelisk test //examples:all_integration_tests
-
-    - name: DEBUG
+    - name: Execute Integration Tests
       shell: bash
       run: |
-        bazelisk test //examples:sudo_integration_tests
-
+        bazelisk test //examples:all_integration_tests
 
   ubuntu_build:
 
