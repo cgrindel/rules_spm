@@ -55,3 +55,10 @@ gazelle_dependencies()
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
 protobuf_deps()
+
+# MARK: - Integration Testing
+
+load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
+load("@build_bazel_integration_testing//tools:repositories.bzl", "bazel_binaries")
+
+bazel_binaries(versions = SUPPORTED_BAZEL_VERSIONS)

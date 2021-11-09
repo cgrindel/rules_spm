@@ -1,0 +1,130 @@
+load(
+    "//tools/bazel_integration_test:bazel_integration_test.bzl",
+    "bazel_integration_test",
+    "glob_workspace_files",
+)
+
+# MARK: - Integration Test Names and Groupings
+
+ALL_OS_TEST_EXAMPLES = [
+    "simple",
+    "simple_revision",
+    "simple_with_binary",
+    # GH090: Disabled tests due to error:
+    # "Library not loaded: /usr/lib/swift/libswift_Concurrency.dylib"
+    #
+    # "local_package",
+    # "vapor",
+]
+
+MACOS_TEST_EXAMPLES = [
+    "ios_sim",
+]
+
+NO_SUDO_INTEGRATION_TESTS = [
+    example + "_test"
+    for example in ALL_OS_TEST_EXAMPLES + MACOS_TEST_EXAMPLES
+]
+
+# Integration tests that require root access
+SUDO_INTEGRATION_TESTS = [
+    "incompatible_xcode_use_dev_dir_attr_test",
+    "incompatible_xcode_use_dev_dir_env_test",
+]
+
+# MARK: - Shared Attribute Values
+
+INTEGRATION_TEST_TAGS = [
+    "exclusive",
+    "manual",
+]
+
+ADDITIONAL_WORKSPACE_FILES = [
+    # The example workspaces reference the *.bazelrc files in the parent.
+    "//:shared_bazelrc_files",
+
+    # The example workspaces use local_repository to reference this
+    # workspace.  This target collects all of the files needed for
+    # rules_spm to work in the child workspaces.
+    "//:local_repository_files",
+]
+
+# MARK: - Test Suites
+
+# Integration tests that do not require sudo
+test_suite(
+    name = "no_sudo_integration_tests",
+    tags = INTEGRATION_TEST_TAGS,
+    tests = [test for test in NO_SUDO_INTEGRATION_TESTS],
+    visibility = ["//:__subpackages__"],
+)
+
+# Integration tests that require sudo.
+# See /examples/README.md for more details.
+test_suite(
+    name = "sudo_integration_tests",
+    tags = INTEGRATION_TEST_TAGS,
+    tests = [test for test in SUDO_INTEGRATION_TESTS],
+    visibility = ["//:__subpackages__"],
+)
+
+test_suite(
+    name = "all_integration_tests",
+    tags = INTEGRATION_TEST_TAGS,
+    tests = [
+        ":no_sudo_integration_tests",
+        ":sudo_integration_tests",
+    ],
+    visibility = ["//:__subpackages__"],
+)
+
+# MARK: - Integration Tests
+
+[
+    bazel_integration_test(
+        name = example + "_test",
+        # The test needs to be local due to the operations that rules_spm performs.
+        local = True,
+        tags = INTEGRATION_TEST_TAGS,
+        workspace_files = glob_workspace_files(example) +
+                          ADDITIONAL_WORKSPACE_FILES,
+    )
+    for example in ALL_OS_TEST_EXAMPLES
+]
+
+[
+    bazel_integration_test(
+        name = example + "_test",
+        # The test needs to be local due to the operations that rules_spm performs.
+        local = True,
+        tags = INTEGRATION_TEST_TAGS,
+        target_compatible_with = ["@platforms//os:macos"],
+        workspace_files = glob_workspace_files(example) +
+                          ADDITIONAL_WORKSPACE_FILES,
+    )
+    for example in MACOS_TEST_EXAMPLES
+]
+
+bazel_integration_test(
+    name = "incompatible_xcode_use_dev_dir_attr_test",
+    # The test needs to be local due to the operations that rules_spm performs.
+    local = True,
+    tags = INTEGRATION_TEST_TAGS,
+    target_compatible_with = ["@platforms//os:macos"],
+    test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
+    workspace_files = glob_workspace_files("simple_with_dev_dir") +
+                      ADDITIONAL_WORKSPACE_FILES,
+    workspace_path = "simple_with_dev_dir",
+)
+
+bazel_integration_test(
+    name = "incompatible_xcode_use_dev_dir_env_test",
+    # The test needs to be local due to the operations that rules_spm performs.
+    local = True,
+    tags = INTEGRATION_TEST_TAGS,
+    target_compatible_with = ["@platforms//os:macos"],
+    test_runner_srcs = ["incompatible_xcode_use_dev_dir_env_test.sh"],
+    workspace_files = glob_workspace_files("simple") +
+                      ADDITIONAL_WORKSPACE_FILES,
+    workspace_path = "simple",
+)
