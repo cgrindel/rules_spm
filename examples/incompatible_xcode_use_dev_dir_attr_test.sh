@@ -33,7 +33,7 @@ do_sudo() {
   # DEBUG BEGIN
   set -x
   # DEBUG END
-  sudo "${sudo_flags[@]:-}" "${@:-}"
+  sudo ${sudo_flags[@]:-} "${@:-}"
 }
 
 starting_dir="$(pwd)"
