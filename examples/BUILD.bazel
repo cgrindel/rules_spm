@@ -60,8 +60,7 @@ test_suite(
 )
 
 # Integration tests that require sudo.
-# Execute with sudo:
-#   sudo bazel test //examples:sudo_integration_tests
+# See /examples/README.md for more details.
 test_suite(
     name = "sudo_integration_tests",
     tags = INTEGRATION_TEST_TAGS,
