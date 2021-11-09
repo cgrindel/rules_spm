@@ -39,16 +39,6 @@ jobs:
       run: |
         bazelisk test //examples:all_integration_tests
 
-    # - name: Execute Integration Tests without sudo
-    #   shell: bash
-    #   run: |
-    #     bazelisk test //examples:no_sudo_integration_tests
-
-    # - name: Execute Integration Tests with sudo
-    #   shell: bash
-    #   run: |
-    #     bazelisk test //examples:sudo_integration_tests
-
   ubuntu_build:
 
     runs-on: ubuntu-20.04
@@ -100,13 +90,3 @@ jobs:
       shell: bash
       run: |
         bazelisk test //examples:all_integration_tests
-
-    # - name: Execute Integration Tests without sudo
-    #   shell: bash
-    #   run: |
-    #     bazelisk test //examples:no_sudo_integration_tests
-
-    # - name: Execute Integration Tests with sudo
-    #   shell: bash
-    #   run: |
-    #     bazelisk test //examples:sudo_integration_tests
