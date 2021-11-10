@@ -73,12 +73,12 @@ execute `bazel test //...` on the `rules_spm` repository, permission errors will
 
 To execute these tests, you have two choices:
 
-1. Configure `NOPASSWD` for the user. This will allow `sudo` to be executed without a password. It
+1. Configure `NOPASSWD` for the user. This will allow `sudo` to execute without a password. It
    can be convenient, but it can also be risky.
 2. Set up a utility that sends along the password for the `sudo` user using the `SUDO_ASKPASS`
    environment variable. The integration tests are configured to pass along `SUDO_ASKPASS` from your
    environment to the integration test. If the environment variable is detected the `sudo` command 
-   is configured to execute the utility referenced by the `SUDO_ASKPASS` environment variable. 
+   will execute the utility referenced by the `SUDO_ASKPASS` environment variable. 
 
 #### Set Up Askpass Utility for macOS
 
