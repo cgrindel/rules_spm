@@ -12,6 +12,11 @@ DEFAULT_TEST_RUNNER = "//tools/bazel_integration_test:integration_test_runner.sh
 
 DEFAULT_BAZEL_CMDS = ["info", "test //..."]
 
+DEFAULT_INTEGRATION_TEST_TAGS = [
+    "exclusive",
+    "manual",
+]
+
 def glob_workspace_files(workspace_path):
     """Recursively globs the Bazel workspace files at the specified path.
 
@@ -36,7 +41,7 @@ def semantic_version_to_name(version):
     Returns:
         A `string` that is suitable for use in a label or filename.
     """
-    return version.replace(".", "_")
+    return version.replace(".", "_").replace("-", "_")
 
 def bazel_binary_label(version):
     """Returns a label for the specified Bazel version as provided by https://github.com/bazelbuild/bazel-integration-testing.
@@ -58,6 +63,7 @@ def bazel_integration_test(
         workspace_files = None,
         bazel_cmds = DEFAULT_BAZEL_CMDS,
         test_runner_srcs = [DEFAULT_TEST_RUNNER],
+        tags = DEFAULT_INTEGRATION_TEST_TAGS,
         timeout = "long",
         **kwargs):
     """Macro that defines a set of targets for a single Bazel integration test.
@@ -147,6 +153,7 @@ def bazel_integration_test(
             "//conditions:default": {},
         }),
         env_inherit = ["SUDO_ASKPASS"],
+        tags = tags,
         **kwargs
     )
 
