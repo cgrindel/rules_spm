@@ -7,6 +7,19 @@ and consume Swift packages with [rules_swift](https://github.com/bazelbuild/rule
 rules in this repository build the external Swift packages with [Swift Package
 Manager](https://swift.org/package-manager/), then make the outputs available to Bazel rules.
 
+## Table of Contents
+
+* [Reference Documentation](#reference-documentation)
+* [Prerequisites](#prerequisites)
+  * [Mac OS](#mac-os)
+  * [Linux](#linux)
+    * [Option \#1: Create a symlink to the linker in the clang directory\.](#option-1-create-a-symlink-to-the-linker-in-the-clang-directory)
+    * [Option \#2:](#option-2)
+* [Quickstart](#quickstart)
+  * [1\. Configure your workspace to use rules\_spm](#1-configure-your-workspace-to-use-rules_spm)
+  * [2\. Add external Swift packages as dependencies to your workspace](#2-add-external-swift-packages-as-dependencies-to-your-workspace)
+  * [3\. Use the module(s) defined in the Swift packages](#3-use-the-modules-defined-in-the-swift-packages)
+
 
 ## Reference Documentation
 
