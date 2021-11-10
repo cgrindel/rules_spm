@@ -159,8 +159,8 @@ def bazel_integration_test(
 
 def bazel_integration_tests(
         name,
+        workspace_path,
         bazel_versions = [],
-        workspace_path = None,
         workspace_files = None,
         bazel_cmds = DEFAULT_BAZEL_CMDS,
         test_runner_srcs = [DEFAULT_TEST_RUNNER],
@@ -170,12 +170,12 @@ def bazel_integration_tests(
 
     Args:
         name: name of the resulting py_test
+        workspace_path: A `string` specifying the path to the child
+                        workspace. If not specified, then it is derived from
+                        the name.
         bazel_versions: A `list` of `string` string values representing the
                         semantic versions of Bazel to use for the integration
                         tests.
-        workspace_path: Optional. A `string` specifying the path to the child
-                        workspace. If not specified, then it is derived from
-                        the name.
         workspace_files: Optional. A `list` of files for the child workspace.
                          If not specified, then it is derived from the
                          `workspace_path`.
