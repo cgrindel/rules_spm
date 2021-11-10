@@ -1,23 +1,49 @@
 # Examples and Integration Tests for `rules_spm`
 
+* [Examples](#examples)
+* [Integration Tests](#integration-tests)
+  * [Specify Individual Tests](#specify-individual-tests)
+  * [Execute One of the Predefined Test Suites](#execute-one-of-the-predefined-test-suites)
+  * [Integration Tests That Require Root Access](#integration-tests-that-require-root-access)
+    * [Set Up Askpass Utility for macOS](#set-up-askpass-utility-for-macos)
+
 ## Examples
 
-_GH092: Add list of examples with short descriptions._
+- [Simple](/examples/simple): Demonstrates how to declare a Swift package as a dependency and use it
+  in a `swift_binary` target.
+- [Simple (Revision/Commit)](/examples/simple_revision): Same as `Simple`, except the Swift package
+  version is specified as a commit hash instead of a [semantic version](https://semver.org/).
+- [Simple + Swift Package Binary](/examples/simple_with_binary): Same as `Simple`. In addition, it
+  uses a binary provided by a Swift package (e.g. `SwiftLint`, `SwiftFormat`). This example also
+  demonstrates that `rules_spm` can build complex Swift packages.
+- [Simple using DEVELOPER_DIR](/examples/simple_with_dev_dir): Same as `Simple`, except that the
+  `spm_repositories` declaration is configured to use a different version of Xcode from the default
+  version.
+- [Local Package](/examples/local_package): Demonstrates a dependency on a local Swift package
+  (i.e., Swift package referenced by a local path). This example also demonstrates that common
+  second-order dependencies are resolved properly (i.e., project has a dependency on A and B, A also
+  has a dependency on B).
+- [iOS Simulator](/examples/ios_sim): Demonstrates that `rules_spm` can build for multiple
+  platforms.
+- [Vapor](/examples/vapor): Demonstrates a dependency on [Vapor](https://github.com/vapor/vapor), a
+  popular web framework for Swift. This examples also demonstrates that `rules_spm` can handle custom
+  module maps in dependent Swift packages.
 
 ## Integration Tests
 
 The integration tests for the `rules_spm` repository execute against the example workspaces. Due to
 their size and, in some cases, environment changes, the integration tests are declared with the
 `manual` tag. This means that they will not be selected when `bazel test //...` is executed. To run
-the integration tests, you need to either execute an individual test or a predefined test suite.
+the integration tests, you need to specify the individual tests on the command-line or use a
+predefined test suite.
 
-### Execute a Single Test
+### Specify Individual Tests
 
-To execute a single integration test, specify the target on the Bazel command line.
+To execute individual integration tests, specify the targets on the Bazel command line.
 
 ```sh
 # Execute the default integration test for the simple workspace
-$ bazel test //examples:simple_test
+$ bazel test //examples:simple_test //examples:simple_revision_test
 ```
 
 ### Execute One of the Predefined Test Suites
@@ -47,12 +73,12 @@ execute `bazel test //...` on the `rules_spm` repository, permission errors will
 
 To execute these tests, you have two choices:
 
-1. Configure `NOPASSWD` for the user. This will allow `sudo` to be executed without a password. It
+1. Configure `NOPASSWD` for the user. This will allow `sudo` to execute without a password. It
    can be convenient, but it can also be risky.
 2. Set up a utility that sends along the password for the `sudo` user using the `SUDO_ASKPASS`
    environment variable. The integration tests are configured to pass along `SUDO_ASKPASS` from your
    environment to the integration test. If the environment variable is detected the `sudo` command 
-   is configured to execute the utility referenced by the `SUDO_ASKPASS` environment variable. 
+   will execute the utility referenced by the `SUDO_ASKPASS` environment variable. 
 
 #### Set Up Askpass Utility for macOS
 
