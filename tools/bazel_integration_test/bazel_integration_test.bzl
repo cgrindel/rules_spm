@@ -55,6 +55,21 @@ def bazel_binary_label(version):
     """
     return "@build_bazel_bazel_%s//:bazel_binary" % semantic_version_to_name(version)
 
+def bazel_integration_test_name(name, version):
+    """Generates a test name from the provided base name and the Bazel version.
+
+    Args:
+        name: The base name as a `string`.
+        version: The Bazel semantic version as a `string`.
+
+    Returns:
+        A `string` that is suitable as an integration test name.
+    """
+    return "{name}_bazel_{version}".format(
+        name = name,
+        version = semantic_version_to_name(version),
+    )
+
 def bazel_integration_test(
         name,
         bazel_binary = None,
@@ -190,12 +205,8 @@ def bazel_integration_tests(
     if bazel_versions == []:
         fail("One or more Bazel versions must be specified.")
     for bazel_version in bazel_versions:
-        test_name = "{name}_bazel_{version}".format(
-            name = name,
-            version = semantic_version_to_name(bazel_version),
-        )
         bazel_integration_test(
-            test_name,
+            name = bazel_integration_test_name(name, bazel_version),
             bazel_version = bazel_version,
             workspace_path = workspace_path,
             workspace_files = workspace_files,
