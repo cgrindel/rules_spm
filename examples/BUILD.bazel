@@ -3,6 +3,7 @@ load(
     "bazel_integration_test",
     "bazel_integration_tests",
     "glob_workspace_files",
+    "semantic_version_to_name",
 )
 load("//:bazel_versions.bzl", "CURRENT_BAZEL_VERSION", "OTHER_BAZEL_VERSIONS")
 
@@ -27,7 +28,8 @@ NO_SUDO_INTEGRATION_TESTS = [
     example + "_test"
     for example in ALL_OS_TEST_EXAMPLES + MACOS_TEST_EXAMPLES
 ] + [
-    # "simple_test_bazel_5_0_0_pre_20211006_1",
+    "simple_test_bazel_%s" % semantic_version_to_name(version)
+    for version in OTHER_BAZEL_VERSIONS
 ]
 
 # Integration tests that require root access
