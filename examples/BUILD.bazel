@@ -3,6 +3,7 @@ load(
     "bazel_integration_test",
     "glob_workspace_files",
 )
+load("//:bazel_versions.bzl", "CURRENT_BAZEL_VERSION", "SUPPORTED_BAZEL_VERSIONS")
 
 # MARK: - Integration Test Names and Groupings
 
@@ -83,6 +84,7 @@ test_suite(
 [
     bazel_integration_test(
         name = example + "_test",
+        bazel_version = CURRENT_BAZEL_VERSION,
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
@@ -95,6 +97,7 @@ test_suite(
 [
     bazel_integration_test(
         name = example + "_test",
+        bazel_version = CURRENT_BAZEL_VERSION,
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         tags = INTEGRATION_TEST_TAGS,
@@ -107,6 +110,7 @@ test_suite(
 
 bazel_integration_test(
     name = "incompatible_xcode_use_dev_dir_attr_test",
+    bazel_version = CURRENT_BAZEL_VERSION,
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,
@@ -119,6 +123,7 @@ bazel_integration_test(
 
 bazel_integration_test(
     name = "incompatible_xcode_use_dev_dir_env_test",
+    bazel_version = CURRENT_BAZEL_VERSION,
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     tags = INTEGRATION_TEST_TAGS,

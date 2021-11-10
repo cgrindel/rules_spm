@@ -5,9 +5,6 @@ exports_files(["integration_test_runner.sh"])
 bzl_library(
     name = "bazel_integration_test",
     srcs = ["bazel_integration_test.bzl"],
-    deps = [
-        "//:bazel_versions",
-    ],
 )
 
 sh_binary(

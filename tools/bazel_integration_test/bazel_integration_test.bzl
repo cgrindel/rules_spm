@@ -1,4 +1,3 @@
-load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:select_file.bzl", "select_file")
 
@@ -8,8 +7,6 @@ an integration test.
 
 # This was lovingly inspired by
 # https://github.com/bazelbuild/rules_python/blob/main/tools/bazel_integration_test/bazel_integration_test.bzl.
-
-BAZEL_BINARY = "@build_bazel_bazel_%s//:bazel_binary" % SUPPORTED_BAZEL_VERSIONS[0].replace(".", "_")
 
 DEFAULT_TEST_RUNNER = "//tools/bazel_integration_test:integration_test_runner.sh"
 
@@ -30,8 +27,33 @@ def glob_workspace_files(workspace_path):
         exclude = [paths.join(workspace_path, "bazel-*", "**")],
     )
 
+def semantic_version_to_name(version):
+    """Converts a semantic version string (e.g. X.Y.Z) to a suitable name string (e.g. X_Y_Z).
+
+    Args:
+        version: A semantic version `string`.
+
+    Returns:
+        A `string` that is suitable for use in a label or filename.
+    """
+    return version.replace(".", "_")
+
+def bazel_binary_label(version):
+    """Returns a label for the specified Bazel version as provided by https://github.com/bazelbuild/bazel-integration-testing.
+
+    Args:
+        version: A `string` value representing the semantic version of
+                 Bazel to use for the integration test.
+
+    Returns:
+        A `string` representing a label for a version of Bazel.
+    """
+    return "@build_bazel_bazel_%s//:bazel_binary" % semantic_version_to_name(version)
+
 def bazel_integration_test(
         name,
+        bazel_binary = None,
+        bazel_version = None,
         workspace_path = None,
         workspace_files = None,
         bazel_cmds = DEFAULT_BAZEL_CMDS,
@@ -42,6 +64,10 @@ def bazel_integration_test(
 
     Args:
         name: name of the resulting py_test
+        bazel_binary: A `Label` for the version of Bazel that will be used to
+                      execute the integration test.
+        bazel_version: A `string` value representing the semantic version of
+                       Bazel to use for the integration test.
         workspace_path: Optional. A `string` specifying the path to the child
                         workspace. If not specified, then it is derived from
                         the name.
@@ -56,6 +82,11 @@ def bazel_integration_test(
                  https://docs.bazel.build/versions/main/test-encyclopedia.html#role-of-the-test-runner
         **kwargs: additional attributes like timeout and visibility
     """
+
+    if bazel_binary == None and bazel_version == None:
+        fail("The `bazel_binary` or the `bazel_version` must be specified.")
+    if bazel_binary == None:
+        bazel_binary = bazel_binary_label(bazel_version)
 
     if workspace_path == None:
         if name.endswith("_test"):
@@ -77,7 +108,7 @@ def bazel_integration_test(
     bazel_bin_name = name + "_bazel_binary"
     select_file(
         name = bazel_bin_name,
-        srcs = BAZEL_BINARY,
+        srcs = bazel_binary,
         subpath = "bazel",
     )
 
@@ -104,7 +135,7 @@ def bazel_integration_test(
             "$(location :%s)" % (bazel_wksp_file_name),
         ] + bazel_cmd_args,
         data = [
-            BAZEL_BINARY,
+            bazel_binary,
             bazel_bin_name,
             workspace_files_name,
             bazel_wksp_file_name,
@@ -118,3 +149,50 @@ def bazel_integration_test(
         env_inherit = ["SUDO_ASKPASS"],
         **kwargs
     )
+
+def bazel_integration_tests(
+        name,
+        bazel_versions = [],
+        workspace_path = None,
+        workspace_files = None,
+        bazel_cmds = DEFAULT_BAZEL_CMDS,
+        test_runner_srcs = [DEFAULT_TEST_RUNNER],
+        timeout = "long",
+        **kwargs):
+    """Macro that defines a set Bazel integration tests each executed with a different version of Bazel.
+
+    Args:
+        name: name of the resulting py_test
+        bazel_versions: A `list` of `string` string values representing the
+                        semantic versions of Bazel to use for the integration
+                        tests.
+        workspace_path: Optional. A `string` specifying the path to the child
+                        workspace. If not specified, then it is derived from
+                        the name.
+        workspace_files: Optional. A `list` of files for the child workspace.
+                         If not specified, then it is derived from the
+                         `workspace_path`.
+        bazel_cmds: A `list` of `string` values that represent arguments for
+                    Bazel.
+        test_runner_srcs: A `list` of shell scripts that are used as the test
+                          runner.
+        timeout: A valid Bazel timeout value.
+                 https://docs.bazel.build/versions/main/test-encyclopedia.html#role-of-the-test-runner
+        **kwargs: additional attributes like timeout and visibility
+    """
+    if bazel_versions == []:
+        fail("One or more Bazel versions must be specified.")
+    for bazel_version in bazel_versions:
+        test_name = "{name}_bazel_{version}".format(
+            name = name,
+            version = semantic_version_to_name(bazel_version),
+        )
+        bazel_integration_test(
+            test_name,
+            bazel_version = bazel_version,
+            workspace_path = workspace_path,
+            workspace_files = workspace_files,
+            bazel_cmds = bazel_cmds,
+            test_runner_srcs = test_runner_srcs,
+            timeout = timeout,
+        )
