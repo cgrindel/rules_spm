@@ -41,7 +41,7 @@ def semantic_version_to_name(version):
     Returns:
         A `string` that is suitable for use in a label or filename.
     """
-    return version.replace(".", "_").replace("-", "_")
+    return version.replace(".", "_")
 
 def bazel_binary_label(version):
     """Returns a label for the specified Bazel version as provided by https://github.com/bazelbuild/bazel-integration-testing.
