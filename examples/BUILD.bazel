@@ -1,5 +1,6 @@
 load(
     "//tools/bazel_integration_test:bazel_sh_integration_test.bzl",
+    "DEFAULT_INTEGRATION_TEST_TAGS",
     "bazel_integration_test_name",
     "bazel_sh_integration_test",
     "bazel_sh_integration_tests",
@@ -56,6 +57,7 @@ ADDITIONAL_WORKSPACE_FILES = [
 # Integration tests that do not require sudo
 test_suite(
     name = "no_sudo_integration_tests",
+    tags = DEFAULT_INTEGRATION_TEST_TAGS,
     tests = [test for test in NO_SUDO_INTEGRATION_TESTS],
     visibility = ["//:__subpackages__"],
 )
@@ -64,12 +66,14 @@ test_suite(
 # See /examples/README.md for more details.
 test_suite(
     name = "sudo_integration_tests",
+    tags = DEFAULT_INTEGRATION_TEST_TAGS,
     tests = [test for test in SUDO_INTEGRATION_TESTS],
     visibility = ["//:__subpackages__"],
 )
 
 test_suite(
     name = "all_integration_tests",
+    tags = DEFAULT_INTEGRATION_TEST_TAGS,
     tests = [
         ":no_sudo_integration_tests",
         ":sudo_integration_tests",
