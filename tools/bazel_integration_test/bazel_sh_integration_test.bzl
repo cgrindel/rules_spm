@@ -1,7 +1,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:select_file.bzl", "select_file")
 
-"""Macros that define a test target that is suitable for executing Bazel in \
+"""Macros that define an sh_test target that is suitable for executing Bazel in \
 an integration test.
 """
 
