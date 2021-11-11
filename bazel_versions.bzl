@@ -1,7 +1,6 @@
 CURRENT_BAZEL_VERSION = "4.2.1"
 
 OTHER_BAZEL_VERSIONS = [
-    "4.1.0",
     "5.0.0-pre.20211011.2",
 ]
 
