@@ -1,6 +1,7 @@
 load(
     "//tools/bazel_integration_test:bazel_integration_test.bzl",
     "bazel_integration_test",
+    "bazel_integration_test_name",
     "bazel_integration_tests",
     "glob_workspace_files",
     "semantic_version_to_name",
@@ -28,7 +29,7 @@ NO_SUDO_INTEGRATION_TESTS = [
     example + "_test"
     for example in ALL_OS_TEST_EXAMPLES + MACOS_TEST_EXAMPLES
 ] + [
-    "simple_test_bazel_%s" % semantic_version_to_name(version)
+    bazel_integration_test_name("simple_test", version)
     for version in OTHER_BAZEL_VERSIONS
 ]
 

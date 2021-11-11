@@ -72,8 +72,8 @@ def bazel_integration_test_name(name, version):
 
 def bazel_integration_test(
         name,
-        bazel_binary = None,
         bazel_version = None,
+        bazel_binary = None,
         workspace_path = None,
         workspace_files = None,
         bazel_cmds = DEFAULT_BAZEL_CMDS,
@@ -85,13 +85,16 @@ def bazel_integration_test(
 
     Args:
         name: name of the resulting py_test
-        bazel_binary: A `Label` for the version of Bazel that will be used to
-                      execute the integration test.
-        bazel_version: A `string` value representing the semantic version of
-                       Bazel to use for the integration test.
-        workspace_path: Optional. A `string` specifying the path to the child
-                        workspace. If not specified, then it is derived from
-                        the name.
+        bazel_version: Optional. A `string` value representing the semantic
+                       version of Bazel to use for the integration test. If a
+                       version is not specified, then the `bazel_binary` must
+                       be specified.
+        bazel_binary: Optional. A `Label` for the Bazel binary to use for the
+                      execution of the integration test. Most users will not
+                      use this attribute. Use the `bazel_version` instead.
+        workspace_path: Optional. A `string` specifying the relative path to
+                        the child workspace. If not specified, then it is
+                        derived from the name.
         workspace_files: Optional. A `list` of files for the child workspace.
                          If not specified, then it is derived from the
                          `workspace_path`.
