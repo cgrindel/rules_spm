@@ -70,7 +70,7 @@ def bazel_integration_test_name(name, version):
         version = semantic_version_to_name(version),
     )
 
-def bazel_integration_test(
+def bazel_sh_integration_test(
         name,
         bazel_version = None,
         bazel_binary = None,
@@ -175,7 +175,7 @@ def bazel_integration_test(
         **kwargs
     )
 
-def bazel_integration_tests(
+def bazel_sh_integration_tests(
         name,
         workspace_path,
         bazel_versions = [],
@@ -208,7 +208,7 @@ def bazel_integration_tests(
     if bazel_versions == []:
         fail("One or more Bazel versions must be specified.")
     for bazel_version in bazel_versions:
-        bazel_integration_test(
+        bazel_sh_integration_test(
             name = bazel_integration_test_name(name, bazel_version),
             bazel_version = bazel_version,
             workspace_path = workspace_path,

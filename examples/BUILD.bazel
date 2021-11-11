@@ -1,8 +1,8 @@
 load(
-    "//tools/bazel_integration_test:bazel_integration_test.bzl",
-    "bazel_integration_test",
+    "//tools/bazel_integration_test:bazel_sh_integration_test.bzl",
     "bazel_integration_test_name",
-    "bazel_integration_tests",
+    "bazel_sh_integration_test",
+    "bazel_sh_integration_tests",
     "glob_workspace_files",
     "semantic_version_to_name",
 )
@@ -80,7 +80,7 @@ test_suite(
 # MARK: - Integration Tests with Current Bazel Version
 
 [
-    bazel_integration_test(
+    bazel_sh_integration_test(
         name = example + "_test",
         bazel_version = CURRENT_BAZEL_VERSION,
         # The test needs to be local due to the operations that rules_spm performs.
@@ -92,7 +92,7 @@ test_suite(
 ]
 
 [
-    bazel_integration_test(
+    bazel_sh_integration_test(
         name = example + "_test",
         bazel_version = CURRENT_BAZEL_VERSION,
         # The test needs to be local due to the operations that rules_spm performs.
@@ -104,7 +104,7 @@ test_suite(
     for example in MACOS_TEST_EXAMPLES
 ]
 
-bazel_integration_test(
+bazel_sh_integration_test(
     name = "incompatible_xcode_use_dev_dir_attr_test",
     bazel_version = CURRENT_BAZEL_VERSION,
     # The test needs to be local due to the operations that rules_spm performs.
@@ -116,7 +116,7 @@ bazel_integration_test(
     workspace_path = "simple_with_dev_dir",
 )
 
-bazel_integration_test(
+bazel_sh_integration_test(
     name = "incompatible_xcode_use_dev_dir_env_test",
     bazel_version = CURRENT_BAZEL_VERSION,
     # The test needs to be local due to the operations that rules_spm performs.
@@ -130,7 +130,7 @@ bazel_integration_test(
 
 # MARK: - Integration Tests with Other Bazel Versions
 
-bazel_integration_tests(
+bazel_sh_integration_tests(
     name = "simple_test",
     bazel_versions = OTHER_BAZEL_VERSIONS,
     # The test needs to be local due to the operations that rules_spm performs.
