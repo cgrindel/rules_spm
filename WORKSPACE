@@ -58,6 +58,10 @@ protobuf_deps()
 
 # MARK: - Integration Testing
 
+load("@cgrindel_rules_bazel_integration_test//bazel_integration_test:deps.bzl", "bazel_integration_test_rules_dependencies")
+
+bazel_integration_test_rules_dependencies()
+
 load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
 load("@build_bazel_integration_testing//tools:repositories.bzl", "bazel_binaries")
 
