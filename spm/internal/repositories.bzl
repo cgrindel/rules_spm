@@ -42,18 +42,10 @@ def spm_rules_dependencies():
         name = "cgrindel_rules_spm_local_config",
     )
 
-    #     maybe(
-    #         http_archive,
-    #         name = "build_bazel_integration_testing",
-    #         url = "https://github.com/bazelbuild/bazel-integration-testing/archive/3a6136e8f6287b04043217d94d97ba17edcb7feb.zip",
-    #         type = "zip",
-    #         strip_prefix = "bazel-integration-testing-3a6136e8f6287b04043217d94d97ba17edcb7feb",
-    #         sha256 = "bfc43a94d42e08c89a26a4711ea396a0a594bd5d55394d76aae861b299628dca",
-    #     )
-
-    # TODO: FIXME
     maybe(
-        native.local_repository,
+        http_archive,
         name = "cgrindel_rules_bazel_integration_test",
-        path = "/Users/chuck/code/cgrindel/rules_bazel_integration_test",
+        sha256 = "4fa679d98318df3e280e9c8b7f445cd06de7954aa0454702a62ebab8c820ce7e",
+        strip_prefix = "rules_bazel_integration_test-0.1.0",
+        urls = ["https://github.com/cgrindel/rules_bazel_integration_test/archive/v0.1.0.tar.gz"],
     )
