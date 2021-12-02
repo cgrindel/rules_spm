@@ -4,6 +4,10 @@ load(
     "updatesrc_update_all",
 )
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load(
+    "@cgrindel_rules_bazel_integration_test//bazel_integration_test:bazel_integration_test.bzl",
+    "integration_test_utils",
+)
 
 updatesrc_update_all(
     name = "update_all",
@@ -13,6 +17,8 @@ updatesrc_update_all(
 )
 
 bzlformat_pkg(name = "bzlformat")
+
+# MARK: - Related to Integration Tests
 
 bzl_library(
     name = "bazel_versions",
@@ -38,6 +44,15 @@ filegroup(
         "//spm:all_files",
         "//spm/internal:all_files",
         "//spm/internal/modulemap_parser:all_files",
+    ],
+    visibility = ["//:__subpackages__"],
+)
+
+test_suite(
+    name = "all_integration_tests",
+    tags = integration_test_utils.DEFAULT_INTEGRATION_TEST_TAGS,
+    tests = [
+        "//examples:integration_tests",
     ],
     visibility = ["//:__subpackages__"],
 )
