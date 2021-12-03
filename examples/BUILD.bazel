@@ -3,6 +3,7 @@ load(
     "@cgrindel_rules_bazel_integration_test//bazel_integration_test:bazel_integration_test.bzl",
     "bazel_integration_test",
     "bazel_integration_tests",
+    "default_test_runner",
     "integration_test_utils",
 )
 load("//:bazel_versions.bzl", "CURRENT_BAZEL_VERSION", "OTHER_BAZEL_VERSIONS")
@@ -72,7 +73,7 @@ test_suite(
 )
 
 test_suite(
-    name = "all_integration_tests",
+    name = "integration_tests",
     tags = integration_test_utils.DEFAULT_INTEGRATION_TEST_TAGS,
     tests = [
         ":no_sudo_integration_tests",
@@ -83,12 +84,17 @@ test_suite(
 
 # MARK: - Integration Tests with Current Bazel Version
 
+default_test_runner(
+    name = "default_test_runner",
+)
+
 [
     bazel_integration_test(
         name = example + "_test",
         bazel_version = CURRENT_BAZEL_VERSION,
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
+        test_runner = ":default_test_runner",
         workspace_files = integration_test_utils.glob_workspace_files(example) +
                           ADDITIONAL_WORKSPACE_FILES,
     )
@@ -102,11 +108,18 @@ test_suite(
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
         target_compatible_with = ["@platforms//os:macos"],
+        test_runner = ":default_test_runner",
         workspace_files = integration_test_utils.glob_workspace_files(example) +
                           ADDITIONAL_WORKSPACE_FILES,
     )
     for example in MACOS_TEST_EXAMPLES
 ]
+
+sh_binary(
+    name = "incompatible_xcode_use_dev_dir_attr_test_runner",
+    testonly = True,
+    srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
+)
 
 bazel_integration_test(
     name = "incompatible_xcode_use_dev_dir_attr_test",
@@ -114,10 +127,15 @@ bazel_integration_test(
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     target_compatible_with = ["@platforms//os:macos"],
-    test_runner_srcs = ["incompatible_xcode_use_dev_dir_attr_test.sh"],
+    test_runner = ":incompatible_xcode_use_dev_dir_attr_test_runner",
     workspace_files = integration_test_utils.glob_workspace_files("simple_with_dev_dir") +
                       ADDITIONAL_WORKSPACE_FILES,
     workspace_path = "simple_with_dev_dir",
+)
+
+sh_binary(
+    name = "incompatible_xcode_use_dev_dir_env_test_runner",
+    srcs = ["incompatible_xcode_use_dev_dir_env_test.sh"],
 )
 
 bazel_integration_test(
@@ -126,7 +144,7 @@ bazel_integration_test(
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
     target_compatible_with = ["@platforms//os:macos"],
-    test_runner_srcs = ["incompatible_xcode_use_dev_dir_env_test.sh"],
+    test_runner = ":incompatible_xcode_use_dev_dir_env_test_runner",
     workspace_files = integration_test_utils.glob_workspace_files("simple") +
                       ADDITIONAL_WORKSPACE_FILES,
     workspace_path = "simple",
@@ -139,6 +157,7 @@ bazel_integration_tests(
     bazel_versions = OTHER_BAZEL_VERSIONS,
     # The test needs to be local due to the operations that rules_spm performs.
     local = True,
+    test_runner = ":default_test_runner",
     workspace_files = integration_test_utils.glob_workspace_files("simple") +
                       ADDITIONAL_WORKSPACE_FILES,
     workspace_path = "simple",
