@@ -45,7 +45,7 @@ def spm_rules_dependencies():
     maybe(
         http_archive,
         name = "cgrindel_rules_bazel_integration_test",
-        sha256 = "ef6cf463a269d969bdb3b31eed53c50d3667f02e004abc9ce7a3a2413eadca6a",
-        strip_prefix = "rules_bazel_integration_test-0.3.0",
-        urls = ["https://github.com/cgrindel/rules_bazel_integration_test/archive/v0.3.0.tar.gz"],
+        sha256 = "50b808269ee09373c099256103c40629db8a66fd884030d7a36cf9a2e8675b75",
+        strip_prefix = "rules_bazel_integration_test-0.3.1",
+        urls = ["https://github.com/cgrindel/rules_bazel_integration_test/archive/v0.3.1.tar.gz"],
     )
