@@ -39,6 +39,12 @@ jobs:
       run: |
         bazelisk test //:all_integration_tests
 
+    - name: Ensure all packages have bzlformat checks
+      shell: bash
+      run: |
+        bazelisk run //:bzlformat_missing_pkgs_test
+
+
   ubuntu_build:
 
     runs-on: ubuntu-20.04
@@ -90,3 +96,9 @@ jobs:
       shell: bash
       run: |
         bazelisk test //:all_integration_tests
+
+    - name: Ensure all packages have bzlformat checks
+      shell: bash
+      run: |
+        bazelisk run //:bzlformat_missing_pkgs_test
+
