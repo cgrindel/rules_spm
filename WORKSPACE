@@ -8,6 +8,10 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
 
+load("@cgrindel_bazel_starlib//:deps.bzl", "bazel_starlib_dependencies")
+
+bazel_starlib_dependencies()
+
 load(
     "@build_bazel_rules_swift//swift:repositories.bzl",
     "swift_rules_dependencies",
@@ -21,10 +25,6 @@ load(
 )
 
 swift_rules_extra_dependencies()
-
-load("@cgrindel_bazel_starlib//:deps.bzl", "bazel_starlib_dependencies")
-
-bazel_starlib_dependencies()
 
 # MARK: - Documentation
 
