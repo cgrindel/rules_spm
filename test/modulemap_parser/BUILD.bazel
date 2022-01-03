@@ -1,4 +1,4 @@
-load("@cgrindel_rules_bzlformat//bzlformat:bzlformat.bzl", "bzlformat_pkg")
+load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 load(":declarations_tests.bzl", "declarations_test_suite")
 load(":errors_tests.bzl", "errors_test_suite")
 load(":parser_tests.bzl", "parser_test_suite")

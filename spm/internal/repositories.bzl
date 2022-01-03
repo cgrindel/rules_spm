@@ -23,18 +23,12 @@ def spm_rules_dependencies():
 
     maybe(
         http_archive,
-        name = "cgrindel_bazel_doc",
-        sha256 = "3ccc6d205a7f834c5e89adcb4bc5091a9a07a69376107807eb9aea731ce92854",
-        strip_prefix = "bazel-doc-0.1.2",
-        urls = ["https://github.com/cgrindel/bazel-doc/archive/v0.1.2.tar.gz"],
-    )
-
-    maybe(
-        http_archive,
-        name = "cgrindel_rules_bzlformat",
-        sha256 = "44b09ad9c5395760065820676ba6e65efec08ae02c1ce7e2d39d42c5b1e7aec8",
-        strip_prefix = "rules_bzlformat-0.2.1",
-        urls = ["https://github.com/cgrindel/rules_bzlformat/archive/v0.2.1.tar.gz"],
+        name = "cgrindel_bazel_starlib",
+        sha256 = "238c05abf31447b93bd15b616c7413c4c719ee7b5e81c1489ca20f02ce628489",
+        strip_prefix = "bazel-starlib-0.2.0",
+        urls = [
+            "http://github.com/cgrindel/bazel-starlib/archive/v0.2.0.tar.gz",
+        ],
     )
 
     maybe(
