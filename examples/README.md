@@ -9,8 +9,8 @@
 
 ## Examples
 
-- [Simple](/examples/simple): Demonstrates how to declare a Swift package as a dependency and use it
-  in a `swift_binary` target.
+- [Simple](/examples/simple): Demonstrates how to declare an exact version of a Swift package as a 
+  dependency and use it in a `swift_binary` target.
 - [Simple (Revision/Commit)](/examples/simple_revision): Same as `Simple`, except the Swift package
   version is specified as a commit hash instead of a [semantic version](https://semver.org/).
 - [Simple + Swift Package Binary](/examples/simple_with_binary): Same as `Simple`. In addition, it
