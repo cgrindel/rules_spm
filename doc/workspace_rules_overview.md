@@ -41,7 +41,7 @@ Used to fetch and prepare external Swift package manager packages for the build.
 ## spm_pkg
 
 <pre>
-spm_pkg(<a href="#spm_pkg-url">url</a>, <a href="#spm_pkg-path">path</a>, <a href="#spm_pkg-name">name</a>, <a href="#spm_pkg-from_version">from_version</a>, <a href="#spm_pkg-revision">revision</a>, <a href="#spm_pkg-products">products</a>)
+spm_pkg(<a href="#spm_pkg-url">url</a>, <a href="#spm_pkg-path">path</a>, <a href="#spm_pkg-name">name</a>, <a href="#spm_pkg-exact_version">exact_version</a>, <a href="#spm_pkg-from_version">from_version</a>, <a href="#spm_pkg-revision">revision</a>, <a href="#spm_pkg-products">products</a>)
 </pre>
 
 Returns a JSON string describing a Swift package.
@@ -60,6 +60,7 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="spm_pkg-url"></a>url |  A <code>string</code> representing the URL for the package repository.   |  <code>None</code> |
 | <a id="spm_pkg-path"></a>path |  A local path <code>string</code> to the package repository.   |  <code>None</code> |
 | <a id="spm_pkg-name"></a>name |  Optional. The name (<code>string</code>) to be used for the package in Package.swift.   |  <code>None</code> |
+| <a id="spm_pkg-exact_version"></a>exact_version |  Optional. A <code>string</code> representing a valid "exact" SPM version.   |  <code>None</code> |
 | <a id="spm_pkg-from_version"></a>from_version |  Optional. A <code>string</code> representing a valid "from" SPM version.   |  <code>None</code> |
 | <a id="spm_pkg-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="spm_pkg-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |

@@ -24,10 +24,10 @@ def spm_rules_dependencies():
     maybe(
         http_archive,
         name = "cgrindel_bazel_starlib",
-        sha256 = "238c05abf31447b93bd15b616c7413c4c719ee7b5e81c1489ca20f02ce628489",
-        strip_prefix = "bazel-starlib-0.2.0",
+        sha256 = "163a45d949fdb96b328bb44fe56976c610c6728c77118c6cd999f26cedca97eb",
+        strip_prefix = "bazel-starlib-0.2.1",
         urls = [
-            "http://github.com/cgrindel/bazel-starlib/archive/v0.2.0.tar.gz",
+            "http://github.com/cgrindel/bazel-starlib/archive/v0.2.1.tar.gz",
         ],
     )
 

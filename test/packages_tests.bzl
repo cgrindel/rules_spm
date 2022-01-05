@@ -18,13 +18,27 @@ def _create_test(ctx):
     url = "https://github.com/foo/bar.git"
     path = "/path/to/foo/bar"
     from_version = "1.0.0"
+    exact_version = "1.2.3"
     products = ["Foo", "Bar"]
+
+    actual = packages.create(url = url, exact_version = exact_version, products = products)
+    expected = struct(
+        url = url,
+        path = None,
+        name = packages.create_name(url),
+        exact_version = exact_version,
+        from_version = None,
+        revision = None,
+        products = products,
+    )
+    asserts.equals(env, expected, actual)
 
     actual = packages.create(url = url, from_version = from_version, products = products)
     expected = struct(
         url = url,
         path = None,
         name = packages.create_name(url),
+        exact_version = None,
         from_version = from_version,
         revision = None,
         products = products,
@@ -36,6 +50,7 @@ def _create_test(ctx):
         url = None,
         path = path,
         name = packages.create_name(path),
+        exact_version = None,
         from_version = from_version,
         revision = None,
         products = products,
@@ -53,6 +68,7 @@ def _create_test(ctx):
         url = url,
         path = None,
         name = name,
+        exact_version = None,
         from_version = from_version,
         revision = None,
         products = products,
@@ -71,6 +87,7 @@ def _create_test(ctx):
         url = url,
         path = None,
         name = name,
+        exact_version = None,
         from_version = None,
         revision = revision,
         products = products,

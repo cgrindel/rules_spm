@@ -491,6 +491,10 @@ _local_package_tpl = """\
 .package(name: "{name}", path: "{path}")\
 """
 
+_package_exact_tpl = """\
+.package(name: "{name}", url: "{url}", .exact("{version}"))\
+"""
+
 _package_from_tpl = """\
 .package(name: "{name}", url: "{url}", from: "{version}")\
 """
@@ -524,6 +528,12 @@ def _generate_spm_package_dep(pkg):
             path = pkg.path,
         )
     if pkg.url != None:
+        if pkg.exact_version:
+            return _package_exact_tpl.format(
+                name = pkg.name,
+                url = pkg.url,
+                version = pkg.exact_version,
+            )
         if pkg.from_version:
             return _package_from_tpl.format(
                 name = pkg.name,
