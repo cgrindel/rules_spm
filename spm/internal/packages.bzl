@@ -23,6 +23,7 @@ def _create_pkg(
         url = None,
         path = None,
         name = None,
+        exact_version = None,
         from_version = None,
         revision = None,
         products = []):
@@ -38,6 +39,7 @@ def _create_pkg(
         path: A local path `string` to the package repository.
         products: A `list` of `string` values representing the names of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
+        exact_version: Optional. A `string` representing a valid "exact" SPM version.
         from_version: Optional. A `string` representing a valid "from" SPM version.
         revision: Optional. A commit hash (`string`).
 
@@ -57,18 +59,19 @@ def _create_pkg(
         fail("A list of product names from the package must be provided.")
 
     if url != None:
-        dep_requirements = [from_version, revision]
+        dep_requirements = [exact_version, from_version, revision]
         specified_dep_reqs = [d for d in dep_requirements if d != None]
         specified_dep_reqs_cnt = len(specified_dep_reqs)
         if specified_dep_reqs_cnt < 1:
-            fail("A package requirement (e.g. from_version, revision) must be specified.")
+            fail("A package requirement (e.g. exact_version, from_version, revision) must be specified.")
         if specified_dep_reqs_cnt > 1:
-            fail("Only a single package requirement (e.g. from_version, revision) can be specified.")
+            fail("Only a single package requirement (e.g. exact_version, from_version, revision) can be specified.")
 
     return struct(
         url = url,
         path = path,
         name = name,
+        exact_version = exact_version,
         from_version = from_version,
         revision = revision,
         products = products,
@@ -79,6 +82,7 @@ def _copy_pkg(
         url = None,
         path = None,
         name = None,
+        exact_version = None,
         from_version = None,
         revision = None,
         products = None):
@@ -91,6 +95,7 @@ def _copy_pkg(
         products: Optional. jA `list` of `string` values representing the names
                   of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
+        exact_version: Optional. A `string` representing a valid "exact" SPM version.
         from_version: Optional. A `string` representing a valid "from" SPM version.
         revision: Optional. A commit hash (`string`).
 
@@ -101,6 +106,7 @@ def _copy_pkg(
         url = url if url != None else pkg.url,
         path = path if path != None else pkg.path,
         name = name if name != None else pkg.name,
+        exact_version = exact_version if exact_version != None else pkg.exact_version,
         from_version = from_version if from_version != None else pkg.from_version,
         revision = revision if revision != None else pkg.revision,
         products = products if products != None else pkg.products,
@@ -112,6 +118,7 @@ def _to_json(
         url = None,
         path = None,
         name = None,
+        exact_version = None,
         from_version = None,
         revision = None,
         products = []):
@@ -127,6 +134,7 @@ def _to_json(
         path: A local path `string` to the package repository.
         products: A `list` of `string` values representing the names of the products to be used.
         name: Optional. The name (`string`) to be used for the package in Package.swift.
+        exact_version: Optional. A `string` representing a valid "exact" SPM version.
         from_version: Optional. A `string` representing a valid "from" SPM version.
         revision: Optional. A commit hash (`string`).
 
@@ -137,6 +145,7 @@ def _to_json(
         url = url,
         path = path,
         name = name,
+        exact_version = exact_version,
         from_version = from_version,
         revision = revision,
         products = products,

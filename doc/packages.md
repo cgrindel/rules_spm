@@ -29,7 +29,7 @@ A package name `string`.
 ## packages.create
 
 <pre>
-packages.create(<a href="#packages.create-url">url</a>, <a href="#packages.create-path">path</a>, <a href="#packages.create-name">name</a>, <a href="#packages.create-from_version">from_version</a>, <a href="#packages.create-revision">revision</a>, <a href="#packages.create-products">products</a>)
+packages.create(<a href="#packages.create-url">url</a>, <a href="#packages.create-path">path</a>, <a href="#packages.create-name">name</a>, <a href="#packages.create-exact_version">exact_version</a>, <a href="#packages.create-from_version">from_version</a>, <a href="#packages.create-revision">revision</a>, <a href="#packages.create-products">products</a>)
 </pre>
 
 Create a Swift package dependency struct.
@@ -48,6 +48,7 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="packages.create-url"></a>url |  A <code>string</code> representing the URL for the package repository.   |  <code>None</code> |
 | <a id="packages.create-path"></a>path |  A local path <code>string</code> to the package repository.   |  <code>None</code> |
 | <a id="packages.create-name"></a>name |  Optional. The name (<code>string</code>) to be used for the package in Package.swift.   |  <code>None</code> |
+| <a id="packages.create-exact_version"></a>exact_version |  Optional. A <code>string</code> representing a valid "exact" SPM version.   |  <code>None</code> |
 | <a id="packages.create-from_version"></a>from_version |  Optional. A <code>string</code> representing a valid "from" SPM version.   |  <code>None</code> |
 | <a id="packages.create-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="packages.create-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |
@@ -62,7 +63,7 @@ A `struct` representing a Swift package.
 ## packages.copy
 
 <pre>
-packages.copy(<a href="#packages.copy-pkg">pkg</a>, <a href="#packages.copy-url">url</a>, <a href="#packages.copy-path">path</a>, <a href="#packages.copy-name">name</a>, <a href="#packages.copy-from_version">from_version</a>, <a href="#packages.copy-revision">revision</a>, <a href="#packages.copy-products">products</a>)
+packages.copy(<a href="#packages.copy-pkg">pkg</a>, <a href="#packages.copy-url">url</a>, <a href="#packages.copy-path">path</a>, <a href="#packages.copy-name">name</a>, <a href="#packages.copy-exact_version">exact_version</a>, <a href="#packages.copy-from_version">from_version</a>, <a href="#packages.copy-revision">revision</a>, <a href="#packages.copy-products">products</a>)
 </pre>
 
 Create a copy of the provided package replacing any of the argument values that are not None.
@@ -76,6 +77,7 @@ Create a copy of the provided package replacing any of the argument values that 
 | <a id="packages.copy-url"></a>url |  Optional. A <code>string</code> representing the URL for the package repository.   |  <code>None</code> |
 | <a id="packages.copy-path"></a>path |  Optional. A local path <code>string</code> to the package repository.   |  <code>None</code> |
 | <a id="packages.copy-name"></a>name |  Optional. The name (<code>string</code>) to be used for the package in Package.swift.   |  <code>None</code> |
+| <a id="packages.copy-exact_version"></a>exact_version |  Optional. A <code>string</code> representing a valid "exact" SPM version.   |  <code>None</code> |
 | <a id="packages.copy-from_version"></a>from_version |  Optional. A <code>string</code> representing a valid "from" SPM version.   |  <code>None</code> |
 | <a id="packages.copy-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="packages.copy-products"></a>products |  Optional. jA <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>None</code> |
@@ -90,7 +92,7 @@ A `struct` representing a Swift package.
 ## packages.pkg_json
 
 <pre>
-packages.pkg_json(<a href="#packages.pkg_json-url">url</a>, <a href="#packages.pkg_json-path">path</a>, <a href="#packages.pkg_json-name">name</a>, <a href="#packages.pkg_json-from_version">from_version</a>, <a href="#packages.pkg_json-revision">revision</a>, <a href="#packages.pkg_json-products">products</a>)
+packages.pkg_json(<a href="#packages.pkg_json-url">url</a>, <a href="#packages.pkg_json-path">path</a>, <a href="#packages.pkg_json-name">name</a>, <a href="#packages.pkg_json-exact_version">exact_version</a>, <a href="#packages.pkg_json-from_version">from_version</a>, <a href="#packages.pkg_json-revision">revision</a>, <a href="#packages.pkg_json-products">products</a>)
 </pre>
 
 Returns a JSON string describing a Swift package.
@@ -109,6 +111,7 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 | <a id="packages.pkg_json-url"></a>url |  A <code>string</code> representing the URL for the package repository.   |  <code>None</code> |
 | <a id="packages.pkg_json-path"></a>path |  A local path <code>string</code> to the package repository.   |  <code>None</code> |
 | <a id="packages.pkg_json-name"></a>name |  Optional. The name (<code>string</code>) to be used for the package in Package.swift.   |  <code>None</code> |
+| <a id="packages.pkg_json-exact_version"></a>exact_version |  Optional. A <code>string</code> representing a valid "exact" SPM version.   |  <code>None</code> |
 | <a id="packages.pkg_json-from_version"></a>from_version |  Optional. A <code>string</code> representing a valid "from" SPM version.   |  <code>None</code> |
 | <a id="packages.pkg_json-revision"></a>revision |  Optional. A commit hash (<code>string</code>).   |  <code>None</code> |
 | <a id="packages.pkg_json-products"></a>products |  A <code>list</code> of <code>string</code> values representing the names of the products to be used.   |  <code>[]</code> |
