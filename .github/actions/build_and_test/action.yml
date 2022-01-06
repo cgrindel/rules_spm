@@ -1,4 +1,5 @@
 name: Build and Test
+description: Common build and test steps.
 
 runs:
   using: composite
