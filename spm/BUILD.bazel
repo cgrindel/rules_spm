@@ -13,8 +13,8 @@ bzl_library(
 )
 
 bzl_library(
-    name = "spm",
-    srcs = ["spm.bzl"],
+    name = "defs",
+    srcs = ["defs.bzl"],
     deps = [
         "//spm/internal:package_descriptions",
         "//spm/internal:packages",
@@ -35,6 +35,8 @@ bzl_library(
         "//spm/internal:spm_versions",
     ],
 )
+
+# TODO: Add backward compatible spm.bzl?
 
 bzlformat_pkg(name = "bzlformat")
 

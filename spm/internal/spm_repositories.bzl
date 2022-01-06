@@ -139,7 +139,7 @@ spm_system_library(
 
 _bazel_pkg_hdr = """
 load(
-    "@cgrindel_rules_spm//spm:spm.bzl", 
+    "@cgrindel_rules_spm//spm:defs.bzl", 
     "spm_clang_library",
     "spm_swift_binary", 
     "spm_swift_library", 
