@@ -4,37 +4,52 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 package(default_visibility = ["//visibility:public"])
 
 bzl_library(
+    name = "bazel_tools_repo_http",
+    srcs = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "bazel_tools_repo_utils",
+    srcs = ["@bazel_tools//tools/build_defs/repo:utils.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
     name = "deps",
     srcs = ["deps.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
-        "//spm/internal:repositories",
+        ":bazel_tools_repo_http",
+        ":bazel_tools_repo_utils",
+        "//spm/private:spm_autoconfiguration",
     ],
 )
 
 bzl_library(
-    name = "spm",
-    srcs = ["spm.bzl"],
+    name = "defs",
+    srcs = ["defs.bzl"],
     deps = [
-        "//spm/internal:package_descriptions",
-        "//spm/internal:packages",
-        "//spm/internal:platforms",
-        "//spm/internal:providers",
-        "//spm/internal:references",
-        "//spm/internal:repositories",
-        "//spm/internal:repository_utils",
-        "//spm/internal:spm_archive",
-        "//spm/internal:spm_clang_library",
-        "//spm/internal:spm_common",
-        "//spm/internal:spm_package",
-        "//spm/internal:spm_package_info_utils",
-        "//spm/internal:spm_repositories",
-        "//spm/internal:spm_swift_binary",
-        "//spm/internal:spm_swift_library",
-        "//spm/internal:spm_system_library",
-        "//spm/internal:spm_versions",
+        "//spm/private:package_descriptions",
+        "//spm/private:packages",
+        "//spm/private:platforms",
+        "//spm/private:providers",
+        "//spm/private:references",
+        "//spm/private:repository_utils",
+        "//spm/private:spm_archive",
+        "//spm/private:spm_clang_library",
+        "//spm/private:spm_common",
+        "//spm/private:spm_package",
+        "//spm/private:spm_package_info_utils",
+        "//spm/private:spm_repositories",
+        "//spm/private:spm_swift_binary",
+        "//spm/private:spm_swift_library",
+        "//spm/private:spm_system_library",
+        "//spm/private:spm_versions",
     ],
 )
+
+# TODO: Add backward compatible spm.bzl?
 
 bzlformat_pkg(name = "bzlformat")
 

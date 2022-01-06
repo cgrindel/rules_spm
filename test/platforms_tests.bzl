@@ -1,6 +1,6 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load(
-    "//spm/internal:platforms.bzl",
+    "//spm/private:platforms.bzl",
     "platforms",
     "spm_oss",
     "spm_vendors",

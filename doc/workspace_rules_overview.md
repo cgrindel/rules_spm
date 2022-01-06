@@ -9,7 +9,6 @@ On this page:
 
   * [spm_repositories](#spm_repositories)
   * [spm_pkg](#spm_pkg)
-  * [spm_rules_dependencies](#spm_rules_dependencies)
 
 
 <a id="#spm_repositories"></a>
@@ -68,17 +67,5 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 **RETURNS**
 
 A JSON `string` representing a Swift package.
-
-
-<a id="#spm_rules_dependencies"></a>
-
-## spm_rules_dependencies
-
-<pre>
-spm_rules_dependencies()
-</pre>
-
-Loads the dependencies for `rules_spm`.
-
 
 

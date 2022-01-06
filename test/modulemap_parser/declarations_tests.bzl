@@ -1,6 +1,6 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load(
-    "//spm/internal/modulemap_parser:declarations.bzl",
+    "//spm/private/modulemap_parser:declarations.bzl",
     "declarations",
     dts = "declaration_types",
 )

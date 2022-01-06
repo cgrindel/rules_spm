@@ -54,7 +54,7 @@ def _create_linux_toolchain(repository_ctx):
         "BUILD.bazel",
         """
 load(
-    "@cgrindel_rules_spm//spm/internal:spm_linux_toolchain.bzl",
+    "@cgrindel_rules_spm//spm/private:spm_linux_toolchain.bzl",
     "spm_linux_toolchain",
 )
 
@@ -92,7 +92,7 @@ def _create_xcode_toolchain(repository_ctx):
         "BUILD.bazel",
         """
 load(
-    "@cgrindel_rules_spm//spm/internal:spm_xcode_toolchain.bzl",
+    "@cgrindel_rules_spm//spm/private:spm_xcode_toolchain.bzl",
     "spm_xcode_toolchain",
 )
 

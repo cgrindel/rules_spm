@@ -1,5 +1,5 @@
-load("//spm/internal/modulemap_parser:tokenizer.bzl", "tokenizer")
-load("//spm/internal/modulemap_parser:tokens.bzl", "tokens")
+load("//spm/private/modulemap_parser:tokenizer.bzl", "tokenizer")
+load("//spm/private/modulemap_parser:tokens.bzl", "tokens")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
 def _tokenize_test(ctx):

@@ -1,5 +1,5 @@
-load("//spm/internal:spm_package_info_utils.bzl", "spm_package_info_utils")
-load("//spm/internal:providers.bzl", "SPMPackageInfo", "providers")
+load("//spm/private:spm_package_info_utils.bzl", "spm_package_info_utils")
+load("//spm/private:providers.bzl", "SPMPackageInfo", "providers")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
 def _get_test(ctx):

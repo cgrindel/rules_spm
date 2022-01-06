@@ -36,7 +36,7 @@ load(
 
 swift_rules_extra_dependencies()
 
-load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
+load("@cgrindel_rules_spm//spm:defs.bzl", "spm_pkg", "spm_repositories")
 
 # This set of packages are used as dependencies for the project.
 spm_repositories(

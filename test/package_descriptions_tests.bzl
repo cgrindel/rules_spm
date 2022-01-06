@@ -1,7 +1,7 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:references.bzl", ref_types = "reference_types", refs = "references")
+load("//spm/private:references.bzl", ref_types = "reference_types", refs = "references")
 load(
-    "//spm/internal:package_descriptions.bzl",
+    "//spm/private:package_descriptions.bzl",
     "module_types",
     pds = "package_descriptions",
 )

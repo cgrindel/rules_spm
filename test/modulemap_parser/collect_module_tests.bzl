@@ -1,5 +1,5 @@
-load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
-load("//spm/internal/modulemap_parser:tokens.bzl", "tokens")
+load("//spm/private/modulemap_parser:declarations.bzl", "declarations")
+load("//spm/private/modulemap_parser:tokens.bzl", "tokens")
 load(":test_helpers.bzl", "do_failing_parse_test", "do_parse_test")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 

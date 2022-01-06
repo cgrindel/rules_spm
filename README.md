@@ -122,7 +122,7 @@ your workspace. NOTE: It is imperative that the products that will be used by yo
 listed in the `products` list.
 
 ```python
-load("@cgrindel_rules_spm//spm:spm.bzl", "spm_pkg", "spm_repositories")
+load("@cgrindel_rules_spm//spm:defs.bzl", "spm_pkg", "spm_repositories")
 
 spm_repositories(
     name = "swift_pkgs",

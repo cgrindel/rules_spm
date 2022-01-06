@@ -1,6 +1,6 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal/modulemap_parser:tokens.bzl", "tokens", tts = "token_types")
-load("//spm/internal/modulemap_parser:errors.bzl", "errors")
+load("//spm/private/modulemap_parser:tokens.bzl", "tokens", tts = "token_types")
+load("//spm/private/modulemap_parser:errors.bzl", "errors")
 
 def _create_token_test(ctx):
     env = unittest.begin(ctx)

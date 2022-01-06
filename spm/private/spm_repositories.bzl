@@ -1,5 +1,5 @@
-load("//spm/internal/modulemap_parser:declarations.bzl", dts = "declaration_types")
-load("//spm/internal/modulemap_parser:parser.bzl", "parser")
+load("//spm/private/modulemap_parser:declarations.bzl", dts = "declaration_types")
+load("//spm/private/modulemap_parser:parser.bzl", "parser")
 load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":references.bzl", ref_types = "reference_types", refs = "references")
@@ -139,7 +139,7 @@ spm_system_library(
 
 _bazel_pkg_hdr = """
 load(
-    "@cgrindel_rules_spm//spm:spm.bzl", 
+    "@cgrindel_rules_spm//spm:defs.bzl", 
     "spm_clang_library",
     "spm_swift_binary", 
     "spm_swift_library", 
@@ -753,10 +753,10 @@ workspace for local path resolution.\
 """,
         ),
         "_package_swift_tpl": attr.label(
-            default = "//spm/internal:Package.swift.tpl",
+            default = "//spm/private:Package.swift.tpl",
         ),
         "_root_build_tpl": attr.label(
-            default = "//spm/internal:root.BUILD.bazel.tpl",
+            default = "//spm/private:root.BUILD.bazel.tpl",
         ),
     },
     doc = """\

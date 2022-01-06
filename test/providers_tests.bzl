@@ -1,5 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal:providers.bzl", "providers")
+load("//spm/private:providers.bzl", "providers")
 
 def _swift_binary_test(ctx):
     env = unittest.begin(ctx)
