@@ -8,7 +8,8 @@ jobs:
   ubuntu_build:
     runs-on: ubuntu-20.04
     steps:
-      - uses: cgrindel/custom-github-actions-test@main
+      # - uses: cgrindel/custom-github-actions-test@main
+      - uses: cgrindel/custom-github-actions-test/foo@main
 
   # macos_build:
   #   runs-on: macos-11.0
