@@ -5,43 +5,44 @@ on:
     branches: [ main ]
 
 jobs:
-  ubuntu_build:
-    runs-on: ubuntu-20.04
-    steps:
-      # - uses: cgrindel/custom-github-actions-test@main
-      - uses: cgrindel/custom-github-actions-test/foo@main
-
-  # macos_build:
-  #   runs-on: macos-11.0
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel_cache@main
-  #     with:
-  #       name: rules_spm
-  #   - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel@main
-  #   - uses: ./.github/actions/build_and_test
 
   # ubuntu_build:
   #   runs-on: ubuntu-20.04
-  #   env:
-  #     CC: clang
   #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: ./.github/actions/setup_bazel_cache
-  #     with:
-  #       name: rules_spm
-  #   - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel
-  #   - name: Bazel Config for Linux
-  #     shell: bash
-  #     run: |
-  #       # Make sure that the Swift bin directory is first in the PATH. This addresses
-  #       # the `invalid linker name in argument '-fuse-ld=gold'` error when running
-  #       # SPM. In short, it allows SPM to find the correct linker.
-  #       swift_exec=$(which swift)
-  #       real_swift_exec=$(realpath $swift_exec)
-  #       real_swift_dir=$(dirname $real_swift_exec)
-  #       new_path="${real_swift_dir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-  #       cat >>local.bazelrc <<EOF
-  #       build --action_env=PATH=${new_path}
-  #       EOF
-  #   - uses: ./.github/actions/build_and_test
+  #     # - uses: cgrindel/custom-github-actions-test@main
+  #     - uses: cgrindel/custom-github-actions-test/foo@main
+
+  macos_build:
+    runs-on: macos-11.0
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cgrindel/bazel-github-actions/setup_bazel_cache@main
+      with:
+        name: rules_spm
+    - uses: cgrindel/bazel-github-actions/setup_bazel@main
+    - uses: ./.github/actions/build_and_test
+
+  ubuntu_build:
+    runs-on: ubuntu-20.04
+    env:
+      CC: clang
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cgrindel/bazel-github-actions/setup_bazel_cache@main
+      with:
+        name: rules_spm
+    - uses: cgrindel/bazel-github-actions/setup_bazel@main
+    - name: Bazel Config for Linux
+      shell: bash
+      run: |
+        # Make sure that the Swift bin directory is first in the PATH. This addresses
+        # the `invalid linker name in argument '-fuse-ld=gold'` error when running
+        # SPM. In short, it allows SPM to find the correct linker.
+        swift_exec=$(which swift)
+        real_swift_exec=$(realpath $swift_exec)
+        real_swift_dir=$(dirname $real_swift_exec)
+        new_path="${real_swift_dir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        cat >>local.bazelrc <<EOF
+        build --action_env=PATH=${new_path}
+        EOF
+    - uses: ./.github/actions/build_and_test
