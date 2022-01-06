@@ -4,11 +4,25 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 package(default_visibility = ["//visibility:public"])
 
 bzl_library(
+    name = "bazel_tools_repo_http",
+    srcs = ["@bazel_tools//tools/build_defs/repo:http.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
+    name = "bazel_tools_repo_utils",
+    srcs = ["@bazel_tools//tools/build_defs/repo:utils.bzl"],
+    visibility = ["//spm:__subpackages__"],
+)
+
+bzl_library(
     name = "deps",
     srcs = ["deps.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
-        "//spm/private:repositories",
+        ":bazel_tools_repo_http",
+        ":bazel_tools_repo_utils",
+        "//spm/private:spm_autoconfiguration",
     ],
 )
 
@@ -21,7 +35,6 @@ bzl_library(
         "//spm/private:platforms",
         "//spm/private:providers",
         "//spm/private:references",
-        "//spm/private:repositories",
         "//spm/private:repository_utils",
         "//spm/private:spm_archive",
         "//spm/private:spm_clang_library",

@@ -71,10 +71,6 @@ load(
     _references = "references",
 )
 load(
-    "//spm/private:repositories.bzl",
-    _spm_rules_dependencies = "spm_rules_dependencies",
-)
-load(
     "//spm/private:repository_utils.bzl",
     _repository_utils = "repository_utils",
 )
@@ -86,7 +82,6 @@ load(
 # Workspce Rules and Functions
 spm_repositories = _spm_repositories
 spm_pkg = _spm_pkg
-spm_rules_dependencies = _spm_rules_dependencies
 
 # Build Rules and Macros
 spm_filegroup = _spm_filegroup

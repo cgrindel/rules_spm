@@ -1,6 +1,6 @@
 load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 load(
-    "@cgrindel_bazel_doc//bazeldoc:bazeldoc.bzl",
+    "@cgrindel_bazel_starlib//bazeldoc:defs.bzl",
     "doc_for_provs",
     "write_file_list",
     "write_header",
@@ -43,7 +43,6 @@ _DOC_WITH_SYMBOLS = {
     "workspace_rules": [
         "spm_repositories",
         "spm_pkg",
-        "spm_rules_dependencies",
     ],
 }
 
