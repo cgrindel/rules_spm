@@ -1,5 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal/modulemap_parser:errors.bzl", "errors")
+load("//spm/private/modulemap_parser:errors.bzl", "errors")
 
 def _create_test(ctx):
     env = unittest.begin(ctx)

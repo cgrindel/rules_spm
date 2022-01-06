@@ -1,5 +1,5 @@
-load("//spm/internal/modulemap_parser:collect_link_declaration.bzl", "collect_link_declaration")
-load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
+load("//spm/private/modulemap_parser:collect_link_declaration.bzl", "collect_link_declaration")
+load("//spm/private/modulemap_parser:declarations.bzl", "declarations")
 load(":test_helpers.bzl", "do_failing_parse_test", "do_parse_test")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 

@@ -537,7 +537,7 @@ spm_repositories)\
     ),
     "_modulemap_tpl": attr.label(
         allow_single_file = True,
-        default = "//spm/internal:module.modulemap.tpl",
+        default = "//spm/private:module.modulemap.tpl",
     ),
     "_toolchain": attr.label(
         default = Label("@cgrindel_rules_spm_local_config//:toolchain"),

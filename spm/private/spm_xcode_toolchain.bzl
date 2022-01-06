@@ -145,7 +145,7 @@ for incremental compilation using a persistent mode.
         "_build_tool": attr.label(
             executable = True,
             cfg = "exec",
-            default = "//spm/internal:exec_spm_build",
+            default = "//spm/private:exec_spm_build",
         ),
         "_xcode_config": attr.label(
             default = configuration_field(

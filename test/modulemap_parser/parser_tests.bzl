@@ -1,5 +1,5 @@
 load("@bazel_skylib//lib:unittest.bzl", "unittest")
-load("//spm/internal/modulemap_parser:declarations.bzl", "declarations")
+load("//spm/private/modulemap_parser:declarations.bzl", "declarations")
 load(":test_helpers.bzl", "do_parse_test")
 
 def _parse_test(ctx):

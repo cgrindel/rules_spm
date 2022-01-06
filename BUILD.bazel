@@ -46,8 +46,8 @@ filegroup(
         "BUILD.bazel",
         "WORKSPACE",
         "//spm:all_files",
-        "//spm/internal:all_files",
-        "//spm/internal/modulemap_parser:all_files",
+        "//spm/private:all_files",
+        "//spm/private/modulemap_parser:all_files",
     ],
     visibility = ["//:__subpackages__"],
 )

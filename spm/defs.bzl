@@ -1,85 +1,85 @@
 load(
-    "//spm/internal:spm_filegroup.bzl",
+    "//spm/private:spm_filegroup.bzl",
     _spm_filegroup = "spm_filegroup",
 )
 load(
-    "//spm/internal:spm_package.bzl",
+    "//spm/private:spm_package.bzl",
     _spm_package = "spm_package",
 )
 load(
-    "//spm/internal:spm_repositories.bzl",
+    "//spm/private:spm_repositories.bzl",
     _spm_pkg = "spm_pkg",
     _spm_repositories = "spm_repositories",
 )
 load(
-    "//spm/internal:spm_swift_library.bzl",
+    "//spm/private:spm_swift_library.bzl",
     _spm_swift_library = "spm_swift_library",
 )
 load(
-    "//spm/internal:spm_swift_binary.bzl",
+    "//spm/private:spm_swift_binary.bzl",
     _spm_swift_binary = "spm_swift_binary",
 )
 load(
-    "//spm/internal:spm_clang_library.bzl",
+    "//spm/private:spm_clang_library.bzl",
     _spm_clang_library = "spm_clang_library",
 )
 load(
-    "//spm/internal:spm_system_library.bzl",
+    "//spm/private:spm_system_library.bzl",
     _spm_system_library = "spm_system_library",
 )
 load(
-    "//spm/internal:spm_archive.bzl",
+    "//spm/private:spm_archive.bzl",
     _spm_archive = "spm_archive",
 )
 load(
-    "//spm/internal:providers.bzl",
+    "//spm/private:providers.bzl",
     _SPMPackageInfo = "SPMPackageInfo",
     _SPMPackagesInfo = "SPMPackagesInfo",
     _SPMPlatformInfo = "SPMPlatformInfo",
     _SPMToolchainInfo = "SPMToolchainInfo",
 )
 load(
-    "//spm/internal:spm_common.bzl",
+    "//spm/private:spm_common.bzl",
     _spm_common = "spm_common",
 )
 load(
-    "//spm/internal:spm_package_info_utils.bzl",
+    "//spm/private:spm_package_info_utils.bzl",
     _spm_package_info_utils = "spm_package_info_utils",
 )
 load(
-    "//spm/internal:spm_versions.bzl",
+    "//spm/private:spm_versions.bzl",
     _spm_versions = "spm_versions",
 )
 load(
-    "//spm/internal:packages.bzl",
+    "//spm/private:packages.bzl",
     _packages = "packages",
 )
 load(
-    "//spm/internal:package_descriptions.bzl",
+    "//spm/private:package_descriptions.bzl",
     _package_descriptions = "package_descriptions",
 )
 load(
-    "//spm/internal:providers.bzl",
+    "//spm/private:providers.bzl",
     _providers = "providers",
 )
 load(
-    "//spm/internal:platforms.bzl",
+    "//spm/private:platforms.bzl",
     _platforms = "platforms",
 )
 load(
-    "//spm/internal:references.bzl",
+    "//spm/private:references.bzl",
     _references = "references",
 )
 load(
-    "//spm/internal:repositories.bzl",
+    "//spm/private:repositories.bzl",
     _spm_rules_dependencies = "spm_rules_dependencies",
 )
 load(
-    "//spm/internal:repository_utils.bzl",
+    "//spm/private:repository_utils.bzl",
     _repository_utils = "repository_utils",
 )
 load(
-    "//spm/internal:actions.bzl",
+    "//spm/private:actions.bzl",
     _actions = "actions",
 )
 

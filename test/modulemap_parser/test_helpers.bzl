@@ -1,7 +1,7 @@
-load("//spm/internal/modulemap_parser:parser.bzl", "parser")
+load("//spm/private/modulemap_parser:errors.bzl", "errors")
+load("//spm/private/modulemap_parser:parser.bzl", "parser")
 load("@bazel_skylib//lib:types.bzl", "types")
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/internal/modulemap_parser:errors.bzl", "errors")
 
 def do_parse_test(env, msg, text, expected):
     if msg == None:
