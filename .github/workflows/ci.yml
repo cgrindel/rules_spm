@@ -12,7 +12,7 @@ jobs:
     - uses: ./.github/actions/setup_bazel_cache
       with:
         name: rules_spm
-    - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel
+    - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel@v0.3.0
     - uses: ./.github/actions/build_and_test
 
   ubuntu_build:
