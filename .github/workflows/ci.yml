@@ -9,10 +9,10 @@ jobs:
     runs-on: macos-11.0
     steps:
     - uses: actions/checkout@v2
-    - uses: ./.github/actions/setup_bazel_cache
+    - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel_cache@main
       with:
         name: rules_spm
-    - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel@v0.3.0
+    - uses: cgrindel/bazel-starlib/.github/actions/setup_bazel@main
     - uses: ./.github/actions/build_and_test
 
   ubuntu_build:
