@@ -83,6 +83,7 @@ out the [examples directory](examples/) for more information.
 
 Add the following to your `WORKSPACE` file to add this repository and its dependencies.
 
+<!-- BEGIN WORKSPACE SNIPPET -->
 ```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -114,6 +115,7 @@ load(
 
 swift_rules_extra_dependencies()
 ```
+<!-- END WORKSPACE SNIPPET -->
 
 ### 2. Add external Swift packages as dependencies to your workspace
 
