@@ -1,0 +1,42 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        required: true
+        type: string
+      reset_tag:
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      release_tag:
+        required: true
+        type: string
+      reset_tag:
+        type: boolean
+        default: false
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    env:
+      CC: clang
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: cgrindel/bazel-starlib/actions/setup_bazel_cache
+      with:
+        name: rules_spm
+    - uses: cgrindel/bazel-starlib/actions/setup_bazel
+    - uses: tibdex/github-app-token@v1
+      id: generate_token
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+    - uses: cgrindel/bazel-starlib/actions/create_release
+      with:
+        release_tag: ${{ github.event.inputs.release_tag }}
+        reset_tag: ${{ github.event.inputs.reset_tag }}
+        github_token: ${{ steps.generate_token.outputs.token }}
