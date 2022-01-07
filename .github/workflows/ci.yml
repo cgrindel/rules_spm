@@ -10,10 +10,10 @@ jobs:
     runs-on: macos-11.0
     steps:
     - uses: actions/checkout@v2
-    - uses: cgrindel/bazel-github-actions/setup_bazel_cache@main
+    - uses: cgrindel/bazel-github-actions/actions/setup_bazel_cache@main
       with:
         name: rules_spm
-    - uses: cgrindel/bazel-github-actions/setup_bazel@main
+    - uses: cgrindel/bazel-github-actions/actions/setup_bazel@main
     - uses: ./.github/actions/build_and_test
 
   ubuntu_build:
@@ -22,10 +22,10 @@ jobs:
       CC: clang
     steps:
     - uses: actions/checkout@v2
-    - uses: cgrindel/bazel-github-actions/setup_bazel_cache@main
+    - uses: cgrindel/bazel-github-actions/actions/setup_bazel_cache@main
       with:
         name: rules_spm
-    - uses: cgrindel/bazel-github-actions/setup_bazel@main
+    - uses: cgrindel/bazel-github-actions/actions/setup_bazel@main
     - name: Bazel Config for Linux
       shell: bash
       run: |
