@@ -1,6 +1,6 @@
 # Swift Package Manager Rules for Bazel
 
-[![Build](https://github.com/cgrindel/rules_spm/actions/workflows/bazel.yml/badge.svg)](https://github.com/cgrindel/rules_spm/actions/workflows/bazel.yml)
+[![Build](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml/badge.svg)](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml)
 
 This repository contains rules for [Bazel](https://bazel.build/) that can be used to download, build
 and consume Swift packages with [rules_swift](https://github.com/bazelbuild/rules_swift) rules.  The
@@ -83,6 +83,7 @@ out the [examples directory](examples/) for more information.
 
 Add the following to your `WORKSPACE` file to add this repository and its dependencies.
 
+<!-- BEGIN WORKSPACE SNIPPET -->
 ```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -114,6 +115,7 @@ load(
 
 swift_rules_extra_dependencies()
 ```
+<!-- END WORKSPACE SNIPPET -->
 
 ### 2. Add external Swift packages as dependencies to your workspace
 
