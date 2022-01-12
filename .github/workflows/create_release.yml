@@ -26,17 +26,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: cgrindel/bazel-starlib/actions/setup_bazel_cache
+    - uses: cgrindel/gha_set_up_bazel@v1
       with:
-        name: rules_spm
-    - uses: cgrindel/bazel-starlib/actions/setup_bazel
+        repo_name: rules_spm
     - uses: tibdex/github-app-token@v1
       id: generate_token
       with:
         app_id: ${{ secrets.APP_ID }}
         private_key: ${{ secrets.APP_PRIVATE_KEY }}
-    - uses: cgrindel/bazel-starlib/actions/create_release
+    - uses: cgrindel/gha_configure_git_user@v1
+    - uses: cgrindel/gha_create_release@v1
       with:
         release_tag: ${{ github.event.inputs.release_tag }}
         reset_tag: ${{ github.event.inputs.reset_tag }}
+        base_branch: ${{ github.event.inputs.base_branch }}
         github_token: ${{ steps.generate_token.outputs.token }}
