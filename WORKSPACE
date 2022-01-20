@@ -55,6 +55,6 @@ load("@cgrindel_rules_bazel_integration_test//bazel_integration_test:deps.bzl", 
 bazel_integration_test_rules_dependencies()
 
 load("//:bazel_versions.bzl", "SUPPORTED_BAZEL_VERSIONS")
-load("@build_bazel_integration_testing//tools:repositories.bzl", "bazel_binaries")
+load("@cgrindel_rules_bazel_integration_test//bazel_integration_test:defs.bzl", "bazel_binaries")
 
 bazel_binaries(versions = SUPPORTED_BAZEL_VERSIONS)

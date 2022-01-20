@@ -1,6 +1,6 @@
 load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 load(
-    "@cgrindel_rules_bazel_integration_test//bazel_integration_test:bazel_integration_test.bzl",
+    "@cgrindel_rules_bazel_integration_test//bazel_integration_test:defs.bzl",
     "bazel_integration_test",
     "bazel_integration_tests",
     "default_test_runner",
@@ -97,6 +97,7 @@ default_test_runner(
         test_runner = ":default_test_runner",
         workspace_files = integration_test_utils.glob_workspace_files(example) +
                           ADDITIONAL_WORKSPACE_FILES,
+        workspace_path = example,
     )
     for example in ALL_OS_TEST_EXAMPLES
 ]
@@ -111,6 +112,7 @@ default_test_runner(
         test_runner = ":default_test_runner",
         workspace_files = integration_test_utils.glob_workspace_files(example) +
                           ADDITIONAL_WORKSPACE_FILES,
+        workspace_path = example,
     )
     for example in MACOS_TEST_EXAMPLES
 ]
