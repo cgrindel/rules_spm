@@ -79,7 +79,7 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/apple/swift-nio.git",
-            from_version = "2.0.0",
+            exact_version = "2.37.0",
             products = ["NIO"],
         ),
     ],
