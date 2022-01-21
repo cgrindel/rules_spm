@@ -63,4 +63,9 @@ spm_repositories(
             products = ["FooKit"],
         ),
     ],
+    # New concurrency stuff is supported in macOS v12.
+    platforms = [
+        ".macOS(.v12)",
+    ],
+    swift_version = "5.5",
 )
