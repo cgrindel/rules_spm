@@ -20,7 +20,7 @@ ALL_OS_TEST_EXAMPLES = [
     # "Library not loaded: /usr/lib/swift/libswift_Concurrency.dylib"
     #
     "local_package",
-    # "vapor",
+    "vapor",
 ]
 
 MACOS_TEST_EXAMPLES = [

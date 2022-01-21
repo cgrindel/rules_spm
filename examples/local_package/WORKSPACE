@@ -48,12 +48,12 @@ spm_repositories(
     name = "swift_pkgs",
     dependencies = [
         spm_pkg(
-            from_version = "1.0.0",
+            exact_version = "1.4.2",
             products = ["Logging"],
             url = "https://github.com/apple/swift-log.git",
         ),
         spm_pkg(
-            from_version = "2.0.0",
+            exact_version = "2.37.0",
             products = ["NIO"],
             url = "https://github.com/apple/swift-nio.git",
         ),
