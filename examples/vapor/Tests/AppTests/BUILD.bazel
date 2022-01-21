@@ -3,9 +3,18 @@ load("@build_bazel_rules_swift//swift:swift.bzl", "swift_test")
 swift_test(
     name = "AppTests",
     srcs = glob(["*.swift"]),
+    # Workaround for missing libswift_Concurrency.dylib
+    # https://forums.swift.org/t/swift-concurrency-back-deploy-issue/53917/10
+    linkopts = [
+        "-Wl",
+        "-weak-lswift_Concurrency",
+        "-Wl",
+        "-rpath",
+        "/usr/lib/swift",
+    ],
     deps = [
         "//Sources/App/Configuration",
         "@swift_pkgs//vapor:XCTVapor",
-        "@zlib//:zlib",
+        "@zlib",
     ],
 )
