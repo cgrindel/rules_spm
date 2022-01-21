@@ -1,7 +1,4 @@
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_binary")
-# load("@build_bazel_rules_apple//apple:macos.bzl", "macos_command_line_application")
-# load("@build_bazel_rules_apple//apple:versioning.bzl", "apple_bundle_version")
-# load("@build_bazel_rules_swift//swift:swift.bzl",  "swift_library")
 
 swift_binary(
     name = "local_package",
@@ -22,32 +19,6 @@ swift_binary(
         "@swift_pkgs//swift-nio:NIO",
     ],
 )
-
-# swift_library(
-#     name = "sources",
-#     srcs = ["main.swift"],
-#     visibility = ["//swift:__subpackages__"],
-#     deps = [
-#         "@swift_pkgs//foo-kit:FooKit",
-#         "@swift_pkgs//swift-log:Logging",
-#         "@swift_pkgs//swift-nio:NIO",
-#     ],
-# )
-
-# apple_bundle_version(
-#     name = "version",
-#     build_version = "1.0",
-# )
-
-# macos_command_line_application(
-#     name = "local_package",
-#     bundle_id = "com.example.local_package",
-#     infoplists = [":Info.plist"],
-#     minimum_os_version = "12",
-#     version = ":version",
-#     visibility = ["//swift:__subpackages__"],
-#     deps = [":sources"],
-# )
 
 sh_test(
     name = "local_package_test",
