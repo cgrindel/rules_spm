@@ -16,11 +16,8 @@ ALL_OS_TEST_EXAMPLES = [
     "simple",
     "simple_revision",
     "simple_with_binary",
-    # GH090: Disabled tests due to error:
-    # "Library not loaded: /usr/lib/swift/libswift_Concurrency.dylib"
-    #
-    # "local_package",
-    # "vapor",
+    "local_package",
+    "vapor",
 ]
 
 MACOS_TEST_EXAMPLES = [
