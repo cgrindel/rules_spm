@@ -7,20 +7,11 @@ config_setting(
     ],
 )
 
-# TODO: FIX ME
-
 swift_binary(
     name = "local_package",
     srcs = ["main.swift"],
     # Workaround for missing libswift_Concurrency.dylib
     # https://forums.swift.org/t/swift-concurrency-back-deploy-issue/53917/10
-    # linkopts = [
-    #     "-Wl",
-    #     "-weak-lswift_Concurrency",
-    #     "-Wl",
-    #     "-rpath",
-    #     "/usr/lib/swift",
-    # ],
     linkopts = select({
         ":macos_os": [
             "-Wl",
