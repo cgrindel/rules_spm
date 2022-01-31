@@ -1,6 +1,6 @@
 # Swift Package Manager Rules for Bazel
 
-[![Build](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml/badge.svg)](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml)
+[![Build](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml)
 
 This repository contains rules for [Bazel](https://bazel.build/) that can be used to download, build
 and consume Swift packages with [rules_swift](https://github.com/bazelbuild/rules_swift) rules.  The
