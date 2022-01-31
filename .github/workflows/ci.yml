@@ -24,20 +24,31 @@ jobs:
     env:
       CC: clang
     steps:
+    - uses: cgrindel/gha_install_swift_on_ubuntu@v1
+      with:
+        swift_release_tag: "swift-5.5.2-RELEASE"
+        ubuntu_version: "20.04"
     - uses: actions/checkout@v2
-    - name: Bazel Config for Linux
+    - name: Update local.bazelrc with Linux Flags
       shell: bash
       run: |
-        # Make sure that the Swift bin directory is first in the PATH. This addresses
-        # the `invalid linker name in argument '-fuse-ld=gold'` error when running
-        # SPM. In short, it allows SPM to find the correct linker.
-        swift_exec=$(which swift)
-        real_swift_exec=$(realpath $swift_exec)
-        real_swift_dir=$(dirname $real_swift_exec)
-        new_path="${real_swift_dir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-        cat >>local.bazelrc <<EOF
-        build --action_env=PATH=${new_path}
+        cat >> "local.bazelrc" <<EOF
+        # Need to expose the PATH so that the Swift toolchain can be found
+        build --action_env=PATH
         EOF
+    # - name: Bazel Config for Linux
+    #   shell: bash
+    #   run: |
+    #     # Make sure that the Swift bin directory is first in the PATH. This addresses
+    #     # the `invalid linker name in argument '-fuse-ld=gold'` error when running
+    #     # SPM. In short, it allows SPM to find the correct linker.
+    #     swift_exec=$(which swift)
+    #     real_swift_exec=$(realpath $swift_exec)
+    #     real_swift_dir=$(dirname $real_swift_exec)
+    #     new_path="${real_swift_dir}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    #     cat >>local.bazelrc <<EOF
+    #     build --action_env=PATH=${new_path}
+    #     EOF
     - uses: cgrindel/gha_set_up_bazel@v1
       with:
         repo_name: rules_spm
