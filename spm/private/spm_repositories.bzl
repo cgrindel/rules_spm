@@ -636,7 +636,7 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             clang_hdr_paths = _get_clang_hdrs_for_target(
                 repository_ctx,
                 clang_target,
-                pkg_root_path = paths.join(spm_common.checkouts_path, dep_name),
+                pkg_root_path = dep_pkg_desc["path"],
             )
             clang_hdrs_key = spm_common.create_clang_hdrs_key(
                 dep_name,
