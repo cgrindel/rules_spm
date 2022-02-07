@@ -371,19 +371,6 @@ def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
 
     return hdrs
 
-def _is_include_hdr_path(path):
-    """Determines whether the path is a public header.
-
-    Args:
-        path: A path `string` value.
-
-    Returns:
-        A `bool` indicating whether the path is a public header.
-    """
-    root, ext = paths.split_extension(path)
-    dirname = paths.basename(paths.dirname(path))
-    return dirname == "include" and ext == ".h"
-
 def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     """Returns a list of the public headers for the clang target.
 
@@ -412,7 +399,7 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
             module_paths,
             modulemap_paths[0],
         )
-    return [p for p in module_paths if _is_include_hdr_path(p)]
+    return [p for p in module_paths if spm_common.is_include_hdr_path(p)]
 
 # MARK: - Root BUILD.bazel Generation
 
@@ -653,6 +640,7 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     for product_ref in declared_product_refs:
         ref_type, pkg_name, product_name = refs.split(product_ref)
         exec_products = exec_products_dict.setdefault(pkg_name, default = [])
+
         product = pds.get_product(pkg_descs_dict[pkg_name], product_name)
         if pds.is_executable_product(product):
             exec_products.append(product)

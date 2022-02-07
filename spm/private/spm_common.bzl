@@ -27,12 +27,26 @@ def _split_clang_hdrs_key(key):
         fail("Unexpected clang headers key value. %s" % (key))
     return (parts[0], parts[1])
 
+def _is_include_hdr_path(path):
+    """Determines whether the path is a public header.
+
+    Args:
+        path: A path `string` value.
+
+    Returns:
+        A `bool` indicating whether the path is a public header.
+    """
+    root, ext = paths.split_extension(path)
+    contains_include_dir = path.find("/include/") > -1
+    return contains_include_dir and ext == ".h"
+
 _build_dirname = "spm_build"
 _checkouts_path = paths.join(_build_dirname, "checkouts")
 
 spm_common = struct(
     create_clang_hdrs_key = _create_clang_hdrs_key,
     split_clang_hdrs_key = _split_clang_hdrs_key,
+    is_include_hdr_path = _is_include_hdr_path,
     build_dirname = _build_dirname,
     checkouts_path = _checkouts_path,
 )

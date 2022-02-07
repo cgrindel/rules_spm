@@ -18,6 +18,7 @@ ALL_OS_TEST_EXAMPLES = [
     "simple_with_binary",
     "local_package",
     "vapor",
+    "interesting_deps",
 ]
 
 MACOS_TEST_EXAMPLES = [
