@@ -371,19 +371,6 @@ def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
 
     return hdrs
 
-def _is_include_hdr_path(path):
-    """Determines whether the path is a public header.
-
-    Args:
-        path: A path `string` value.
-
-    Returns:
-        A `bool` indicating whether the path is a public header.
-    """
-    root, ext = paths.split_extension(path)
-    dirname = paths.basename(paths.dirname(path))
-    return dirname == "include" and ext == ".h"
-
 def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     """Returns a list of the public headers for the clang target.
 
@@ -399,6 +386,15 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     src_path = paths.join(pkg_root_path, target["path"])
     module_paths = _list_files_under(repository_ctx, src_path)
 
+    # DEBUG BEGIN
+    print("*** CHUCK target: ", target)
+    print("*** CHUCK src_path: ", src_path)
+    print("*** CHUCK module_paths: ")
+    for idx, item in enumerate(module_paths):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
+
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
     modulemap_paths_len = len(modulemap_paths)
     if modulemap_paths_len > 1:
@@ -412,7 +408,7 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
             module_paths,
             modulemap_paths[0],
         )
-    return [p for p in module_paths if _is_include_hdr_path(p)]
+    return [p for p in module_paths if spm_common.is_include_hdr_path(p)]
 
 # MARK: - Root BUILD.bazel Generation
 
@@ -649,25 +645,12 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     # dependencies
     declared_product_refs = packages.get_product_refs(pkgs)
 
-    # DEBUG BEGIN
-    print("*** CHUCK pkg_descs_dict: ")
-    for key in pkg_descs_dict:
-        print("*** CHUCK", key, ":", pkg_descs_dict[key])
-
-    # DEBUG END
-
     # Index the executable products by package name.
     exec_products_dict = {}
     for product_ref in declared_product_refs:
         ref_type, pkg_name, product_name = refs.split(product_ref)
         exec_products = exec_products_dict.setdefault(pkg_name, default = [])
 
-        # DEBUG BEGIN
-        print("*** CHUCK product_ref: ", product_ref)
-        print("*** CHUCK product_name: ", product_name)
-        print("*** CHUCK pkg_name: ", pkg_name)
-
-        # DEBUG END
         product = pds.get_product(pkg_descs_dict[pkg_name], product_name)
         if pds.is_executable_product(product):
             exec_products.append(product)
