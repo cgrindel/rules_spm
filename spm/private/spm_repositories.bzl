@@ -386,15 +386,6 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     src_path = paths.join(pkg_root_path, target["path"])
     module_paths = _list_files_under(repository_ctx, src_path)
 
-    # DEBUG BEGIN
-    print("*** CHUCK target: ", target)
-    print("*** CHUCK src_path: ", src_path)
-    print("*** CHUCK module_paths: ")
-    for idx, item in enumerate(module_paths):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
-
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
     modulemap_paths_len = len(modulemap_paths)
     if modulemap_paths_len > 1:
