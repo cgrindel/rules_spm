@@ -28,6 +28,8 @@
 - [Vapor](/examples/vapor): Demonstrates a dependency on [Vapor](https://github.com/vapor/vapor), a
   popular web framework for Swift. This examples also demonstrates that `rules_spm` can handle custom
   module maps in dependent Swift packages.
+- [Interesting Dependencies](/examples/interesting_deps): Demonstrates the declaration of dependent
+  Swift packages with unique or non-standard characteristics.
 
 ## Integration Tests
 
