@@ -636,7 +636,8 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             clang_hdr_paths = _get_clang_hdrs_for_target(
                 repository_ctx,
                 clang_target,
-                pkg_root_path = paths.join(spm_common.checkouts_path, dep_name),
+                # pkg_root_path = paths.join(spm_common.checkouts_path, dep_name),
+                pkg_root_path = dep_pkg_desc["path"],
             )
             clang_hdrs_key = spm_common.create_clang_hdrs_key(
                 dep_name,
@@ -648,11 +649,25 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     # dependencies
     declared_product_refs = packages.get_product_refs(pkgs)
 
+    # DEBUG BEGIN
+    print("*** CHUCK pkg_descs_dict: ")
+    for key in pkg_descs_dict:
+        print("*** CHUCK", key, ":", pkg_descs_dict[key])
+
+    # DEBUG END
+
     # Index the executable products by package name.
     exec_products_dict = {}
     for product_ref in declared_product_refs:
         ref_type, pkg_name, product_name = refs.split(product_ref)
         exec_products = exec_products_dict.setdefault(pkg_name, default = [])
+
+        # DEBUG BEGIN
+        print("*** CHUCK product_ref: ", product_ref)
+        print("*** CHUCK product_name: ", product_name)
+        print("*** CHUCK pkg_name: ", pkg_name)
+
+        # DEBUG END
         product = pds.get_product(pkg_descs_dict[pkg_name], product_name)
         if pds.is_executable_product(product):
             exec_products.append(product)
