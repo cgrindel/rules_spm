@@ -27,6 +27,9 @@ def _split_clang_hdrs_key(key):
         fail("Unexpected clang headers key value. %s" % (key))
     return (parts[0], parts[1])
 
+# Directory names that may include public header files.
+_PUBLIC_HDR_DIRNAMES = ["include", "public"]
+
 def _is_include_hdr_path(path):
     """Determines whether the path is a public header.
 
@@ -37,8 +40,15 @@ def _is_include_hdr_path(path):
         A `bool` indicating whether the path is a public header.
     """
     root, ext = paths.split_extension(path)
-    contains_include_dir = (path.find("/include/") > -1) or (path.find("/public/") > -1)
-    return contains_include_dir and ext == ".h"
+    if ext != ".h":
+        return False
+    for dirname in _PUBLIC_HDR_DIRNAMES:
+        if (path.find("/%s/" % dirname) > -1) or path.startswith("%s/" % dirname):
+            return True
+    return False
+
+    # contains_include_dir = (path.find("/include/") > -1) or (path.find("/public/") > -1)
+    # return contains_include_dir and ext == ".h"
 
 _build_dirname = "spm_build"
 _checkouts_path = paths.join(_build_dirname, "checkouts")
