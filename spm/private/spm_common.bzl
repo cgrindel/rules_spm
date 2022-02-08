@@ -37,7 +37,7 @@ def _is_include_hdr_path(path):
         A `bool` indicating whether the path is a public header.
     """
     root, ext = paths.split_extension(path)
-    contains_include_dir = path.find("/include/") > -1
+    contains_include_dir = (path.find("/include/") > -1) or (path.find("/public/") > -1)
     return contains_include_dir and ext == ".h"
 
 _build_dirname = "spm_build"
