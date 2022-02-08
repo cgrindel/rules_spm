@@ -23,6 +23,7 @@ ALL_OS_TEST_EXAMPLES = [
 
 MACOS_TEST_EXAMPLES = [
     "ios_sim",
+    "public_hdrs",
 ]
 
 NO_SUDO_INTEGRATION_TESTS = [
