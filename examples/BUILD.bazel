@@ -19,6 +19,7 @@ ALL_OS_TEST_EXAMPLES = [
     "local_package",
     "vapor",
     "interesting_deps",
+    "public_hdrs",
 ]
 
 MACOS_TEST_EXAMPLES = [

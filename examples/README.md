@@ -30,6 +30,8 @@
   module maps in dependent Swift packages.
 - [Interesting Dependencies](/examples/interesting_deps): Demonstrates the declaration of dependent
   Swift packages with unique or non-standard characteristics.
+- [Public Headers](/examples/public_hdrs): Example of the package that holds its public headers in a
+  'public' directory.
 
 ## Integration Tests
 

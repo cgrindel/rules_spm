@@ -26,6 +26,8 @@ def _is_include_hdr_path_test(ctx):
     env = unittest.begin(ctx)
 
     asserts.true(env, spm_common.is_include_hdr_path("foo/bar/include/chicken.h"))
+    asserts.true(env, spm_common.is_include_hdr_path("foo/public/chicken.h"))
+    asserts.true(env, spm_common.is_include_hdr_path("public/chicken.h"))
     asserts.false(env, spm_common.is_include_hdr_path("foo/bar/chicken.h"))
 
     # Find headers that are not directly under the include directory.
