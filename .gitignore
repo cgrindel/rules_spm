@@ -1,3 +1,8 @@
 # Ignore Bazel symlinks
 bazel-*
 
+# macOS
+.DS_Store
+
+# VSCode
+.vscode
