@@ -47,9 +47,6 @@ def _is_include_hdr_path(path):
             return True
     return False
 
-    # contains_include_dir = (path.find("/include/") > -1) or (path.find("/public/") > -1)
-    # return contains_include_dir and ext == ".h"
-
 _build_dirname = "spm_build"
 _checkouts_path = paths.join(_build_dirname, "checkouts")
 
