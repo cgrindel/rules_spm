@@ -1,23 +1,23 @@
 import TrustKit
 
 let trustKitConfig =
-[
-    kTSKSwizzleNetworkDelegates: false,
-    kTSKPinnedDomains:
     [
-        "yahoo.com": [
-            kTSKExpirationDate: "2022-02-08",
-            kTSKPublicKeyHashes:
+        kTSKSwizzleNetworkDelegates: false,
+        kTSKPinnedDomains:
             [
-                "JbQbUG5JMJUoI6brnx0x3vZF6jilxsapbXGVfjhN8Fg=",
-                "WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18="
+                "yahoo.com": [
+                    kTSKExpirationDate: "2022-02-08",
+                    kTSKPublicKeyHashes:
+                        [
+                            "JbQbUG5JMJUoI6brnx0x3vZF6jilxsapbXGVfjhN8Fg=",
+                            "WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=",
+                        ],
+                ],
             ],
-        ]
-    ]
-] as [String : Any]
+    ] as [String: Any]
 
 TrustKit.setLoggerBlock {
     print($0)
 }
 
-let _ = TrustKit(configuration: trustKitConfig)
+_ = TrustKit(configuration: trustKitConfig)
