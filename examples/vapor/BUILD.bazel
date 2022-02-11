@@ -1,4 +1,6 @@
 # Vapor was not happy building under 13.2.1. Fix the version for now.
+# See Keith's article for more details:
+# https://www.smileykeith.com/2021/03/08/locking-xcode-in-bazel/
 
 xcode_version(
     name = "version13_1_0_13A1030d",
