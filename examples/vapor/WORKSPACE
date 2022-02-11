@@ -47,7 +47,7 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/vapor/vapor.git",
-            exact_version = "4.54.1",
+            exact_version = "4.55.0",
             products = [
                 "Vapor",
                 "XCTVapor",
