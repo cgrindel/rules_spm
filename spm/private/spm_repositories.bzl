@@ -638,7 +638,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             pkg_descs_dict[pkg_name],
             dep_target_refs_dict,
             exec_products_dict.get(pkg_name, default = []),
-            pkg_root_path = paths.join(spm_common.checkouts_path, pkg_name),
         )
 
     # Write BUILD.bazel file.
