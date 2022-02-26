@@ -241,8 +241,7 @@ def _generate_bazel_pkg(
         repository_ctx,
         pkg_desc,
         dep_target_refs_dict,
-        exec_products,
-        pkg_root_path):
+        exec_products):
     """Generate a Bazel package for the specified Swift package.
 
     Args:
@@ -251,8 +250,6 @@ def _generate_bazel_pkg(
         dep_target_refs_dict: A `dict` of target refs and their dependencies.
         exec_products: A `list` of product `dict` from the package description
                        that are executable.
-        pkg_root_path: A path `string` specifying the location of the package
-                       which defines the target.
     """
     pkg_name = pkg_desc["name"]
     bld_path = "%s/BUILD.bazel" % (pkg_name)
