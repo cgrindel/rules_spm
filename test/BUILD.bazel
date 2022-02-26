@@ -1,13 +1,13 @@
 load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 load(":package_descriptions_tests.bzl", "package_descriptions_test_suite")
-load(":providers_tests.bzl", "providers_test_suite")
 load(":packages_tests.bzl", "packages_test_suite")
-load(":spm_common_tests.bzl", "spm_common_test_suite")
-load(":references_tests.bzl", "references_test_suite")
 load(":platforms_tests.bzl", "platforms_test_suite")
-load(":swift_toolchains_tests.bzl", "swift_toolchains_test_suite")
+load(":providers_tests.bzl", "providers_test_suite")
+load(":references_tests.bzl", "references_test_suite")
+load(":spm_common_tests.bzl", "spm_common_test_suite")
 load(":spm_package_info_utils_tests.bzl", "spm_package_info_utils_test_suite")
 load(":spm_versions_tests.bzl", "spm_versions_test_suite")
+load(":swift_toolchains_tests.bzl", "swift_toolchains_test_suite")
 
 package_descriptions_test_suite()
 

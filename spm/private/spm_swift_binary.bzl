@@ -1,6 +1,8 @@
+"""Definition for spm_swift_binary rule."""
+
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":providers.bzl", "SPMPackagesInfo")
 load(":spm_package_info_utils.bzl", "spm_package_info_utils")
-load("@bazel_skylib//lib:paths.bzl", "paths")
 
 def _derive_pkg_name(ctx):
     """Determines the Swift package name from the Bazel package name.
@@ -46,11 +48,10 @@ spm_swift_binary = rule(
     implementation = _spm_swift_binary_impl,
     executable = True,
     attrs = {
-        "packages": attr.label(
-            mandatory = True,
-            providers = [[SPMPackagesInfo]],
+        "module_name": attr.string(
             doc = """\
-A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
+The name of the executable module in the SPM package. If no value
+is provided, it will be derived from the name attribute.\
 """,
         ),
         "package_name": attr.string(
@@ -59,10 +60,11 @@ The name of the package that exports this module. If no value
 provided, it will be derived from the Bazel package name.\
 """,
         ),
-        "module_name": attr.string(
+        "packages": attr.label(
+            mandatory = True,
+            providers = [[SPMPackagesInfo]],
             doc = """\
-The name of the executable module in the SPM package. If no value
-is provided, it will be derived from the name attribute.\
+A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
 """,
         ),
     },

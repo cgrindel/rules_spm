@@ -1,14 +1,15 @@
-load(":errors.bzl", "errors")
+"""Definition for tokens module."""
+
 load("@bazel_skylib//lib:partial.bzl", "partial")
 load("@bazel_skylib//lib:sets.bzl", "sets")
 load("@bazel_skylib//lib:structs.bzl", "structs")
 load("@bazel_skylib//lib:types.bzl", "types")
+load(":errors.bzl", "errors")
 
 # MARK: - Token Creation Functions
 
 def _is_valid_value(value_type_or_set, value):
-    """Returns a boolean indicating whether the specified value is valid for the specified value 
-    type.
+    """Returns a boolean indicating whether the specified value is valid for the specified value type.
 
     Args:
         value_type_or_set: If this is a string, then it is considered to be a string type as returned
@@ -204,8 +205,7 @@ def _get_token(tokens, idx, count = None):
     return tokens[idx], None
 
 def _get_token_as(tokens, idx, token_type, value = None, count = None):
-    """Returns the next token in the list if it matches the specified type and, optionally, the
-    specified value.
+    """Returns the next token in the list if it matches the specified type and, optionally, the specified value.
 
     Args:
         tokens: A `list` of tokens.

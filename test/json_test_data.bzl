@@ -1,3 +1,5 @@
+"""Provides JSON test data."""
+
 package_description_json = """
 {
   "dependencies" : [

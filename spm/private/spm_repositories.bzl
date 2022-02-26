@@ -1,14 +1,16 @@
-load("//spm/private/modulemap_parser:declarations.bzl", dts = "declaration_types")
-load("//spm/private/modulemap_parser:parser.bzl", "parser")
-load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
-load(":packages.bzl", "packages")
-load(":references.bzl", ref_types = "reference_types", refs = "references")
-load(":repository_utils.bzl", "repository_utils")
-load(":spm_common.bzl", "spm_common")
-load(":spm_versions.bzl", "spm_versions")
+"""Definition for spm_repositories module."""
+
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//lib:versions.bzl", "versions")
+load("//spm/private/modulemap_parser:declarations.bzl", dts = "declaration_types")
+load("//spm/private/modulemap_parser:parser.bzl", "parser")
+load(":package_descriptions.bzl", pds = "package_descriptions")
+load(":packages.bzl", "packages")
+load(":references.bzl", refs = "references")
+load(":repository_utils.bzl", "repository_utils")
+load(":spm_common.bzl", "spm_common")
+load(":spm_versions.bzl", "spm_versions")
 
 # MARK: - Environment Variables
 
@@ -160,7 +162,7 @@ def _create_deps_str(pkg_name, target_deps):
     """
     target_labels = []
     for target_ref in target_deps:
-        rtype, pname, tname = refs.split(target_ref)
+        _rtype, pname, tname = refs.split(target_ref)
         if pname == pkg_name:
             target_labels.append(":%s" % (tname))
         else:
@@ -169,12 +171,11 @@ def _create_deps_str(pkg_name, target_deps):
     deps = ["        \"%s\"," % (label) for label in target_labels]
     return "\n".join(deps)
 
-def _create_spm_swift_binary_decl(repository_ctx, pkg_name, product):
+def _create_spm_swift_binary_decl(repository_ctx, product):
     """Returns the spm_swift_library declaration for this Swift target.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
-        pkg_name: The name of the Swift package as a `string`.
         product: A product `dict` from a package description JSON.
 
     Returns:
@@ -219,7 +220,7 @@ def _create_spm_clang_library_decl(repository_ctx, pkg_name, target, target_deps
     deps_str = _create_deps_str(pkg_name, target_deps)
     return _spm_clang_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
-def _create_spm_system_library_decl(repository_ctx, pkg_name, target, target_deps, pkg_root_path):
+def _create_spm_system_library_decl(repository_ctx, pkg_name, target, target_deps):
     """Returns the spm_clang_library declaration for this clang target.
 
     Args:
@@ -228,15 +229,11 @@ def _create_spm_system_library_decl(repository_ctx, pkg_name, target, target_dep
         target: A target `dict` from a package description JSON.
         target_deps: A `list` of the target's dependencies as target
                      references.
-        pkg_root_path: A path `string` specifying the location of the package
-                       which defines the target.
 
     Returns:
         A `string` representing an `spm_clang_library` declaration.
     """
     module_name = target["name"]
-    src_path = paths.join(pkg_root_path, target["path"])
-    module_paths = _list_files_under(repository_ctx, src_path)
     deps_str = _create_deps_str(pkg_name, target_deps)
     return _spm_system_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
 
@@ -244,7 +241,6 @@ def _generate_bazel_pkg(
         repository_ctx,
         pkg_desc,
         dep_target_refs_dict,
-        clang_hdrs_dict,
         exec_products,
         pkg_root_path):
     """Generate a Bazel package for the specified Swift package.
@@ -253,10 +249,6 @@ def _generate_bazel_pkg(
         repository_ctx: A `repository_ctx` instance.
         pkg_desc: A package description `dict`.
         dep_target_refs_dict: A `dict` of target refs and their dependencies.
-        clang_hdrs_dict: A `dict` where the values are a `list` of clang
-                         public header path `string` values and the keys are
-                         a `string` created by
-                         `spm_common.create_clang_hdrs_key()`.
         exec_products: A `list` of product `dict` from the package description
                        that are executable.
         pkg_root_path: A path `string` specifying the location of the package
@@ -279,7 +271,7 @@ def _generate_bazel_pkg(
     target_refs = [tr for tr in dep_target_refs_dict if refs.is_target_ref(tr, for_pkg = pkg_name)]
     for target_ref in target_refs:
         target_deps = dep_target_refs_dict[target_ref]
-        rtype, pname, target_name = refs.split(target_ref)
+        _rtype, _pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
         if pds.is_clang_target(target):
             module_decls.append(_create_spm_clang_library_decl(
@@ -333,15 +325,13 @@ def _is_modulemap_path(path):
         file.
     """
     basename = paths.basename(path)
-    dirname = paths.basename(paths.dirname(path))
     return basename == "module.modulemap"
 
-def _get_hdr_paths_from_modulemap(repository_ctx, module_paths, modulemap_path):
+def _get_hdr_paths_from_modulemap(repository_ctx, modulemap_path):
     """Retrieves the list of headers declared in the specified modulemap file.
 
     Args:
         repository_ctx: A `repository_ctx` instance.
-        module_paths: A `list` of path `string` values.
         modulemap_path: A path `string` to the `module.modulemap` file.
 
     Returns:
@@ -460,10 +450,10 @@ def _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkg
         pkgs: A `list` of package declarations as created by `packages.create()`.
     """
     substitutions = {
-        "{spm_repos_name}": repository_ctx.attr.name,
-        "{pkg_descs_json}": json.encode_indent(pkg_descs_dict, indent = "  "),
         "{clang_module_headers}": _create_clang_module_headers(clang_hdrs_dict),
         "{dependencies_json}": json.encode_indent(pkgs),
+        "{pkg_descs_json}": json.encode_indent(pkg_descs_dict, indent = "  "),
+        "{spm_repos_name}": repository_ctx.attr.name,
     }
     repository_ctx.template(
         "BUILD.bazel",
@@ -553,9 +543,9 @@ def _generate_package_swift_file(repository_ctx, pkgs):
     pkg_deps = [_generate_spm_package_dep(pkg) for pkg in pkgs]
     target_deps = [_target_dep_tpl % (pname, pkg.name) for pkg in pkgs for pname in pkg.products]
     substitutions = {
-        "{swift_tools_version}": repository_ctx.attr.swift_version,
-        "{swift_platforms}": swift_platforms,
         "{package_dependencies}": ",\n".join(["    %s" % (d) for d in pkg_deps]),
+        "{swift_platforms}": swift_platforms,
+        "{swift_tools_version}": repository_ctx.attr.swift_version,
         "{target_dependencies}": ",\n".join(["      %s" % (d) for d in target_deps]),
     }
     repository_ctx.template(
@@ -573,10 +563,11 @@ def _configure_spm_repository(repository_ctx, pkgs, env):
     Args:
         repository_ctx: A `repository_ctx` instance.
         pkgs: A `list` of package declarations as created by `packages.create()`.
+        env: An env struct.
     """
 
     # Resolve/fetch the dependencies.
-    resolve_out = repository_utils.exec_spm_command(
+    repository_utils.exec_spm_command(
         repository_ctx,
         ["swift", "package", "resolve", "--build-path", spm_common.build_dirname],
         env = env,
@@ -638,7 +629,7 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     # Index the executable products by package name.
     exec_products_dict = {}
     for product_ref in declared_product_refs:
-        ref_type, pkg_name, product_name = refs.split(product_ref)
+        _ref_type, pkg_name, product_name = refs.split(product_ref)
         exec_products = exec_products_dict.setdefault(pkg_name, default = [])
 
         product = pds.get_product(pkg_descs_dict[pkg_name], product_name)
@@ -714,10 +705,11 @@ spm_repositories = repository_rule(
             mandatory = True,
             doc = "List of JSON strings specifying the SPM packages to load.",
         ),
-        "swift_version": attr.string(
-            default = "5.3",
+        "env": attr.string_dict(
             doc = """\
-The version of Swift that will be declared in the placeholder/uber Swift package.\
+Environment variables that will be passed to the execution environments for \
+this repository rule. (e.g. SPM version check, SPM dependency resolution, SPM \
+package description generation)\
 """,
         ),
         "platforms": attr.string_list(
@@ -726,18 +718,10 @@ The platforms to declare in the placeholder/uber Swift package. \
 (e.g. .macOS(.v10_15))\
 """,
         ),
-        "env": attr.string_dict(
+        "swift_version": attr.string(
+            default = "5.3",
             doc = """\
-Environment variables that will be passed to the execution environments for \
-this repository rule. (e.g. SPM version check, SPM dependency resolution, SPM \
-package description generation)\
-""",
-        ),
-        "_workspace_file": attr.label(
-            default = "@//:WORKSPACE",
-            doc = """\
-The value of this label helps the rule find the root of the Bazel \
-workspace for local path resolution.\
+The version of Swift that will be declared in the placeholder/uber Swift package.\
 """,
         ),
         "_package_swift_tpl": attr.label(
@@ -745,6 +729,13 @@ workspace for local path resolution.\
         ),
         "_root_build_tpl": attr.label(
             default = "//spm/private:root.BUILD.bazel.tpl",
+        ),
+        "_workspace_file": attr.label(
+            default = "@//:WORKSPACE",
+            doc = """\
+The value of this label helps the rule find the root of the Bazel \
+workspace for local path resolution.\
+""",
         ),
     },
     doc = """\

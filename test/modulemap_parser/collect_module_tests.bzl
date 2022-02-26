@@ -1,7 +1,13 @@
+"""Tests for collect_module."""
+
+load("@bazel_skylib//lib:unittest.bzl", "unittest")
+
+# buildifier: disable=bzl-visibility
 load("//spm/private/modulemap_parser:declarations.bzl", "declarations")
+
+# buildifier: disable=bzl-visibility
 load("//spm/private/modulemap_parser:tokens.bzl", "tokens")
 load(":test_helpers.bzl", "do_failing_parse_test", "do_parse_test")
-load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
 def _collect_module_test(ctx):
     env = unittest.begin(ctx)

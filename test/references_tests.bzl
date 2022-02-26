@@ -1,5 +1,7 @@
+"""Tests for references module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private:references.bzl", "reference_types", "references")
+load("//spm:defs.bzl", "reference_types", "references")
 
 def _create_test(ctx):
     env = unittest.begin(ctx)

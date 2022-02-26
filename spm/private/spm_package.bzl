@@ -1,13 +1,13 @@
+"""Definition for spm_package rule."""
+
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":actions.bzl", "action_names")
-load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
+load(":package_descriptions.bzl", pds = "package_descriptions")
 load(":packages.bzl", "packages")
-load(":platforms.bzl", "platforms")
-load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "SPMPlatformInfo", "SPMToolchainInfo", "providers")
-load(":references.bzl", ref_types = "reference_types", refs = "references")
+load(":providers.bzl", "SPMPackageInfo", "SPMPackagesInfo", "SPMToolchainInfo", "providers")
+load(":references.bzl", refs = "references")
 load(":spm_common.bzl", "spm_common")
 load(":swift_toolchains.bzl", "swift_toolchains")
-load("@bazel_skylib//lib:dicts.bzl", "dicts")
-load("@bazel_skylib//lib:paths.bzl", "paths")
 
 # MARK: - Swift Module Info
 
@@ -184,7 +184,7 @@ def _gather_package_build_info(
     # Collect the executable products
     exec_products = []
     for product_ref in product_refs:
-        ref_type, pkg_name, product_name = refs.split(product_ref)
+        _ref_type, pkg_name, product_name = refs.split(product_ref)
         product = pds.get_product(pkg_desc, product_name)
         if pds.is_executable_product(product):
             exec_products.append(product)
@@ -201,7 +201,7 @@ def _gather_package_build_info(
 
     # Declare outputs for the targets that will be used
     for target_ref in target_refs:
-        ref_type, pname, target_name = refs.split(target_ref)
+        _ref_type, pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
 
         if pds.is_swift_target(target):
@@ -333,8 +333,8 @@ def _customize_clang_modulemap_and_hdrs(
     # away with specifying a single umbrella header.
     umbrella_hdr = public_hdrs[0]
     substitutions = {
-        "{spm_module_name}": module_name,
         "{spm_module_header}": paths.basename(umbrella_hdr),
+        "{spm_module_name}": module_name,
     }
     ctx.actions.expand_template(
         template = ctx.file._modulemap_tpl,
@@ -514,13 +514,8 @@ def _spm_package_impl(ctx):
     ]
 
 _attrs = {
-    "srcs": attr.label_list(
-        allow_files = True,
-        mandatory = True,
-    ),
-    "package_descriptions_json": attr.string(
-        mandatory = True,
-        doc = "JSON string which describes the package (i.e. swift package describe --type json).",
+    "clang_module_headers": attr.string_list_dict(
+        doc = "A `dict` where the keys are target names and the values are public header paths.",
     ),
     "dependencies_json": attr.string(
         mandatory = True,
@@ -529,11 +524,16 @@ JSON string describing the dependencies to expose (e.g. see dependencies in \
 spm_repositories)\
 """,
     ),
+    "package_descriptions_json": attr.string(
+        mandatory = True,
+        doc = "JSON string which describes the package (i.e. swift package describe --type json).",
+    ),
     "package_path": attr.string(
         doc = "Directory which contains the Package.swift (i.e. swift build --package-path VALUE).",
     ),
-    "clang_module_headers": attr.string_list_dict(
-        doc = "A `dict` where the keys are target names and the values are public header paths.",
+    "srcs": attr.label_list(
+        allow_files = True,
+        mandatory = True,
     ),
     "_modulemap_tpl": attr.label(
         allow_single_file = True,

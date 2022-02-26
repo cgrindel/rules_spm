@@ -1,3 +1,5 @@
+"""Definition for platforms module."""
+
 swift_archs = struct(
     x86_64 = "x86_64",
     # https://stackoverflow.com/questions/52624308/xcode-arm64-vs-arm64e
@@ -23,7 +25,7 @@ def _get_spm_arch(swift_cpu):
     """Maps the Bazel architeture value to a suitable SPM architecture value.
 
     Args:
-        bzl_arch: A `string` representing the Bazel architecture value.
+        swift_cpu: A `string` representing the Swift CPU.
 
     Returns:
         A `string` representing the SPM architecture value.
@@ -33,10 +35,10 @@ def _get_spm_arch(swift_cpu):
     return swift_cpu
 
 def _get_spm_os(swift_os):
-    """Maps the Bazel OS value to a suitable SPM OS value.
+    """Maps the Swift OS value to a suitable SPM OS value.
 
     Args:
-        bzl_os: A `string` representing the Bazel OS value.
+        swift_os: A `string` representing the Swift OS value.
 
     Returns:
         A `string` representing the SPM OS value.
@@ -46,10 +48,10 @@ def _get_spm_os(swift_os):
     return swift_os
 
 def _get_spm_vendor(swift_os):
-    """Maps the Bazel OS value to the corresponding SPM vendor value.
+    """Maps the Swift OS value to the corresponding SPM vendor value.
 
     Args:
-        bzl_os: A `string` representing the Bazel OS value.
+        swift_os: A `string` representing the Swift OS value.
 
     Returns:
         A `string` representing the SPM vendor value.

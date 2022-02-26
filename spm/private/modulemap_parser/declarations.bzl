@@ -1,3 +1,5 @@
+"""Definition for declarations module."""
+
 # MARK: - Module Declarations
 
 _declaration_types = struct(

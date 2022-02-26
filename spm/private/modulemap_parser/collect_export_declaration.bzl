@@ -1,3 +1,5 @@
+"""Definition for collect_export_declaration macro."""
+
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
@@ -26,9 +28,8 @@ def collect_export_declaration(parsed_tokens):
     """
     tlen = len(parsed_tokens)
     consumed_count = 0
-    collect_result = None
 
-    export_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.export, count = tlen)
+    _export_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.export, count = tlen)
     if err != None:
         return None, err
     consumed_count += 1

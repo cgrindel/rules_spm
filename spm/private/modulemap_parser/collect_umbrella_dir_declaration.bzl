@@ -1,7 +1,8 @@
-load(":errors.bzl", "errors")
+"""Definition for collect_umbrella_dir_declaration."""
+
 load(":collection_results.bzl", "collection_results")
+load(":declarations.bzl", "declarations")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
-load(":declarations.bzl", "declarations", dts = "declaration_types")
 
 def collect_umbrella_dir_declaration(parsed_tokens):
     """Collect an umbrella directory declaration.
@@ -22,7 +23,7 @@ def collect_umbrella_dir_declaration(parsed_tokens):
     tlen = len(parsed_tokens)
     consumed_count = 0
 
-    umbrella_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.umbrella, count = tlen)
+    _umbrella_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.umbrella, count = tlen)
     if err != None:
         return None, err
     consumed_count += 1

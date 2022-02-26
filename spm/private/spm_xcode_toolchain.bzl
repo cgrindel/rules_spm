@@ -1,3 +1,5 @@
+"""Definition for spm_xcode_toolchain rule."""
+
 load(":actions.bzl", "action_names", "actions")
 load(":platforms.bzl", "platforms")
 load(":providers.bzl", "SPMPlatformInfo", "SPMToolchainInfo")
@@ -120,6 +122,11 @@ spm_xcode_toolchain = rule(
     implementation = _spm_xcode_toolchain,
     fragments = ["apple"],
     attrs = {
+        "_build_tool": attr.label(
+            executable = True,
+            cfg = "exec",
+            default = "//spm/private:exec_spm_build",
+        ),
         "_spm_utilities": attr.label(
             cfg = "host",
             allow_files = True,
@@ -141,11 +148,6 @@ An executable that wraps Swift compiler invocations and also provides support
 for incremental compilation using a persistent mode.
 """,
             executable = True,
-        ),
-        "_build_tool": attr.label(
-            executable = True,
-            cfg = "exec",
-            default = "//spm/private:exec_spm_build",
         ),
         "_xcode_config": attr.label(
             default = configuration_field(

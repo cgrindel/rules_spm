@@ -17,7 +17,7 @@ Parses the JSON string and returns a dict representing the JSON structure.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="package_descriptions.parse_json-json_str"></a>json_str |  <p align="center"> - </p>   |  none |
+| <a id="package_descriptions.parse_json-json_str"></a>json_str |  JSON string.   |  none |
 
 **RETURNS**
 
@@ -264,7 +264,7 @@ Returns the target with the specified name from a package description.
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.get_target-pkg_desc"></a>pkg_desc |  A <code>dict</code> representing a package description.   |  none |
 | <a id="package_descriptions.get_target-name"></a>name |  A <code>string</code> represneting the name of the desired target.   |  none |
-| <a id="package_descriptions.get_target-fail_if_not_found"></a>fail_if_not_found |  <p align="center"> - </p>   |  <code>True</code> |
+| <a id="package_descriptions.get_target-fail_if_not_found"></a>fail_if_not_found |  A <code>bool</code> indicating whether to fail if not found.   |  <code>True</code> |
 
 **RETURNS**
 
@@ -388,7 +388,7 @@ Returns the product with the specified product name.
 | :------------- | :------------- | :------------- |
 | <a id="package_descriptions.get_product-pkg_desc"></a>pkg_desc |  A <code>dict</code> representing a package description.   |  none |
 | <a id="package_descriptions.get_product-product_name"></a>product_name |  The product name as a <code>string</code>.   |  none |
-| <a id="package_descriptions.get_product-fail_if_not_found"></a>fail_if_not_found |  <p align="center"> - </p>   |  <code>True</code> |
+| <a id="package_descriptions.get_product-fail_if_not_found"></a>fail_if_not_found |  A <code>bool</code> indicating whether to fail if not found.   |  <code>True</code> |
 
 **RETURNS**
 

@@ -1,3 +1,5 @@
+"""Definition for swift_toolchains module."""
+
 def _get_sdk_name(platform):
     """Returns the SDK name for the provided platform.
 

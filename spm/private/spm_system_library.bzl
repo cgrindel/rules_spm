@@ -1,7 +1,10 @@
+"""Definition for spm_system_library rule."""
+
 load(
     "@build_bazel_rules_swift//swift:swift.bzl",
     "swift_c_module",
 )
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load(":spm_filegroup.bzl", "spm_filegroup")
 
 def spm_system_library(name, packages, deps = None, visibility = None):
@@ -42,7 +45,7 @@ def spm_system_library(name, packages, deps = None, visibility = None):
     )
 
     cc_lib_name = "%s_cc_lib" % (name)
-    native.cc_library(
+    cc_library(
         name = cc_lib_name,
         hdrs = [
             ":%s" % (hdr_files_name),

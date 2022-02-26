@@ -20,7 +20,7 @@ Creates a value representing the Clang module that is built from a package.
 | <a id="providers.clang_module-module_name"></a>module_name |  Name of the Swift module.   |  none |
 | <a id="providers.clang_module-o_files"></a>o_files |  The Mach-O files that are built by SPM.   |  <code>[]</code> |
 | <a id="providers.clang_module-hdrs"></a>hdrs |  The header files.   |  <code>[]</code> |
-| <a id="providers.clang_module-modulemap"></a>modulemap |  <p align="center"> - </p>   |  <code>None</code> |
+| <a id="providers.clang_module-modulemap"></a>modulemap |  A modulemap struct.   |  <code>None</code> |
 | <a id="providers.clang_module-all_outputs"></a>all_outputs |  All of the output files that are declared for the module.   |  <code>[]</code> |
 
 **RETURNS**

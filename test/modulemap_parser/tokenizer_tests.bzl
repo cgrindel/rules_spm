@@ -1,6 +1,12 @@
-load("//spm/private/modulemap_parser:tokenizer.bzl", "tokenizer")
-load("//spm/private/modulemap_parser:tokens.bzl", "tokens")
+"""Tests for tokenizer."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+
+# buildifier: disable=bzl-visibility
+load("//spm/private/modulemap_parser:tokenizer.bzl", "tokenizer")
+
+# buildifier: disable=bzl-visibility
+load("//spm/private/modulemap_parser:tokens.bzl", "tokens")
 
 def _tokenize_test(ctx):
     env = unittest.begin(ctx)

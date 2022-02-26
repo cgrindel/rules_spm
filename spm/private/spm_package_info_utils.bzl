@@ -1,3 +1,5 @@
+"""Definition for spm_package_info_utils module."""
+
 def _get(pkg_infos, pkg_name):
     """Returns the `SPMPackageInfo` with the specified name from the list of `SPMPackageInfo` values.
 

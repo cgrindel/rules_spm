@@ -1,6 +1,7 @@
-load("//spm/private:spm_package_info_utils.bzl", "spm_package_info_utils")
-load("//spm/private:providers.bzl", "SPMPackageInfo", "providers")
+"""Tests for spm_package_info_utils module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load("//spm:defs.bzl", "SPMPackageInfo", "providers", "spm_package_info_utils")
 
 def _get_test(ctx):
     env = unittest.begin(ctx)

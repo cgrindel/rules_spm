@@ -1,6 +1,7 @@
+"""Tests for packages module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private:packages.bzl", "packages")
-load("//spm/private:references.bzl", "reference_types", "references")
+load("//spm:defs.bzl", "packages", "reference_types", "references")
 
 def _create_name_test(ctx):
     env = unittest.begin(ctx)

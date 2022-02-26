@@ -1,3 +1,5 @@
+"""Defintion for repositories module."""
+
 def _is_macos(repository_ctx):
     """Determines if the host is running MacOS.
 

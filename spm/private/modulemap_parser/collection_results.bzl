@@ -1,3 +1,5 @@
+"""Definition for collection_results module."""
+
 def _create(declarations, count):
     """Creates a collection result `struct`.
 

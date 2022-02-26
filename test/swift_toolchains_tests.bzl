@@ -1,5 +1,7 @@
+"""Tests for swift_toolchains module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private:swift_toolchains.bzl", "swift_toolchains")
+load("//spm:defs.bzl", "swift_toolchains")
 
 def _sdk_name_test(ctx):
     env = unittest.begin(ctx)
