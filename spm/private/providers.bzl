@@ -1,3 +1,5 @@
+"""Definition for providers."""
+
 # MARK: - SPM Toolchain/Build Providers
 
 SPMToolchainInfo = provider(
@@ -6,8 +8,8 @@ SPMToolchainInfo = provider(
         "spm_configuration": """\
 The SPM build configuration as a `string`. Values: `release` or `debug`\
 """,
-        "target_triple": "A string representing the target platform as a triple.",
         "spm_platform_info": "An `SpmPlatformInfo` describing the target platform.",
+        "target_triple": "A string representing the target platform as a triple.",
         "tool_configs": """\
 A `dict` of configuration structs where the key is an action name \
 (`action_names`) and the value is a `struct` as returned by \
@@ -19,10 +21,10 @@ A `dict` of configuration structs where the key is an action name \
 SPMPlatformInfo = provider(
     doc = "SPM designations for the architecture, OS and vendor.",
     fields = {
-        "os": "The OS designation as understood by SPM.",
-        "arch": "The architecture designation as understood by SPM.",
-        "vendor": "The vendor designation as understood by SPM.",
         "abi": "The abi destination as understood by SPM.",
+        "arch": "The architecture designation as understood by SPM.",
+        "os": "The OS designation as understood by SPM.",
+        "vendor": "The vendor designation as understood by SPM.",
     },
 )
 
@@ -38,10 +40,10 @@ SPMPackagesInfo = provider(
 SPMPackageInfo = provider(
     doc = "Describes the information about an SPM package.",
     fields = {
+        "clang_modules": "A `list` of values returned from `providers.clang_module`.",
         "name": "Name of the Swift package.",
         "swift_binaries": "A `list` of values returned from `providers.swift_binary`.",
         "swift_modules": "A `list` of values returned from `providers.swift_module`.",
-        "clang_modules": "A `list` of values returned from `providers.clang_module`.",
         "system_library_modules": "`List` of values returned from `providers.system_library_module`.",
     },
 )
@@ -107,6 +109,7 @@ def _create_clang_module(
         module_name: Name of the Swift module.
         o_files: The Mach-O files that are built by SPM.
         hdrs: The header files.
+        modulemap: A modulemap struct.
         all_outputs: All of the output files that are declared for the module.
 
     Returns:

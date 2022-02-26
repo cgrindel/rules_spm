@@ -1,3 +1,5 @@
+"""Definition for spm_linux_toolchain rule."""
+
 load(":actions.bzl", "action_names", "actions")
 load(":providers.bzl", "SPMPlatformInfo", "SPMToolchainInfo")
 load(":swift_toolchains.bzl", "swift_toolchains")
@@ -89,6 +91,9 @@ def _spm_linux_toolchain(ctx):
 spm_linux_toolchain = rule(
     implementation = _spm_linux_toolchain,
     attrs = {
+        "abi": attr.string(
+            doc = "The abi for the system being targetd.",
+        ),
         "arch": attr.string(
             doc = "The name of the architecture that this toolchain targets.",
             mandatory = True,
@@ -99,12 +104,12 @@ The name of the operating system that this toolchain targets.\
 """,
             mandatory = True,
         ),
-        "vendor": attr.string(
-            doc = "The vendor for the system being targetd.",
+        "spm_version": attr.string(
             mandatory = True,
-        ),
-        "abi": attr.string(
-            doc = "The abi for the system being targetd.",
+            doc = """\
+The version number for Swift package manager. It is the value returned from \
+`swift package --version`.\
+""",
         ),
         "swift_exec": attr.string(
             mandatory = True,
@@ -112,12 +117,14 @@ The name of the operating system that this toolchain targets.\
 The path to the Swift executable.\
 """,
         ),
-        "spm_version": attr.string(
+        "vendor": attr.string(
+            doc = "The vendor for the system being targetd.",
             mandatory = True,
-            doc = """\
-The version number for Swift package manager. It is the value returned from \
-`swift package --version`.\
-""",
+        ),
+        "_build_tool": attr.label(
+            executable = True,
+            cfg = "exec",
+            default = "//spm/private:exec_spm_build",
         ),
         "_spm_utilities": attr.label(
             cfg = "host",
@@ -140,11 +147,6 @@ An executable that wraps Swift compiler invocations and also provides support \
 for incremental compilation using a persistent mode.\
 """,
             executable = True,
-        ),
-        "_build_tool": attr.label(
-            executable = True,
-            cfg = "exec",
-            default = "//spm/private:exec_spm_build",
         ),
     },
     doc = "Provides toolchain information for SPM builds on Linux.",

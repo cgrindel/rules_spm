@@ -1,5 +1,7 @@
+"""Tests for spm_versions module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private:spm_versions.bzl", "spm_versions")
+load("//spm:defs.bzl", "spm_versions")
 
 def _extract_test(ctx):
     env = unittest.begin(ctx)

@@ -1,5 +1,7 @@
+"""Definition for spm_clang_library rule."""
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load(":spm_filegroup.bzl", "spm_filegroup")
-load(":package_descriptions.bzl", "module_types", pds = "package_descriptions")
 
 def spm_clang_library(name, packages, deps = None, visibility = None):
     """Exposes a clang module as defined in a dependent Swift package.
@@ -29,8 +31,7 @@ def spm_clang_library(name, packages, deps = None, visibility = None):
         module_name = module_name,
         file_type = "o_files",
     )
-
-    native.cc_library(
+    cc_library(
         name = name,
         hdrs = [
             ":%s" % (hdr_files_name),

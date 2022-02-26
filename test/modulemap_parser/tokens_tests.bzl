@@ -1,6 +1,12 @@
+"""Tests for tokens module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private/modulemap_parser:tokens.bzl", "tokens", tts = "token_types")
+
+# buildifier: disable=bzl-visibility
 load("//spm/private/modulemap_parser:errors.bzl", "errors")
+
+# buildifier: disable=bzl-visibility
+load("//spm/private/modulemap_parser:tokens.bzl", "tokens", tts = "token_types")
 
 def _create_token_test(ctx):
     env = unittest.begin(ctx)

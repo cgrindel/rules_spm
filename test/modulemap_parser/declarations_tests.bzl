@@ -1,4 +1,8 @@
+"""Tests for declarations module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+
+# buildifier: disable=bzl-visibility
 load(
     "//spm/private/modulemap_parser:declarations.bzl",
     "declarations",

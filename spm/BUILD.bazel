@@ -1,5 +1,5 @@
-load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -46,6 +46,7 @@ bzl_library(
         "//spm/private:spm_swift_library",
         "//spm/private:spm_system_library",
         "//spm/private:spm_versions",
+        "//spm/private:swift_toolchains",
     ],
 )
 

@@ -1,5 +1,7 @@
+"""Tests for spm_common module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private:spm_common.bzl", "spm_common")
+load("//spm:defs.bzl", "spm_common")
 
 def _create_clang_hdrs_key_test(ctx):
     env = unittest.begin(ctx)

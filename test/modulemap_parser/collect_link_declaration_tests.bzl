@@ -1,7 +1,10 @@
-load("//spm/private/modulemap_parser:collect_link_declaration.bzl", "collect_link_declaration")
+"""Tests for collect_link_declaration."""
+
+load("@bazel_skylib//lib:unittest.bzl", "unittest")
+
+# buildifier: disable=bzl-visibility
 load("//spm/private/modulemap_parser:declarations.bzl", "declarations")
-load(":test_helpers.bzl", "do_failing_parse_test", "do_parse_test")
-load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
+load(":test_helpers.bzl", "do_parse_test")
 
 def _collect_link_declaration_test(ctx):
     env = unittest.begin(ctx)

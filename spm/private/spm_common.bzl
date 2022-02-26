@@ -1,3 +1,5 @@
+"""Definition for spm_common module."""
+
 load("@bazel_skylib//lib:paths.bzl", "paths")
 
 def _create_clang_hdrs_key(pkg_name, target_name):
@@ -39,7 +41,7 @@ def _is_include_hdr_path(path):
     Returns:
         A `bool` indicating whether the path is a public header.
     """
-    root, ext = paths.split_extension(path)
+    _root, ext = paths.split_extension(path)
     if ext != ".h":
         return False
     for dirname in _PUBLIC_HDR_DIRNAMES:

@@ -1,6 +1,8 @@
+"""Tests for platforms module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 load(
-    "//spm/private:platforms.bzl",
+    "//spm:defs.bzl",
     "platforms",
     "spm_oss",
     "spm_vendors",

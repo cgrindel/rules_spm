@@ -1,10 +1,10 @@
+"""Definition for parser."""
+
 load(":collect_extern_module.bzl", "collect_extern_module")
 load(":collect_module.bzl", "collect_module")
-load(":collection_results.bzl", "collection_results")
-load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
 load(":tokenizer.bzl", "tokenizer")
-load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
+load(":tokens.bzl", rws = "reserved_words", tts = "token_types")
 
 def _parse(text):
     tokenizer_result = tokenizer.tokenize(text)

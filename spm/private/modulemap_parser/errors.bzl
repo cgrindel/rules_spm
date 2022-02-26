@@ -1,3 +1,5 @@
+"""Definition for errors module."""
+
 def _create_error(msg, child_errors = []):
     """Create an error `struct`.
 

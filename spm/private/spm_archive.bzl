@@ -1,3 +1,5 @@
+"""Definition for spm_archive rule."""
+
 load("@bazel_tools//tools/cpp:toolchain_utils.bzl", "find_cpp_toolchain")
 load("@rules_cc//cc:action_names.bzl", "CPP_LINK_STATIC_LIBRARY_ACTION_NAME")
 
@@ -14,7 +16,7 @@ def _spm_archive_impl(ctx):
         unsupported_features = ctx.disabled_features,
     )
 
-    linker_input = cc_common.create_linker_input(
+    cc_common.create_linker_input(
         owner = ctx.label,
         libraries = depset(direct = [
             cc_common.create_library_to_link(
@@ -24,10 +26,6 @@ def _spm_archive_impl(ctx):
                 static_library = output_file,
             ),
         ]),
-    )
-    compilation_context = cc_common.create_compilation_context()
-    linking_context = cc_common.create_linking_context(
-        linker_inputs = depset(direct = [linker_input]),
     )
 
     archiver_path = cc_common.get_tool_for_action(

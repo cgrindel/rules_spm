@@ -1,7 +1,9 @@
-load(":errors.bzl", "errors")
+"""Definition for collect_header_declaration."""
+
 load(":collection_results.bzl", "collection_results")
-load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 load(":declarations.bzl", "declarations", dts = "declaration_types")
+load(":errors.bzl", "errors")
+load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
 def collect_header_declaration(parsed_tokens, prefix_tokens):
     """Collect a header declaration.
@@ -52,7 +54,7 @@ def collect_header_declaration(parsed_tokens, prefix_tokens):
 
     consumed_count = 0
 
-    header_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.header, count = tlen)
+    _header_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.header, count = tlen)
     if err != None:
         return None, err
     consumed_count += 1

@@ -1,3 +1,5 @@
+"""Definition for references module."""
+
 def _create_ref(ref_type, pkg_name, name):
     """Creates a reference for the specified type.
 

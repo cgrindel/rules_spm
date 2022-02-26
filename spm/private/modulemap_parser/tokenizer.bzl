@@ -1,6 +1,8 @@
+"""Definition for tokenizer."""
+
+load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":character_sets.bzl", "character_sets")
 load(":tokens.bzl", "reserved_words_set", "tokens")
-load("@bazel_skylib//lib:sets.bzl", "sets")
 
 def _tokenizer_result(tokens, errors = []):
     return struct(
@@ -13,6 +15,7 @@ def _collection_result(chars = [], count = None, errors = []):
 
     Args:
         chars: A `list` of the tokens that were collected.
+        count: The count of characters collected.
         errors: A `list` of errors that were found.
 
     Returns:

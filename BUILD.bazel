@@ -1,9 +1,9 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_missing_pkgs", "bzlformat_pkg")
 load(
     "@cgrindel_bazel_starlib//updatesrc:defs.bzl",
     "updatesrc_update_all",
 )
-load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load(
     "@cgrindel_rules_bazel_integration_test//bazel_integration_test:defs.bzl",
     "integration_test_utils",

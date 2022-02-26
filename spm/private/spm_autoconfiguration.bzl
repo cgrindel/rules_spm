@@ -1,3 +1,5 @@
+"""Definition for spm_autoconfiguration rule."""
+
 load(":repository_utils.bzl", "repository_utils")
 load(":spm_versions.bzl", "spm_versions")
 

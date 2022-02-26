@@ -1,3 +1,5 @@
+"""Definition for spm_versions module."""
+
 load(":repository_utils.bzl", "repository_utils")
 
 def _extract_version(version):
@@ -10,7 +12,7 @@ def _extract_version(version):
         version: A `string` which has the semantic version embedded at the end.
 
     Returns:
-        A `string` representing the semantic version.
+        A `string` representing the semantic version, if found. Otherwise, `None`.
     """
 
     # Need to parse the version number from `Swift Package Manager - Swift 5.4.0`
@@ -18,6 +20,7 @@ def _extract_version(version):
         c = version[i]
         if c.isdigit():
             return version[i:].strip()
+    return None
 
 def _get_version(repository_ctx, env = {}):
     """Returns the semantic version for Swit Package Manager.

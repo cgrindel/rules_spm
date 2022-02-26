@@ -1,7 +1,9 @@
+"""Definition for collect_link_declaration."""
+
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
-load(":tokens.bzl", "tokens", ops = "operators", rws = "reserved_words", tts = "token_types")
+load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
 def collect_link_declaration(parsed_tokens):
     """Collect a link declaration.
@@ -19,9 +21,8 @@ def collect_link_declaration(parsed_tokens):
     """
     tlen = len(parsed_tokens)
     consumed_count = 0
-    collect_result = None
 
-    link_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.link, count = tlen)
+    _link_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.link, count = tlen)
     if err != None:
         return None, err
     consumed_count += 1

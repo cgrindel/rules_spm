@@ -1,3 +1,5 @@
+"""Definition for character_sets module."""
+
 load("@bazel_skylib//lib:sets.bzl", "sets")
 
 _whitespaces = sets.make([

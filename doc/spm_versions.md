@@ -25,7 +25,7 @@ Output: `5.4.0`
 
 **RETURNS**
 
-A `string` representing the semantic version.
+A `string` representing the semantic version, if found. Otherwise, `None`.
 
 
 <a id="#spm_versions.get"></a>

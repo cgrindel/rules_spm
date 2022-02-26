@@ -1,3 +1,6 @@
+"""Definition for collect_module_members."""
+
+load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":collect_export_declaration.bzl", "collect_export_declaration")
 load(":collect_header_declaration.bzl", "collect_header_declaration")
 load(":collect_link_declaration.bzl", "collect_link_declaration")
@@ -5,7 +8,6 @@ load(":collect_umbrella_dir_declaration.bzl", "collect_umbrella_dir_declaration"
 load(":collection_results.bzl", "collection_results")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
-load("@bazel_skylib//lib:sets.bzl", "sets")
 
 _unsupported_module_members = sets.make([
     rws.config_macros,
@@ -15,11 +17,19 @@ _unsupported_module_members = sets.make([
 ])
 
 def collect_module_members(parsed_tokens):
+    """Collect module members from the parsed tokens.
+
+    Args:
+        parsed_tokens: A `list` of tokens.
+
+    Returns:
+        Collection results.
+    """
     tlen = len(parsed_tokens)
     members = []
     consumed_count = 0
 
-    open_members_token, err = tokens.get_as(parsed_tokens, 0, tts.curly_bracket_open, count = tlen)
+    _open_members_token, err = tokens.get_as(parsed_tokens, 0, tts.curly_bracket_open, count = tlen)
     if err != None:
         return None, err
     consumed_count += 1

@@ -1,3 +1,5 @@
+"""Definition for actions module."""
+
 def _tool_config(
         executable,
         additional_tools = [],

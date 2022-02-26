@@ -1,3 +1,5 @@
+"""Definition for collect_extern_module function."""
+
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
@@ -20,11 +22,11 @@ def collect_extern_module(parsed_tokens):
     """
 
     tlen = len(parsed_tokens)
-    extern_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.extern, count = tlen)
+    _extern_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.extern, count = tlen)
     if err:
         return None, err
 
-    module_token, err = tokens.get_as(parsed_tokens, 1, tts.reserved, rws.module, count = tlen)
+    _module_token, err = tokens.get_as(parsed_tokens, 1, tts.reserved, rws.module, count = tlen)
     if err:
         return None, err
 

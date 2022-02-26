@@ -1,6 +1,8 @@
+"""Definition for spm_filegroup rule."""
+
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":providers.bzl", "SPMPackagesInfo")
 load(":spm_package_info_utils.bzl", "spm_package_info_utils")
-load("@bazel_skylib//lib:paths.bzl", "paths")
 
 def _derive_pkg_name(ctx):
     """Determines the Swift package name from the Bazel package name.
@@ -50,25 +52,6 @@ def _spm_filegroup_impl(ctx):
 spm_filegroup = rule(
     _spm_filegroup_impl,
     attrs = {
-        "packages": attr.label(
-            mandatory = True,
-            providers = [[SPMPackagesInfo]],
-            doc = """\
-A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
-""",
-        ),
-        "package_name": attr.string(
-            doc = """\
-The name of the package that exports this module. If no value provided, it \
-will be derived from the Bazel package name.\
-""",
-        ),
-        "module_name": attr.string(
-            mandatory = True,
-            doc = """\
-The name of the module in the SPM package to select for file exposition.\
-""",
-        ),
         "file_type": attr.string(
             mandatory = True,
             values = [
@@ -83,6 +66,25 @@ The name of the module in the SPM package to select for file exposition.\
             ],
             doc = """\
 The type of file to expose about the module.\
+""",
+        ),
+        "module_name": attr.string(
+            mandatory = True,
+            doc = """\
+The name of the module in the SPM package to select for file exposition.\
+""",
+        ),
+        "package_name": attr.string(
+            doc = """\
+The name of the package that exports this module. If no value provided, it \
+will be derived from the Bazel package name.\
+""",
+        ),
+        "packages": attr.label(
+            mandatory = True,
+            providers = [[SPMPackagesInfo]],
+            doc = """\
+A target that outputs an SPMPackagesInfo (e.g. spm_pacakge).\
 """,
         ),
     },

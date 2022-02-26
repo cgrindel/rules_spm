@@ -1,5 +1,7 @@
-load(":collection_results.bzl", "collection_results")
+"""Defintion for collect_module."""
+
 load(":collect_module_members.bzl", "collect_module_members")
+load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
@@ -27,7 +29,7 @@ def _collect_attribute(parsed_tokens):
     """
     tlen = len(parsed_tokens)
 
-    open_token, err = tokens.get_as(parsed_tokens, 0, tts.square_bracket_open, count = tlen)
+    _open_token, err = tokens.get_as(parsed_tokens, 0, tts.square_bracket_open, count = tlen)
     if err != None:
         return None, err
 
@@ -35,7 +37,7 @@ def _collect_attribute(parsed_tokens):
     if err != None:
         return None, err
 
-    open_token, err = tokens.get_as(parsed_tokens, 2, tts.square_bracket_close, count = tlen)
+    _open_token, err = tokens.get_as(parsed_tokens, 2, tts.square_bracket_close, count = tlen)
     if err != None:
         return None, err
 
@@ -83,7 +85,7 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
                 "Unexpected prefix token collecting module declaration. token: %s" % (token),
             )
 
-    module_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.module, count = tlen)
+    _module_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.module, count = tlen)
     if err != None:
         return None, err
     consumed_count += 1

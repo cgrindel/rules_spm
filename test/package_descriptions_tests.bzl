@@ -1,10 +1,7 @@
+"""Tests for package_descriptions module."""
+
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private:references.bzl", ref_types = "reference_types", refs = "references")
-load(
-    "//spm/private:package_descriptions.bzl",
-    "module_types",
-    pds = "package_descriptions",
-)
+load("//spm:defs.bzl", "module_types", pds = "package_descriptions")
 load(":json_test_data.bzl", "package_description_json")
 
 def _parse_json_test(ctx):
@@ -226,32 +223,6 @@ def _transitive_dependencies_test(ctx):
     env = unittest.begin(ctx)
 
     pkg_descs_dict = {
-        "foo-kit": {
-            "name": "foo-kit",
-            "products": [
-                {"name": "FooKit", "targets": ["FooKit"], "type": {"library": ["automatic"]}},
-            ],
-            "targets": [
-                {
-                    "name": "FooKit",
-                    "dependencies": [
-                        {"product": ["Logging", "swift-log", None]},
-                        {"product": ["BarKit", "bar-kit", None]},
-                        {"byName": ["CoolModule", None]},
-                    ],
-                    "module_type": "SwiftTarget",
-                    "target_dependencies": ["CoolModule"],
-                    "type": "library",
-                },
-                {
-                    "name": "CoolModule",
-                    "dependencies": [],
-                    "module_type": "SwiftTarget",
-                    "target_dependencies": [],
-                    "type": "library",
-                },
-            ],
-        },
         "bar-kit": {
             "name": "bar-kit",
             "products": [
@@ -259,11 +230,37 @@ def _transitive_dependencies_test(ctx):
             ],
             "targets": [
                 {
-                    "name": "BarKit",
                     "dependencies": [
                         {"product": ["Logging", "swift-log", None]},
                     ],
                     "module_type": "SwiftTarget",
+                    "name": "BarKit",
+                    "target_dependencies": [],
+                    "type": "library",
+                },
+            ],
+        },
+        "foo-kit": {
+            "name": "foo-kit",
+            "products": [
+                {"name": "FooKit", "targets": ["FooKit"], "type": {"library": ["automatic"]}},
+            ],
+            "targets": [
+                {
+                    "dependencies": [
+                        {"product": ["Logging", "swift-log", None]},
+                        {"product": ["BarKit", "bar-kit", None]},
+                        {"byName": ["CoolModule", None]},
+                    ],
+                    "module_type": "SwiftTarget",
+                    "name": "FooKit",
+                    "target_dependencies": ["CoolModule"],
+                    "type": "library",
+                },
+                {
+                    "dependencies": [],
+                    "module_type": "SwiftTarget",
+                    "name": "CoolModule",
                     "target_dependencies": [],
                     "type": "library",
                 },
@@ -276,9 +273,9 @@ def _transitive_dependencies_test(ctx):
             ],
             "targets": [
                 {
-                    "name": "Logging",
                     "dependencies": [],
                     "module_type": "SwiftTarget",
+                    "name": "Logging",
                     "target_dependencies": [],
                     "type": "library",
                 },
@@ -296,22 +293,22 @@ def _transitive_dependencies_test(ctx):
     product_refs = ["product:bar-kit/BarKit"]
     actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
     expected = {
-        "target:swift-log/Logging": [],
         "target:bar-kit/BarKit": ["target:swift-log/Logging"],
+        "target:swift-log/Logging": [],
     }
     asserts.equals(env, expected, actual)
 
     product_refs = ["product:foo-kit/FooKit"]
     actual = pds.transitive_dependencies(pkg_descs_dict, product_refs)
     expected = {
-        "target:swift-log/Logging": [],
         "target:bar-kit/BarKit": ["target:swift-log/Logging"],
+        "target:foo-kit/CoolModule": [],
         "target:foo-kit/FooKit": [
             "target:bar-kit/BarKit",
             "target:foo-kit/CoolModule",
             "target:swift-log/Logging",
         ],
-        "target:foo-kit/CoolModule": [],
+        "target:swift-log/Logging": [],
     }
     asserts.equals(env, expected, actual)
 

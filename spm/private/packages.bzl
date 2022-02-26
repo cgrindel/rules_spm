@@ -16,7 +16,7 @@ def _create_name(url):
         A package name `string`.
     """
     basename = paths.basename(url)
-    repo_name, ext = paths.split_extension(basename)
+    repo_name, _ext = paths.split_extension(basename)
     return repo_name
 
 def _create_pkg(
@@ -46,7 +46,7 @@ def _create_pkg(
     Returns:
         A `struct` representing a Swift package.
     """
-    specified_locations = [l for l in [url, path] if l != None]
+    specified_locations = [loc for loc in [url, path] if loc != None]
     specified_locations_cnt = len(specified_locations)
     if specified_locations_cnt < 1:
         fail("Need to specify a url or path to the package.")
