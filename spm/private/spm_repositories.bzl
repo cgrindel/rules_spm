@@ -263,7 +263,6 @@ def _generate_bazel_pkg(
     for product in exec_products:
         module_decls.append(_create_spm_swift_binary_decl(
             repository_ctx,
-            pkg_name,
             product,
         ))
 
@@ -302,7 +301,6 @@ def _generate_bazel_pkg(
                     pkg_name,
                     target,
                     target_deps,
-                    pkg_root_path,
                 ))
             else:
                 fail("Unrecognized system target type. %s" % (target))
@@ -386,7 +384,6 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     if modulemap_paths_len == 1:
         return _get_hdr_paths_from_modulemap(
             repository_ctx,
-            module_paths,
             modulemap_paths[0],
         )
     return [p for p in module_paths if spm_common.is_include_hdr_path(p)]
@@ -643,7 +640,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             repository_ctx,
             pkg_descs_dict[pkg_name],
             dep_target_refs_dict,
-            clang_hdrs_dict,
             exec_products_dict.get(pkg_name, default = []),
             pkg_root_path = paths.join(spm_common.checkouts_path, pkg_name),
         )
