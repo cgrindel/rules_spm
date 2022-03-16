@@ -1,7 +1,5 @@
 workspace(name = "simple_with_binary_example")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 local_repository(
     name = "cgrindel_rules_spm",
     path = "../..",
@@ -44,7 +42,7 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/apple/swift-log.git",
-            from_version = "1.0.0",
+            exact_version = "1.4.2",
             products = ["Logging"],
         ),
     ],
@@ -60,12 +58,12 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/realm/SwiftLint.git",
-            from_version = "0.0.0",
+            exact_version = "0.46.5",
             products = ["swiftlint"],
         ),
         spm_pkg(
             "https://github.com/nicklockwood/SwiftFormat.git",
-            from_version = "0.0.0",
+            exact_version = "0.49.6",
             products = [
                 "swiftformat",
             ],

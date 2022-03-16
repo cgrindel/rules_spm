@@ -1,7 +1,5 @@
 workspace(name = "simple_with_dev_dir_example")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 local_repository(
     name = "cgrindel_rules_spm",
     path = "../..",
@@ -43,7 +41,7 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/apple/swift-log.git",
-            from_version = "1.0.0",
+            exact_version = "1.4.2",
             products = ["Logging"],
         ),
     ],

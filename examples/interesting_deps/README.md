@@ -21,7 +21,7 @@ we must specify the correct package name in the `spm_pkg` declaration.
             # Need to specify for the package because the URL basename does not
             # match the package name in the Package.swift.
             name = "libwebp",
-            from_version = "1.2.1",
+            exact_version = "1.2.1",
             products = ["libwebp"],
             url = "https://github.com/SDWebImage/libwebp-Xcode.git",
         ),

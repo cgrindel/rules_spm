@@ -1,7 +1,5 @@
 workspace(name = "trustkit_with_dev_dir_example")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 local_repository(
     name = "cgrindel_rules_spm",
     path = "../..",
@@ -42,14 +40,10 @@ spm_repositories(
     name = "swift_pkgs",
     dependencies = [
         spm_pkg(
-            url = "https://github.com/datatheorem/TrustKit.git",
-            from_version = "2.0.0",
+            exact_version = "2.0.0",
             products = ["TrustKitStatic"],
+            url = "https://github.com/datatheorem/TrustKit.git",
         ),
-    ],
-    platforms = [
-        ".iOS(.v13)",
-        ".macOS(.v10_14)",
     ],
     env = {
         # If you are testing this locally, set this value to a valid Xcode
@@ -57,4 +51,8 @@ spm_repositories(
         # macos-11.
         # "DEVELOPER_DIR": "/Applications/Xcode_12.5.1.app",
     },
+    platforms = [
+        ".iOS(.v13)",
+        ".macOS(.v10_14)",
+    ],
 )
