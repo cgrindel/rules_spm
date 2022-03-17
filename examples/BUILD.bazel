@@ -15,7 +15,9 @@ bzlformat_pkg(name = "bzlformat")
 ALL_OS_TEST_EXAMPLES = [
     "simple",
     "simple_revision",
-    "simple_with_binary",
+    # GH132: Disable test until the libswift_Concurrency.dylib error is
+    # addressed.
+    # "simple_with_binary",
     "local_package",
     "vapor",
     "interesting_deps",

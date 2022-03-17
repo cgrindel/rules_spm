@@ -14,7 +14,7 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/apple/swift-log.git",
-            from_version = "1.0.0",
+            exact_version = "1.4.2",
             products = ["Logging"],
         ),
     ],
@@ -26,7 +26,7 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/realm/SwiftLint.git",
-            from_version = "0.0.0",
+            exact_version = "0.46.5",
             products = ["swiftlint"],
         ),
     ],
