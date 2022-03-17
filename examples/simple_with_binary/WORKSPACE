@@ -58,8 +58,7 @@ spm_repositories(
     dependencies = [
         spm_pkg(
             "https://github.com/realm/SwiftLint.git",
-            # exact_version = "0.46.5",
-            exact_version = "0.46.4",
+            exact_version = "0.46.5",
             products = ["swiftlint"],
         ),
         spm_pkg(
