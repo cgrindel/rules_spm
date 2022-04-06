@@ -16,11 +16,19 @@ def spm_rules_dependencies():
         sha256 = "c6966ec828da198c5d9adbaa94c05e3a1c7f21bd012a0b29ba8ddbccb2c93b0d",
     )
 
+    # TODO: Point to latest commit or release after https://github.com/bazelbuild/rules_swift/pull/793 is merged.
+
+    # maybe(
+    #     http_archive,
+    #     name = "build_bazel_rules_swift",
+    #     sha256 = "a2fd565e527f83fb3f9eb07eb9737240e668c9242d3bc318712efa54a7deda97",
+    #     url = "https://github.com/bazelbuild/rules_swift/releases/download/0.27.0/rules_swift.0.27.0.tar.gz",
+    # )
+
     maybe(
-        http_archive,
+        native.local_repository,
         name = "build_bazel_rules_swift",
-        sha256 = "4f167e5dbb49b082c5b7f49ee688630d69fb96f15c84c448faa2e97a5780dbbc",
-        url = "https://github.com/bazelbuild/rules_swift/releases/download/0.24.0/rules_swift.0.24.0.tar.gz",
+        path = "/Users/chuck/code/cgrindel/rules_swift/fix_missing_bzl_library",
     )
 
     maybe(
