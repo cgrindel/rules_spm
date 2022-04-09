@@ -16,19 +16,16 @@ def spm_rules_dependencies():
         sha256 = "c6966ec828da198c5d9adbaa94c05e3a1c7f21bd012a0b29ba8ddbccb2c93b0d",
     )
 
-    # TODO: Point to latest commit or release after https://github.com/bazelbuild/rules_swift/pull/793 is merged.
-
-    # maybe(
-    #     http_archive,
-    #     name = "build_bazel_rules_swift",
-    #     sha256 = "a2fd565e527f83fb3f9eb07eb9737240e668c9242d3bc318712efa54a7deda97",
-    #     url = "https://github.com/bazelbuild/rules_swift/releases/download/0.27.0/rules_swift.0.27.0.tar.gz",
-    # )
-
+    # Master as of 2022-04-09. Includes fix to 0.27.0 adding back missing bzl_library declarations.
+    _RULES_SWIFT_VERSION = "22192877498705ff1adbecd820fdc2724414b0b2"
     maybe(
-        native.local_repository,
+        http_archive,
         name = "build_bazel_rules_swift",
-        path = "/Users/chuck/code/cgrindel/rules_swift/master",
+        sha256 = "0844f7fc6d67eaaa2d7e2a620c27b3dfdc6e27c0cf35487b5c9890dd766c80be",
+        strip_prefix = "rules_swift-{}".format(_RULES_SWIFT_VERSION),
+        urls = [
+            "http://github.com/bazelbuild/rules_swift/archive/{}.tar.gz".format(_RULES_SWIFT_VERSION),
+        ],
     )
 
     maybe(
@@ -55,13 +52,6 @@ def spm_rules_dependencies():
             "http://github.com/cgrindel/rules_bazel_integration_test/archive/v0.5.0.tar.gz",
         ],
     )
-
-    # maybe(
-    #     http_archive,
-    #     name = "bazel_build_rules_cc",
-    #     urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.1/rules_cc-0.0.1.tar.gz"],
-    #     sha256 = "4dccbfd22c0def164c8f47458bd50e0c7148f3d92002cdb459c2a96a68498241",
-    # )
 
     # Master as of 2022-04-09
     _RULES_CC_VERSION = "58f8e026c00a8a20767e3dc669f46ba23bc93bdb"
