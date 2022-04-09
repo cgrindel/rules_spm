@@ -16,14 +16,14 @@ bzl_library(
 
 bzl_library(
     name = "rules_cc_action_names",
-    srcs = ["@rules_cc//cc:action_names.bzl"],
+    srcs = ["@bazel_build_rules_cc//cc:action_names.bzl"],
     visibility = ["//spm:__subpackages__"],
 )
 
 bzl_library(
     name = "rules_cc_defs",
     srcs = [
-        "@rules_cc//cc:bzl_srcs",
+        "@bazel_build_rules_cc//cc:bzl_srcs",
     ],
     visibility = ["//spm:__subpackages__"],
 )

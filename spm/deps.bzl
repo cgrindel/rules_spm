@@ -28,7 +28,7 @@ def spm_rules_dependencies():
     maybe(
         native.local_repository,
         name = "build_bazel_rules_swift",
-        path = "/Users/chuck/code/cgrindel/rules_swift/fix_missing_bzl_library",
+        path = "/Users/chuck/code/cgrindel/rules_swift/master",
     )
 
     maybe(
@@ -56,9 +56,23 @@ def spm_rules_dependencies():
         ],
     )
 
+    # maybe(
+    #     http_archive,
+    #     name = "bazel_build_rules_cc",
+    #     urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.1/rules_cc-0.0.1.tar.gz"],
+    #     sha256 = "4dccbfd22c0def164c8f47458bd50e0c7148f3d92002cdb459c2a96a68498241",
+    # )
+
+    # Master as of 2022-04-09
+    _RULES_CC_VERSION = "58f8e026c00a8a20767e3dc669f46ba23bc93bdb"
     maybe(
         http_archive,
-        name = "rules_cc",
-        urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.1/rules_cc-0.0.1.tar.gz"],
-        sha256 = "4dccbfd22c0def164c8f47458bd50e0c7148f3d92002cdb459c2a96a68498241",
+        # We purposefully do not name this rules_cc. An incompatibility appeared in Bazel 6.0 pre-release
+        # where action_names.bzl was no longer available.
+        name = "bazel_build_rules_cc",
+        sha256 = "c22f7b4b87c0604f08479190fc0fb09c928982ff8f52b797263505e3b5a75f89",
+        strip_prefix = "rules_cc-{}".format(_RULES_CC_VERSION),
+        urls = [
+            "http://github.com/bazelbuild/rules_cc/archive/{}.tar.gz".format(_RULES_CC_VERSION),
+        ],
     )

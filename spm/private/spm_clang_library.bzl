@@ -1,6 +1,6 @@
 """Definition for spm_clang_library rule."""
 
-load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@bazel_build_rules_cc//cc:defs.bzl", "cc_library")
 load(":spm_filegroup.bzl", "spm_filegroup")
 
 def spm_clang_library(name, packages, deps = None, visibility = None):
