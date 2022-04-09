@@ -1,10 +1,10 @@
 """Definition for spm_system_library rule."""
 
+load("@bazel_build_rules_cc//cc:defs.bzl", "cc_library")
 load(
     "@build_bazel_rules_swift//swift:swift.bzl",
     "swift_c_module",
 )
-load("@rules_cc//cc:defs.bzl", "cc_library")
 load(":spm_filegroup.bzl", "spm_filegroup")
 
 def spm_system_library(name, packages, deps = None, visibility = None):
