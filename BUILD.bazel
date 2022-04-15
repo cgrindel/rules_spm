@@ -5,7 +5,7 @@ load(
     "updatesrc_update_all",
 )
 load(
-    "@cgrindel_rules_bazel_integration_test//bazel_integration_test:defs.bzl",
+    "@contrib_rules_bazel_integration_test//bazel_integration_test:defs.bzl",
     "integration_test_utils",
 )
 
@@ -18,7 +18,7 @@ bzlformat_missing_pkgs(
 updatesrc_update_all(
     name = "update_all",
     targets_to_run = [
-        "@cgrindel_rules_bazel_integration_test//tools:update_deleted_packages",
+        "@contrib_rules_bazel_integration_test//tools:update_deleted_packages",
         ":bzlformat_missing_pkgs_fix",
     ],
 )

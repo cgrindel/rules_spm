@@ -1,3 +1,3 @@
 # Do not add the examples directories here. Execute
-# `bazel run @cgrindel_rules_bazel_integration_test//tools:update_deleted_packages` 
+# `bazel run @contrib_rules_bazel_integration_test//tools:update_deleted_packages` 
 # to update the deleted packages in the .bazelrc.

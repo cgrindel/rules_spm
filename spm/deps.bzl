@@ -43,16 +43,6 @@ def spm_rules_dependencies():
         name = "cgrindel_rules_spm_local_config",
     )
 
-    maybe(
-        http_archive,
-        name = "cgrindel_rules_bazel_integration_test",
-        sha256 = "39071d2ec8e3be74c8c4a6c395247182b987cdb78d3a3955b39e343ece624982",
-        strip_prefix = "rules_bazel_integration_test-0.5.0",
-        urls = [
-            "http://github.com/cgrindel/rules_bazel_integration_test/archive/v0.5.0.tar.gz",
-        ],
-    )
-
     # Master as of 2022-04-09
     _RULES_CC_VERSION = "58f8e026c00a8a20767e3dc669f46ba23bc93bdb"
     maybe(
