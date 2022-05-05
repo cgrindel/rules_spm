@@ -19,8 +19,14 @@ ALL_OS_TEST_EXAMPLES = [
     # addressed.
     # "simple_with_binary",
     "local_package",
-    "vapor",
     "interesting_deps",
+]
+
+LINUX_TEST_EXAMPLES = [
+    # GH141: It appears that swift-crypto has been configured to not build on
+    # MacOSX by default.
+    # https://github.com/apple/swift-crypto/blob/main/Package.swift#L27
+    "vapor",
 ]
 
 MACOS_TEST_EXAMPLES = [
@@ -28,9 +34,11 @@ MACOS_TEST_EXAMPLES = [
     "public_hdrs",
 ]
 
+NO_SUDO_TEST_EXAMPLES = ALL_OS_TEST_EXAMPLES + MACOS_TEST_EXAMPLES + LINUX_TEST_EXAMPLES
+
 NO_SUDO_INTEGRATION_TESTS = [
     example + "_test"
-    for example in ALL_OS_TEST_EXAMPLES + MACOS_TEST_EXAMPLES
+    for example in NO_SUDO_TEST_EXAMPLES
 ] + integration_test_utils.bazel_integration_test_names(
     "simple_test",
     OTHER_BAZEL_VERSIONS,
@@ -104,6 +112,21 @@ default_test_runner(
         workspace_path = example,
     )
     for example in ALL_OS_TEST_EXAMPLES
+]
+
+[
+    bazel_integration_test(
+        name = example + "_test",
+        bazel_version = CURRENT_BAZEL_VERSION,
+        # The test needs to be local due to the operations that rules_spm performs.
+        local = True,
+        target_compatible_with = ["@platforms//os:linux"],
+        test_runner = ":default_test_runner",
+        workspace_files = integration_test_utils.glob_workspace_files(example) +
+                          ADDITIONAL_WORKSPACE_FILES,
+        workspace_path = example,
+    )
+    for example in LINUX_TEST_EXAMPLES
 ]
 
 [
