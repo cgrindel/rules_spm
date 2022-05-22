@@ -3,7 +3,7 @@
 load(":collect_module_attribute.bzl", "collect_module_attribute")
 load(":collect_submodule_members.bzl", "collect_submodule_members")
 load(":collection_results.bzl", "collection_results")
-load(":declarations.bzl", "declarations")
+load(":declarations.bzl", "declarations", dts = "declaration_types")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "tokens", ops = "operators", rws = "reserved_words", tts = "token_types")
 
@@ -65,6 +65,9 @@ def collect_submodule(parsed_tokens, prefix_tokens = [], umbrella_decl = None):
         _, i_err = tokens.get_as(parsed_tokens, 1, tts.operator, ops.asterisk, count = tlen)
         if i_err != None:
             return None, i_err
+
+        if umbrella_decl.decl_type == dts.umbrella_header:
+            members.append(declarations.single_header(umbrella_decl.path))
         module_id = umbrella_decl.path
 
     consumed_count += 1

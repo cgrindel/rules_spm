@@ -198,6 +198,7 @@ def _collect_module_test(ctx):
                 members = [
                     declarations.umbrella_header(path = "header.h"),
                     declarations.module(module_id = "header.h", explicit = True, members = [
+                        struct(attribs = None, decl_type = "single_header", path = "header.h", private = False, textual = False),
                         struct(decl_type = "export", identifiers = [], wildcard = True),
                     ]),
                 ],
