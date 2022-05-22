@@ -126,6 +126,123 @@ def _collect_module_test(ctx):
         ],
     )
 
+    do_parse_test(
+        env,
+        "module with submodule",
+        text = """
+        module MyModule {
+            module A {
+                header "A.h"
+            }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    declarations.module(module_id = "A", members = [
+                        struct(attribs = None, decl_type = "single_header", path = "A.h", private = False, textual = False),
+                    ]),
+                ],
+            ),
+        ],
+    )
+
+    do_parse_test(
+        env,
+        "module with explicit submodule",
+        text = """
+        module MyModule {
+            umbrella "MyLib"
+            explicit module * {
+                export *
+            }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    declarations.umbrella_directory("MyLib"),
+                    declarations.module(module_id = "MyLib", explicit = True, members = [
+                        struct(decl_type = "export", identifiers = [], wildcard = True),
+                    ]),
+                ],
+            ),
+        ],
+    )
+
+    do_parse_test(
+        env,
+        "module with explicit submodule and umbrella header",
+        text = """
+        module MyModule {
+            umbrella header "header.h"
+            explicit module * {
+                export *
+            }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    declarations.umbrella_header(path = "header.h"),
+                    declarations.module(module_id = "header.h", explicit = True, members = [
+                        struct(decl_type = "export", identifiers = [], wildcard = True),
+                    ]),
+                ],
+            ),
+        ],
+    )
+
+    do_parse_test(
+        env,
+        "standard submodule",
+        text = """
+        module MyModule {
+            header "header.h"
+            module A {
+                header "A.h"
+                export *
+            }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    struct(attribs = None, decl_type = "single_header", path = "header.h", private = False, textual = False),
+                    declarations.module(module_id = "A", members = [
+                        struct(attribs = None, decl_type = "single_header", path = "A.h", private = False, textual = False),
+                        struct(decl_type = "export", identifiers = [], wildcard = True),
+                    ]),
+                ],
+            ),
+        ],
+    )
+
+    do_failing_parse_test(
+        env,
+        "explicit module",
+        text = """
+        explicit module MyModule {}
+        """,
+        expected_err = "The explicit qualifier can only exist on submodules.",
+    )
+
     do_failing_parse_test(
         env,
         "module with unexpected qualifier",

@@ -1,13 +1,11 @@
-"""Definition for collect_module_members."""
+"""Definition for collect_submodule_members."""
 
 load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":collect_export_declaration.bzl", "collect_export_declaration")
 load(":collect_header_declaration.bzl", "collect_header_declaration")
 load(":collect_link_declaration.bzl", "collect_link_declaration")
-load(":collect_submodule.bzl", "collect_submodule")
 load(":collect_umbrella_dir_declaration.bzl", "collect_umbrella_dir_declaration")
 load(":collection_results.bzl", "collection_results")
-load(":declarations.bzl", "declaration_types")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
@@ -18,8 +16,8 @@ _unsupported_module_members = sets.make([
     rws.use,
 ])
 
-def collect_module_members(parsed_tokens):
-    """Collect module members from the parsed tokens.
+def collect_submodule_members(parsed_tokens):
+    """Collect submodule members from the parsed tokens.
 
     Args:
         parsed_tokens: A `list` of tokens.
@@ -39,7 +37,6 @@ def collect_module_members(parsed_tokens):
     skip_ahead = 0
     collect_result = None
     prefix_tokens = []
-    umbrella_decl = None
     for idx in range(consumed_count, tlen - consumed_count):
         consumed_count += 1
         if skip_ahead > 0:
@@ -87,15 +84,9 @@ def collect_module_members(parsed_tokens):
                         (prefix_tokens),
                     )
                 collect_result, err = collect_umbrella_dir_declaration(parsed_tokens[idx:])
-                if err == None and len(collect_result.declarations) == 1:
-                    umbrella_decl = collect_result.declarations[0]
 
         elif tokens.is_a(token, tts.reserved, rws.header):
             collect_result, err = collect_header_declaration(parsed_tokens[idx:], prefix_tokens)
-            if (err == None and
-                len(collect_result.declarations) == 1 and
-                collect_result.declarations[0].decl_type == declaration_types.umbrella_header):
-                umbrella_decl = collect_result.declarations[0]
             prefix_tokens = []
 
         elif tokens.is_a(token, tts.reserved, rws.export):
@@ -103,10 +94,6 @@ def collect_module_members(parsed_tokens):
 
         elif tokens.is_a(token, tts.reserved, rws.link):
             collect_result, err = collect_link_declaration(parsed_tokens[idx:])
-
-        elif tokens.is_a(token, tts.reserved, rws.module):
-            collect_result, err = collect_submodule(parsed_tokens[idx:], prefix_tokens = prefix_tokens, umbrella_decl = umbrella_decl)
-            prefix_tokens = []
 
         elif tokens.is_a(token, tts.reserved) and sets.contains(_unsupported_module_members, token.value):
             return None, errors.new("Unsupported module member token. token: %s" % (token))

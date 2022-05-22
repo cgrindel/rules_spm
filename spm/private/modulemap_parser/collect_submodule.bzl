@@ -1,18 +1,18 @@
-"""Defintion for collect_module."""
+"""Defintion for collect_submodule."""
 
 load(":collect_module_attribute.bzl", "collect_module_attribute")
-load(":collect_module_members.bzl", "collect_module_members")
+load(":collect_submodule_members.bzl", "collect_submodule_members")
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
-load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
+load(":tokens.bzl", "tokens", ops = "operators", rws = "reserved_words", tts = "token_types")
 
 # MARK: - Module Collection
 
-def collect_module(parsed_tokens, prefix_tokens = []):
-    """Collect a module declaration.
+def collect_submodule(parsed_tokens, prefix_tokens = [], umbrella_decl = None):
+    """Collect a submodule declaration.
 
-    Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
+    Spec: https://clang.llvm.org/docs/Modules.html#submodule-declaration
 
     Syntax:
         explicitopt frameworkopt module module-id attributesopt '{' module-member* '}'
@@ -20,11 +20,13 @@ def collect_module(parsed_tokens, prefix_tokens = []):
     Args:
         parsed_tokens: A `list` of tokens.
         prefix_tokens: A `list` of tokens that have already been collected, but not applied.
+        umbrella_decl: A `declaration` of type `umbrella`, in the case of an inferred declaration.
 
     Returns:
         A `tuple` where the first item is the collection result and the second is an
         error `struct` as returned from errors.create().
     """
+    explicit = False
     framework = False
     attributes = []
     members = []
@@ -35,7 +37,7 @@ def collect_module(parsed_tokens, prefix_tokens = []):
     # Process the prefix tokens
     for token in prefix_tokens:
         if token.type == tts.reserved and token.value == rws.explicit:
-            return None, errors.new("The explicit qualifier can only exist on submodules.")
+            explicit = True
 
         elif token.type == tts.reserved and token.value == rws.framework:
             framework = True
@@ -51,8 +53,20 @@ def collect_module(parsed_tokens, prefix_tokens = []):
     consumed_count += 1
 
     module_id_token, err = tokens.get_as(parsed_tokens, 1, tts.identifier, count = tlen)
-    if err != None:
-        return None, err
+    if err == None:
+        module_id = module_id_token.value
+    else:
+        if umbrella_decl == None:
+            return None, err
+
+        # A submodule without its next token as an identifier may be an inferred submodule.
+        # Such a submodule gets its members from the umbrella declaration provided in the
+        # parent module's members.
+        _, i_err = tokens.get_as(parsed_tokens, 1, tts.operator, ops.asterisk, count = tlen)
+        if i_err != None:
+            return None, i_err
+        module_id = umbrella_decl.path
+
     consumed_count += 1
 
     # Collect the attributes and module members
@@ -74,7 +88,7 @@ def collect_module(parsed_tokens, prefix_tokens = []):
 
         # Process the token
         if tokens.is_a(token, tts.curly_bracket_open):
-            collect_result, err = collect_module_members(parsed_tokens[idx:])
+            collect_result, err = collect_submodule_members(parsed_tokens[idx:])
             if err != None:
                 return None, err
             members.extend(collect_result.declarations)
@@ -98,8 +112,8 @@ def collect_module(parsed_tokens, prefix_tokens = []):
 
     # Create the declaration
     decl = declarations.module(
-        module_id = module_id_token.value,
-        explicit = False,
+        module_id = module_id,
+        explicit = explicit,
         framework = framework,
         attributes = attributes,
         members = members,
