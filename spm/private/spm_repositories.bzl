@@ -346,12 +346,17 @@ def _get_hdr_paths_from_modulemap(repository_ctx, modulemap_path):
     for module_decl in module_decls:
         for cdecl in module_decl.members:
             if cdecl.decl_type == dts.single_header and not cdecl.private and not cdecl.textual:
-                # Resolve the path relative to the modulemap
-                hdr_path = paths.join(modulemap_dirname, cdecl.path)
-                normalized_hdr_path = paths.normalize(hdr_path)
-                hdrs.append(normalized_hdr_path)
+                hdrs.append(_get_normalized_hdr_path(modulemap_dirname, cdecl.path))
+            elif cdecl.decl_type == dts.umbrella_header:
+                hdrs.append(_get_normalized_hdr_path(modulemap_dirname, cdecl.path))
+            # TODO support umbrella directory
 
     return hdrs
+
+def _get_normalized_hdr_path(modulemap_dirname, path):
+    # Resolve the path relative to the modulemap
+    hdr_path = paths.join(modulemap_dirname, path)
+    return paths.normalize(hdr_path)
 
 def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     """Returns a list of the public headers for the clang target.
