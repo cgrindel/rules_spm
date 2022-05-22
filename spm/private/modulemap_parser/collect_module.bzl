@@ -118,6 +118,8 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
             if err != None:
                 return None, err
             members.extend(collect_result.declarations)
+            consumed_count += collect_result.count - 1
+            break
 
         elif tokens.is_a(token, tts.square_bracket_open):
             collect_result, err = _collect_attribute(parsed_tokens[idx:])

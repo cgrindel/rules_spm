@@ -338,21 +338,18 @@ def _get_hdr_paths_from_modulemap(repository_ctx, modulemap_path):
         fail("Errors parsing the %s. %s" % (modulemap_path, err))
 
     module_decls = [d for d in decls if d.decl_type == dts.module]
-    module_decls_len = len(module_decls)
-    if module_decls_len == 0:
+    if len(module_decls) == 0:
         fail("No module declarations were found in %s." % (modulemap_path))
-    if module_decls_len > 1:
-        fail("Expected a single module definition but found %s." % (module_decls_len))
-    module_decl = module_decls[0]
 
     modulemap_dirname = paths.dirname(modulemap_path)
     hdrs = []
-    for cdecl in module_decl.members:
-        if cdecl.decl_type == dts.single_header and not cdecl.private and not cdecl.textual:
-            # Resolve the path relative to the modulemap
-            hdr_path = paths.join(modulemap_dirname, cdecl.path)
-            normalized_hdr_path = paths.normalize(hdr_path)
-            hdrs.append(normalized_hdr_path)
+    for module_decl in module_decls:
+        for cdecl in module_decl.members:
+            if cdecl.decl_type == dts.single_header and not cdecl.private and not cdecl.textual:
+                # Resolve the path relative to the modulemap
+                hdr_path = paths.join(modulemap_dirname, cdecl.path)
+                normalized_hdr_path = paths.normalize(hdr_path)
+                hdrs.append(normalized_hdr_path)
 
     return hdrs
 

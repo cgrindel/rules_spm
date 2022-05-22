@@ -31,6 +31,69 @@ def _collect_module_test(ctx):
 
     do_parse_test(
         env,
+        "module with members",
+        text = """
+        module MyModule {
+            header "SomeHeader.h"
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    struct(attribs = None, decl_type = "single_header", path = "SomeHeader.h", private = False, textual = False),
+                ],
+            ),
+        ],
+    )
+
+    do_parse_test(
+        env,
+        "two modules with members and exports with newlines",
+        text = """
+        module MyModule {
+            header "SomeHeader.h"
+            header "SomeOtherHeader.h"
+            export *
+        }
+
+        module MyModuleTwo {
+            header "SecondHeader.h"
+            header "ThirdHeader.h"
+            export *
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    struct(attribs = None, decl_type = "single_header", path = "SomeHeader.h", private = False, textual = False),
+                    struct(attribs = None, decl_type = "single_header", path = "SomeOtherHeader.h", private = False, textual = False),
+                    struct(decl_type = "export", identifiers = [], wildcard = True),
+                ],
+            ),
+            declarations.module(
+                module_id = "MyModuleTwo",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    struct(attribs = None, decl_type = "single_header", path = "SecondHeader.h", private = False, textual = False),
+                    struct(attribs = None, decl_type = "single_header", path = "ThirdHeader.h", private = False, textual = False),
+                    struct(decl_type = "export", identifiers = [], wildcard = True),
+                ],
+            ),
+        ],
+    )
+
+    do_parse_test(
+        env,
         "module with qualifiers",
         text = """
         framework module MyModule {}
