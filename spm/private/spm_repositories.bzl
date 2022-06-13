@@ -252,10 +252,10 @@ def _generate_bazel_pkg(
                        that are executable.
     """
     pkg_name = pkg_desc["name"]
-    bld_path = "{}/BUILD.bazel".format(pkg_name)
-    pkg_desc_path = "{}/spm_pkg_desc.json".format(pkg_name)
+    bld_path = paths.join(pkg_name, "BUILD.bazel")
 
     # Write the package description for easier debugging
+    pkg_desc_path = paths.join(pkg_name, "spm_pkg_desc.json")
     repository_ctx.file(
         pkg_desc_path,
         content = json.encode_indent(pkg_desc, indent = "  "),
