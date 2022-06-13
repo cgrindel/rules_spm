@@ -258,7 +258,7 @@ def _generate_bazel_pkg(
     pkg_desc_path = paths.join(pkg_name, "spm_pkg_desc.json")
     repository_ctx.file(
         pkg_desc_path,
-        content = json.encode_indent(pkg_desc, indent = "  "),
+        content = json.encode_indent(pkg_desc),
     )
 
     module_decls = []
