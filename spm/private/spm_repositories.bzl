@@ -252,7 +252,14 @@ def _generate_bazel_pkg(
                        that are executable.
     """
     pkg_name = pkg_desc["name"]
-    bld_path = "%s/BUILD.bazel" % (pkg_name)
+    bld_path = "{}/BUILD.bazel".format(pkg_name)
+    pkg_desc_path = "{}/spm_pkg_desc.json".format(pkg_name)
+
+    # Write the package description for easier debugging
+    repository_ctx.file(
+        pkg_desc_path,
+        content = json.encode_indent(pkg_desc, indent = "  "),
+    )
 
     module_decls = []
 
@@ -591,6 +598,10 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     fetched_pkg_paths = fetched_pkg_paths + local_pkg_paths
 
     for pkg_path in fetched_pkg_paths:
+        # DEBUG BEGIN
+        print("*** CHUCK pkg_path: ", pkg_path)
+
+        # DEBUG END
         dep_pkg_desc = pds.get(
             repository_ctx,
             env = env,
