@@ -598,10 +598,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     fetched_pkg_paths = fetched_pkg_paths + local_pkg_paths
 
     for pkg_path in fetched_pkg_paths:
-        # DEBUG BEGIN
-        print("*** CHUCK pkg_path: ", pkg_path)
-
-        # DEBUG END
         dep_pkg_desc = pds.get(
             repository_ctx,
             env = env,
