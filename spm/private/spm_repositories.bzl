@@ -12,6 +12,13 @@ load(":repository_utils.bzl", "repository_utils")
 load(":spm_common.bzl", "spm_common")
 load(":spm_versions.bzl", "spm_versions")
 
+# MARK: - Constants
+
+spm_build_modes = struct(
+    SPM = "spm",
+    BAZEL = "bazel",
+)
+
 # MARK: - Environment Variables
 
 _DEVELOPER_DIR_ENV = "DEVELOPER_DIR"
@@ -261,7 +268,36 @@ def _generate_bazel_pkg(
         content = json.encode_indent(pkg_desc),
     )
 
+    build_mode = repository_ctx.attr.build_mode
+    if build_mode == spm_build_modes.SPM:
+        module_decls = _create_spm_module_decls(
+            repository_ctx,
+            pkg_desc,
+            dep_target_refs_dict,
+            exec_products,
+        )
+    elif build_mode == spm_build_modes.BAZEL:
+        module_decls = _create_bazel_module_decls(
+            repository_ctx,
+            pkg_desc,
+            dep_target_refs_dict,
+            exec_products,
+        )
+    else:
+        fail("Unrecognized `build_mode`. {build_mode}".format(
+            build_mode = build_mode,
+        ))
+
+    bld_content = _bazel_pkg_hdr + "".join(module_decls)
+    repository_ctx.file(bld_path, content = bld_content, executable = False)
+
+def _create_spm_module_decls(
+        repository_ctx,
+        pkg_desc,
+        dep_target_refs_dict,
+        exec_products):
     module_decls = []
+    pkg_name = pkg_desc["name"]
 
     # Create a binary target for the executable products
     for product in exec_products:
@@ -311,8 +347,14 @@ def _generate_bazel_pkg(
         else:
             fail("Unrecognized target type. %s" % (target))
 
-    bld_content = _bazel_pkg_hdr + "".join(module_decls)
-    repository_ctx.file(bld_path, content = bld_content, executable = False)
+    return module_decls
+
+def _create_bazel_module_decls(
+        repository_ctx,
+        pkg_desc,
+        dep_target_refs_dict,
+        exec_products):
+    fail("NOT IMPLEMENTED: _create_spm_module_decls")
 
 # MARK: - Clang Custom Headers Functions
 
@@ -697,6 +739,17 @@ def _spm_repositories_impl(repository_ctx):
 spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
     attrs = {
+        "build_mode": attr.string(
+            default = "spm",
+            values = ["spm", "bazel"],
+            doc = """\
+Specifies how `rules_spm` will build the Swift packages.
+
+  `spm`: Build the packages with Swift Package Manager and generate Bazel targets 
+         that import the results.
+  `bazel`: Generate Bazel targets that build the packages.
+""",
+        ),
         "dependencies": attr.string_list(
             mandatory = True,
             doc = "List of JSON strings specifying the SPM packages to load.",
