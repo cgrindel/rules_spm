@@ -1,9 +1,9 @@
 """Tested/Supported Bazel Versions"""
 
-CURRENT_BAZEL_VERSION = "5.1.1"
+CURRENT_BAZEL_VERSION = "//:.bazelversion"
 
 OTHER_BAZEL_VERSIONS = [
-    "6.0.0-pre.20220405.2",
+    "6.0.0-pre.20220601.1",
 ]
 
 SUPPORTED_BAZEL_VERSIONS = [
