@@ -9,6 +9,7 @@ load(":package_descriptions.bzl", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":references.bzl", refs = "references")
 load(":repository_utils.bzl", "repository_utils")
+load(":resolved_packages.bzl", "resolved_packages")
 load(":spm_common.bzl", "spm_common")
 load(":spm_versions.bzl", "spm_versions")
 
@@ -642,6 +643,9 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
 """,
     )
 
+    # Load information from Package.resolved
+    resolved_pkgs = resolved_packages.read(repository_ctx)
+
     # Remove any BUILD or BUILD.bazel files in the fetched repos. The presence
     # of these files will prevent glob() from finding the source files because
     # Bazel will consider the directories with the BUILD/BUILD.bazel files to
@@ -655,12 +659,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
 
     root_pkg_desc = pds.get(repository_ctx, env = env)
     pkg_descs_dict[pds.root_pkg_name] = root_pkg_desc
-
-    pkg_dependencies_dict = pds.extract_pkg_dependencies_by_name(root_pkg_desc)
-
-    # DEBUG BEGIN
-    print("*** CHUCK root_pkg_desc: ", root_pkg_desc)
-    # DEBUG END
 
     # Find the location for all of the dependent packages.
     fetched_pkg_paths = _list_directories_under(
@@ -679,13 +677,17 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
         )
 
         dep_name = dep_pkg_desc["name"]
-        pkg_descs_dict[dep_name] = dep_pkg_desc
 
-        dep_dependencies_dict = pds.extract_pkg_dependencies_by_name(dep_pkg_desc)
-        pkg_dependencies_dict = pds.merge_pkg_dependencies_dicts(
-            pkg_dependencies_dict,
-            dep_dependencies_dict,
-        )
+        dep_resolved_pkg = resolved_pkgs.get(dep_name)
+        if dep_resolved_pkg == None:
+            fail("""\
+Expected to find a resolved package for {dep_name} package.\
+""".format(
+                dep_name = dep_name,
+            ))
+        dep_pkg_desc["resolved_package"] = dep_resolved_pkg
+
+        pkg_descs_dict[dep_name] = dep_pkg_desc
 
         # Look for custom header declarations in the clang targets
         clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
@@ -700,13 +702,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
                 clang_target["name"],
             )
             clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
-
-    # DEBUG BEGIN
-    print("*** CHUCK pkg_dependencies_dict: ")
-    for key in pkg_dependencies_dict:
-        print("*** CHUCK", key, ":", pkg_dependencies_dict[key])
-
-    # DEBUG END
 
     # Create Bazel targets for every declared product and any of its transitive
     # dependencies
@@ -723,6 +718,10 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             exec_products.append(product)
             exec_products_dict[pkg_name] = exec_products
 
+    # Write BUILD.bazel file.
+    _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
+
+    # Generate Bazel packages for each package
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
     for pkg_name in pkg_descs_dict:
         _generate_bazel_pkg(
@@ -731,9 +730,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             dep_target_refs_dict,
             exec_products_dict.get(pkg_name, default = []),
         )
-
-    # Write BUILD.bazel file.
-    _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
 
 def _prepare_local_package(repository_ctx, pkg):
     path = pkg.path

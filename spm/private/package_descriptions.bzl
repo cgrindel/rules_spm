@@ -143,6 +143,7 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
 
     return pkg_desc
 
+# TODO: May be deprecated.
 # TODO: Add tests for _extract_pkg_dependencies_by_name
 
 def _extract_pkg_dependencies_by_name(pkg_desc):
@@ -180,6 +181,7 @@ def _extract_pkg_dependencies_by_name(pkg_desc):
 
     return pkg_dependencies_dict
 
+# TODO: May be deprecated.
 # TODO: Add tests for _merge_pkg_dependencies_dicts
 
 def _merge_pkg_dependencies_dicts(a_dict, b_dict):
