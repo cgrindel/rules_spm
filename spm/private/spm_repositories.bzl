@@ -288,6 +288,10 @@ def _generate_bazel_pkg(
             build_mode = build_mode,
         ))
 
+    # DEBUG BEGIN
+    fail("STOP")
+    # DEBUG END
+
     bld_content = _bazel_pkg_hdr + "".join(module_decls)
     repository_ctx.file(bld_path, content = bld_content, executable = False)
 
@@ -354,7 +358,29 @@ def _create_bazel_module_decls(
         pkg_desc,
         dep_target_refs_dict,
         exec_products):
-    fail("NOT IMPLEMENTED: _create_spm_module_decls")
+    module_decls = []
+    pkg_name = pkg_desc["name"]
+
+    target_refs = [
+        tr
+        for tr in dep_target_refs_dict
+        if refs.is_target_ref(tr, for_pkg = pkg_name)
+    ]
+    for target_ref in target_refs:
+        target_deps = dep_target_refs_dict[target_ref]
+        _rtype, _pname, target_name = refs.split(target_ref)
+        target = pds.get_target(pkg_desc, target_name)
+
+        # # DEBUG BEGIN
+        # print("*** CHUCK ===========")
+        # print("*** CHUCK target_ref: ", target_ref)
+        # print("*** CHUCK target: ", target)
+        # print("*** CHUCK target_deps: ")
+        # for idx, item in enumerate(target_deps):
+        #     print("*** CHUCK", idx, ":", item)
+        # # DEBUG END
+
+    return module_decls
 
 # MARK: - Clang Custom Headers Functions
 
@@ -629,6 +655,16 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
 
     root_pkg_desc = pds.get(repository_ctx, env = env)
     pkg_descs_dict[pds.root_pkg_name] = root_pkg_desc
+
+    pkg_dependencies_dict = pds.extract_pkg_dependencies_by_name(root_pkg_desc)
+
+    # DEBUG BEGIN
+    print("*** CHUCK root_pkg_desc: ", root_pkg_desc)
+    print("*** CHUCK pkg_dependencies_dict: ")
+    for key in pkg_dependencies_dict:
+        print("*** CHUCK", key, ":", pkg_dependencies_dict[key])
+
+    # DEBUG END
 
     # Find the location for all of the dependent packages.
     fetched_pkg_paths = _list_directories_under(

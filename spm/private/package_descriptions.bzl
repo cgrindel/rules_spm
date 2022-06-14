@@ -106,6 +106,12 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
         working_directory = working_directory,
     )
 
+    # # DEBUG BEGIN
+    # print("*** CHUCK -----")
+    # print("*** CHUCK working_directory: ", working_directory)
+    # print("*** CHUCK pkg_dump: ", pkg_dump)
+    # # DEBUG END
+
     # Collect the dump targets by name
     dump_targets_dict = {}
     for dump_target in pkg_dump["targets"]:
@@ -142,6 +148,63 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
         target["dependencies"] = dump_target["dependencies"]
 
     return pkg_desc
+
+# def _extract_pkg_source_control_by_name(pkg_desc):
+#     pkg_source_controls_dict = {}
+
+#     # The `dependencies` attribute is a list of dependency structs.
+#     # dependency struct:
+#     #   `sourceControl`: `list` of source_control structs
+#     # source_control struct:
+#     #   `identity`: package name as a `string`
+#     #   `location`: a location struct
+#     #   `productFilter`: ??? (all examples are None)
+#     #   `requirement`:  requirement struct
+#     # location struct:
+#     #   `remote`: `list` of URL strings
+#     # requirement struct:
+#     #   `range`: `list` of range structs
+#     # range struct:
+#     #   `lowerBound`: `string` with lower bound semver (e.g. "2.38.0")
+#     #   `upperBound`: `string` with upper bound semver (e.g. "3.0.0")
+#     for dep in pkg_desc["dependencies"]:
+#         source_controls = dep.get("sourceControl", default = [])
+
+#         # DEBUG BEGIN
+#         print("*** CHUCK dep: ", dep)
+#         print("*** CHUCK source_controls: ", source_controls)
+
+#         # DEBUG END
+#         for source_control in source_controls:
+#             dep_pkg_name = source_control["identity"]
+#             dep_source_controls = pkg_source_controls_dict.get(dep_pkg_name, default = [])
+#             dep_source_controls.append(source_control)
+#             pkg_source_controls_dict[dep_pkg_name] = dep_source_controls
+
+#     return pkg_source_controls_dict
+
+def _extract_pkg_dependencies_by_name(pkg_desc):
+    pkg_dependencies_dict = {}
+
+    # The `dependencies` attribute is a list of dependency structs.
+    # dependency struct:
+    #   `identity`: package name as a `string`
+    #   `requirement`:  requirement struct
+    #   `type`: `string` (e.g., `sourceControl`)
+    #   `url`: `string`
+    # requirement struct:
+    #   `exact`: `list` of `string` semver values
+    #   `range`: `list` of range structs
+    # range struct:
+    #   `lowerBound`: `string` with lower bound semver (e.g. "2.38.0")
+    #   `upperBound`: `string` with upper bound semver (e.g. "3.0.0")
+    for dep in pkg_desc["dependencies"]:
+        dep_pkg_name = dep["identity"]
+        existing_deps = pkg_dependencies_dict.get(dep_pkg_name, default = [])
+        existing_deps.append(dep)
+        pkg_dependencies_dict[dep_pkg_name] = existing_deps
+
+    return pkg_dependencies_dict
 
 # MARK: - Product Functions
 
@@ -540,6 +603,7 @@ module_types = struct(
 package_descriptions = struct(
     parse_json = _parse_json,
     get = _get_package_description,
+    extract_pkg_dependencies_by_name = _extract_pkg_dependencies_by_name,
     # Library Functions
     is_library_product = _is_library_product,
     library_products = _library_products,
