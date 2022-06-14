@@ -206,6 +206,14 @@ def _extract_pkg_dependencies_by_name(pkg_desc):
 
     return pkg_dependencies_dict
 
+def _merge_pkg_dependencies_dicts(a_dict, b_dict):
+    result = dict(**a_dict)
+    for pkg_name, new_values in b_dict.items():
+        existing_values = result.get(pkg_name, default = [])
+        existing_values.extend(new_values)
+        result[pkg_name] = existing_values
+    return result
+
 # MARK: - Product Functions
 
 def _is_executable_product(product):
@@ -604,6 +612,7 @@ package_descriptions = struct(
     parse_json = _parse_json,
     get = _get_package_description,
     extract_pkg_dependencies_by_name = _extract_pkg_dependencies_by_name,
+    merge_pkg_dependencies_dicts = _merge_pkg_dependencies_dicts,
     # Library Functions
     is_library_product = _is_library_product,
     library_products = _library_products,
