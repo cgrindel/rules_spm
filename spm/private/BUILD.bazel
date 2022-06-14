@@ -93,6 +93,11 @@ bzl_library(
 )
 
 bzl_library(
+    name = "resolved_packages",
+    srcs = ["resolved_packages.bzl"],
+)
+
+bzl_library(
     name = "spm_archive",
     srcs = ["spm_archive.bzl"],
     visibility = ["//spm:__subpackages__"],
@@ -184,6 +189,7 @@ bzl_library(
         ":package_descriptions",
         ":packages",
         ":references",
+        ":resolved_packages",
         ":spm_common",
         ":spm_versions",
         "//spm/private/modulemap_parser:declarations",
