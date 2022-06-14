@@ -106,12 +106,6 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
         working_directory = working_directory,
     )
 
-    # # DEBUG BEGIN
-    # print("*** CHUCK -----")
-    # print("*** CHUCK working_directory: ", working_directory)
-    # print("*** CHUCK pkg_dump: ", pkg_dump)
-    # # DEBUG END
-
     # Collect the dump targets by name
     dump_targets_dict = {}
     for dump_target in pkg_dump["targets"]:
@@ -184,20 +178,32 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
 #     return pkg_source_controls_dict
 
 def _extract_pkg_dependencies_by_name(pkg_desc):
+    """Extracts the dependencies from a package description and indexes it by package name.
+
+    Description of the structures
+
+    dependency dict:
+      `identity`: package name as a `string`
+      `requirement`:  requirement struct
+      `type`: `string` (e.g., `sourceControl`)
+      `url`: `string`
+    requirement dict:
+      `exact`: `list` of `string` semver values
+      `range`: `list` of range structs
+    range dict:
+      `lowerBound`: `string` with lower bound semver (e.g. "2.38.0")
+      `upperBound`: `string` with upper bound semver (e.g. "3.0.0")
+
+    Args:
+        pkg_desc: A `dict` as returned by `package_descriptions.get`.
+
+    Returns:
+        A `dict` where the key is the package name/identity and the value is a
+        `list` of depdency struct values.
+    """
     pkg_dependencies_dict = {}
 
-    # The `dependencies` attribute is a list of dependency structs.
-    # dependency struct:
-    #   `identity`: package name as a `string`
-    #   `requirement`:  requirement struct
-    #   `type`: `string` (e.g., `sourceControl`)
-    #   `url`: `string`
-    # requirement struct:
-    #   `exact`: `list` of `string` semver values
-    #   `range`: `list` of range structs
-    # range struct:
-    #   `lowerBound`: `string` with lower bound semver (e.g. "2.38.0")
-    #   `upperBound`: `string` with upper bound semver (e.g. "3.0.0")
+    # The `dependencies` attribute is a list of dependency dict values.
     for dep in pkg_desc["dependencies"]:
         dep_pkg_name = dep["identity"]
         existing_deps = pkg_dependencies_dict.get(dep_pkg_name, default = [])
@@ -207,6 +213,20 @@ def _extract_pkg_dependencies_by_name(pkg_desc):
     return pkg_dependencies_dict
 
 def _merge_pkg_dependencies_dicts(a_dict, b_dict):
+    """Merges the values from two package dependencies `dict` values.
+
+    The values from `b_dict` are appended to the values in `a_dict`.
+
+    Args:
+        a_dict: A `dict` as returned by
+                `package_descriptions.extract_pkg_dependencies_by_name`.
+        b_dict: A `dict` as returned by
+                `package_descriptions.extract_pkg_dependencies_by_name`.
+
+    Returns:
+        A `dict` where the key is the package name/identity and the value is a
+        `list` of depdency struct values.
+    """
     result = dict(**a_dict)
     for pkg_name, new_values in b_dict.items():
         existing_values = result.get(pkg_name, default = [])

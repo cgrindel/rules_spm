@@ -660,10 +660,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
 
     # DEBUG BEGIN
     print("*** CHUCK root_pkg_desc: ", root_pkg_desc)
-    print("*** CHUCK pkg_dependencies_dict: ")
-    for key in pkg_dependencies_dict:
-        print("*** CHUCK", key, ":", pkg_dependencies_dict[key])
-
     # DEBUG END
 
     # Find the location for all of the dependent packages.
@@ -681,8 +677,15 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             env = env,
             working_directory = pkg_path,
         )
+
         dep_name = dep_pkg_desc["name"]
         pkg_descs_dict[dep_name] = dep_pkg_desc
+
+        dep_dependencies_dict = pds.extract_pkg_dependencies_by_name(dep_pkg_desc)
+        pkg_dependencies_dict = pds.merge_pkg_dependencies_dicts(
+            pkg_dependencies_dict,
+            dep_dependencies_dict,
+        )
 
         # Look for custom header declarations in the clang targets
         clang_targets = [t for t in pds.library_targets(dep_pkg_desc) if pds.is_clang_target(t)]
@@ -697,6 +700,13 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
                 clang_target["name"],
             )
             clang_hdrs_dict[clang_hdrs_key] = clang_hdr_paths
+
+    # DEBUG BEGIN
+    print("*** CHUCK pkg_dependencies_dict: ")
+    for key in pkg_dependencies_dict:
+        print("*** CHUCK", key, ":", pkg_dependencies_dict[key])
+
+    # DEBUG END
 
     # Create Bazel targets for every declared product and any of its transitive
     # dependencies
