@@ -233,6 +233,8 @@ def _create_bazel_module_decls(
         repository_ctx,
         pkg_desc,
         dep_target_refs_dict,
+        #GH149: Remove once fully implemented.
+        # buildifier: disable=unused-variable
         exec_products):
     build_decl = build_declarations.create()
     pkg_name = pkg_desc["name"]

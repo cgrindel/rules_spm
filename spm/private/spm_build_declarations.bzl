@@ -1,3 +1,5 @@
+"""Module for defining SPM declarations."""
+
 load(":build_declarations.bzl", "build_declarations")
 
 _spm_swift_binary_tpl = """

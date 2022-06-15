@@ -16,6 +16,8 @@ swift_library(
 )
 """
 
+# GH149: Remove directive once implemented.
+# buildifier: disable=unused-variable
 def _swift_library(repository_ctx, pkg_name, target, target_deps):
     # GH149: IMPLEMENT ME!
     srcs_str = ""
