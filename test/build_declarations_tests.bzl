@@ -1,7 +1,7 @@
 """Tests for build_declarations module"""
 
 load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
-load("//spm/private:build_declarations.bzl", "build_declarations")
+load("//spm:defs.bzl", "build_declarations")
 
 def _load_statement_test(ctx):
     env = unittest.begin(ctx)
