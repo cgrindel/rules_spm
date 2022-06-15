@@ -16,10 +16,8 @@ swift_library(
 )
 """
 
-# TODO: Add unit tests.
-
 def _swift_library(repository_ctx, pkg_name, target, target_deps):
-    # TODO: IMPLEMENT ME!
+    # GH149: IMPLEMENT ME!
     srcs_str = ""
     deps_str = ""
     target_name = target["name"]

@@ -77,8 +77,6 @@ def _create_bazel_deps_str(pkg_name, target_deps):
     deps = ["        \"%s\"," % (label) for label in target_labels]
     return "\n".join(deps)
 
-# TODO: Add unit tests.
-
 build_declarations = struct(
     # Target Declaration
     target = _target,
