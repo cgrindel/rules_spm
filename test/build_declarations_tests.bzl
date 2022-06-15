@@ -25,7 +25,24 @@ load_statement_test = unittest.make(_load_statement_test)
 def _target_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    target_type = "chicken_library"
+    name = "smidgen"
+    declaration = """
+chicken_library(
+    name = "smidgen"
+)
+"""
+    actual = build_declarations.target(
+        type = target_type,
+        name = name,
+        declaration = declaration,
+    )
+    expected = struct(
+        type = target_type,
+        name = name,
+        declaration = declaration,
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
