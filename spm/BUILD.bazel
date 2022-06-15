@@ -50,8 +50,6 @@ bzl_library(
     ],
 )
 
-# TODO: Add backward compatible spm.bzl?
-
 bzlformat_pkg(name = "bzlformat")
 
 filegroup(

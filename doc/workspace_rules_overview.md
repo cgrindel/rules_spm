@@ -16,7 +16,7 @@ On this page:
 ## spm_repositories
 
 <pre>
-spm_repositories(<a href="#spm_repositories-name">name</a>, <a href="#spm_repositories-dependencies">dependencies</a>, <a href="#spm_repositories-env">env</a>, <a href="#spm_repositories-platforms">platforms</a>, <a href="#spm_repositories-repo_mapping">repo_mapping</a>, <a href="#spm_repositories-swift_version">swift_version</a>)
+spm_repositories(<a href="#spm_repositories-name">name</a>, <a href="#spm_repositories-build_mode">build_mode</a>, <a href="#spm_repositories-dependencies">dependencies</a>, <a href="#spm_repositories-env">env</a>, <a href="#spm_repositories-platforms">platforms</a>, <a href="#spm_repositories-repo_mapping">repo_mapping</a>, <a href="#spm_repositories-swift_version">swift_version</a>)
 </pre>
 
 Used to fetch and prepare external Swift package manager packages for the build.
@@ -28,6 +28,7 @@ Used to fetch and prepare external Swift package manager packages for the build.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="spm_repositories-name"></a>name |  A unique name for this repository.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
+| <a id="spm_repositories-build_mode"></a>build_mode |  Specifies how <code>rules_spm</code> will build the Swift packages.<br><br>  <code>spm</code>: Build the packages with Swift Package Manager and generate Bazel targets           that import the results.   <code>bazel</code>: Generate Bazel targets that build the packages.   | String | optional | "spm" |
 | <a id="spm_repositories-dependencies"></a>dependencies |  List of JSON strings specifying the SPM packages to load.   | List of strings | required |  |
 | <a id="spm_repositories-env"></a>env |  Environment variables that will be passed to the execution environments for this repository rule. (e.g. SPM version check, SPM dependency resolution, SPM package description generation)   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: String -> String</a> | optional | {} |
 | <a id="spm_repositories-platforms"></a>platforms |  The platforms to declare in the placeholder/uber Swift package. (e.g. .macOS(.v10_15))   | List of strings | optional | [] |

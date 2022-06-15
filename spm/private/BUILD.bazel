@@ -37,6 +37,23 @@ bzl_library(
 )
 
 bzl_library(
+    name = "bazel_build_declarations",
+    srcs = ["bazel_build_declarations.bzl"],
+    deps = [
+        ":build_declarations",
+    ],
+)
+
+bzl_library(
+    name = "build_declarations",
+    srcs = ["build_declarations.bzl"],
+    deps = [
+        ":references",
+        "@bazel_skylib//lib:sets",
+    ],
+)
+
+bzl_library(
     name = "package_descriptions",
     srcs = ["package_descriptions.bzl"],
     visibility = [
@@ -93,6 +110,11 @@ bzl_library(
 )
 
 bzl_library(
+    name = "resolved_packages",
+    srcs = ["resolved_packages.bzl"],
+)
+
+bzl_library(
     name = "spm_archive",
     srcs = ["spm_archive.bzl"],
     visibility = ["//spm:__subpackages__"],
@@ -108,6 +130,14 @@ bzl_library(
     visibility = ["//spm:__subpackages__"],
     deps = [
         ":repository_utils",
+    ],
+)
+
+bzl_library(
+    name = "spm_build_declarations",
+    srcs = ["spm_build_declarations.bzl"],
+    deps = [
+        ":build_declarations",
     ],
 )
 
@@ -181,9 +211,13 @@ bzl_library(
     srcs = ["spm_repositories.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
+        ":bazel_build_declarations",
+        ":build_declarations",
         ":package_descriptions",
         ":packages",
         ":references",
+        ":resolved_packages",
+        ":spm_build_declarations",
         ":spm_common",
         ":spm_versions",
         "//spm/private/modulemap_parser:declarations",
