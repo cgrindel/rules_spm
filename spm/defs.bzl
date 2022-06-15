@@ -42,6 +42,10 @@ load(
     _repository_utils = "repository_utils",
 )
 load(
+    "//spm/private:resolved_packages.bzl",
+    _resolved_packages = "resolved_packages",
+)
+load(
     "//spm/private:spm_archive.bzl",
     _spm_archive = "spm_archive",
 )
@@ -121,6 +125,7 @@ providers = _providers
 reference_types = _reference_types
 references = _references
 repository_utils = _repository_utils
+resolved_packages = _resolved_packages
 spm_common = _spm_common
 spm_oss = _spm_oss
 spm_package_info_utils = _spm_package_info_utils
