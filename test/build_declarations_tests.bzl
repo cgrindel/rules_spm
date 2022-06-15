@@ -51,7 +51,65 @@ target_test = unittest.make(_target_test)
 def _create_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    actual = build_declarations.create(
+        load_statements = [
+            build_declarations.load_statement(":chicken.bzl", "chicken_library"),
+            build_declarations.load_statement(":foo.bzl", "foo_library"),
+            build_declarations.load_statement(":chicken.bzl", "chicken_library"),
+            build_declarations.load_statement(":chicken.bzl", "chicken_binary"),
+        ],
+        targets = [
+            build_declarations.target(
+                type = "chicken_library",
+                name = "zebra",
+                declaration = """chicken_library(name = "zebra")""",
+            ),
+            build_declarations.target(
+                type = "foo_library",
+                name = "bar",
+                declaration = """foo_library(name = "bar")""",
+            ),
+            build_declarations.target(
+                type = "chicken_library",
+                name = "alpha",
+                declaration = """chicken_library(name = "alpha")""",
+            ),
+            build_declarations.target(
+                type = "chicken_binary",
+                name = "beta",
+                declaration = """chicken_binary(name = "beta")""",
+            ),
+        ],
+    )
+    expected = struct(
+        load_statements = [
+            build_declarations.load_statement(":chicken.bzl", "chicken_binary", "chicken_library"),
+            build_declarations.load_statement(":foo.bzl", "foo_library"),
+        ],
+        targets = [
+            build_declarations.target(
+                type = "chicken_binary",
+                name = "beta",
+                declaration = """chicken_binary(name = "beta")""",
+            ),
+            build_declarations.target(
+                type = "chicken_library",
+                name = "alpha",
+                declaration = """chicken_library(name = "alpha")""",
+            ),
+            build_declarations.target(
+                type = "chicken_library",
+                name = "zebra",
+                declaration = """chicken_library(name = "zebra")""",
+            ),
+            build_declarations.target(
+                type = "foo_library",
+                name = "bar",
+                declaration = """foo_library(name = "bar")""",
+            ),
+        ],
+    )
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 

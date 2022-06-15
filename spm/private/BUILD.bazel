@@ -49,6 +49,7 @@ bzl_library(
     srcs = ["build_declarations.bzl"],
     deps = [
         ":references",
+        "@bazel_skylib//lib:sets",
     ],
 )
 

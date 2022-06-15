@@ -3,6 +3,8 @@
 load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":references.bzl", refs = "references")
 
+# MARK: - Load Statement
+
 def _load_statement(location, *symbols):
     """Create a load statement `struct`.
 
@@ -28,6 +30,28 @@ Expected at least one symbol to be specified. location: {location}\
         symbols = new_symbols,
     )
 
+def _clean_up_load_statements(load_statements):
+    index_by_location = {}
+    for load_stmt in load_statements:
+        location = load_stmt.location
+        existing_values = index_by_location.get(location, default = [])
+        existing_values.append(load_stmt)
+        index_by_location[location] = existing_values
+
+    # Collect results in location-sorted order
+    results = []
+    for location in sorted(index_by_location.keys()):
+        existing_values = index_by_location[location]
+        symbols = []
+        for load_stmt in existing_values:
+            symbols.extend(load_stmt.symbols)
+        new_load_stmt = _load_statement(location, *symbols)
+        results.append(new_load_stmt)
+
+    return results
+
+# MARK: - Target
+
 def _target(type, name, declaration):
     """Create a target `struct`.
 
@@ -45,6 +69,35 @@ def _target(type, name, declaration):
         declaration = declaration,
     )
 
+def _clean_up_targets(targets):
+    index_by_type_name = {}
+    for target in targets:
+        key = "{type}_{name}".format(
+            type = target.type,
+            name = target.name,
+        )
+        existing_values = index_by_type_name.get(key, default = [])
+        existing_values.append(target)
+        index_by_type_name[key] = existing_values
+
+    # Collect in type-name order
+    results = []
+    for type_name in sorted(index_by_type_name.keys()):
+        existing_values = index_by_type_name[type_name]
+        results.extend(existing_values)
+
+    # Check for any duplicate target names
+    names = sets.make()
+    for target in results:
+        name = target.name
+        if sets.contains(names, name):
+            fail("A duplicate target name was found. name: {}".format(name))
+        sets.insert(names, name)
+
+    return results
+
+# MARK: - Build Declaration
+
 def _create(load_statements = [], targets = []):
     """Create a `struct` that represents the parts of a Bazel build file.
 
@@ -57,13 +110,11 @@ def _create(load_statements = [], targets = []):
     Returns:
         A `struct` representing parts of a Bazel  build file.
     """
-
-    # TODO: Sort and uniquify load_statements.
-    # TODO: Sort targets by type and name.
-    # TODO: Ensure that no target names are the same.
+    new_load_stmts = _clean_up_load_statements(load_statements)
+    new_targets = _clean_up_targets(targets)
     return struct(
-        load_statements = load_statements,
-        targets = targets,
+        load_statements = new_load_stmts,
+        targets = new_targets,
     )
 
 def _merge(*build_decls):
@@ -73,7 +124,7 @@ def _merge(*build_decls):
     by type and name.
 
     Args:
-        build_decls: A `sequence` of build file declaration `struct` values
+        *build_decls: A `sequence` of build file declaration `struct` values
                      as returned by `build_declarations.create`.
 
     Returns:
@@ -88,6 +139,8 @@ def _merge(*build_decls):
         load_statements = load_statements,
         targets = targets,
     )
+
+# MARK: - Starlark Code Generation
 
 def _generate_load_statement(load_stmt):
     """Generate a Starlark load statement from a load statement `struct`.
@@ -134,8 +187,6 @@ def _write_build_file(repository_ctx, path, build_decl):
         path: The path where to write the build file content as a `string`.
         build_decl: A build declaration `struct` as returned by
                     `build_declarations.create`.
-
-    Returns:
     """
     content = _generate_build_file_content(build_decl)
     repository_ctx.file(path, content = content, executable = False)
