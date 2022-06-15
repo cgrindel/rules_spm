@@ -133,6 +133,14 @@ bzl_library(
 )
 
 bzl_library(
+    name = "spm_build_declarations",
+    srcs = ["spm_build_declarations.bzl"],
+    deps = [
+        ":build_declarations",
+    ],
+)
+
+bzl_library(
     name = "spm_clang_library",
     srcs = ["spm_clang_library.bzl"],
     visibility = ["//spm:__subpackages__"],
@@ -208,6 +216,7 @@ bzl_library(
         ":packages",
         ":references",
         ":resolved_packages",
+        ":spm_build_declarations",
         ":spm_common",
         ":spm_versions",
         "//spm/private/modulemap_parser:declarations",
