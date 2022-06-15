@@ -1,5 +1,6 @@
 """Module for defining build with Bazel declarations."""
 
+load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":build_declarations.bzl", "build_declarations")
 
 _SWIFT_BZL_LOCATION = "@build_bazel_rules_swift//swift:swift.bzl"
@@ -22,8 +23,15 @@ swift_library(
 # GH149: Remove directive once implemented.
 # buildifier: disable=unused-variable
 def _swift_library(repository_ctx, pkg_name, target, target_deps):
-    # GH149: IMPLEMENT ME!
-    srcs_str = ""
+    target_path = target["path"]
+    srcs = [
+        paths.join(target_path, src)
+        for src in target["sources"]
+    ]
+    srcs_str = build_declarations.bazel_list_str(
+        srcs,
+        double_quote_values = True,
+    )
     deps_str = build_declarations.bazel_deps_str(pkg_name, target_deps)
     target_name = target["name"]
     load_stmt = build_declarations.load_statement(

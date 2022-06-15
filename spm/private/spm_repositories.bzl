@@ -125,12 +125,12 @@ def _generate_bazel_pkg(
     """
     pkg_name = pkg_desc["name"]
 
-    # Write the package description for easier debugging
-    pkg_desc_path = paths.join(pkg_name, "spm_pkg_desc.json")
-    repository_ctx.file(
-        pkg_desc_path,
-        content = json.encode_indent(pkg_desc),
-    )
+    # # Write the package description for easier debugging
+    # pkg_desc_path = paths.join(pkg_name, "spm_pkg_desc.json")
+    # repository_ctx.file(
+    #     pkg_desc_path,
+    #     content = json.encode_indent(pkg_desc),
+    # )
 
     build_mode = repository_ctx.attr.build_mode
     if build_mode == spm_build_modes.SPM:
@@ -141,6 +141,16 @@ def _generate_bazel_pkg(
             exec_products,
         )
     elif build_mode == spm_build_modes.BAZEL:
+        # Copy the sources from the checkout directory
+        repository_ctx.execute(
+            [
+                "cp",
+                "-R",
+                "-f",
+                paths.join(spm_common.checkouts_path, pkg_name),
+                pkg_name,
+            ],
+        )
         build_decl = _create_bazel_module_decls(
             repository_ctx,
             pkg_desc,
@@ -631,10 +641,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             dep_target_refs_dict,
             exec_products_dict.get(pkg_name, default = []),
         )
-
-    # # DEBUG BEGIN
-    # fail("STOP")
-    # # DEBUG END
 
 def _prepare_local_package(repository_ctx, pkg):
     path = pkg.path
