@@ -38,8 +38,6 @@ def _read(repository_ctx, path = "Package.resolved"):
     json_str = repository_ctx.read("Package.resolved")
     return _parse_json(json_str)
 
-# TODO: Add unit tests.
-
 resolved_packages = struct(
     read = _read,
     parse_json = _parse_json,

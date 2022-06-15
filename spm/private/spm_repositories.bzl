@@ -248,7 +248,7 @@ def _create_bazel_module_decls(
         target = pds.get_target(pkg_desc, target_name)
 
         if pds.is_clang_target(target):
-            # TODO: IMPLEMENT ME!
+            # GH149: IMPLEMENT ME!
             pass
         elif pds.is_swift_target(target):
             if pds.is_library_target(target):
@@ -269,7 +269,7 @@ def _create_bazel_module_decls(
                 fail("Unrecognized Swift target type. %s" % (target))
 
         elif pds.is_system_library_target(target):
-            # TODO: IMPLEMENT ME!
+            # GH149: IMPLEMENT ME!
             # if pds.is_system_target(target):
             #     module_decls.append(_create_spm_system_library_decl(
             #         repository_ctx,
