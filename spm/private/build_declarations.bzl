@@ -231,8 +231,36 @@ def _bazel_deps_str(pkg_name, target_deps):
     target_labels = []
     for target_ref in target_deps:
         target_labels.append(_target_ref_str(pkg_name, target_ref))
-    deps = ["        \"%s\"," % (label) for label in target_labels]
-    return "\n".join(deps)
+
+    # deps = ["        \"%s\"," % (label) for label in target_labels]
+    # return "\n".join(deps)
+    return _bazel_list_str(target_labels, double_quote_values = True)
+
+def _bazel_list_str(values, double_quote_values = False, indent = "        "):
+    """Create a `string` of values that is suitable to be inserted in a Starlark list.
+
+    Args:
+        values: A `sequence` of `string` values.
+        double_quote_values: A `bool` indicating whether to add double quotes.
+        indent: A `string` representing the characters to prefix for each value.
+
+    Returns:
+        A `string` value suitable to be inserted between square brackets ([])
+        as Starlark list values.
+    """
+    if double_quote_values:
+        new_values = ["\"{}\"".format(value) for value in values]
+    else:
+        new_values = values
+
+    new_values = [
+        "{indent}{value},".format(
+            indent = indent,
+            value = value,
+        )
+        for value in new_values
+    ]
+    return "\n".join(new_values)
 
 build_declarations = struct(
     # Target Declaration
@@ -245,6 +273,6 @@ build_declarations = struct(
     # Build File Generation
     generate_build_file_content = _generate_build_file_content,
     write_build_file = _write_build_file,
-    # Dependencies
+    bazel_list_str = _bazel_list_str,
     bazel_deps_str = _bazel_deps_str,
 )
