@@ -176,8 +176,17 @@ def _generate_build_file_content(build_decl):
         _generate_load_statement(ls)
         for ls in build_decl.load_statements
     ])
-    target_decls = "".join([t.declaration for t in build_decl.targets])
-    return load_statements + "\n" + target_decls
+    target_decls = "\n".join([
+        t.declaration + ("" if t.declaration[-1] == "\n" else "\n")
+        for t in build_decl.targets
+    ])
+    parts = []
+    if load_statements != "":
+        load_statements += ("" if load_statements[-1] == "\n" else "\n")
+        parts.append(load_statements)
+    if target_decls != "":
+        parts.append(target_decls)
+    return "\n".join(parts)
 
 def _write_build_file(repository_ctx, path, build_decl):
     """Write a Bazel build file from a build declaration.

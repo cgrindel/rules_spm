@@ -187,7 +187,41 @@ merge_test = unittest.make(_merge_test)
 def _generate_build_file_content_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    build_decl = build_declarations.create(
+        load_statements = [
+            build_declarations.load_statement(":chicken.bzl", "chicken_library"),
+            build_declarations.load_statement(":foo.bzl", "foo_library"),
+        ],
+        targets = [
+            build_declarations.target(
+                type = "chicken_library",
+                name = "alpha",
+                declaration = """chicken_library(name = "alpha")""",
+            ),
+            build_declarations.target(
+                type = "chicken_library",
+                name = "zebra",
+                declaration = """chicken_library(name = "zebra")""",
+            ),
+            build_declarations.target(
+                type = "foo_library",
+                name = "bar",
+                declaration = """foo_library(name = "bar")""",
+            ),
+        ],
+    )
+    actual = build_declarations.generate_build_file_content(build_decl)
+    expected = """\
+load(":chicken.bzl", "chicken_library")
+load(":foo.bzl", "foo_library")
+
+chicken_library(name = "alpha")
+
+chicken_library(name = "zebra")
+
+foo_library(name = "bar")
+"""
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
