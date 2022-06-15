@@ -582,13 +582,9 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
 
         dep_name = dep_pkg_desc["name"]
 
+        # It is possible that we will not find a resolved package if it is a
+        # local package.
         dep_resolved_pkg = resolved_pkgs.get(dep_name)
-        if dep_resolved_pkg == None:
-            fail("""\
-Expected to find a resolved package for {dep_name} package.\
-""".format(
-                dep_name = dep_name,
-            ))
         dep_pkg_desc["resolved_package"] = dep_resolved_pkg
 
         pkg_descs_dict[dep_name] = dep_pkg_desc
