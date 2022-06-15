@@ -87,7 +87,7 @@ def _spm_swift_library(repository_ctx, pkg_name, target, target_deps):
         A `string` representing an `spm_swift_library` declaration.
     """
     module_name = target["name"]
-    deps_str = build_declarations.create_bazel_deps_str(
+    deps_str = build_declarations.bazel_deps_str(
         pkg_name,
         target_deps,
     )
@@ -121,7 +121,7 @@ def _spm_clang_library(repository_ctx, pkg_name, target, target_deps):
         A `string` representing an `spm_clang_library` declaration.
     """
     module_name = target["name"]
-    deps_str = build_declarations.create_bazel_deps_str(
+    deps_str = build_declarations.bazel_deps_str(
         pkg_name,
         target_deps,
     )
@@ -155,7 +155,7 @@ def _spm_system_library(repository_ctx, pkg_name, target, target_deps):
         A `string` representing an `spm_clang_library` declaration.
     """
     module_name = target["name"]
-    deps_str = build_declarations.create_bazel_deps_str(pkg_name, target_deps)
+    deps_str = build_declarations.bazel_deps_str(pkg_name, target_deps)
 
     return build_declarations.create(
         load_statements = [_spm_defs_load_stmt],

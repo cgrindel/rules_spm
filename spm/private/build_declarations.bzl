@@ -1,16 +1,44 @@
 """Module for defining and generating Bazel build files."""
 
+load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":references.bzl", refs = "references")
 
 def _load_statement(location, *symbols):
-    # TODO: Sort and uniquify symbols
-    # TODO: Ensure that at least one symbol was specified.
+    """Create a load statement `struct`.
+
+    The list of symbols will be sorted and uniquified.
+
+    Args:
+        location: A `string` representing the location of a Starlark file.
+        *symbols: A `sequence` of symbols to be loaded from the location.
+
+    Returns:
+        A `struct` that includes the location and the cleaned up symbols.
+    """
+    if len(symbols) < 1:
+        fail("""\
+Expected at least one symbol to be specified. location: {location}\
+""".format(location = location))
+
+    # Get a unique set
+    symbols_set = sets.make(symbols)
+    new_symbols = sorted(sets.to_list(symbols_set))
     return struct(
         location = location,
-        symbols = symbols,
+        symbols = new_symbols,
     )
 
 def _target(type, name, declaration):
+    """Create a target `struct`.
+
+    Args:
+        type: A `string` specifying the rule/macro type.
+        name: A `string` representing the target name.
+        declaration: The Starlark code for the declaration as a `string`.
+
+    Returns:
+        A `struct` that represents a target declaration in a build file.
+    """
     return struct(
         type = type,
         name = name,
@@ -18,6 +46,18 @@ def _target(type, name, declaration):
     )
 
 def _create(load_statements = [], targets = []):
+    """Create a `struct` that represents the parts of a Bazel build file.
+
+    Args:
+        load_statements: A `list` of load statement `struct` values as returned
+                         by `build_declarations.load_statement`.
+        targets: A `list` of target `struct` values as returned by
+                 `build_declarations.target`.
+
+    Returns:
+        A `struct` representing parts of a Bazel  build file.
+    """
+
     # TODO: Sort and uniquify load_statements.
     # TODO: Sort targets by type and name.
     # TODO: Ensure that no target names are the same.
@@ -26,13 +66,39 @@ def _create(load_statements = [], targets = []):
         targets = targets,
     )
 
-def _merge(a, b):
+def _merge(*build_decls):
+    """Merge build file `struct` values into a single value.
+
+    The load statements will be sorted and deduped. The targets will be sorted
+    by type and name.
+
+    Args:
+        build_decls: A `sequence` of build file declaration `struct` values
+                     as returned by `build_declarations.create`.
+
+    Returns:
+        A merged build file declaration `struct`.
+    """
+    load_statements = []
+    targets = []
+    for bd in build_decls:
+        load_statements.extend(bd.load_statements)
+        targets.extend(bd.targets)
     return _create(
-        load_statements = a.load_statements + b.load_statements,
-        targets = a.targets + b.targets,
+        load_statements = load_statements,
+        targets = targets,
     )
 
 def _generate_load_statement(load_stmt):
+    """Generate a Starlark load statement from a load statement `struct`.
+
+    Args:
+        load_stmt: A load statement `struct` as returned by
+                   `build_declarations.load_statement`.
+
+    Returns:
+        A Starlark load statement `string` value.
+    """
     symbols_str = ", ".join([
         "\"{}\"".format(s)
         for s in load_stmt.symbols
@@ -43,6 +109,16 @@ def _generate_load_statement(load_stmt):
     )
 
 def _generate_build_file_content(build_decl):
+    """Generate Bazel build file content from a build file declaration `struct`.
+
+    Args:
+        build_decl: A build file declaration `struct` as returned by
+                    `build_declarations.create`.
+
+    Returns:
+        A `string` containing valid Starlark code that can be used as Bazel
+        build file content.
+    """
     load_statements = "\n".join([
         _generate_load_statement(ls)
         for ls in build_decl.load_statements
@@ -51,29 +127,50 @@ def _generate_build_file_content(build_decl):
     return load_statements + "\n" + target_decls
 
 def _write_build_file(repository_ctx, path, build_decl):
+    """Write a Bazel build file from a build declaration.
+
+    Args:
+        repository_ctx: A Bazel `repository_ctx` instance.
+        path: The path where to write the build file content as a `string`.
+        build_decl: A build declaration `struct` as returned by
+                    `build_declarations.create`.
+
+    Returns:
+    """
     content = _generate_build_file_content(build_decl)
     repository_ctx.file(path, content = content, executable = False)
 
-def _create_bazel_dep_str(pkg_name, target_ref):
+def _target_ref_str(pkg_name, target_ref):
+    """Create a valid Bazel target reference `string`.
+
+    Args:
+        pkg_name: The name of the package where the reference will be written as
+                  a `string`.
+        target_ref: A reference `string` as created by
+                    `references.create_target_ref()`.
+
+    Returns:
+        A Bazel target reference `string`.
+    """
     _rtype, pname, tname = refs.split(target_ref)
     if pname == pkg_name:
         return ":%s" % (tname)
     return "//%s:%s" % (pname, tname)
 
-def _create_bazel_deps_str(pkg_name, target_deps):
+def _bazel_deps_str(pkg_name, target_deps):
     """Create deps list string suitable for injection into a module template.
 
     Args:
         pkg_name: The name of the Swift package as a `string`.
         target_deps: A `list` of the target's dependencies as target
-                     references.
+                     references (`references.create_target_ref()`).
 
     Returns:
         A `string` value.
     """
     target_labels = []
     for target_ref in target_deps:
-        target_labels.append(_create_bazel_dep_str(pkg_name, target_ref))
+        target_labels.append(_target_ref_str(pkg_name, target_ref))
     deps = ["        \"%s\"," % (label) for label in target_labels]
     return "\n".join(deps)
 
@@ -89,5 +186,5 @@ build_declarations = struct(
     generate_build_file_content = _generate_build_file_content,
     write_build_file = _write_build_file,
     # Dependencies
-    create_bazel_deps_str = _create_bazel_deps_str,
+    bazel_deps_str = _bazel_deps_str,
 )
