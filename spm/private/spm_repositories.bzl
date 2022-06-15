@@ -288,16 +288,18 @@ def _create_bazel_module_decls(
                 fail("Unrecognized Swift target type. %s" % (target))
 
         elif pds.is_system_library_target(target):
-            # GH149: IMPLEMENT ME!
-            # if pds.is_system_target(target):
-            #     module_decls.append(_create_spm_system_library_decl(
-            #         repository_ctx,
-            #         pkg_name,
-            #         target,
-            #         target_deps,
-            #     ))
-            # else:
-            #     fail("Unrecognized system target type. %s" % (target))
+            if pds.is_system_target(target):
+                build_decl = build_declarations.merge(
+                    build_decl,
+                    spm_build_declarations.spm_system_library(
+                        repository_ctx,
+                        pkg_name,
+                        target,
+                        target_deps,
+                    ),
+                )
+            else:
+                fail("Unrecognized system target type. %s" % (target))
             pass
         else:
             fail("Unrecognized target type. %s" % (target))

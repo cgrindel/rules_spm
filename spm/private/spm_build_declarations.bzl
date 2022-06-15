@@ -2,6 +2,12 @@
 
 load(":build_declarations.bzl", "build_declarations")
 
+_DEFS_BZL_LOCATION = "@cgrindel_rules_spm//spm:defs.bzl"
+_SPM_CLANG_LIBRARY_TYPE = "spm_clang_library"
+_SPM_SWIFT_BINARY_TYPE = "spm_swift_binary"
+_SPM_SWIFT_LIBRARY_TYPE = "spm_swift_library"
+_SPM_SYSTEM_LIBRARY_TYPE = "spm_system_library"
+
 _spm_swift_binary_tpl = """
 spm_swift_binary(
     name = "{exec_name}",
@@ -43,13 +49,13 @@ spm_system_library(
 )
 """
 
-_spm_defs_load_stmt = build_declarations.load_statement(
-    "@cgrindel_rules_spm//spm:defs.bzl",
-    "spm_clang_library",
-    "spm_swift_binary",
-    "spm_swift_library",
-    "spm_system_library",
-)
+# _spm_defs_load_stmt = build_declarations.load_statement(
+#     "@cgrindel_rules_spm//spm:defs.bzl",
+#     "spm_clang_library",
+#     "spm_swift_binary",
+#     "spm_swift_library",
+#     "spm_system_library",
+# )
 
 def _spm_swift_binary(repository_ctx, product):
     """Returns the spm_swift_library declaration for this Swift target.
@@ -62,10 +68,15 @@ def _spm_swift_binary(repository_ctx, product):
         A `string` representing an `spm_swift_binary` declaration.
     """
     return build_declarations.create(
-        load_statements = [_spm_defs_load_stmt],
+        load_statements = [
+            build_declarations.load_statement(
+                _DEFS_BZL_LOCATION,
+                _SPM_SWIFT_BINARY_TYPE,
+            ),
+        ],
         targets = [
             build_declarations.target(
-                type = "spm_swift_binary",
+                type = _SPM_SWIFT_BINARY_TYPE,
                 name = product["name"],
                 declaration = _spm_swift_binary_tpl.format(
                     repo_name = repository_ctx.attr.name,
@@ -95,10 +106,15 @@ def _spm_swift_library(repository_ctx, pkg_name, target, target_deps):
     )
 
     return build_declarations.create(
-        load_statements = [_spm_defs_load_stmt],
+        load_statements = [
+            build_declarations.load_statement(
+                _DEFS_BZL_LOCATION,
+                _SPM_SWIFT_LIBRARY_TYPE,
+            ),
+        ],
         targets = [
             build_declarations.target(
-                type = "spm_swift_library",
+                type = _SPM_SWIFT_LIBRARY_TYPE,
                 name = module_name,
                 declaration = _spm_swift_library_tpl % (
                     module_name,
@@ -129,10 +145,15 @@ def _spm_clang_library(repository_ctx, pkg_name, target, target_deps):
     )
 
     return build_declarations.create(
-        load_statements = [_spm_defs_load_stmt],
+        load_statements = [
+            build_declarations.load_statement(
+                _DEFS_BZL_LOCATION,
+                _SPM_CLANG_LIBRARY_TYPE,
+            ),
+        ],
         targets = [
             build_declarations.target(
-                type = "spm_clang_library",
+                type = _SPM_CLANG_LIBRARY_TYPE,
                 name = module_name,
                 declaration = _spm_clang_library_tpl % (
                     module_name,
@@ -160,10 +181,15 @@ def _spm_system_library(repository_ctx, pkg_name, target, target_deps):
     deps_str = build_declarations.bazel_deps_str(pkg_name, target_deps)
 
     return build_declarations.create(
-        load_statements = [_spm_defs_load_stmt],
+        load_statements = [
+            build_declarations.load_statement(
+                _DEFS_BZL_LOCATION,
+                _SPM_SYSTEM_LIBRARY_TYPE,
+            ),
+        ],
         targets = [
             build_declarations.target(
-                type = "spm_system_library",
+                type = _SPM_SYSTEM_LIBRARY_TYPE,
                 name = module_name,
                 declaration = _spm_system_library_tpl % (
                     module_name,
