@@ -231,9 +231,6 @@ def _bazel_deps_str(pkg_name, target_deps):
     target_labels = []
     for target_ref in target_deps:
         target_labels.append(_target_ref_str(pkg_name, target_ref))
-
-    # deps = ["        \"%s\"," % (label) for label in target_labels]
-    # return "\n".join(deps)
     return _bazel_list_str(target_labels, double_quote_values = True)
 
 def _bazel_list_str(values, double_quote_values = False, indent = "        "):
