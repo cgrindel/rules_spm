@@ -230,7 +230,18 @@ generate_build_file_content_test = unittest.make(_generate_build_file_content_te
 def _bazel_deps_str_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    actual = build_declarations.bazel_deps_str(
+        pkg_name = "chicken",
+        target_deps = [
+            "target:chicken/foo",
+            "target:smidgen/bar",
+        ],
+    )
+    expected = """\
+        ":foo",
+        "//smidgen:bar",\
+"""
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
