@@ -143,69 +143,6 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
 
     return pkg_desc
 
-# TODO: May be deprecated.
-# TODO: Add tests for _extract_pkg_dependencies_by_name
-
-def _extract_pkg_dependencies_by_name(pkg_desc):
-    """Extracts the dependencies from a package description and indexes it by package name.
-
-    Description of the structures
-
-    dependency dict:
-      `identity`: package name as a `string`
-      `requirement`:  requirement struct
-      `type`: `string` (e.g., `sourceControl`)
-      `url`: `string`
-    requirement dict:
-      `exact`: `list` of `string` semver values
-      `range`: `list` of range structs
-    range dict:
-      `lowerBound`: `string` with lower bound semver (e.g. "2.38.0")
-      `upperBound`: `string` with upper bound semver (e.g. "3.0.0")
-
-    Args:
-        pkg_desc: A `dict` as returned by `package_descriptions.get`.
-
-    Returns:
-        A `dict` where the key is the package name/identity and the value is a
-        `list` of depdency struct values.
-    """
-    pkg_dependencies_dict = {}
-
-    # The `dependencies` attribute is a list of dependency dict values.
-    for dep in pkg_desc["dependencies"]:
-        dep_pkg_name = dep["identity"]
-        existing_deps = pkg_dependencies_dict.get(dep_pkg_name, default = [])
-        existing_deps.append(dep)
-        pkg_dependencies_dict[dep_pkg_name] = existing_deps
-
-    return pkg_dependencies_dict
-
-# TODO: May be deprecated.
-# TODO: Add tests for _merge_pkg_dependencies_dicts
-
-def _merge_pkg_dependencies_dicts(a_dict, b_dict):
-    """Merges the values from two package dependencies `dict` values.
-
-    The values from `b_dict` are appended to the values in `a_dict`.
-
-    Args:
-        a_dict: A `dict` as returned by
-                `package_descriptions.extract_pkg_dependencies_by_name`.
-        b_dict: A `dict` as returned by
-                `package_descriptions.extract_pkg_dependencies_by_name`.
-
-    Returns:
-        A `dict` where the key is the package name/identity and the value is a
-        `list` of depdency struct values.
-    """
-    result = dict(**a_dict)
-    for pkg_name, new_values in b_dict.items():
-        existing_values = result.get(pkg_name, default = [])
-        existing_values.extend(new_values)
-        result[pkg_name] = existing_values
-    return result
-
 # MARK: - Product Functions
 
 def _is_executable_product(product):
@@ -603,8 +540,6 @@ module_types = struct(
 package_descriptions = struct(
     parse_json = _parse_json,
     get = _get_package_description,
-    extract_pkg_dependencies_by_name = _extract_pkg_dependencies_by_name,
-    merge_pkg_dependencies_dicts = _merge_pkg_dependencies_dicts,
     # Library Functions
     is_library_product = _is_library_product,
     library_products = _library_products,
