@@ -260,8 +260,15 @@ def _create_bazel_module_decls(
         target = pds.get_target(pkg_desc, target_name)
 
         if pds.is_clang_target(target):
-            # GH149: IMPLEMENT ME!
-            pass
+            build_decl = build_declarations.merge(
+                build_decl,
+                spm_build_declarations.spm_clang_library(
+                    repository_ctx,
+                    pkg_name,
+                    target,
+                    target_deps,
+                ),
+            )
         elif pds.is_swift_target(target):
             if pds.is_library_target(target):
                 build_decl = build_declarations.merge(
