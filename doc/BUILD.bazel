@@ -13,15 +13,19 @@ load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 # MARK: - Documentation Declarations
 
 _API_SRCS = [
+    "bazel_build_declarations",
+    "build_declarations",
+    "package_descriptions",
+    "packages",
+    "platforms",
+    "providers",
+    "references",
+    "repository_utils",
+    "resolved_packages",
+    "spm_build_declarations",
     "spm_common",
     "spm_package_info_utils",
     "spm_versions",
-    "packages",
-    "package_descriptions",
-    "providers",
-    "platforms",
-    "references",
-    "repository_utils",
 ]
 
 _DOC_WITH_SYMBOLS = {
