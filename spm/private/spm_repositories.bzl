@@ -12,6 +12,7 @@ load(":packages.bzl", "packages")
 load(":references.bzl", refs = "references")
 load(":repository_utils.bzl", "repository_utils")
 load(":resolved_packages.bzl", "resolved_packages")
+load(":spm_build_declarations.bzl", "spm_build_declarations")
 load(":spm_common.bzl", "spm_common")
 load(":spm_versions.bzl", "spm_versions")
 
@@ -106,124 +107,7 @@ def _find_and_delete_files(repository_ctx, path, name):
             stderr = exec_result.stderr,
         ))
 
-# MARK: - SPM Module Declaration Functions
-
-_spm_swift_binary_tpl = """
-spm_swift_binary(
-    name = "{exec_name}",
-    packages = "@{repo_name}//:build",
-    visibility = ["//visibility:public"],
-)
-"""
-
-_spm_swift_library_tpl = """
-spm_swift_library(
-    name = "%s",
-    packages = "@%s//:build",
-    deps = [
-%s
-    ],
-    visibility = ["//visibility:public"],
-)
-"""
-
-_spm_clang_library_tpl = """
-spm_clang_library(
-    name = "%s",
-    packages = "@%s//:build",
-    deps = [
-%s
-    ],
-    visibility = ["//visibility:public"],
-)
-"""
-
-_spm_system_library_tpl = """
-spm_system_library(
-    name = "%s",
-    packages = "@%s//:build",
-    deps = [
-%s
-    ],
-    visibility = ["//visibility:public"],
-)
-"""
-
-_bazel_pkg_hdr = """
-load(
-    "@cgrindel_rules_spm//spm:defs.bzl", 
-    "spm_clang_library",
-    "spm_swift_binary", 
-    "spm_swift_library", 
-    "spm_system_library",
-)
-"""
-
-def _create_spm_swift_binary_decl(repository_ctx, product):
-    """Returns the spm_swift_library declaration for this Swift target.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        product: A product `dict` from a package description JSON.
-
-    Returns:
-        A `string` representing an `spm_swift_binary` declaration.
-    """
-    return _spm_swift_binary_tpl.format(
-        repo_name = repository_ctx.attr.name,
-        exec_name = product["name"],
-    )
-
-def _create_spm_swift_library_decl(repository_ctx, pkg_name, target, target_deps):
-    """Returns the spm_swift_library declaration for this Swift target.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        pkg_name: The name of the Swift package as a `string`.
-        target: A target `dict` from a package description JSON.
-        target_deps: A `list` of the target's dependencies as target
-                     references.
-
-    Returns:
-        A `string` representing an `spm_swift_library` declaration.
-    """
-    module_name = target["name"]
-    deps_str = build_declarations.create_bazel_deps_str(pkg_name, target_deps)
-    return _spm_swift_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
-
-def _create_spm_clang_library_decl(repository_ctx, pkg_name, target, target_deps):
-    """Returns the spm_clang_library declaration for this clang target.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        pkg_name: The name of the Swift package as a `string`.
-        target: A target `dict` from a package description JSON.
-        target_deps: A `list` of the target's dependencies as target
-                     references.
-
-    Returns:
-        A `string` representing an `spm_clang_library` declaration.
-    """
-    module_name = target["name"]
-    deps_str = build_declarations.create_bazel_deps_str(pkg_name, target_deps)
-    return _spm_clang_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
-
-def _create_spm_system_library_decl(repository_ctx, pkg_name, target, target_deps):
-    """Returns the spm_clang_library declaration for this clang target.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        pkg_name: The name of the Swift package as a `string`.
-        target: A target `dict` from a package description JSON.
-        target_deps: A `list` of the target's dependencies as target
-                     references.
-
-    Returns:
-        A `string` representing an `spm_clang_library` declaration.
-    """
-    module_name = target["name"]
-    deps_str = build_declarations.create_bazel_deps_str(pkg_name, target_deps)
-    return _spm_system_library_tpl % (module_name, repository_ctx.attr.name, deps_str)
+# MARK: - Module Declaration Functions
 
 def _generate_bazel_pkg(
         repository_ctx,
@@ -250,14 +134,11 @@ def _generate_bazel_pkg(
 
     build_mode = repository_ctx.attr.build_mode
     if build_mode == spm_build_modes.SPM:
-        build_decl = build_declarations.create(
-            load_statements = _bazel_pkg_hdr,
-            targets = _create_spm_module_decls(
-                repository_ctx,
-                pkg_desc,
-                dep_target_refs_dict,
-                exec_products,
-            ),
+        build_decl = _create_spm_module_decls(
+            repository_ctx,
+            pkg_desc,
+            dep_target_refs_dict,
+            exec_products,
         )
     elif build_mode == spm_build_modes.BAZEL:
         build_decl = _create_bazel_module_decls(
@@ -279,37 +160,50 @@ def _create_spm_module_decls(
         pkg_desc,
         dep_target_refs_dict,
         exec_products):
-    module_decls = []
+    build_decl = build_declarations.create()
     pkg_name = pkg_desc["name"]
 
     # Create a binary target for the executable products
     for product in exec_products:
-        module_decls.append(_create_spm_swift_binary_decl(
-            repository_ctx,
-            product,
-        ))
+        build_decl = build_declarations.merge(
+            build_decl,
+            spm_build_declarations.spm_swift_binary(
+                repository_ctx,
+                product,
+            ),
+        )
 
     # Collect the target refs for the specified package
-    target_refs = [tr for tr in dep_target_refs_dict if refs.is_target_ref(tr, for_pkg = pkg_name)]
+    target_refs = [
+        tr
+        for tr in dep_target_refs_dict
+        if refs.is_target_ref(tr, for_pkg = pkg_name)
+    ]
     for target_ref in target_refs:
         target_deps = dep_target_refs_dict[target_ref]
         _rtype, _pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
         if pds.is_clang_target(target):
-            module_decls.append(_create_spm_clang_library_decl(
-                repository_ctx,
-                pkg_name,
-                target,
-                target_deps,
-            ))
-        elif pds.is_swift_target(target):
-            if pds.is_library_target(target):
-                module_decls.append(_create_spm_swift_library_decl(
+            build_decl = build_declarations.merge(
+                build_decl,
+                spm_build_declarations.spm_clang_library(
                     repository_ctx,
                     pkg_name,
                     target,
                     target_deps,
-                ))
+                ),
+            )
+        elif pds.is_swift_target(target):
+            if pds.is_library_target(target):
+                build_decl = build_declarations.merge(
+                    build_decl,
+                    spm_build_declarations.spm_swift_library(
+                        repository_ctx,
+                        pkg_name,
+                        target,
+                        target_deps,
+                    ),
+                )
             elif pds.is_executable_target(target):
                 # Do not generate a Bazel target for the executable. One will
                 # be created for the executable product.
@@ -319,18 +213,21 @@ def _create_spm_module_decls(
 
         elif pds.is_system_library_target(target):
             if pds.is_system_target(target):
-                module_decls.append(_create_spm_system_library_decl(
-                    repository_ctx,
-                    pkg_name,
-                    target,
-                    target_deps,
-                ))
+                build_decl = build_declarations.merge(
+                    build_decl,
+                    spm_build_declarations.spm_system_library(
+                        repository_ctx,
+                        pkg_name,
+                        target,
+                        target_deps,
+                    ),
+                )
             else:
                 fail("Unrecognized system target type. %s" % (target))
         else:
             fail("Unrecognized target type. %s" % (target))
 
-    return module_decls
+    return build_decl
 
 def _create_bazel_module_decls(
         repository_ctx,
@@ -350,17 +247,6 @@ def _create_bazel_module_decls(
         _rtype, _pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
 
-        # DEBUG BEGIN
-        print("*** CHUCK ===========")
-        print("*** CHUCK target_ref: ", target_ref)
-        print("*** CHUCK target: ")
-        for key in target:
-            print("*** CHUCK", key, ":", target[key])
-        print("*** CHUCK target_deps: ")
-        for idx, item in enumerate(target_deps):
-            print("*** CHUCK", idx, ":", item)
-
-        # DEBUG END
         if pds.is_clang_target(target):
             # TODO: IMPLEMENT ME!
             pass
@@ -740,12 +626,6 @@ Expected to find a resolved package for {dep_name} package.\
     # Generate Bazel packages for each package
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
 
-    # DEBUG BEGIN
-    print("*** CHUCK dep_target_refs_dict: ")
-    for key in dep_target_refs_dict:
-        print("*** CHUCK", key, ":", dep_target_refs_dict[key])
-
-    # DEBUG END
     for pkg_name in pkg_descs_dict:
         _generate_bazel_pkg(
             repository_ctx,
@@ -754,9 +634,9 @@ Expected to find a resolved package for {dep_name} package.\
             exec_products_dict.get(pkg_name, default = []),
         )
 
-    # DEBUG BEGIN
-    fail("STOP")
-    # DEBUG END
+    # # DEBUG BEGIN
+    # fail("STOP")
+    # # DEBUG END
 
 def _prepare_local_package(repository_ctx, pkg):
     path = pkg.path

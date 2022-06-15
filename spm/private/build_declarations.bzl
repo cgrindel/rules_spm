@@ -1,3 +1,5 @@
+"""Module for defining and generating Bazel build files."""
+
 load(":references.bzl", refs = "references")
 
 def _load_statement(location, *symbols):
@@ -71,10 +73,11 @@ def _create_bazel_deps_str(pkg_name, target_deps):
     """
     target_labels = []
     for target_ref in target_deps:
-        _rtype, pname, tname = refs.split(target_ref)
         target_labels.append(_create_bazel_dep_str(pkg_name, target_ref))
     deps = ["        \"%s\"," % (label) for label in target_labels]
     return "\n".join(deps)
+
+# TODO: Add unit tests.
 
 build_declarations = struct(
     # Target Declaration

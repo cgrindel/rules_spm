@@ -1,3 +1,5 @@
+"""Module for defining build with Bazel declarations."""
+
 load(":build_declarations.bzl", "build_declarations")
 
 _SWIFT_LIBRARY_TPL = """
@@ -13,6 +15,8 @@ swift_library(
     visibility = ["//visibility:public"],
 )
 """
+
+# TODO: Add unit tests.
 
 def _swift_library(repository_ctx, pkg_name, target, target_deps):
     # TODO: IMPLEMENT ME!
