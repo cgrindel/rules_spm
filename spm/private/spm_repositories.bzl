@@ -3,13 +3,13 @@
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//lib:versions.bzl", "versions")
-load("//spm/private/modulemap_parser:declarations.bzl", dts = "declaration_types")
-load("//spm/private/modulemap_parser:parser.bzl", "parser")
 load(":bazel_build_declarations.bzl", "bazel_build_declarations")
 load(":build_declarations.bzl", "build_declarations")
+load(":clang_files.bzl", "clang_files")
 load(":package_descriptions.bzl", pds = "package_descriptions")
 load(":packages.bzl", "packages")
 load(":references.bzl", refs = "references")
+load(":repository_files.bzl", "repository_files")
 load(":repository_utils.bzl", "repository_utils")
 load(":resolved_packages.bzl", "resolved_packages")
 load(":spm_build_declarations.bzl", "spm_build_declarations")
@@ -44,68 +44,6 @@ def _get_exec_env(repository_ctx):
     if dev_dir:
         env[_DEVELOPER_DIR_ENV] = dev_dir
     return env
-
-# MARK: - File Listing Functions
-
-def _list_files_under(repository_ctx, path):
-    """Retrieves the list of files under the specified path.
-
-    This function returns paths for all of the files under the specified path.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        path: A path `string` value.
-
-    Returns:
-        A `list` of path `string` values.
-    """
-    exec_result = repository_ctx.execute(
-        ["find", path],
-        quiet = True,
-    )
-    if exec_result.return_code != 0:
-        fail("Failed to list files in %s. stderr:\n%s" % (path, exec_result.stderr))
-    paths = exec_result.stdout.splitlines()
-    return paths
-
-def _list_directories_under(repository_ctx, path, max_depth = None):
-    """Retrieves the list of directories under the specified path.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        path: A path `string` value.
-        max_depth: Optional. The depth for the directory search.
-
-    Returns:
-        A `list` of path `string` values.
-    """
-    find_args = ["find", path, "-type", "d"]
-    if max_depth != None:
-        find_args.extend(["-maxdepth", "%d" % (max_depth)])
-    exec_result = repository_ctx.execute(find_args, quiet = True)
-    if exec_result.return_code != 0:
-        fail("Failed to list directories under %s. stderr:\n%s" % (path, exec_result.stderr))
-    paths = exec_result.stdout.splitlines()
-    return [p for p in paths if p != path]
-
-def _find_and_delete_files(repository_ctx, path, name):
-    """Finds files with the specified name under the specified path and deletes them.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        path: A path `string` value.
-        name: A file basename as a `string`.
-    """
-    find_args = ["find", path, "-type", "f", "-name", name]
-    rm_args = ["-delete"]
-    all_args = find_args + rm_args
-    exec_result = repository_ctx.execute(all_args, quiet = True)
-    if exec_result.return_code != 0:
-        fail("Failed to remove files named {name} under {path}. stderr:\n{stderr}".format(
-            name = name,
-            path = path,
-            stderr = exec_result.stderr,
-        ))
 
 # MARK: - Module Declaration Functions
 
@@ -274,7 +212,6 @@ def _create_bazel_module_decls(
                 build_decl = build_declarations.merge(
                     build_decl,
                     bazel_build_declarations.swift_library(
-                        repository_ctx,
                         pkg_name,
                         target,
                         target_deps,
@@ -291,7 +228,7 @@ def _create_bazel_module_decls(
             if pds.is_system_target(target):
                 build_decl = build_declarations.merge(
                     build_decl,
-                    spm_build_declarations.spm_system_library(
+                    bazel_build_declarations.system_library(
                         repository_ctx,
                         pkg_name,
                         target,
@@ -308,50 +245,6 @@ def _create_bazel_module_decls(
 
 # MARK: - Clang Custom Headers Functions
 
-def _is_modulemap_path(path):
-    """Determines whether the specified path is to a public `module.modulemap` file.
-
-    Args:
-        path: A path `string`.
-
-    Returns:
-        A `bool` indicating whether the path is a public `module.modulemap`
-        file.
-    """
-    basename = paths.basename(path)
-    return basename == "module.modulemap"
-
-def _get_hdr_paths_from_modulemap(repository_ctx, modulemap_path):
-    """Retrieves the list of headers declared in the specified modulemap file.
-
-    Args:
-        repository_ctx: A `repository_ctx` instance.
-        modulemap_path: A path `string` to the `module.modulemap` file.
-
-    Returns:
-        A `list` of path `string` values.
-    """
-    modulemap_str = repository_ctx.read(modulemap_path)
-    decls, err = parser.parse(modulemap_str)
-    if err != None:
-        fail("Errors parsing the %s. %s" % (modulemap_path, err))
-
-    module_decls = [d for d in decls if d.decl_type == dts.module]
-    if len(module_decls) == 0:
-        fail("No module declarations were found in %s." % (modulemap_path))
-
-    modulemap_dirname = paths.dirname(modulemap_path)
-    hdrs = []
-    for module_decl in module_decls:
-        for cdecl in module_decl.members:
-            if cdecl.decl_type == dts.single_header and not cdecl.private and not cdecl.textual:
-                # Resolve the path relative to the modulemap
-                hdr_path = paths.join(modulemap_dirname, cdecl.path)
-                normalized_hdr_path = paths.normalize(hdr_path)
-                hdrs.append(normalized_hdr_path)
-
-    return hdrs
-
 def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     """Returns a list of the public headers for the clang target.
 
@@ -365,9 +258,9 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
         A `list` of path `string` values.
     """
     src_path = paths.join(pkg_root_path, target["path"])
-    module_paths = _list_files_under(repository_ctx, src_path)
+    module_paths = repository_files.list_files_under(repository_ctx, src_path)
 
-    modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
+    modulemap_paths = [p for p in module_paths if clang_files.is_public_modulemap(p)]
     modulemap_paths_len = len(modulemap_paths)
     if modulemap_paths_len > 1:
         fail("Found more than one module.modulemap file. %" % (modulemap_paths))
@@ -375,13 +268,15 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     # If a modulemap was provided, read it for header info.
     # Otherwise, use all of the header files under the "include" directory.
     if modulemap_paths_len == 1:
-        return _get_hdr_paths_from_modulemap(
+        return clang_files.get_hdr_paths_from_modulemap(
             repository_ctx,
             modulemap_paths[0],
         )
-    return [p for p in module_paths if spm_common.is_include_hdr_path(p)]
+    return [p for p in module_paths if clang_files.is_include_hdr(p)]
 
 # MARK: - Root BUILD.bazel Generation
+
+# TODO: Replace with build_declarations.bazel_list_str
 
 def _create_hdrs_str(hdr_paths):
     """Creates a headers string suitable for injection into a BUILD.bazel template.
@@ -574,8 +469,16 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     # Bazel will consider the directories with the BUILD/BUILD.bazel files to
     # be legitimate packages. See glob() documentation for more details:
     # https://docs.bazel.build/versions/main/be/functions.html#glob
-    _find_and_delete_files(repository_ctx, spm_common.checkouts_path, name = "BUILD")
-    _find_and_delete_files(repository_ctx, spm_common.checkouts_path, name = "BUILD.bazel")
+    repository_files.find_and_delete_files(
+        repository_ctx,
+        spm_common.checkouts_path,
+        name = "BUILD",
+    )
+    repository_files.find_and_delete_files(
+        repository_ctx,
+        spm_common.checkouts_path,
+        name = "BUILD.bazel",
+    )
 
     pkg_descs_dict = dict()
     clang_hdrs_dict = dict()
@@ -584,7 +487,7 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     pkg_descs_dict[pds.root_pkg_name] = root_pkg_desc
 
     # Find the location for all of the dependent packages.
-    fetched_pkg_paths = _list_directories_under(
+    fetched_pkg_paths = repository_files.list_directories_under(
         repository_ctx,
         spm_common.checkouts_path,
         max_depth = 1,
@@ -637,8 +540,14 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             exec_products.append(product)
             exec_products_dict[pkg_name] = exec_products
 
-    # Write BUILD.bazel file.
-    _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
+    build_mode = repository_ctx.attr.build_mode
+    if build_mode == spm_build_modes.SPM:
+        # Write BUILD.bazel file.
+        _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
+
+    # TODO: Clean up
+    # # Write BUILD.bazel file.
+    # _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
 
     # Generate Bazel packages for each package
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)

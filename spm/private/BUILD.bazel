@@ -37,6 +37,14 @@ bzl_library(
 )
 
 bzl_library(
+    name = "bazel_system_library",
+    srcs = ["bazel_system_library.bzl"],
+    deps = [
+        "@build_bazel_rules_swift//swift",
+    ],
+)
+
+bzl_library(
     name = "bazel_build_declarations",
     srcs = ["bazel_build_declarations.bzl"],
     deps = [
@@ -50,6 +58,17 @@ bzl_library(
     deps = [
         ":references",
         "@bazel_skylib//lib:sets",
+    ],
+)
+
+bzl_library(
+    name = "clang_files",
+    srcs = ["clang_files.bzl"],
+    deps = [
+        ":repository_files",
+        "//spm/private/modulemap_parser:declarations",
+        "//spm/private/modulemap_parser:parser",
+        "@bazel_skylib//lib:paths",
     ],
 )
 
@@ -213,6 +232,7 @@ bzl_library(
     deps = [
         ":bazel_build_declarations",
         ":build_declarations",
+        ":clang_files",
         ":package_descriptions",
         ":packages",
         ":references",
@@ -220,8 +240,6 @@ bzl_library(
         ":spm_build_declarations",
         ":spm_common",
         ":spm_versions",
-        "//spm/private/modulemap_parser:declarations",
-        "//spm/private/modulemap_parser:parser",
         "@bazel_skylib//lib:paths",
         "@bazel_skylib//lib:versions",
     ],

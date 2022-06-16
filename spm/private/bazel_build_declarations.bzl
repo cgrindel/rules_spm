@@ -2,9 +2,12 @@
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load(":build_declarations.bzl", "build_declarations")
+load(":repository_files.bzl", "repository_files")
 
+_DEFS_BZL_LOCATION = "@cgrindel_rules_spm//spm:defs.bzl"
 _SWIFT_BZL_LOCATION = "@build_bazel_rules_swift//swift:swift.bzl"
 _SWIFT_LIBRARY_TYPE = "swift_library"
+_BAZEL_SYSTEM_LIBRARY_TYPE = "bazel_system_library"
 
 _SWIFT_LIBRARY_TPL = """
 swift_library(
@@ -20,9 +23,16 @@ swift_library(
 )
 """
 
-# GH149: Remove directive once implemented.
-# buildifier: disable=unused-variable
-def _swift_library(repository_ctx, pkg_name, target, target_deps):
+_BAZEL_SYSTEM_LIBRARY_TPL = """
+bazel_system_library(
+    name = "{target_name}",
+    deps = [
+{deps}
+    ],
+)
+"""
+
+def _swift_library(pkg_name, target, target_deps):
     target_path = target["path"]
     srcs = [
         paths.join(target_path, src)
@@ -53,6 +63,45 @@ def _swift_library(repository_ctx, pkg_name, target, target_deps):
         targets = [target_decl],
     )
 
+def _system_library(repository_ctx, pkg_name, target, target_deps):
+    target_name = target["name"]
+
+    module_files = repository_files.list_files_under(
+        repository_ctx,
+        paths.join(pkg_name, "Sources", target_name),
+    )
+
+    # DEBUG BEGIN
+    print("*** CHUCK ======")
+    print("*** CHUCK pkg_name: ", pkg_name)
+    print("*** CHUCK target: ")
+    for key in target:
+        print("*** CHUCK", key, ":", target[key])
+
+    print("*** CHUCK module_files: ")
+    for idx, item in enumerate(module_files):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
+    deps_str = build_declarations.bazel_deps_str(pkg_name, target_deps)
+    load_stmt = build_declarations.load_statement(
+        _DEFS_BZL_LOCATION,
+        _BAZEL_SYSTEM_LIBRARY_TYPE,
+    )
+    target_decl = build_declarations.target(
+        type = _BAZEL_SYSTEM_LIBRARY_TYPE,
+        name = target_name,
+        declaration = _BAZEL_SYSTEM_LIBRARY_TPL.format(
+            target_name = target_name,
+            deps = deps_str,
+        ),
+    )
+    return build_declarations.create(
+        load_statements = [load_stmt],
+        targets = [target_decl],
+    )
+
 bazel_build_declarations = struct(
     swift_library = _swift_library,
+    system_library = _system_library,
 )

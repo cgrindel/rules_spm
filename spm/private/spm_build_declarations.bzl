@@ -49,14 +49,6 @@ spm_system_library(
 )
 """
 
-# _spm_defs_load_stmt = build_declarations.load_statement(
-#     "@cgrindel_rules_spm//spm:defs.bzl",
-#     "spm_clang_library",
-#     "spm_swift_binary",
-#     "spm_swift_library",
-#     "spm_system_library",
-# )
-
 def _spm_swift_binary(repository_ctx, product):
     """Returns the spm_swift_library declaration for this Swift target.
 
