@@ -70,6 +70,8 @@ def _swift_library(pkg_name, target, target_deps):
         targets = [target_decl],
     )
 
+# TODO: Rename this now that it is used for system library and clang targets.
+
 def _system_library(repository_ctx, pkg_name, target, target_deps):
     target_name = target["name"]
 
@@ -79,16 +81,6 @@ def _system_library(repository_ctx, pkg_name, target, target_deps):
         remove_prefix = "{}/".format(pkg_name),
     )
 
-    # DEBUG BEGIN
-    print("*** CHUCK ======")
-    print("*** CHUCK pkg_name: ", pkg_name)
-    print("*** CHUCK target: ")
-    for key in target:
-        print("*** CHUCK", key, ":", target[key])
-
-    print("*** CHUCK collected_files: ", collected_files)
-
-    # DEBUG END
     load_stmt = build_declarations.load_statement(
         _DEFS_BZL_LOCATION,
         _BAZEL_SYSTEM_LIBRARY_TYPE,

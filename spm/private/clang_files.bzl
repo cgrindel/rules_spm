@@ -68,7 +68,7 @@ def _get_hdr_paths_from_modulemap(repository_ctx, modulemap_path):
     return hdrs
 
 def _remove_prefix(path, prefix):
-    if prefix == None:
+    if prefix == None or path == None:
         return path
     prefix_len = len(prefix)
     return path[prefix_len:] if path.startswith(prefix) else path

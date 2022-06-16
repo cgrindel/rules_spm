@@ -200,7 +200,13 @@ def _create_bazel_module_decls(
         if pds.is_clang_target(target):
             build_decl = build_declarations.merge(
                 build_decl,
-                spm_build_declarations.spm_clang_library(
+                # spm_build_declarations.spm_clang_library(
+                #     repository_ctx,
+                #     pkg_name,
+                #     target,
+                #     target_deps,
+                # ),
+                bazel_build_declarations.system_library(
                     repository_ctx,
                     pkg_name,
                     target,
@@ -258,22 +264,6 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
         A `list` of path `string` values.
     """
     src_path = paths.join(pkg_root_path, target["path"])
-    # module_paths = repository_files.list_files_under(repository_ctx, src_path)
-
-    # modulemap_paths = [p for p in module_paths if clang_files.is_public_modulemap(p)]
-    # modulemap_paths_len = len(modulemap_paths)
-    # if modulemap_paths_len > 1:
-    #     fail("Found more than one module.modulemap file. %" % (modulemap_paths))
-
-    # # If a modulemap was provided, read it for header info.
-    # # Otherwise, use all of the header files under the "include" directory.
-    # if modulemap_paths_len == 1:
-    #     return clang_files.get_hdr_paths_from_modulemap(
-    #         repository_ctx,
-    #         modulemap_paths[0],
-    #     )
-    # return [p for p in module_paths if clang_files.is_include_hdr(p)]
-
     collected_files = clang_files.collect_files(repository_ctx, src_path)
     return collected_files.hdrs
 
