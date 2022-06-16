@@ -8,7 +8,7 @@ load(":build_declarations.bzl", "build_declarations")
 load(":clang_files.bzl", "clang_files")
 load(":package_descriptions.bzl", pds = "package_descriptions")
 load(":packages.bzl", "packages")
-load(":references.bzl", refs = "references")
+load(":references.bzl", "reference_types", refs = "references")
 load(":repository_files.bzl", "repository_files")
 load(":repository_utils.bzl", "repository_utils")
 load(":resolved_packages.bzl", "resolved_packages")
@@ -197,15 +197,11 @@ def _create_bazel_module_decls(
         _rtype, _pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
 
+        # TODO: Add check and support for Objective C
+
         if pds.is_clang_target(target):
             build_decl = build_declarations.merge(
                 build_decl,
-                # spm_build_declarations.spm_clang_library(
-                #     repository_ctx,
-                #     pkg_name,
-                #     target,
-                #     target_deps,
-                # ),
                 bazel_build_declarations.system_library(
                     repository_ctx,
                     pkg_name,
@@ -246,6 +242,22 @@ def _create_bazel_module_decls(
             pass
         else:
             fail("Unrecognized target type. %s" % (target))
+
+    # Create a binary target for the executable products
+    for product in exec_products:
+        target_name = product["targets"][0]
+        target = pds.get_target(pkg_desc, target_name)
+        target_ref = refs.create(reference_types.target, pkg_name, target_name)
+        target_deps = dep_target_refs_dict[target_ref]
+        build_decl = build_declarations.merge(
+            build_decl,
+            bazel_build_declarations.swift_binary(
+                pkg_name,
+                product,
+                target,
+                target_deps,
+            ),
+        )
 
     return build_decl
 
@@ -604,7 +616,9 @@ spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
     attrs = {
         "build_mode": attr.string(
-            default = "spm",
+            # TODO: FIX ME!
+            # default = "spm",
+            default = "bazel",
             values = ["spm", "bazel"],
             doc = """\
 Specifies how `rules_spm` will build the Swift packages.

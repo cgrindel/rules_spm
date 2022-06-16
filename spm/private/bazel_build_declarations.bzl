@@ -7,10 +7,25 @@ load(":clang_files.bzl", "clang_files")
 _DEFS_BZL_LOCATION = "@cgrindel_rules_spm//spm:defs.bzl"
 _SWIFT_BZL_LOCATION = "@build_bazel_rules_swift//swift:swift.bzl"
 _SWIFT_LIBRARY_TYPE = "swift_library"
+_SWIFT_BINARY_TYPE = "swift_binary"
 _BAZEL_SYSTEM_LIBRARY_TYPE = "bazel_system_library"
 
 _SWIFT_LIBRARY_TPL = """
 swift_library(
+    name = "{target_name}",
+    module_name = "{module_name}",
+    srcs = [
+{srcs}
+    ],
+    deps = [
+{deps}
+    ],
+    visibility = ["//visibility:public"],
+)
+"""
+
+_SWIFT_BINARY_TPL = """
+swift_binary(
     name = "{target_name}",
     module_name = "{module_name}",
     srcs = [
@@ -62,6 +77,48 @@ def _swift_library(pkg_name, target, target_deps):
         type = _SWIFT_LIBRARY_TYPE,
         name = target_name,
         declaration = _SWIFT_LIBRARY_TPL.format(
+            target_name = target_name,
+            module_name = target_name,
+            srcs = srcs_str,
+            deps = deps_str,
+        ),
+    )
+    return build_declarations.create(
+        load_statements = [load_stmt],
+        targets = [target_decl],
+    )
+
+def _swift_binary(pkg_name, product, target, target_deps):
+    # DEBUG BEGIN
+    print("*** CHUCK ===========")
+    print("*** CHUCK pkg_name: ", pkg_name)
+    print("*** CHUCK product: ", product)
+    print("*** CHUCK target: ", target)
+    print("*** CHUCK target_deps: ")
+    for idx, item in enumerate(target_deps):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
+
+    target_path = target["path"]
+    srcs = [
+        paths.join(target_path, src)
+        for src in target["sources"]
+    ]
+    srcs_str = build_declarations.bazel_list_str(
+        srcs,
+        double_quote_values = True,
+    )
+    deps_str = build_declarations.bazel_deps_str(pkg_name, target_deps)
+    target_name = product["name"]
+    load_stmt = build_declarations.load_statement(
+        _SWIFT_BZL_LOCATION,
+        _SWIFT_BINARY_TYPE,
+    )
+    target_decl = build_declarations.target(
+        type = _SWIFT_BINARY_TYPE,
+        name = target_name,
+        declaration = _SWIFT_BINARY_TPL.format(
             target_name = target_name,
             module_name = target_name,
             srcs = srcs_str,
@@ -127,5 +184,6 @@ def _system_library(repository_ctx, pkg_name, target, target_deps):
 
 bazel_build_declarations = struct(
     swift_library = _swift_library,
+    swift_binary = _swift_binary,
     system_library = _system_library,
 )
