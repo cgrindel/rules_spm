@@ -89,17 +89,6 @@ def _swift_library(pkg_name, target, target_deps):
     )
 
 def _swift_binary(pkg_name, product, target, target_deps):
-    # DEBUG BEGIN
-    print("*** CHUCK ===========")
-    print("*** CHUCK pkg_name: ", pkg_name)
-    print("*** CHUCK product: ", product)
-    print("*** CHUCK target: ", target)
-    print("*** CHUCK target_deps: ")
-    for idx, item in enumerate(target_deps):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
-
     target_path = target["path"]
     srcs = [
         paths.join(target_path, src)
