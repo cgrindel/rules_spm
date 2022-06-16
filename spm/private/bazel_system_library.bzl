@@ -1,6 +1,6 @@
 """Definition for bazel_system_library rule."""
 
-# load("@bazel_build_rules_cc//cc:defs.bzl", "cc_library")
+load("@bazel_build_rules_cc//cc:defs.bzl", "cc_library")
 load(
     "@build_bazel_rules_swift//swift:swift.bzl",
     "swift_c_module",
@@ -34,8 +34,7 @@ def bazel_system_library(name, hdrs, srcs, includes, modulemap, deps = None, vis
         cc_lib_name = name
         cc_lib_visibility = visibility
 
-    # cc_library(
-    native.cc_library(
+    cc_library(
         name = cc_lib_name,
         hdrs = hdrs,
         srcs = srcs,
