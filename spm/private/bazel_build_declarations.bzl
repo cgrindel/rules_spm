@@ -75,12 +75,26 @@ def _swift_library(pkg_name, target, target_deps):
 
 # TODO: Rename this now that it is used for system library and clang targets.
 
+# SourceKitten uses `Source` instead of `Sources`
+_SOURCE_DIR_NAMES = ["Sources", "Source"]
+
+def _find_srcs_dir(repository_ctx, pkg_name):
+    for dir_name in _SOURCE_DIR_NAMES:
+        srcs_dir = paths.join(pkg_name, dir_name)
+        srcs_path = repository_ctx.path(srcs_dir)
+        if srcs_path.exists:
+            return srcs_dir
+    fail("Could not find the sources directory for {pkg_name}".format(
+        pkg_name = pkg_name,
+    ))
+
 def _system_library(repository_ctx, pkg_name, target, target_deps):
     target_name = target["name"]
 
+    srcs_dir = _find_srcs_dir(repository_ctx, pkg_name)
     collected_files = clang_files.collect_files(
         repository_ctx,
-        paths.join(pkg_name, "Sources", target_name),
+        paths.join(srcs_dir, target_name),
         remove_prefix = "{}/".format(pkg_name),
     )
 
