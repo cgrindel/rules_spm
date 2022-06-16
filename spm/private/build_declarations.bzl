@@ -233,7 +233,10 @@ def _bazel_deps_str(pkg_name, target_deps):
         target_labels.append(_target_ref_str(pkg_name, target_ref))
     return _bazel_list_str(target_labels, double_quote_values = True)
 
-def _bazel_list_str(values, double_quote_values = False, indent = "        "):
+def _quote_str(value):
+    return "\"{}\"".format(value)
+
+def _bazel_list_str(values, double_quote_values = True, indent = "        "):
     """Create a `string` of values that is suitable to be inserted in a Starlark list.
 
     Args:
@@ -246,7 +249,7 @@ def _bazel_list_str(values, double_quote_values = False, indent = "        "):
         as Starlark list values.
     """
     if double_quote_values:
-        new_values = ["\"{}\"".format(value) for value in values]
+        new_values = [_quote_str(value) for value in values]
     else:
         new_values = values
 
@@ -272,4 +275,5 @@ build_declarations = struct(
     write_build_file = _write_build_file,
     bazel_list_str = _bazel_list_str,
     bazel_deps_str = _bazel_deps_str,
+    quote_str = _quote_str,
 )

@@ -67,7 +67,22 @@ def _get_hdr_paths_from_modulemap(repository_ctx, modulemap_path):
 
     return hdrs
 
-def _identify_files(repository_ctx, root_path):
+def _remove_prefix(path, prefix):
+    if prefix == None:
+        return path
+    prefix_len = len(prefix)
+    return path[prefix_len:] if path.startswith(prefix) else path
+
+def _remove_prefixes(paths_list, prefix):
+    if prefix == None:
+        return paths_list
+    prefix_len = len(prefix)
+    return [
+        path[prefix_len:] if path.startswith(prefix) else path
+        for path in paths_list
+    ]
+
+def _collect_files(repository_ctx, root_path, remove_prefix = None):
     paths_list = repository_files.list_files_under(repository_ctx, root_path)
 
     # hdrs: Public headers
@@ -102,16 +117,17 @@ def _identify_files(repository_ctx, root_path):
     if modulemap != None:
         hdrs = _get_hdr_paths_from_modulemap(repository_ctx, modulemap)
 
+    # Remove the prefixes before returning the results
     return struct(
-        hdrs = hdrs,
-        srcs = srcs,
-        modulemap = modulemap,
-        others = others,
+        hdrs = _remove_prefixes(hdrs, remove_prefix),
+        srcs = _remove_prefixes(srcs, remove_prefix),
+        modulemap = _remove_prefix(modulemap, remove_prefix),
+        others = _remove_prefixes(others, remove_prefix),
     )
 
 clang_files = struct(
     is_include_hdr = _is_include_hdr,
     is_public_modulemap = _is_public_modulemap,
-    identify_files = _identify_files,
+    collect_files = _collect_files,
     get_hdr_paths_from_modulemap = _get_hdr_paths_from_modulemap,
 )

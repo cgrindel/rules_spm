@@ -6,8 +6,7 @@ load(
     "swift_c_module",
 )
 
-# def bazel_system_library(name, hdrs, srcs, modulemap, deps = None, visibility = None):
-def bazel_system_library(name, deps = None, visibility = None):
+def bazel_system_library(name, hdrs, srcs, modulemap, deps = None, visibility = None):
     """Exposes a system library module as defined in a Swift package.
 
     Args:
@@ -21,8 +20,8 @@ def bazel_system_library(name, deps = None, visibility = None):
     cc_lib_name = "%s_cc_lib" % (name)
     cc_library(
         name = cc_lib_name,
-        hdrs = native.glob(["*.h"]),
-        srcs = native.glob(["*.c"]),
+        hdrs = hdrs,
+        srcs = srcs,
         tags = ["swift_module=%s" % (name)],
         deps = deps,
     )
@@ -30,7 +29,7 @@ def bazel_system_library(name, deps = None, visibility = None):
     swift_c_module(
         name = name,
         deps = [cc_lib_name],
-        module_map = native.glob(["*.modulemap"]),
+        module_map = modulemap,
         module_name = name,
         visibility = visibility,
     )

@@ -49,6 +49,7 @@ bzl_library(
     srcs = ["bazel_build_declarations.bzl"],
     deps = [
         ":build_declarations",
+        ":clang_files",
     ],
 )
 
