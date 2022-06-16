@@ -1,4 +1,5 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:sets.bzl", "sets")
 load("//spm/private/modulemap_parser:declarations.bzl", dts = "declaration_types")
 load("//spm/private/modulemap_parser:parser.bzl", modulemap_parser = "parser")
 load(":repository_files.bzl", "repository_files")
@@ -92,12 +93,14 @@ def _collect_files(repository_ctx, root_path, remove_prefix = None):
     hdrs = []
     srcs = []
     others = []
+    includes = sets.make()
     modulemap = None
     for path in paths_list:
         _root, ext = paths.split_extension(path)
         if ext == ".h":
             if _is_include_hdr(path):
                 hdrs.append(path)
+                sets.insert(includes, paths.dirname(path))
             else:
                 srcs.append(path)
         elif ext == ".c":
@@ -121,6 +124,7 @@ def _collect_files(repository_ctx, root_path, remove_prefix = None):
     return struct(
         hdrs = _remove_prefixes(hdrs, remove_prefix),
         srcs = _remove_prefixes(srcs, remove_prefix),
+        includes = _remove_prefixes(sets.to_list(includes), remove_prefix),
         modulemap = _remove_prefix(modulemap, remove_prefix),
         others = _remove_prefixes(others, remove_prefix),
     )

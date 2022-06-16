@@ -32,6 +32,9 @@ bazel_system_library(
     srcs = [
 {srcs}
     ],
+    includes = [
+{includes}
+    ],
     modulemap = {modulemap},
     deps = [
 {deps}
@@ -98,6 +101,7 @@ def _system_library(repository_ctx, pkg_name, target, target_deps):
             target_name = target_name,
             hdrs = build_declarations.bazel_list_str(collected_files.hdrs),
             srcs = build_declarations.bazel_list_str(collected_files.srcs),
+            includes = build_declarations.bazel_list_str(collected_files.includes),
             modulemap = modulemap_str,
             deps = build_declarations.bazel_deps_str(pkg_name, target_deps),
         ),

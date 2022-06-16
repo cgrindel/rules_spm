@@ -63,13 +63,6 @@ def _generate_bazel_pkg(
     """
     pkg_name = pkg_desc["name"]
 
-    # # Write the package description for easier debugging
-    # pkg_desc_path = paths.join(pkg_name, "spm_pkg_desc.json")
-    # repository_ctx.file(
-    #     pkg_desc_path,
-    #     content = json.encode_indent(pkg_desc),
-    # )
-
     build_mode = repository_ctx.attr.build_mode
     if build_mode == spm_build_modes.SPM:
         build_decl = _create_spm_module_decls(
@@ -102,6 +95,13 @@ def _generate_bazel_pkg(
 
     bld_path = paths.join(pkg_name, "BUILD.bazel")
     build_declarations.write_build_file(repository_ctx, bld_path, build_decl)
+
+    # Write the package description for easier debugging
+    pkg_desc_path = paths.join(pkg_name, "spm_pkg_desc.json")
+    repository_ctx.file(
+        pkg_desc_path,
+        content = json.encode_indent(pkg_desc),
+    )
 
 def _create_spm_module_decls(
         repository_ctx,

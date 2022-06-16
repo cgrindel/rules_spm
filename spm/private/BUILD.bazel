@@ -70,6 +70,7 @@ bzl_library(
         "//spm/private/modulemap_parser:declarations",
         "//spm/private/modulemap_parser:parser",
         "@bazel_skylib//lib:paths",
+        "@bazel_skylib//lib:sets",
     ],
 )
 
