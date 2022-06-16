@@ -16,12 +16,12 @@ def spm_rules_dependencies():
         sha256 = "f7be3474d42aae265405a592bb7da8e171919d74c16f082a5457840f06054728",
     )
 
-    # Master as of 2022-04-09. Includes fix to 0.27.0 adding back missing bzl_library declarations.
-    _RULES_SWIFT_VERSION = "22192877498705ff1adbecd820fdc2724414b0b2"
+    # Master as of 2022-06-16. Includes fix to 0.27.0 adding back missing bzl_library declarations.
+    _RULES_SWIFT_VERSION = "a31c34e882dd68d15e8ed1007b1adc241857ab5a"
     maybe(
         http_archive,
         name = "build_bazel_rules_swift",
-        sha256 = "0844f7fc6d67eaaa2d7e2a620c27b3dfdc6e27c0cf35487b5c9890dd766c80be",
+        sha256 = "8ddcc2207c3630bb19c5741151b6db5341c8f8eb5f844b773a50b5ee033306a8",
         strip_prefix = "rules_swift-{}".format(_RULES_SWIFT_VERSION),
         urls = [
             "http://github.com/bazelbuild/rules_swift/archive/{}.tar.gz".format(_RULES_SWIFT_VERSION),
