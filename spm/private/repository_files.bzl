@@ -60,8 +60,23 @@ def _find_and_delete_files(repository_ctx, path, name):
             stderr = exec_result.stderr,
         ))
 
+# TODO: Add doc comment for _copy_directory.
+
+def _copy_directory(repository_ctx, src_path, dest_path):
+    # Copy the sources from the checkout directory
+    repository_ctx.execute(
+        [
+            "cp",
+            "-R",
+            "-f",
+            src_path,
+            dest_path,
+        ],
+    )
+
 repository_files = struct(
     list_files_under = _list_files_under,
     list_directories_under = _list_directories_under,
     find_and_delete_files = _find_and_delete_files,
+    copy_directory = _copy_directory,
 )
