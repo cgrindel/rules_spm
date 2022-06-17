@@ -20,5 +20,10 @@ err_msg() {
 workspace="simple_example"
 binary="$(rlocation "${workspace}/simple")"
 
+output="$( "${binary}" )"
+
 expected="Hello World"
-"${binary}" | grep "${expected}" || err_msg "Failed to find expected output. ${expected}"
+echo "${output}" | grep "${expected}" || err_msg "Failed to find expected output. ${expected}"
+
+expected="WebP version:"
+echo "${output}" | grep "${expected}" || err_msg "Failed to find expected output. ${expected}"
