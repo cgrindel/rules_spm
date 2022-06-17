@@ -181,14 +181,6 @@ def _create_bazel_module_decls(
     build_decl = build_declarations.create()
     pkg_name = pkg_desc["name"]
 
-    # DEBUG BEGIN
-    print("*** CHUCK =============")
-    print("*** CHUCK pkg_desc: ")
-    for key in pkg_desc:
-        print("*** CHUCK", key, ":", pkg_desc[key])
-
-    # DEBUG END
-
     target_refs = [
         tr
         for tr in dep_target_refs_dict
