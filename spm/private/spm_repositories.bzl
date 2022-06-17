@@ -200,7 +200,7 @@ def _create_bazel_module_decls(
         if pds.is_clang_target(target):
             build_decl = build_declarations.merge(
                 build_decl,
-                bazel_build_declarations.system_library(
+                bazel_build_declarations.clang_library(
                     repository_ctx,
                     pkg_name,
                     target,
@@ -228,7 +228,7 @@ def _create_bazel_module_decls(
             if pds.is_system_target(target):
                 build_decl = build_declarations.merge(
                     build_decl,
-                    bazel_build_declarations.system_library(
+                    bazel_build_declarations.library_library(
                         repository_ctx,
                         pkg_name,
                         target,
@@ -595,7 +595,9 @@ spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
     attrs = {
         "build_mode": attr.string(
-            default = "spm",
+            # TODO: FIX ME!
+            # default = "spm",
+            default = "bazel",
             values = ["spm", "bazel"],
             doc = """\
 Specifies how `rules_spm` will build the Swift packages.
