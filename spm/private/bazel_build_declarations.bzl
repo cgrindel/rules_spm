@@ -38,8 +38,8 @@ swift_binary(
 )
 """
 
-_BAZEL_SYSTEM_LIBRARY_TPL = """
-bazel_system_library(
+_BAZEL_CLANG_LIBRARY_TPL = """
+bazel_clang_library(
     name = "{target_name}",
     hdrs = [
 {hdrs}
@@ -119,8 +119,6 @@ def _swift_binary(pkg_name, product, target, target_deps):
         targets = [target_decl],
     )
 
-# TODO: Rename this now that it is used for system library and clang targets.
-
 # SourceKitten uses `Source` instead of `Sources`
 _SOURCE_DIR_NAMES = ["Sources", "Source"]
 
@@ -134,7 +132,19 @@ def _find_srcs_dir(repository_ctx, pkg_name):
         pkg_name = pkg_name,
     ))
 
-def _system_library(repository_ctx, pkg_name, target, target_deps):
+def _clang_library(repository_ctx, pkg_name, target, target_deps):
+    """Generates a build declaration for clang libraries and system libraries.
+
+    Args:
+        repository_ctx: An instance of `repository_ctx`.
+        pkg_name: The name of the package as a `string`.
+        target: The target `dict`.
+        target_deps: The dependencies for the target as a `list` of target
+                     references.
+
+    Returns:
+        A build declaration `struct` as returned by `build_declarations.create`.
+    """
     target_name = target["name"]
 
     srcs_dir = _find_srcs_dir(repository_ctx, pkg_name)
@@ -157,7 +167,7 @@ def _system_library(repository_ctx, pkg_name, target, target_deps):
     target_decl = build_declarations.target(
         type = _BAZEL_SYSTEM_LIBRARY_TYPE,
         name = target_name,
-        declaration = _BAZEL_SYSTEM_LIBRARY_TPL.format(
+        declaration = _BAZEL_CLANG_LIBRARY_TPL.format(
             target_name = target_name,
             hdrs = build_declarations.bazel_list_str(collected_files.hdrs),
             srcs = build_declarations.bazel_list_str(collected_files.srcs),
@@ -174,5 +184,5 @@ def _system_library(repository_ctx, pkg_name, target, target_deps):
 bazel_build_declarations = struct(
     swift_library = _swift_library,
     swift_binary = _swift_binary,
-    system_library = _system_library,
+    clang_library = _clang_library,
 )

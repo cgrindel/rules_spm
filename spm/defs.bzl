@@ -5,8 +5,8 @@ load(
     _actions = "actions",
 )
 load(
-    "//spm/private:bazel_system_library.bzl",
-    _bazel_system_library = "bazel_system_library",
+    "//spm/private:bazel_clang_library.bzl",
+    _bazel_clang_library = "bazel_clang_library",
 )
 load(
     "//spm/private:build_declarations.bzl",
@@ -108,7 +108,7 @@ spm_pkg = _spm_pkg
 spm_repositories = _spm_repositories
 
 # Build Rules and Macros
-bazel_system_library = _bazel_system_library
+bazel_clang_library = _bazel_clang_library
 spm_archive = _spm_archive
 spm_clang_library = _spm_clang_library
 spm_filegroup = _spm_filegroup

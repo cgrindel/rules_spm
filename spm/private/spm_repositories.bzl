@@ -181,8 +181,6 @@ def _create_bazel_module_decls(
         repository_ctx,
         pkg_desc,
         dep_target_refs_dict,
-        #GH149: Remove once fully implemented.
-        # buildifier: disable=unused-variable
         exec_products):
     build_decl = build_declarations.create()
     pkg_name = pkg_desc["name"]
@@ -197,7 +195,7 @@ def _create_bazel_module_decls(
         _rtype, _pname, target_name = refs.split(target_ref)
         target = pds.get_target(pkg_desc, target_name)
 
-        # TODO: Add check and support for Objective C
+        # GH149: Add check and support for Objective C
 
         if pds.is_clang_target(target):
             build_decl = build_declarations.merge(
@@ -281,21 +279,6 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
 
 # MARK: - Root BUILD.bazel Generation
 
-# TODO: Replace with build_declarations.bazel_list_str
-
-def _create_hdrs_str(hdr_paths):
-    """Creates a headers string suitable for injection into a BUILD.bazel template.
-
-    Args:
-        hdr_paths: A `list` of path `string` values.
-
-    Returns:
-        A `string` value suitable for injection into the `clang_module_headers`
-        entry.
-    """
-    hdrs = ["        \"%s\"," % (p) for p in hdr_paths]
-    return "\n".join(hdrs)
-
 def _create_clang_module_headers_entry(target_name, hdr_paths):
     """Creates a `clang_module_headers` entry string.
 
@@ -311,7 +294,7 @@ def _create_clang_module_headers_entry(target_name, hdr_paths):
     %s
         ],
     """
-    hdrs_str = _create_hdrs_str(hdr_paths)
+    hdrs_str = build_declarations.bazel_list_str(hdr_paths)
     return entry_tpl % (target_name, hdrs_str)
 
 def _create_clang_module_headers(hdrs_dict):
@@ -550,10 +533,6 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
         # Write BUILD.bazel file.
         _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
 
-    # TODO: Clean up
-    # # Write BUILD.bazel file.
-    # _generate_root_bld_file(repository_ctx, pkg_descs_dict, clang_hdrs_dict, pkgs)
-
     # Generate Bazel packages for each package
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
 
@@ -616,7 +595,9 @@ spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
     attrs = {
         "build_mode": attr.string(
-            default = "spm",
+            # TODO: FIX ME!
+            # default = "spm",
+            default = "bazel",
             values = ["spm", "bazel"],
             doc = """\
 Specifies how `rules_spm` will build the Swift packages.

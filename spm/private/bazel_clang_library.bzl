@@ -6,13 +6,16 @@ load(
     "swift_c_module",
 )
 
-# TODO: Rename if we do double duty.
-
-def bazel_system_library(name, hdrs, srcs, includes, modulemap, deps = None, visibility = None):
-    """Exposes a system library module as defined in a Swift package.
+def bazel_clang_library(name, hdrs, srcs, includes, modulemap, deps = None, visibility = None):
+    """Exposes a clang library or system library module as defined in a Swift package.
 
     Args:
         name: The Bazel target name.
+        hdrs: A `list` of public header files.
+        srcs: A `list` of source files.
+        includes: A `list` of include directories.
+        modulemap: Optional. A `string` reference the location of a modulemap, 
+                   if provided.
         deps: Dependencies appropriate for the `swift_c_module` which defines
               the target.
         visibility: Target visibility.
