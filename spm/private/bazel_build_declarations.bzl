@@ -135,6 +135,16 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     """
     target_name = target["name"]
 
+    # GH149: Check target for publicHeadersPath and sources to find the sources
+    # and the headers.
+    #  .target(
+    #      name: "libwebp",
+    #      dependencies: [],
+    #      path: ".",
+    #      sources: ["libwebp/src"],
+    #      publicHeadersPath: "include",
+    #      cSettings: [.headerSearchPath("libwebp")])
+
     # We copy the source files to a directory that is named after the package.
     target_path = target["path"]
     src_path = paths.join(pkg_name, target_path) if target_path != "." else pkg_name
