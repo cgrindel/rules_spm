@@ -144,6 +144,31 @@ Write a Bazel build file from a build declaration.
 | <a id="build_declarations.write_build_file-build_decl"></a>build_decl |  A build declaration <code>struct</code> as returned by <code>build_declarations.create</code>.   |  none |
 
 
+<a id="#build_declarations.bazel_list_str"></a>
+
+## build_declarations.bazel_list_str
+
+<pre>
+build_declarations.bazel_list_str(<a href="#build_declarations.bazel_list_str-values">values</a>, <a href="#build_declarations.bazel_list_str-double_quote_values">double_quote_values</a>, <a href="#build_declarations.bazel_list_str-indent">indent</a>)
+</pre>
+
+Create a `string` of values that is suitable to be inserted in a Starlark list.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="build_declarations.bazel_list_str-values"></a>values |  A <code>sequence</code> of <code>string</code> values.   |  none |
+| <a id="build_declarations.bazel_list_str-double_quote_values"></a>double_quote_values |  A <code>bool</code> indicating whether to add double quotes.   |  <code>True</code> |
+| <a id="build_declarations.bazel_list_str-indent"></a>indent |  A <code>string</code> representing the characters to prefix for each value.   |  <code>"        "</code> |
+
+**RETURNS**
+
+A `string` value suitable to be inserted between square brackets ([])
+  as Starlark list values.
+
+
 <a id="#build_declarations.bazel_deps_str"></a>
 
 ## build_declarations.bazel_deps_str
@@ -165,5 +190,23 @@ Create deps list string suitable for injection into a module template.
 **RETURNS**
 
 A `string` value.
+
+
+<a id="#build_declarations.quote_str"></a>
+
+## build_declarations.quote_str
+
+<pre>
+build_declarations.quote_str(<a href="#build_declarations.quote_str-value">value</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="build_declarations.quote_str-value"></a>value |  <p align="center"> - </p>   |  none |
 
 

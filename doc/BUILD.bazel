@@ -15,11 +15,13 @@ load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 _API_SRCS = [
     "bazel_build_declarations",
     "build_declarations",
+    "clang_files",
     "package_descriptions",
     "packages",
     "platforms",
     "providers",
     "references",
+    "repository_files",
     "repository_utils",
     "resolved_packages",
     "spm_build_declarations",

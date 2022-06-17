@@ -247,6 +247,43 @@ def _bazel_deps_str_test(ctx):
 
 bazel_deps_str_test = unittest.make(_bazel_deps_str_test)
 
+def _bazel_list_str_test(ctx):
+    env = unittest.begin(ctx)
+
+    actual = build_declarations.bazel_list_str([])
+    expected = ""
+    asserts.equals(env, expected, actual, "no values")
+
+    values = ["apple", "pear", "cherries"]
+
+    actual = build_declarations.bazel_list_str(values, double_quote_values = False)
+    expected = """\
+        apple,
+        pear,
+        cherries,\
+"""
+    asserts.equals(env, expected, actual, "values, no double quote")
+
+    actual = build_declarations.bazel_list_str(values)
+    expected = """\
+        "apple",
+        "pear",
+        "cherries",\
+"""
+    asserts.equals(env, expected, actual, "values, double quote")
+
+    actual = build_declarations.bazel_list_str(values, indent = "")
+    expected = """\
+"apple",
+"pear",
+"cherries",\
+"""
+    asserts.equals(env, expected, actual, "values, no double quote, no indent")
+
+    return unittest.end(env)
+
+bazel_list_str_test = unittest.make(_bazel_list_str_test)
+
 def build_declarations_test_suite():
     return unittest.suite(
         "build_declarations_tests",
@@ -256,4 +293,5 @@ def build_declarations_test_suite():
         merge_test,
         generate_build_file_content_test,
         bazel_deps_str_test,
+        bazel_list_str_test,
     )
