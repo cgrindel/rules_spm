@@ -73,14 +73,10 @@ def _generate_bazel_pkg(
         )
     elif build_mode == spm_build_modes.BAZEL:
         # Copy the sources from the checkout directory
-        repository_ctx.execute(
-            [
-                "cp",
-                "-R",
-                "-f",
-                paths.join(spm_common.checkouts_path, pkg_name),
-                pkg_name,
-            ],
+        repository_files.copy_directory(
+            repository_ctx,
+            pkg_desc["path"],
+            pkg_name,
         )
         build_decl = _create_bazel_module_decls(
             repository_ctx,
@@ -200,7 +196,7 @@ def _create_bazel_module_decls(
         if pds.is_clang_target(target):
             build_decl = build_declarations.merge(
                 build_decl,
-                bazel_build_declarations.system_library(
+                bazel_build_declarations.clang_library(
                     repository_ctx,
                     pkg_name,
                     target,
@@ -228,7 +224,7 @@ def _create_bazel_module_decls(
             if pds.is_system_target(target):
                 build_decl = build_declarations.merge(
                     build_decl,
-                    bazel_build_declarations.system_library(
+                    bazel_build_declarations.library_library(
                         repository_ctx,
                         pkg_name,
                         target,

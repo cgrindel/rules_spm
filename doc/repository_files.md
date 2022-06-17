@@ -72,3 +72,23 @@ Finds files with the specified name under the specified path and deletes them.
 | <a id="repository_files.find_and_delete_files-name"></a>name |  A file basename as a <code>string</code>.   |  none |
 
 
+<a id="#repository_files.copy_directory"></a>
+
+## repository_files.copy_directory
+
+<pre>
+repository_files.copy_directory(<a href="#repository_files.copy_directory-repository_ctx">repository_ctx</a>, <a href="#repository_files.copy_directory-src">src</a>, <a href="#repository_files.copy_directory-dest">dest</a>)
+</pre>
+
+Copy a directory.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="repository_files.copy_directory-repository_ctx"></a>repository_ctx |  An instance of <code>repository_ctx</code>.   |  none |
+| <a id="repository_files.copy_directory-src"></a>src |  The path to the direcotry to copy as a <code>string</code>.   |  none |
+| <a id="repository_files.copy_directory-dest"></a>dest |  The path where the directory will be copied as a <code>string</code>.   |  none |
+
+

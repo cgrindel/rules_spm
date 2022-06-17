@@ -60,8 +60,29 @@ def _find_and_delete_files(repository_ctx, path, name):
             stderr = exec_result.stderr,
         ))
 
+def _copy_directory(repository_ctx, src, dest):
+    """Copy a directory.
+
+    Args:
+        repository_ctx: An instance of `repository_ctx`.
+        src: The path to the direcotry to copy as a `string`.
+        dest: The path where the directory will be copied as a `string`.
+    """
+
+    # Copy the sources from the checkout directory
+    repository_ctx.execute(
+        [
+            "cp",
+            "-R",
+            "-f",
+            src,
+            dest,
+        ],
+    )
+
 repository_files = struct(
     list_files_under = _list_files_under,
     list_directories_under = _list_directories_under,
     find_and_delete_files = _find_and_delete_files,
+    copy_directory = _copy_directory,
 )
