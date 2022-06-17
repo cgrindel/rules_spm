@@ -54,6 +54,7 @@ bazel_clang_library(
     deps = [
 {deps}
     ],
+    visibility = ["//visibility:public"],
 )
 """
 
@@ -134,11 +135,12 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     """
     target_name = target["name"]
 
+    # We copy the source files to a directory that is named after the package.
     target_path = target["path"]
+    src_path = paths.join(pkg_name, target_path) if target_path != "." else pkg_name
     collected_files = clang_files.collect_files(
         repository_ctx,
-        # We copy the source files to a directory that is named after the package.
-        paths.join(pkg_name, target_path),
+        src_path,
         remove_prefix = "{}/".format(pkg_name),
     )
 
