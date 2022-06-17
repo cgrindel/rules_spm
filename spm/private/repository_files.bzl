@@ -1,3 +1,5 @@
+"""Module for retrieving and manipulating repository file information."""
+
 def _list_files_under(repository_ctx, path):
     """Retrieves the list of files under the specified path.
 

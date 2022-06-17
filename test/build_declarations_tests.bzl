@@ -256,7 +256,7 @@ def _bazel_list_str_test(ctx):
 
     values = ["apple", "pear", "cherries"]
 
-    actual = build_declarations.bazel_list_str(values)
+    actual = build_declarations.bazel_list_str(values, double_quote_values = False)
     expected = """\
         apple,
         pear,
@@ -264,7 +264,7 @@ def _bazel_list_str_test(ctx):
 """
     asserts.equals(env, expected, actual, "values, no double quote")
 
-    actual = build_declarations.bazel_list_str(values, double_quote_values = True)
+    actual = build_declarations.bazel_list_str(values)
     expected = """\
         "apple",
         "pear",
@@ -274,9 +274,9 @@ def _bazel_list_str_test(ctx):
 
     actual = build_declarations.bazel_list_str(values, indent = "")
     expected = """\
-apple,
-pear,
-cherries,\
+"apple",
+"pear",
+"cherries",\
 """
     asserts.equals(env, expected, actual, "values, no double quote, no indent")
 

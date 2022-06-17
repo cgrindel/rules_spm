@@ -160,7 +160,7 @@ Create a `string` of values that is suitable to be inserted in a Starlark list.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="build_declarations.bazel_list_str-values"></a>values |  A <code>sequence</code> of <code>string</code> values.   |  none |
-| <a id="build_declarations.bazel_list_str-double_quote_values"></a>double_quote_values |  A <code>bool</code> indicating whether to add double quotes.   |  <code>False</code> |
+| <a id="build_declarations.bazel_list_str-double_quote_values"></a>double_quote_values |  A <code>bool</code> indicating whether to add double quotes.   |  <code>True</code> |
 | <a id="build_declarations.bazel_list_str-indent"></a>indent |  A <code>string</code> representing the characters to prefix for each value.   |  <code>"        "</code> |
 
 **RETURNS**
@@ -190,5 +190,23 @@ Create deps list string suitable for injection into a module template.
 **RETURNS**
 
 A `string` value.
+
+
+<a id="#build_declarations.quote_str"></a>
+
+## build_declarations.quote_str
+
+<pre>
+build_declarations.quote_str(<a href="#build_declarations.quote_str-value">value</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="build_declarations.quote_str-value"></a>value |  <p align="center"> - </p>   |  none |
 
 

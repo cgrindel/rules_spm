@@ -8,7 +8,7 @@ _DEFS_BZL_LOCATION = "@cgrindel_rules_spm//spm:defs.bzl"
 _SWIFT_BZL_LOCATION = "@build_bazel_rules_swift//swift:swift.bzl"
 _SWIFT_LIBRARY_TYPE = "swift_library"
 _SWIFT_BINARY_TYPE = "swift_binary"
-_BAZEL_SYSTEM_LIBRARY_TYPE = "bazel_system_library"
+_BAZEL_CLANG_LIBRARY_TYPE = "bazel_clang_library"
 
 _SWIFT_LIBRARY_TPL = """
 swift_library(
@@ -156,7 +156,7 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
 
     load_stmt = build_declarations.load_statement(
         _DEFS_BZL_LOCATION,
-        _BAZEL_SYSTEM_LIBRARY_TYPE,
+        _BAZEL_CLANG_LIBRARY_TYPE,
     )
 
     if collected_files.modulemap != None:
@@ -165,7 +165,7 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
         modulemap_str = "None"
 
     target_decl = build_declarations.target(
-        type = _BAZEL_SYSTEM_LIBRARY_TYPE,
+        type = _BAZEL_CLANG_LIBRARY_TYPE,
         name = target_name,
         declaration = _BAZEL_CLANG_LIBRARY_TPL.format(
             target_name = target_name,

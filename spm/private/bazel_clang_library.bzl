@@ -14,7 +14,7 @@ def bazel_clang_library(name, hdrs, srcs, includes, modulemap, deps = None, visi
         hdrs: A `list` of public header files.
         srcs: A `list` of source files.
         includes: A `list` of include directories.
-        modulemap: Optional. A `string` reference the location of a modulemap, 
+        modulemap: Optional. A `string` reference the location of a modulemap,
                    if provided.
         deps: Dependencies appropriate for the `swift_c_module` which defines
               the target.

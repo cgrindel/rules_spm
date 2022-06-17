@@ -7,11 +7,13 @@ Swift packages.
 
   * [bazel_build_declarations](/doc/bazel_build_declarations.md)
   * [build_declarations](/doc/build_declarations.md)
+  * [clang_files](/doc/clang_files.md)
   * [package_descriptions](/doc/package_descriptions.md)
   * [packages](/doc/packages.md)
   * [platforms](/doc/platforms.md)
   * [providers](/doc/providers.md)
   * [references](/doc/references.md)
+  * [repository_files](/doc/repository_files.md)
   * [repository_utils](/doc/repository_utils.md)
   * [resolved_packages](/doc/resolved_packages.md)
   * [spm_build_declarations](/doc/spm_build_declarations.md)

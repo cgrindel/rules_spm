@@ -1,3 +1,5 @@
+"""Module for retrieving and categorizing clang files."""
+
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//lib:sets.bzl", "sets")
 load("//spm/private/modulemap_parser:declarations.bzl", dts = "declaration_types")

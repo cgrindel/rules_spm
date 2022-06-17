@@ -48,25 +48,3 @@ A two item `tuple` where the first item is the package name and
   the second item is the target name.
 
 
-<a id="#spm_common.is_include_hdr_path"></a>
-
-## spm_common.is_include_hdr_path
-
-<pre>
-spm_common.is_include_hdr_path(<a href="#spm_common.is_include_hdr_path-path">path</a>)
-</pre>
-
-Determines whether the path is a public header.
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="spm_common.is_include_hdr_path-path"></a>path |  A path <code>string</code> value.   |  none |
-
-**RETURNS**
-
-A `bool` indicating whether the path is a public header.
-
-
