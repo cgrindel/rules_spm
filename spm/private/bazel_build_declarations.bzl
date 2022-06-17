@@ -119,18 +119,18 @@ def _swift_binary(pkg_name, product, target, target_deps):
         targets = [target_decl],
     )
 
-# SourceKitten uses `Source` instead of `Sources`
-_SOURCE_DIR_NAMES = ["Sources", "Source"]
+# # SourceKitten uses `Source` instead of `Sources`
+# _SOURCE_DIR_NAMES = ["Sources", "Source"]
 
-def _find_srcs_dir(repository_ctx, pkg_name):
-    for dir_name in _SOURCE_DIR_NAMES:
-        srcs_dir = paths.join(pkg_name, dir_name)
-        srcs_path = repository_ctx.path(srcs_dir)
-        if srcs_path.exists:
-            return srcs_dir
-    fail("Could not find the sources directory for {pkg_name}".format(
-        pkg_name = pkg_name,
-    ))
+# def _find_srcs_dir(repository_ctx, pkg_name):
+#     for dir_name in _SOURCE_DIR_NAMES:
+#         srcs_dir = paths.join(pkg_name, dir_name)
+#         srcs_path = repository_ctx.path(srcs_dir)
+#         if srcs_path.exists:
+#             return srcs_dir
+#     fail("Could not find the sources directory for {pkg_name}".format(
+#         pkg_name = pkg_name,
+#     ))
 
 def _clang_library(repository_ctx, pkg_name, target, target_deps):
     """Generates a build declaration for clang libraries and system libraries.
@@ -147,10 +147,26 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     """
     target_name = target["name"]
 
-    srcs_dir = _find_srcs_dir(repository_ctx, pkg_name)
+    # DEBUG BEGIN
+    print("*** CHUCK ------------")
+    print("*** CHUCK target: ")
+    for key in target:
+        print("*** CHUCK", key, ":", target[key])
+
+    # DEBUG END
+
+    # srcs_dir = _find_srcs_dir(repository_ctx, pkg_name)
+    # collected_files = clang_files.collect_files(
+    #     repository_ctx,
+    #     paths.join(srcs_dir, target_name),
+    #     remove_prefix = "{}/".format(pkg_name),
+    # )
+
+    target_path = target["path"]
     collected_files = clang_files.collect_files(
         repository_ctx,
-        paths.join(srcs_dir, target_name),
+        # We copy the source files to a directory that is named after the package.
+        paths.join(pkg_name, target_path),
         remove_prefix = "{}/".format(pkg_name),
     )
 
