@@ -8,17 +8,15 @@ import Workspace
 struct Dump: AsyncParsableCommand {
     @Argument(
         help: "The location of the Package.swift file to analyze.",
-        completion: .file(),
+        completion: .directory,
         transform: ({ AbsolutePath($0) })
     )
-    // var packagePath: String
     var packagePath: AbsolutePath
 
-    // var packageAbsolutePath: AbsolutePath {
-    //     return AbsolutePath(packagePath)
-    // }
-
-    // private var loadingTask: Task<Void, Never>?
+    // @Option(
+    //     help: "The location to write the "
+    // )
+    // var
 
     mutating func runAsync() async throws {
         // DEBUG BEGIN
