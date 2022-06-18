@@ -40,7 +40,6 @@ struct Dump: AsyncParsableCommand {
             at: packagePath,
             observabilityScope: observability.topScope
         )
-        // let targets = manifest.targets
 
         // Encode to JSON
         let jsonData = try encoder.encode(manifest)
