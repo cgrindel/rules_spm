@@ -6,9 +6,11 @@ import PackageDescription
 let package = Package(
     name: "spm_parser",
     platforms: [
-        .macOS("10.15.4"),
+        // .macOS("10.15.4"),
+        .macOS(.v12),
     ],
     dependencies: [
+        // Need to match the version that is used in swift-package-manager
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
         .package(
             url: "https://github.com/apple/swift-package-manager",
