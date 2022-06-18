@@ -8,13 +8,15 @@ import Workspace
 struct Dump: AsyncParsableCommand {
     @Argument(
         help: "The location of the Package.swift file to analyze.",
-        completion: .file()
+        completion: .file(),
+        transform: ({ AbsolutePath($0) })
     )
-    var packagePath: String
+    // var packagePath: String
+    var packagePath: AbsolutePath
 
-    var packageAbsolutePath: AbsolutePath {
-        return AbsolutePath(packagePath)
-    }
+    // var packageAbsolutePath: AbsolutePath {
+    //     return AbsolutePath(packagePath)
+    // }
 
     // private var loadingTask: Task<Void, Never>?
 
@@ -24,14 +26,14 @@ struct Dump: AsyncParsableCommand {
         // DEBUG END
 
         let observability = ObservabilitySystem { print("\($0): \($1)") }
-        let workspace = try Workspace(forRootPackage: packageAbsolutePath)
+        let workspace = try Workspace(forRootPackage: packagePath)
 
         // DEBUG BEGIN
         fputs("*** CHUCK START\n", stderr)
         // DEBUG END
 
         let manifest = try await workspace.loadRootManifest(
-            at: packageAbsolutePath,
+            at: packagePath,
             observabilityScope: observability.topScope
         )
 
