@@ -25,23 +25,6 @@ struct Dump: AsyncParsableCommand {
     )
     var outputFile: URL?
 
-    var outputFileHandle: FileHandle {
-        get throws {
-            guard let outputFile = outputFile else {
-                return .standardOutput
-            }
-            // Create the file, then create the file handle
-            guard FileManager.default.createFile(atPath: outputFile.path, contents: nil) else {
-                throw DumpError.failedToCreateOutputFile(outputFile.path)
-            }
-            // return try FileHandle(forWritingTo: outputFile)
-            guard let outputFileHandle = FileHandle(forWritingAtPath: outputFile.path) else {
-                throw DumpError.failedToOpenOutputFile(outputFile.path)
-            }
-            return outputFileHandle
-        }
-    }
-
     lazy var encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -57,14 +40,36 @@ struct Dump: AsyncParsableCommand {
             at: packagePath,
             observabilityScope: observability.topScope
         )
+        let targets = manifest.targets
 
         // Encode to JSON
-        let targets = manifest.targets
         let jsonData = try encoder.encode(targets)
 
-        // Write the JSON
-        try outputFileHandle.write(jsonData)
-        try outputFileHandle.write(Dump.newLine)
-        try outputFileHandle.close()
+        try writeOutput { fileHandle in
+            try fileHandle.write(contentsOf: jsonData)
+            try fileHandle.write(contentsOf: Dump.newLine)
+        }
+    }
+
+    private func createFileHandle() throws -> FileHandle {
+        guard let outputFile = outputFile else {
+            return .standardOutput
+        }
+        // Create the file, then create the file handle
+        guard FileManager.default.createFile(atPath: outputFile.path, contents: nil) else {
+            throw DumpError.failedToCreateOutputFile(outputFile.path)
+        }
+        guard let outputFileHandle = FileHandle(forWritingAtPath: outputFile.path) else {
+            throw DumpError.failedToOpenOutputFile(outputFile.path)
+        }
+        return outputFileHandle
+    }
+
+    func writeOutput(closure: (_ fileHandle: FileHandle) throws -> Void) throws {
+        let fileHandle = try createFileHandle()
+        defer {
+            try? fileHandle.close()
+        }
+        try closure(fileHandle)
     }
 }
