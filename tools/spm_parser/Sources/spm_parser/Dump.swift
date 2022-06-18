@@ -7,7 +7,8 @@ import Workspace
 @main
 struct Dump: AsyncParsableCommand {
     enum DumpError: Error {
-        case failedToConvertToUTF8
+        case failedToCreateOutputFile(String)
+        case failedToOpenOutputFile(String)
     }
 
     @Argument(
@@ -29,7 +30,15 @@ struct Dump: AsyncParsableCommand {
             guard let outputFile = outputFile else {
                 return .standardOutput
             }
-            return try FileHandle(forWritingTo: outputFile)
+            // Create the file, then create the file handle
+            guard FileManager.default.createFile(atPath: outputFile.path, contents: nil) else {
+                throw DumpError.failedToCreateOutputFile(outputFile.path)
+            }
+            // return try FileHandle(forWritingTo: outputFile)
+            guard let outputFileHandle = FileHandle(forWritingAtPath: outputFile.path) else {
+                throw DumpError.failedToOpenOutputFile(outputFile.path)
+            }
+            return outputFileHandle
         }
     }
 
@@ -49,30 +58,13 @@ struct Dump: AsyncParsableCommand {
             observabilityScope: observability.topScope
         )
 
-        // let products = manifest.products.map { $0.name }.joined(separator: ", ")
-        // print("Products:", products)
-
-        // let targets = manifest.targets.map { $0.name }.joined(separator: ", ")
-        // print("Targets:", targets)
-        // // DEBUG BEGIN
-        // fputs("*** CHUCK manifest.targets:\n", stderr)
-        // for (idx, item) in manifest.targets.enumerated() {
-        //     fputs("*** CHUCK   \(idx) : \(String(reflecting: item))\n", stderr)
-        // }
-        // // DEBUG END
-
+        // Encode to JSON
         let targets = manifest.targets
         let jsonData = try encoder.encode(targets)
-        // guard let json = String(data: jsonData, encoding: .utf8) else {
-        //     throw DumpError.failedToConvertToUTF8
-        // }
-
-        // // DEBUG BEGIN
-        // fputs("*** CHUCK json: \(json)\n", stderr)
-        // // DEBUG END
 
         // Write the JSON
         try outputFileHandle.write(jsonData)
         try outputFileHandle.write(Dump.newLine)
+        try outputFileHandle.close()
     }
 }
