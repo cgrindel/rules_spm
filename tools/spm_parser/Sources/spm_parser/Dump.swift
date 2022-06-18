@@ -24,15 +24,14 @@ struct Dump: AsyncParsableCommand {
         // DEBUG END
 
         let observability = ObservabilitySystem { print("\($0): \($1)") }
-        let pkgPath = packageAbsolutePath
-        let workspace = try Workspace(forRootPackage: pkgPath)
+        let workspace = try Workspace(forRootPackage: packageAbsolutePath)
 
         // DEBUG BEGIN
         fputs("*** CHUCK START\n", stderr)
         // DEBUG END
 
         let manifest = try await workspace.loadRootManifest(
-            at: pkgPath,
+            at: packageAbsolutePath,
             observabilityScope: observability.topScope
         )
 
@@ -45,5 +44,11 @@ struct Dump: AsyncParsableCommand {
 
         let targets = manifest.targets.map { $0.name }.joined(separator: ", ")
         print("Targets:", targets)
+        // DEBUG BEGIN
+        fputs("*** CHUCK manifest.targets:\n", stderr)
+        for (idx, item) in manifest.targets.enumerated() {
+            fputs("*** CHUCK   \(idx) : \(String(reflecting: item))\n", stderr)
+        }
+        // DEBUG END
     }
 }
