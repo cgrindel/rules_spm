@@ -7,7 +7,6 @@ import Workspace
 @main
 struct Dump: AsyncParsableCommand {
     enum DumpError: Error {
-        // case failedToEncodeAsJSON
         case failedToConvertToUTF8
     }
 
@@ -18,17 +17,29 @@ struct Dump: AsyncParsableCommand {
     )
     var packagePath: AbsolutePath
 
-    // @Option(
-    //     help: "The location to write the target descriptions JSON."
-    // )
-    // var outputPath:
+    @Option(
+        help: "The location to write the target descriptions JSON file.",
+        completion: .file(extensions: ["json", "txt"]),
+        transform: URL.init(fileURLWithPath:)
+    )
+    var outputFile: URL?
 
-    // let encoder = JSONEncoder()
+    var outputFileHandle: FileHandle {
+        get throws {
+            guard let outputFile = outputFile else {
+                return .standardOutput
+            }
+            return try FileHandle(forWritingTo: outputFile)
+        }
+    }
+
     lazy var encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         return encoder
     }()
+
+    static let newLine: Data = "\n".data(using: .utf8)!
 
     mutating func runAsync() async throws {
         let observability = ObservabilitySystem { print("\($0): \($1)") }
@@ -52,12 +63,16 @@ struct Dump: AsyncParsableCommand {
 
         let targets = manifest.targets
         let jsonData = try encoder.encode(targets)
-        guard let json = String(data: jsonData, encoding: .utf8) else {
-            throw DumpError.failedToConvertToUTF8
-        }
+        // guard let json = String(data: jsonData, encoding: .utf8) else {
+        //     throw DumpError.failedToConvertToUTF8
+        // }
 
-        // DEBUG BEGIN
-        fputs("*** CHUCK json: \(json)\n", stderr)
-        // DEBUG END
+        // // DEBUG BEGIN
+        // fputs("*** CHUCK json: \(json)\n", stderr)
+        // // DEBUG END
+
+        // Write the JSON
+        try outputFileHandle.write(jsonData)
+        try outputFileHandle.write(Dump.newLine)
     }
 }
