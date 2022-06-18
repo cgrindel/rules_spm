@@ -591,7 +591,9 @@ spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
     attrs = {
         "build_mode": attr.string(
-            default = "spm",
+            # TODO: FIX ME
+            # default = "spm",
+            default = "bazel",
             values = ["spm", "bazel"],
             doc = """\
 Specifies how `rules_spm` will build the Swift packages.
