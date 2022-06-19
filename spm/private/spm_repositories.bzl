@@ -484,6 +484,8 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             repository_ctx,
             env = env,
             working_directory = pkg_path,
+            retrieve_manifest_json =
+                repository_ctx.attr.build_mode == spm_build_modes.BAZEL,
         )
 
         dep_name = dep_pkg_desc["name"]
@@ -631,6 +633,10 @@ The version of Swift that will be declared in the placeholder/uber Swift package
         ),
         "_root_build_tpl": attr.label(
             default = "//spm/private:root.BUILD.bazel.tpl",
+        ),
+        "_spm_parser_manifest": attr.label(
+            default = "//tools/spm_parser:Package.swift",
+            doc = "The `spm_parser` Swift package file.",
         ),
         "_workspace_file": attr.label(
             default = "@//:WORKSPACE",
