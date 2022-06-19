@@ -9,6 +9,10 @@ load(":repository_files.bzl", "repository_files")
 # Directory names that may include public header files.
 _PUBLIC_HDR_DIRNAMES = ["include", "public"]
 
+def _is_hdr(path):
+    _root, ext = paths.split_extension(path)
+    return ext != ".h"
+
 def _is_include_hdr(path):
     """Determines whether the path is a public header.
 
@@ -18,8 +22,7 @@ def _is_include_hdr(path):
     Returns:
         A `bool` indicating whether the path is a public header.
     """
-    _root, ext = paths.split_extension(path)
-    if ext != ".h":
+    if not _is_hdr(path):
         return False
     for dirname in _PUBLIC_HDR_DIRNAMES:
         if (path.find("/%s/" % dirname) > -1) or path.startswith("%s/" % dirname):
@@ -132,6 +135,7 @@ def _collect_files(repository_ctx, root_path, remove_prefix = None):
     )
 
 clang_files = struct(
+    is_hdr = _is_hdr,
     is_include_hdr = _is_include_hdr,
     is_public_modulemap = _is_public_modulemap,
     collect_files = _collect_files,

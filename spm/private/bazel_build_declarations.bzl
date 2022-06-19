@@ -1,6 +1,7 @@
 """Module for defining build with Bazel declarations."""
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":build_declarations.bzl", "build_declarations")
 load(":clang_files.bzl", "clang_files")
 
@@ -144,6 +145,7 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     #      sources: ["libwebp/src"],
     #      publicHeadersPath: "include",
     #      cSettings: [.headerSearchPath("libwebp")])
+    target_manifest = target["manifest"]
 
     # We copy the source files to a directory that is named after the package.
     target_path = target["path"]
@@ -164,14 +166,63 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     else:
         modulemap_str = "None"
 
+    # Add any directory that includes a private header
+    # private_hdr_dirs = sets.to_list(
+    #     sets.make([
+    #         paths.dirname(src)
+    #         for src in collected_files.srcs
+    #         if clang_files.is_hdr(src)
+    #     ]),
+    # )
+    # collected_files.includes + private_hdr_dirs
+
+    # DEBUG BEGIN
+    print("*** CHUCK collected_files.includes: ", collected_files.includes)
+    print("*** CHUCK collected_files.hdrs: ", collected_files.hdrs)
+
+    # DEBUG END
+    public_hdrs_path = target_manifest.get("publicHeadersPath")
+    includes = []
+    if public_hdrs_path != None:
+        includes.append(public_hdrs_path)
+    private_hdr_dirs = sets.to_list(
+        sets.make([
+            paths.dirname(src)
+            for src in collected_files.srcs
+            if clang_files.is_hdr(src)
+        ]),
+    )
+    includes.extend(private_hdr_dirs)
+
+    # Be sure to add any parent directories to the includes list
+    includes_set = sets.make(includes)
+    for include in includes:
+        parts = include.split("/")
+        for idx, part in enumerate(parts):
+            path = "/".join(parts[0:idx])
+            if path != "":
+                sets.insert(includes_set, path)
+    includes = sets.to_list(includes_set)
+
+    manifest_sources = target_manifest.get("sources", [])
+    if manifest_sources != []:
+        srcs = []
+        for src in collected_files.srcs:
+            for prefix in manifest_sources:
+                if src.startswith(prefix):
+                    srcs.append(src)
+                    continue
+    else:
+        srcs = collected_files.srcs
+
     target_decl = build_declarations.target(
         type = _BAZEL_CLANG_LIBRARY_TYPE,
         name = target_name,
         declaration = _BAZEL_CLANG_LIBRARY_TPL.format(
             target_name = target_name,
             hdrs = build_declarations.bazel_list_str(collected_files.hdrs),
-            srcs = build_declarations.bazel_list_str(collected_files.srcs),
-            includes = build_declarations.bazel_list_str(collected_files.includes),
+            srcs = build_declarations.bazel_list_str(srcs),
+            includes = build_declarations.bazel_list_str(includes),
             modulemap = modulemap_str,
             deps = build_declarations.bazel_deps_str(pkg_name, target_deps),
         ),

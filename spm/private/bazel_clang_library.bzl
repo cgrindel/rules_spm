@@ -6,7 +6,14 @@ load(
     "swift_c_module",
 )
 
-def bazel_clang_library(name, hdrs, srcs, includes, modulemap, deps = None, visibility = None):
+def bazel_clang_library(
+        name,
+        hdrs,
+        srcs,
+        includes,
+        modulemap,
+        deps = None,
+        visibility = None):
     """Exposes a clang library or system library module as defined in a Swift package.
 
     Args:

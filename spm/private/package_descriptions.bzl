@@ -144,7 +144,26 @@ def _get_package_description(
             env = env,
             working_directory = working_directory,
         )
-        pkg_desc["manifest"] = pkg_manifest
+        target_map_dict = pkg_manifest["targetMap"]
+        for target in pkg_desc["targets"]:
+            target_name = target["name"]
+
+            # target_manifest: `dict`
+            #   dependencies: `list`
+            #   type: `string`
+            #   settings: `list` of `dict`
+            #     kind: `dict`
+            #       headerSearchPath: `dict`
+            #         _0: `string` (e.g. dir name `libwebp` )
+            #     tool: `string` (e.g. `c`)
+            #   resources: `list`
+            #   sources: `list` of `string` (e.g. path, `libwebp/src`)
+            #   path: `string` (e.g. `.`)
+            #   publicHeadersPath: `string` (e.g. path, `include`)
+            #   exclude: `list`
+            #   name: `string`
+            target_manifest = target_map_dict.get(target_name)
+            target["manifest"] = target_manifest
 
     # Collect the dump targets by name
     dump_targets_dict = {}
