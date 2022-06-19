@@ -224,7 +224,7 @@ def _create_bazel_module_decls(
             if pds.is_system_target(target):
                 build_decl = build_declarations.merge(
                     build_decl,
-                    bazel_build_declarations.library_library(
+                    bazel_build_declarations.clang_library(
                         repository_ctx,
                         pkg_name,
                         target,
