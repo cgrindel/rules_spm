@@ -1,6 +1,6 @@
 """Module for retrieving and manipulating repository file information."""
 
-def _list_files_under(repository_ctx, path):
+def _list_files_under(repository_ctx, path, relative_paths = False):
     """Retrieves the list of files under the specified path.
 
     This function returns paths for all of the files under the specified path.
@@ -19,6 +19,13 @@ def _list_files_under(repository_ctx, path):
     if exec_result.return_code != 0:
         fail("Failed to list files in %s. stderr:\n%s" % (path, exec_result.stderr))
     paths = exec_result.stdout.splitlines()
+    if relative_paths:
+        prefix = "{}/".format(path)
+        prefix_len = len(prefix)
+        paths = [
+            p[prefix_len:] if p.startswith(prefix) else p
+            for p in paths
+        ]
     return paths
 
 def _list_directories_under(repository_ctx, path, max_depth = None):

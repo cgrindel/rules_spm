@@ -11,7 +11,7 @@ _PUBLIC_HDR_DIRNAMES = ["include", "public"]
 
 def _is_hdr(path):
     _root, ext = paths.split_extension(path)
-    return ext != ".h"
+    return ext == ".h"
 
 def _is_include_hdr(path):
     """Determines whether the path is a public header.
@@ -89,7 +89,11 @@ def _remove_prefixes(paths_list, prefix):
     ]
 
 def _collect_files(repository_ctx, root_path, remove_prefix = None):
-    paths_list = repository_files.list_files_under(repository_ctx, root_path)
+    paths_list = repository_files.list_files_under(
+        repository_ctx,
+        root_path,
+        relative_paths = True,
+    )
 
     # hdrs: Public headers
     # srcs: Private headers and source files.

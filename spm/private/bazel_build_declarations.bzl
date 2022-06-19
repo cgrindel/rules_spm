@@ -166,21 +166,6 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     else:
         modulemap_str = "None"
 
-    # Add any directory that includes a private header
-    # private_hdr_dirs = sets.to_list(
-    #     sets.make([
-    #         paths.dirname(src)
-    #         for src in collected_files.srcs
-    #         if clang_files.is_hdr(src)
-    #     ]),
-    # )
-    # collected_files.includes + private_hdr_dirs
-
-    # DEBUG BEGIN
-    print("*** CHUCK collected_files.includes: ", collected_files.includes)
-    print("*** CHUCK collected_files.hdrs: ", collected_files.hdrs)
-
-    # DEBUG END
     public_hdrs_path = target_manifest.get("publicHeadersPath")
     includes = []
     if public_hdrs_path != None:
