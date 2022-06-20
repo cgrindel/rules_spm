@@ -1,3 +1,6 @@
 # Do not add the examples directories here. Execute
 # `bazel run @contrib_rules_bazel_integration_test//tools:update_deleted_packages` 
 # to update the deleted packages in the .bazelrc.
+
+# Swift Package Manager build directory
+tools/spm_parser/.build

@@ -7,4 +7,5 @@ bazel-*
 # VSCode
 .vscode
 
+# Swift Package Manager build directory
 tools/spm_parser/.build

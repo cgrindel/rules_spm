@@ -18,6 +18,8 @@ def _is_include_hdr(path, public_includes = None):
 
     Args:
         path: A path `string` value.
+        public_includes: Optional. A `sequence` of path `string` values that
+                         are used to identify public header files.
 
     Returns:
         A `bool` indicating whether the path is a public header.
@@ -157,7 +159,7 @@ def _collect_files(
     # Some clang files reference their header files from different relative paths
     for include in sets.to_list(includes_set):
         parts = include.split("/")
-        for idx, part in enumerate(parts):
+        for idx, _part in enumerate(parts):
             path = "/".join(parts[0:idx])
             if path != "":
                 sets.insert(includes_set, path)
