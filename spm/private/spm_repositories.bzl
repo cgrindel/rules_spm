@@ -63,6 +63,10 @@ def _generate_bazel_pkg(
     """
     pkg_name = pkg_desc["name"]
 
+    # DEBUG BEGIN
+    print("*** CHUCK _generate_bazel_pkg pkg_name: ", pkg_name)
+    # DEBUG END
+
     build_mode = repository_ctx.attr.build_mode
     if build_mode == spm_build_modes.SPM:
         build_decl = _create_spm_module_decls(
@@ -535,6 +539,13 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
 
     for pkg_name in pkg_descs_dict:
+        # DEBUG BEGIN
+        print("*** CHUCK pkg_name: ", pkg_name)
+
+        # DEBUG END
+        # Do not generate a Bazel package for the placeholder
+        if pkg_name == pds.root_pkg_name:
+            continue
         _generate_bazel_pkg(
             repository_ctx,
             pkg_descs_dict[pkg_name],
@@ -593,7 +604,9 @@ spm_repositories = repository_rule(
     implementation = _spm_repositories_impl,
     attrs = {
         "build_mode": attr.string(
-            default = "spm",
+            # TODO: FIX ME!
+            # default = "spm",
+            default = "bazel",
             values = ["spm", "bazel"],
             doc = """\
 Specifies how `rules_spm` will build the Swift packages.
