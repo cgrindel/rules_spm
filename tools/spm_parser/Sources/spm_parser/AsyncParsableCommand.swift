@@ -4,7 +4,7 @@ import ArgumentParser
 // https://medium.com/geekculture/develop-a-command-line-tool-using-swift-concurrency-e16d254361cb
 
 // In ArgumentParser 1.1.0 and later, AsyncParsableCommand exists. However, swift-package-manager is
-// pineed to no later than 1.0.3, right now.
+// pinned to no later than 1.0.3, right now.
 protocol AsyncParsableCommand: ParsableCommand {
     mutating func runAsync() async throws
 }
