@@ -6,7 +6,6 @@ import PackageDescription
 let package = Package(
     name: "spm_parser",
     platforms: [
-        // .macOS("10.15.4"),
         .macOS(.v12),
     ],
     dependencies: [
