@@ -149,6 +149,8 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     src_paths = []
     includes_set = sets.make()
 
+    # TODO: Figure out what to do with headerSearchPath
+
     # Determine the default source path to use, if no others are provided
     target_path = target["path"]
     if target_path == ".":
@@ -166,34 +168,17 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
             for manifest_src in manifest_srcs
         ])
 
-    # src_paths.append(
-    #     paths.join(pkg_name, target_path) if target_path != "." else pkg_name,
-    # )
-
-    # Use a specified public headers path
+    # Use the specified public headers path
     public_hdrs_path = target_manifest.get("publicHeadersPath")
     if public_hdrs_path != None:
         sets.insert(includes_set, public_hdrs_path)
-
-        # src_paths.append(paths.join(pkg_name, public_hdrs_path))
         src_paths.append(paths.join(default_src_path, public_hdrs_path))
 
-    # DEBUG BEGIN
-    print("*** CHUCK src_paths: ")
-    for idx, item in enumerate(src_paths):
-        print("*** CHUCK", idx, ":", item)
-
-    # DEBUG END
-
+    # Collect the files
     collected_files = clang_files.collect_files(
         repository_ctx,
         src_paths,
         remove_prefix = "{}/".format(pkg_name),
-    )
-
-    load_stmt = build_declarations.load_statement(
-        _DEFS_BZL_LOCATION,
-        _BAZEL_CLANG_LIBRARY_TYPE,
     )
 
     if collected_files.modulemap != None:
@@ -216,16 +201,10 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
             if path != "":
                 sets.insert(includes_set, path)
 
-    manifest_sources = target_manifest.get("sources", [])
-    if manifest_sources != []:
-        srcs = []
-        for src in collected_files.srcs:
-            for prefix in manifest_sources:
-                if src.startswith(prefix):
-                    srcs.append(src)
-                    continue
-    else:
-        srcs = collected_files.srcs
+    load_stmt = build_declarations.load_statement(
+        _DEFS_BZL_LOCATION,
+        _BAZEL_CLANG_LIBRARY_TYPE,
+    )
 
     target_decl = build_declarations.target(
         type = _BAZEL_CLANG_LIBRARY_TYPE,
@@ -233,7 +212,7 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
         declaration = _BAZEL_CLANG_LIBRARY_TPL.format(
             target_name = target_name,
             hdrs = build_declarations.bazel_list_str(collected_files.hdrs),
-            srcs = build_declarations.bazel_list_str(srcs),
+            srcs = build_declarations.bazel_list_str(collected_files.srcs),
             includes = build_declarations.bazel_list_str(
                 sets.to_list(includes_set),
             ),
