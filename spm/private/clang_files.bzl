@@ -119,6 +119,7 @@ def _collect_files(
     others_set = sets.make()
     includes_set = sets.make()
     modulemap = None
+    modulemap_orig_path = None
     for orig_path in paths_list:
         path = _remove_prefix(orig_path, remove_prefix)
         _root, ext = paths.split_extension(path)
@@ -136,6 +137,7 @@ def _collect_files(
                     first = modulemap,
                     second = path,
                 ))
+            modulemap_orig_path = orig_path
             modulemap = path
         else:
             sets.insert(others_set, path)
@@ -164,8 +166,11 @@ def _collect_files(
 
     # If we found a public modulemap, get the headers from there. This
     # overrides any hdrs that we found by inspection.
-    if modulemap != None:
-        hdrs = _get_hdr_paths_from_modulemap(repository_ctx, modulemap)
+    if modulemap_orig_path != None:
+        hdrs = _get_hdr_paths_from_modulemap(
+            repository_ctx,
+            modulemap_orig_path,
+        )
     else:
         hdrs = sets.to_list(hdrs_set)
 
