@@ -147,7 +147,7 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     target_manifest = target["manifest"]
     src_paths = []
 
-    # TODO: Figure out what to do with headerSearchPath
+    # GH149: Figure out what to do with headerSearchPath
 
     # We copy the source files to a directory that is named after the package.
     # Determine the default source path to use, if no others are provided
