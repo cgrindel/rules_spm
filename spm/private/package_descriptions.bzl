@@ -82,7 +82,38 @@ def _retrieve_package_description(repository_ctx, env = {}, working_directory = 
     )
     return _parse_json(json_str)
 
-def _get_package_description(repository_ctx, env = {}, working_directory = ""):
+def _retrieve_package_manifest(repository_ctx, env = {}, working_directory = ""):
+    """Returns a dict representing the package manifest JSON returned from `spm_parser`.
+
+    Args:
+        repository_ctx: A `repository_ctx`.
+        env: A `dict` of environment variables that will be included in the
+             command execution.
+        working_directory: A `string` specifying the directory for the SPM package.
+
+    Returns:
+        A `dict` representing the package manifest JSON as returned by `spm_parser`.
+    """
+
+    spm_parser_manifest_path = repository_ctx.path(
+        repository_ctx.attr._spm_parser_manifest,
+    )
+    spm_parser_directory = "{}".format(spm_parser_manifest_path.dirname)
+    package_directory = "{}".format(repository_ctx.path(working_directory))
+
+    manifest_json_str = repository_utils.exec_spm_command(
+        repository_ctx,
+        ["swift", "run", "spm_parser", package_directory],
+        env = env,
+        working_directory = spm_parser_directory,
+    )
+    return _parse_json(manifest_json_str)
+
+def _get_package_description(
+        repository_ctx,
+        env = {},
+        working_directory = "",
+        retrieve_manifest_json = False):
     """Returns a dict representing the merge of a package's description and it's dump (dump-package) information.
 
     Args:
@@ -90,6 +121,7 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
         env: A `dict` of environment variables that will be included in the
              command execution.
         working_directory: A `string` specifying the directory for the SPM package.
+        retrieve_manifest_json: Optional. A `bool` specifying whether to include the manifest JSON.
 
     Returns:
         A `dict` representing information gathered from an SPM package
@@ -105,6 +137,33 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
         env = env,
         working_directory = working_directory,
     )
+
+    if retrieve_manifest_json:
+        pkg_manifest = _retrieve_package_manifest(
+            repository_ctx,
+            env = env,
+            working_directory = working_directory,
+        )
+        target_map_dict = pkg_manifest["targetMap"]
+        for target in pkg_desc["targets"]:
+            target_name = target["name"]
+
+            # target_manifest: `dict`
+            #   dependencies: `list`
+            #   type: `string`
+            #   settings: `list` of `dict`
+            #     kind: `dict`
+            #       headerSearchPath: `dict`
+            #         _0: `string` (e.g. dir name `libwebp` )
+            #     tool: `string` (e.g. `c`)
+            #   resources: `list`
+            #   sources: `list` of `string` (e.g. path, `libwebp/src`)
+            #   path: `string` (e.g. `.`)
+            #   publicHeadersPath: `string` (e.g. path, `include`)
+            #   exclude: `list`
+            #   name: `string`
+            target_manifest = target_map_dict.get(target_name)
+            target["manifest"] = target_manifest
 
     # Collect the dump targets by name
     dump_targets_dict = {}

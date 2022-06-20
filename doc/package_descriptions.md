@@ -29,7 +29,7 @@ A dict which contains the information from the JSON string.
 ## package_descriptions.get
 
 <pre>
-package_descriptions.get(<a href="#package_descriptions.get-repository_ctx">repository_ctx</a>, <a href="#package_descriptions.get-env">env</a>, <a href="#package_descriptions.get-working_directory">working_directory</a>)
+package_descriptions.get(<a href="#package_descriptions.get-repository_ctx">repository_ctx</a>, <a href="#package_descriptions.get-env">env</a>, <a href="#package_descriptions.get-working_directory">working_directory</a>, <a href="#package_descriptions.get-retrieve_manifest_json">retrieve_manifest_json</a>)
 </pre>
 
 Returns a dict representing the merge of a package's description and it's dump (dump-package) information.
@@ -42,6 +42,7 @@ Returns a dict representing the merge of a package's description and it's dump (
 | <a id="package_descriptions.get-repository_ctx"></a>repository_ctx |  A <code>repository_ctx</code>.   |  none |
 | <a id="package_descriptions.get-env"></a>env |  A <code>dict</code> of environment variables that will be included in the command execution.   |  <code>{}</code> |
 | <a id="package_descriptions.get-working_directory"></a>working_directory |  A <code>string</code> specifying the directory for the SPM package.   |  <code>""</code> |
+| <a id="package_descriptions.get-retrieve_manifest_json"></a>retrieve_manifest_json |  Optional. A <code>bool</code> specifying whether to include the manifest JSON.   |  <code>False</code> |
 
 **RETURNS**
 

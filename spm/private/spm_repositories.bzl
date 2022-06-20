@@ -224,7 +224,7 @@ def _create_bazel_module_decls(
             if pds.is_system_target(target):
                 build_decl = build_declarations.merge(
                     build_decl,
-                    bazel_build_declarations.library_library(
+                    bazel_build_declarations.clang_library(
                         repository_ctx,
                         pkg_name,
                         target,
@@ -270,7 +270,7 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
         A `list` of path `string` values.
     """
     src_path = paths.join(pkg_root_path, target["path"])
-    collected_files = clang_files.collect_files(repository_ctx, src_path)
+    collected_files = clang_files.collect_files(repository_ctx, [src_path])
     return collected_files.hdrs
 
 # MARK: - Root BUILD.bazel Generation
@@ -484,6 +484,8 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
             repository_ctx,
             env = env,
             working_directory = pkg_path,
+            retrieve_manifest_json =
+                repository_ctx.attr.build_mode == spm_build_modes.BAZEL,
         )
 
         dep_name = dep_pkg_desc["name"]
@@ -533,6 +535,9 @@ Resolution of SPM packages for {repo_name} failed. args: {exec_args}\n{stderr}\
     dep_target_refs_dict = pds.transitive_dependencies(pkg_descs_dict, declared_product_refs)
 
     for pkg_name in pkg_descs_dict:
+        # Do not generate a Bazel package for the placeholder
+        if pkg_name == pds.root_pkg_name:
+            continue
         _generate_bazel_pkg(
             repository_ctx,
             pkg_descs_dict[pkg_name],
@@ -629,6 +634,10 @@ The version of Swift that will be declared in the placeholder/uber Swift package
         ),
         "_root_build_tpl": attr.label(
             default = "//spm/private:root.BUILD.bazel.tpl",
+        ),
+        "_spm_parser_manifest": attr.label(
+            default = "//tools/spm_parser:Package.swift",
+            doc = "The `spm_parser` Swift package file.",
         ),
         "_workspace_file": attr.label(
             default = "@//:WORKSPACE",

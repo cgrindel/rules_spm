@@ -2,12 +2,30 @@
 # `clang_files` API
 
 
+<a id="#clang_files.is_hdr"></a>
+
+## clang_files.is_hdr
+
+<pre>
+clang_files.is_hdr(<a href="#clang_files.is_hdr-path">path</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="clang_files.is_hdr-path"></a>path |  <p align="center"> - </p>   |  none |
+
+
 <a id="#clang_files.is_include_hdr"></a>
 
 ## clang_files.is_include_hdr
 
 <pre>
-clang_files.is_include_hdr(<a href="#clang_files.is_include_hdr-path">path</a>)
+clang_files.is_include_hdr(<a href="#clang_files.is_include_hdr-path">path</a>, <a href="#clang_files.is_include_hdr-public_includes">public_includes</a>)
 </pre>
 
 Determines whether the path is a public header.
@@ -18,6 +36,7 @@ Determines whether the path is a public header.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="clang_files.is_include_hdr-path"></a>path |  A path <code>string</code> value.   |  none |
+| <a id="clang_files.is_include_hdr-public_includes"></a>public_includes |  Optional. A <code>sequence</code> of path <code>string</code> values that are used to identify public header files.   |  <code>None</code> |
 
 **RETURNS**
 
@@ -52,7 +71,7 @@ A `bool` indicating whether the path is a public `module.modulemap`
 ## clang_files.collect_files
 
 <pre>
-clang_files.collect_files(<a href="#clang_files.collect_files-repository_ctx">repository_ctx</a>, <a href="#clang_files.collect_files-root_path">root_path</a>, <a href="#clang_files.collect_files-remove_prefix">remove_prefix</a>)
+clang_files.collect_files(<a href="#clang_files.collect_files-repository_ctx">repository_ctx</a>, <a href="#clang_files.collect_files-root_paths">root_paths</a>, <a href="#clang_files.collect_files-public_includes">public_includes</a>, <a href="#clang_files.collect_files-remove_prefix">remove_prefix</a>)
 </pre>
 
 
@@ -63,7 +82,8 @@ clang_files.collect_files(<a href="#clang_files.collect_files-repository_ctx">re
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="clang_files.collect_files-repository_ctx"></a>repository_ctx |  <p align="center"> - </p>   |  none |
-| <a id="clang_files.collect_files-root_path"></a>root_path |  <p align="center"> - </p>   |  none |
+| <a id="clang_files.collect_files-root_paths"></a>root_paths |  <p align="center"> - </p>   |  none |
+| <a id="clang_files.collect_files-public_includes"></a>public_includes |  <p align="center"> - </p>   |  <code>None</code> |
 | <a id="clang_files.collect_files-remove_prefix"></a>remove_prefix |  <p align="center"> - </p>   |  <code>None</code> |
 
 

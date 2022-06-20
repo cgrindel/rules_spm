@@ -144,25 +144,53 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     #      sources: ["libwebp/src"],
     #      publicHeadersPath: "include",
     #      cSettings: [.headerSearchPath("libwebp")])
+    target_manifest = target["manifest"]
+    src_paths = []
+
+    # GH149: Figure out what to do with headerSearchPath
 
     # We copy the source files to a directory that is named after the package.
+    # Determine the default source path to use, if no others are provided
     target_path = target["path"]
-    src_path = paths.join(pkg_name, target_path) if target_path != "." else pkg_name
+    if target_path == ".":
+        default_src_path = pkg_name
+    else:
+        default_src_path = paths.join(pkg_name, target_path)
+
+    manifest_srcs = target_manifest.get("sources", [])
+    if manifest_srcs == []:
+        src_paths.append(default_src_path)
+    else:
+        src_paths.extend([
+            paths.join(default_src_path, manifest_src)
+            for manifest_src in manifest_srcs
+        ])
+
+    # Use the specified public headers path
+    public_includes = None
+    public_hdrs_path = target_manifest.get("publicHeadersPath")
+    if public_hdrs_path != None:
+        public_hdrs_path = paths.join(default_src_path, public_hdrs_path)
+        public_includes = [public_hdrs_path]
+        src_paths.append(public_hdrs_path)
+
+    # Collect the files
     collected_files = clang_files.collect_files(
         repository_ctx,
-        src_path,
+        src_paths,
+        public_includes = public_includes,
         remove_prefix = "{}/".format(pkg_name),
-    )
-
-    load_stmt = build_declarations.load_statement(
-        _DEFS_BZL_LOCATION,
-        _BAZEL_CLANG_LIBRARY_TYPE,
     )
 
     if collected_files.modulemap != None:
         modulemap_str = build_declarations.quote_str(collected_files.modulemap)
     else:
         modulemap_str = "None"
+
+    load_stmt = build_declarations.load_statement(
+        _DEFS_BZL_LOCATION,
+        _BAZEL_CLANG_LIBRARY_TYPE,
+    )
 
     target_decl = build_declarations.target(
         type = _BAZEL_CLANG_LIBRARY_TYPE,
