@@ -146,14 +146,48 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     #      publicHeadersPath: "include",
     #      cSettings: [.headerSearchPath("libwebp")])
     target_manifest = target["manifest"]
+    src_paths = []
+    includes_set = sets.make()
+
+    # Determine the default source path to use, if no others are provided
+    target_path = target["path"]
+    if target_path == ".":
+        default_src_path = pkg_name
+    else:
+        default_src_path = paths.join(pkg_name, target_path)
 
     # We copy the source files to a directory that is named after the package.
-    target_path = target["path"]
-    src_path = paths.join(pkg_name, target_path) if target_path != "." else pkg_name
+    manifest_srcs = target_manifest.get("sources", [])
+    if manifest_srcs == []:
+        src_paths.append(default_src_path)
+    else:
+        src_paths.extend([
+            paths.join(default_src_path, manifest_src)
+            for manifest_src in manifest_srcs
+        ])
+
+    # src_paths.append(
+    #     paths.join(pkg_name, target_path) if target_path != "." else pkg_name,
+    # )
+
+    # Use a specified public headers path
+    public_hdrs_path = target_manifest.get("publicHeadersPath")
+    if public_hdrs_path != None:
+        sets.insert(includes_set, public_hdrs_path)
+
+        # src_paths.append(paths.join(pkg_name, public_hdrs_path))
+        src_paths.append(paths.join(default_src_path, public_hdrs_path))
+
+    # DEBUG BEGIN
+    print("*** CHUCK src_paths: ")
+    for idx, item in enumerate(src_paths):
+        print("*** CHUCK", idx, ":", item)
+
+    # DEBUG END
 
     collected_files = clang_files.collect_files(
         repository_ctx,
-        [src_path],
+        src_paths,
         remove_prefix = "{}/".format(pkg_name),
     )
 
@@ -167,28 +201,20 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     else:
         modulemap_str = "None"
 
-    public_hdrs_path = target_manifest.get("publicHeadersPath")
-    includes = []
-    if public_hdrs_path != None:
-        includes.append(public_hdrs_path)
-    private_hdr_dirs = sets.to_list(
-        sets.make([
-            paths.dirname(src)
-            for src in collected_files.srcs
-            if clang_files.is_hdr(src)
-        ]),
-    )
-    includes.extend(private_hdr_dirs)
+    private_hdr_dirs = sets.make([
+        paths.dirname(src)
+        for src in collected_files.srcs
+        if clang_files.is_hdr(src)
+    ])
+    includes_set = sets.union(includes_set, private_hdr_dirs)
 
     # Be sure to add any parent directories to the includes list
-    includes_set = sets.make(includes)
-    for include in includes:
+    for include in sets.to_list(includes_set):
         parts = include.split("/")
         for idx, part in enumerate(parts):
             path = "/".join(parts[0:idx])
             if path != "":
                 sets.insert(includes_set, path)
-    includes = sets.to_list(includes_set)
 
     manifest_sources = target_manifest.get("sources", [])
     if manifest_sources != []:
@@ -208,7 +234,9 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
             target_name = target_name,
             hdrs = build_declarations.bazel_list_str(collected_files.hdrs),
             srcs = build_declarations.bazel_list_str(srcs),
-            includes = build_declarations.bazel_list_str(includes),
+            includes = build_declarations.bazel_list_str(
+                sets.to_list(includes_set),
+            ),
             modulemap = modulemap_str,
             deps = build_declarations.bazel_deps_str(pkg_name, target_deps),
         ),

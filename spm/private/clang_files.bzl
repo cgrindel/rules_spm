@@ -102,21 +102,21 @@ def _collect_files(repository_ctx, root_paths, remove_prefix = None):
     # srcs: Private headers and source files.
     # others: Uncategorized
     # modulemap: Public modulemap
-    hdrs = []
-    srcs = []
-    others = []
-    includes = sets.make()
+    hdrs_set = sets.make()
+    srcs_set = sets.make()
+    others_set = sets.make()
+    includes_set = sets.make()
     modulemap = None
     for path in paths_list:
         _root, ext = paths.split_extension(path)
         if ext == ".h":
             if _is_include_hdr(path):
-                hdrs.append(path)
-                sets.insert(includes, paths.dirname(path))
+                sets.insert(hdrs_set, path)
+                sets.insert(includes_set, paths.dirname(path))
             else:
-                srcs.append(path)
+                sets.insert(srcs_set, path)
         elif ext == ".c":
-            srcs.append(path)
+            sets.insert(srcs_set, path)
         elif ext == ".modulemap" and _is_public_modulemap(path):
             if modulemap != None:
                 fail("Found multiple modulemap files. {first} {second}".format(
@@ -125,18 +125,24 @@ def _collect_files(repository_ctx, root_paths, remove_prefix = None):
                 ))
             modulemap = path
         else:
-            others.append(path)
+            sets.insert(others_set, path)
+
+    srcs = sets.to_list(srcs_set)
+    others = sets.to_list(others_set)
+    includes = sets.to_list(includes_set)
 
     # If we found a public modulemap, get the headers from there. This
     # overrides any hdrs that we found by inspection.
     if modulemap != None:
         hdrs = _get_hdr_paths_from_modulemap(repository_ctx, modulemap)
+    else:
+        hdrs = sets.to_list(hdrs_set)
 
     # Remove the prefixes before returning the results
     return struct(
         hdrs = _remove_prefixes(hdrs, remove_prefix),
         srcs = _remove_prefixes(srcs, remove_prefix),
-        includes = _remove_prefixes(sets.to_list(includes), remove_prefix),
+        includes = _remove_prefixes(includes, remove_prefix),
         modulemap = _remove_prefix(modulemap, remove_prefix),
         others = _remove_prefixes(others, remove_prefix),
     )
