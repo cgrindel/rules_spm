@@ -1,7 +1,6 @@
 """Module for defining build with Bazel declarations."""
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
-load("@bazel_skylib//lib:sets.bzl", "sets")
 load(":build_declarations.bzl", "build_declarations")
 load(":clang_files.bzl", "clang_files")
 
@@ -147,10 +146,10 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     #      cSettings: [.headerSearchPath("libwebp")])
     target_manifest = target["manifest"]
     src_paths = []
-    includes_set = sets.make()
 
     # TODO: Figure out what to do with headerSearchPath
 
+    # We copy the source files to a directory that is named after the package.
     # Determine the default source path to use, if no others are provided
     target_path = target["path"]
     if target_path == ".":
@@ -158,7 +157,6 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
     else:
         default_src_path = paths.join(pkg_name, target_path)
 
-    # We copy the source files to a directory that is named after the package.
     manifest_srcs = target_manifest.get("sources", [])
     if manifest_srcs == []:
         src_paths.append(default_src_path)
@@ -169,15 +167,18 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
         ])
 
     # Use the specified public headers path
+    public_includes = None
     public_hdrs_path = target_manifest.get("publicHeadersPath")
     if public_hdrs_path != None:
-        sets.insert(includes_set, public_hdrs_path)
-        src_paths.append(paths.join(default_src_path, public_hdrs_path))
+        public_hdrs_path = paths.join(default_src_path, public_hdrs_path)
+        public_includes = [public_hdrs_path]
+        src_paths.append(public_hdrs_path)
 
     # Collect the files
     collected_files = clang_files.collect_files(
         repository_ctx,
         src_paths,
+        public_includes = public_includes,
         remove_prefix = "{}/".format(pkg_name),
     )
 
@@ -185,21 +186,6 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
         modulemap_str = build_declarations.quote_str(collected_files.modulemap)
     else:
         modulemap_str = "None"
-
-    private_hdr_dirs = sets.make([
-        paths.dirname(src)
-        for src in collected_files.srcs
-        if clang_files.is_hdr(src)
-    ])
-    includes_set = sets.union(includes_set, private_hdr_dirs)
-
-    # Be sure to add any parent directories to the includes list
-    for include in sets.to_list(includes_set):
-        parts = include.split("/")
-        for idx, part in enumerate(parts):
-            path = "/".join(parts[0:idx])
-            if path != "":
-                sets.insert(includes_set, path)
 
     load_stmt = build_declarations.load_statement(
         _DEFS_BZL_LOCATION,
@@ -213,9 +199,7 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
             target_name = target_name,
             hdrs = build_declarations.bazel_list_str(collected_files.hdrs),
             srcs = build_declarations.bazel_list_str(collected_files.srcs),
-            includes = build_declarations.bazel_list_str(
-                sets.to_list(includes_set),
-            ),
+            includes = build_declarations.bazel_list_str(collected_files.includes),
             modulemap = modulemap_str,
             deps = build_declarations.bazel_deps_str(pkg_name, target_deps),
         ),
