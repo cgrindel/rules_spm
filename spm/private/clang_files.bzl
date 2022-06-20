@@ -171,6 +171,7 @@ def _collect_files(
             repository_ctx,
             modulemap_orig_path,
         )
+        hdrs = _remove_prefixes(hdrs, remove_prefix)
     else:
         hdrs = sets.to_list(hdrs_set)
 
