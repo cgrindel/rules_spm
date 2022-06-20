@@ -92,7 +92,6 @@ def _collect_files(repository_ctx, root_path, remove_prefix = None):
     paths_list = repository_files.list_files_under(
         repository_ctx,
         root_path,
-        relative_paths = True,
     )
 
     # hdrs: Public headers

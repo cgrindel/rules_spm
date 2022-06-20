@@ -19,6 +19,8 @@ def _list_files_under(repository_ctx, path, relative_paths = False):
     if exec_result.return_code != 0:
         fail("Failed to list files in %s. stderr:\n%s" % (path, exec_result.stderr))
     paths = exec_result.stdout.splitlines()
+
+    # TODO: Remove relative_paths if not used.
     if relative_paths:
         prefix = "{}/".format(path)
         prefix_len = len(prefix)
