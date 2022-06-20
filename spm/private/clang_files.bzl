@@ -88,11 +88,15 @@ def _remove_prefixes(paths_list, prefix):
         for path in paths_list
     ]
 
-def _collect_files(repository_ctx, root_path, remove_prefix = None):
-    paths_list = repository_files.list_files_under(
-        repository_ctx,
-        root_path,
-    )
+def _collect_files(repository_ctx, root_paths, remove_prefix = None):
+    paths_list = []
+    for root_path in root_paths:
+        paths_list.extend(
+            repository_files.list_files_under(
+                repository_ctx,
+                root_path,
+            ),
+        )
 
     # hdrs: Public headers
     # srcs: Private headers and source files.

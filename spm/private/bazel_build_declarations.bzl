@@ -153,7 +153,7 @@ def _clang_library(repository_ctx, pkg_name, target, target_deps):
 
     collected_files = clang_files.collect_files(
         repository_ctx,
-        src_path,
+        [src_path],
         remove_prefix = "{}/".format(pkg_name),
     )
 

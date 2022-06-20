@@ -270,7 +270,7 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
         A `list` of path `string` values.
     """
     src_path = paths.join(pkg_root_path, target["path"])
-    collected_files = clang_files.collect_files(repository_ctx, src_path)
+    collected_files = clang_files.collect_files(repository_ctx, [src_path])
     return collected_files.hdrs
 
 # MARK: - Root BUILD.bazel Generation
