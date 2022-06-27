@@ -4,7 +4,7 @@ import Foundation
 import TSCBasic
 import Workspace
 
-@main
+// @main
 struct Dump: AsyncParsableCommand {
     enum DumpError: Error {
         case failedToCreateOutputFile(String)

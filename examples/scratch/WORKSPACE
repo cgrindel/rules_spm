@@ -1,0 +1,98 @@
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+git_repository(
+    name = "com_github_buildbuddy_io_rules_xcodeproj",
+    # Current as of June 16, 2022.
+    commit = "85d5b31a5d2c9f686a6ac403475d3b508bc737fc",
+    remote = "https://github.com/buildbuddy-io/rules_xcodeproj",
+    shallow_since = "1655389276 -0500",
+)
+
+load(
+    "@com_github_buildbuddy_io_rules_xcodeproj//xcodeproj:repositories.bzl",
+    "xcodeproj_rules_dependencies",
+)
+
+xcodeproj_rules_dependencies()
+
+load(
+    "@build_bazel_rules_apple//apple:repositories.bzl",
+    "apple_rules_dependencies",
+)
+
+apple_rules_dependencies()
+
+load(
+    "@build_bazel_rules_swift//swift:repositories.bzl",
+    "swift_rules_dependencies",
+)
+
+swift_rules_dependencies()
+
+load(
+    "@build_bazel_rules_swift//swift:extras.bzl",
+    "swift_rules_extra_dependencies",
+)
+
+swift_rules_extra_dependencies()
+
+load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
+
+apple_support_dependencies()
+
+# load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# http_archive(
+#     name = "cgrindel_rules_spm",
+#     sha256 = "ba4310ba33cd1864a95e41d1ceceaa057e56ebbe311f74105774d526d68e2a0d",
+#     strip_prefix = "rules_spm-0.10.0",
+#     urls = [
+#         "http://github.com/cgrindel/rules_spm/archive/v0.10.0.tar.gz",
+#     ],
+# )
+
+# http_archive(
+#     name = "cgrindel_rules_spm",
+#     sha256 = "d3ebeb2182f6881cfeb7dd29ad62c235de9355cdeea8238195940b48531a0a7d",
+#     strip_prefix = "rules_spm-5ef7fc2c7d79988a28ffdd9b2c6855feb796dc6e",
+#     urls = [
+#         "http://github.com/cgrindel/rules_spm/archive/5ef7fc2c7d79988a28ffdd9b2c6855feb796dc6e.tar.gz",
+#     ],
+# )
+
+local_repository(
+    name = "cgrindel_rules_spm",
+    path = "../..",
+)
+
+load(
+    "@cgrindel_rules_spm//spm:deps.bzl",
+    "spm_rules_dependencies",
+)
+
+spm_rules_dependencies()
+
+swift_rules_dependencies()
+
+swift_rules_extra_dependencies()
+
+load("@cgrindel_rules_spm//spm:defs.bzl", "spm_pkg", "spm_repositories")
+
+spm_repositories(
+    name = "swift_pkgs",
+    build_mode = "bazel",
+    dependencies = [
+        spm_pkg(
+            "https://github.com/apple/swift-nio.git",
+            exact_version = "2.40.0",
+            products = ["NIOPosix"],  # Can't directly depend on _NIODataStructures, and NIOPosix contains it
+        ),
+    ],
+    platforms = [
+        ".iOS(.v14)",
+        ".macOS(.v10_15)",
+    ],
+)
