@@ -6,12 +6,17 @@ load("//spm/private:spm_autoconfiguration.bzl", "spm_autoconfiguration")
 
 def spm_rules_dependencies():
     """Loads the dependencies for `rules_spm`."""
+    _SKYLIB_VERSION = "1.3.0"
     maybe(
         http_archive,
         name = "bazel_skylib",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.2.1/bazel-skylib-1.2.1.tar.gz",
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.2.1/bazel-skylib-1.2.1.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/{version}/bazel-skylib-{version}.tar.gz".format(
+                version = _SKYLIB_VERSION,
+            ),
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/{version}/bazel-skylib-{version}.tar.gz".format(
+                version = _SKYLIB_VERSION,
+            ),
         ],
         sha256 = "f7be3474d42aae265405a592bb7da8e171919d74c16f082a5457840f06054728",
     )
