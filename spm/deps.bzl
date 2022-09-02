@@ -43,11 +43,16 @@ def spm_rules_dependencies():
         name = "cgrindel_rules_spm_local_config",
     )
 
+    # Master as of 2022-04-09
+    _RULES_CC_VERSION = "58f8e026c00a8a20767e3dc669f46ba23bc93bdb"
     maybe(
         http_archive,
         # We purposefully do not name this rules_cc. An incompatibility appeared in Bazel 6.0 pre-release
         # where action_names.bzl was no longer available.
         name = "bazel_build_rules_cc",
-        urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.2/rules_cc-0.0.2.tar.gz"],
-        sha256 = "58bff40957ace85c2de21ebfc72e53ed3a0d33af8cc20abd0ceec55c63be7de2",
+        sha256 = "c22f7b4b87c0604f08479190fc0fb09c928982ff8f52b797263505e3b5a75f89",
+        strip_prefix = "rules_cc-{}".format(_RULES_CC_VERSION),
+        urls = [
+            "http://github.com/bazelbuild/rules_cc/archive/{}.tar.gz".format(_RULES_CC_VERSION),
+        ],
     )
