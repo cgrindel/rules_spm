@@ -25,8 +25,7 @@ def _create_spm_platform_info(swift_cpu, swift_os):
     )
 
 def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuration, sdk_name = None):
-    # swift_worker = ctx.executable._swift_worker
-    swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run
+    swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run.executable
 
     args = [
         "--worker",
