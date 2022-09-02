@@ -10,21 +10,21 @@ def spm_rules_dependencies():
         http_archive,
         name = "bazel_skylib",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.2.1/bazel-skylib-1.2.1.tar.gz",
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.2.1/bazel-skylib-1.2.1.tar.gz",
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
         ],
-        sha256 = "f7be3474d42aae265405a592bb7da8e171919d74c16f082a5457840f06054728",
+        sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
     )
 
-    # Master as of 2022-06-16. Includes fix to 0.27.0 adding back missing bzl_library declarations.
-    _RULES_SWIFT_VERSION = "a31c34e882dd68d15e8ed1007b1adc241857ab5a"
+    _RULES_SWIFT_VERSION = "1.1.1"
     maybe(
         http_archive,
         name = "build_bazel_rules_swift",
-        sha256 = "8ddcc2207c3630bb19c5741151b6db5341c8f8eb5f844b773a50b5ee033306a8",
-        strip_prefix = "rules_swift-{}".format(_RULES_SWIFT_VERSION),
+        sha256 = "043897b483781cfd6cbd521569bfee339c8fbb2ad0f0bdcd1b3749523a262cf4",
         urls = [
-            "http://github.com/bazelbuild/rules_swift/archive/{}.tar.gz".format(_RULES_SWIFT_VERSION),
+            "https://github.com/bazelbuild/rules_swift/releases/download/{version}/rules_swift.{version}.tar.gz".format(
+                version = _RULES_SWIFT_VERSION,
+            ),
         ],
     )
 
