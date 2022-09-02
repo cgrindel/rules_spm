@@ -23,7 +23,6 @@ Could not parse the version number for Swift package manager. {version}\
 def _create_build_tool_config(ctx, target_triple, spm_configuration):
     swift_worker = ctx.executable._swift_worker
 
-    # swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run
     swift_exec = ctx.attr.swift_exec
     args = [
         "--worker",
