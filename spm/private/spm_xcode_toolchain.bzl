@@ -26,6 +26,7 @@ def _create_spm_platform_info(swift_cpu, swift_os):
 
 def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuration, sdk_name = None):
     swift_worker = ctx.executable._swift_worker
+    # swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run
 
     args = [
         "--worker",
@@ -128,7 +129,7 @@ spm_xcode_toolchain = rule(
             default = "//spm/private:exec_spm_build",
         ),
         "_spm_utilities": attr.label(
-            cfg = "host",
+            cfg = "exec",
             allow_files = True,
             default = Label(
                 "@cgrindel_rules_spm_local_config//spm_utilities:all_utilities",
@@ -138,7 +139,7 @@ The location for the utilities that are required by SPM.\
 """,
         ),
         "_swift_worker": attr.label(
-            cfg = "host",
+            cfg = "exec",
             allow_files = True,
             default = Label(
                 "@build_bazel_rules_swift//tools/worker",

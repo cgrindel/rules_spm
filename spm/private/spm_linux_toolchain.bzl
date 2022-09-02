@@ -22,6 +22,8 @@ Could not parse the version number for Swift package manager. {version}\
 
 def _create_build_tool_config(ctx, target_triple, spm_configuration):
     swift_worker = ctx.executable._swift_worker
+
+    # swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run
     swift_exec = ctx.attr.swift_exec
     args = [
         "--worker",
@@ -127,7 +129,7 @@ The path to the Swift executable.\
             default = "//spm/private:exec_spm_build",
         ),
         "_spm_utilities": attr.label(
-            cfg = "host",
+            cfg = "exec",
             allow_files = True,
             default = Label(
                 "@cgrindel_rules_spm_local_config//spm_utilities:all_utilities",
@@ -137,7 +139,7 @@ The location for the utilities that are required by SPM.\
 """,
         ),
         "_swift_worker": attr.label(
-            cfg = "host",
+            cfg = "exec",
             allow_files = True,
             default = Label(
                 "@build_bazel_rules_swift//tools/worker",
