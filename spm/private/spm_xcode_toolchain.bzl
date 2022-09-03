@@ -25,11 +25,11 @@ def _create_spm_platform_info(swift_cpu, swift_os):
     )
 
 def _create_build_tool_config(ctx, xcode_config, target_triple, spm_configuration, sdk_name = None):
-    swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run.executable
+    swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run
 
     args = [
         "--worker",
-        swift_worker,
+        swift_worker.executable,
     ]
     if sdk_name:
         args.extend(["--sdk_name", sdk_name])
@@ -141,7 +141,7 @@ The location for the utilities that are required by SPM.\
             cfg = "exec",
             allow_files = True,
             default = Label(
-                "@build_bazel_rules_swift//tools/worker",
+                "@build_bazel_rules_swift//tools/worker:worker_wrapper",
             ),
             doc = """\
 An executable that wraps Swift compiler invocations and also provides support

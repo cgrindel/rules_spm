@@ -21,12 +21,12 @@ Could not parse the version number for Swift package manager. {version}\
     return current_version >= desired_version_value
 
 def _create_build_tool_config(ctx, target_triple, spm_configuration):
-    swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run.executable
+    swift_worker = ctx.attr._swift_worker[DefaultInfo].files_to_run
 
     swift_exec = ctx.attr.swift_exec
     args = [
         "--worker",
-        swift_worker,
+        swift_worker.executable,
         "--swift",
         swift_exec,
     ]
@@ -141,7 +141,7 @@ The location for the utilities that are required by SPM.\
             cfg = "exec",
             allow_files = True,
             default = Label(
-                "@build_bazel_rules_swift//tools/worker",
+                "@build_bazel_rules_swift//tools/worker:worker_wrapper",
             ),
             doc = """\
 An executable that wraps Swift compiler invocations and also provides support \
