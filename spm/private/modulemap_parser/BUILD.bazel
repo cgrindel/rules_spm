@@ -1,5 +1,4 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
-load("@cgrindel_bazel_starlib//bzlformat:defs.bzl", "bzlformat_pkg")
 
 bzl_library(
     name = "character_sets",
@@ -157,7 +156,8 @@ bzl_library(
     ],
 )
 
-bzlformat_pkg(name = "bzlformat")
+# TODO: FIX ME!
+# bzlformat_pkg(name = "bzlformat")
 
 filegroup(
     name = "all_files",

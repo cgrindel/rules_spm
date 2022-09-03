@@ -5,6 +5,7 @@ load(":collect_export_declaration.bzl", "collect_export_declaration")
 load(":collect_header_declaration.bzl", "collect_header_declaration")
 load(":collect_link_declaration.bzl", "collect_link_declaration")
 load(":collect_umbrella_dir_declaration.bzl", "collect_umbrella_dir_declaration")
+load(":collect_unprocessed_submodule.bzl", "collect_unprocessed_submodule")
 load(":collection_results.bzl", "collection_results")
 load(":errors.bzl", "errors")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
@@ -97,6 +98,9 @@ def collect_module_members(parsed_tokens):
 
         elif tokens.is_a(token, tts.reserved) and sets.contains(_unsupported_module_members, token.value):
             return None, errors.new("Unsupported module member token. token: %s" % (token))
+
+        elif tokens.is_a(token, tts.reserved, rws.module):
+            collect_result, err = collect_unprocessed_submodule(parsed_tokens[idx:])
 
         else:
             # Store any unrecognized tokens as prefix tokens to be processed later

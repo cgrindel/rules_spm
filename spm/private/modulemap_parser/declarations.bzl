@@ -11,6 +11,9 @@ _declaration_types = struct(
     umbrella_directory = "umbrella_directory",
     export = "export",
     link = "link",
+    # An unprocessed_submodule contains the tokens of the submodule. They will
+    # be processed later because Starlark does not allow recursion.
+    unprocessed_submodule = "unprocessed_submodule",
 )
 
 def _create_module_decl(module_id, explicit = False, framework = False, attributes = [], members = []):
@@ -188,18 +191,24 @@ def _create_link(name, framework = False):
         framework = framework,
     )
 
+def _create_unprocessed_submodule(tokens):
+    return struct(
+        tokens = tokens,
+    )
+
 # MARK: - Namespaces
 
 declaration_types = _declaration_types
 
 declarations = struct(
-    module = _create_module_decl,
+    exclude_header = _create_exclude_header,
+    export = _create_export,
     extern_module = _create_extern_module_decl,
     header_attribs = _create_header_attributes,
-    single_header = _create_single_header,
-    umbrella_header = _create_umbrella_header,
-    exclude_header = _create_exclude_header,
-    umbrella_directory = _create_umbrella_directory,
-    export = _create_export,
     link = _create_link,
+    module = _create_module_decl,
+    single_header = _create_single_header,
+    umbrella_directory = _create_umbrella_directory,
+    umbrella_header = _create_umbrella_header,
+    unprocessed_submodule = _create_unprocessed_submodule,
 )
