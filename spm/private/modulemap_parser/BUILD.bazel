@@ -78,6 +78,7 @@ bzl_library(
         ":collect_header_declaration",
         ":collect_link_declaration",
         ":collect_umbrella_dir_declaration",
+        ":collect_unprocessed_submodule",
         ":collection_results",
         ":errors",
         ":tokens",
@@ -88,6 +89,18 @@ bzl_library(
 bzl_library(
     name = "collect_umbrella_dir_declaration",
     srcs = ["collect_umbrella_dir_declaration.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":collection_results",
+        ":declarations",
+        ":errors",
+        ":tokens",
+    ],
+)
+
+bzl_library(
+    name = "collect_unprocessed_submodule",
+    srcs = ["collect_unprocessed_submodule.bzl"],
     visibility = ["//spm:__subpackages__"],
     deps = [
         ":collection_results",

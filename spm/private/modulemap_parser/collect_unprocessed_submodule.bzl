@@ -1,8 +1,23 @@
-load(":tokens.bzl", "tokens", tts = "token_types")
+load(":collection_results.bzl", "collection_results")
+load(":declarations.bzl", "declarations")
+load(":errors.bzl", "errors")
+load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
-def collect_unprocessed_submodule(parsed_tokens):
+def collect_unprocessed_submodule(parsed_tokens, prefix_tokens = []):
+    """Collect the submodule tokens for later processing.
+
+    https://clang.llvm.org/docs/Modules.html#submodule-declaration
+
+    Args:
+        parsed_tokens: A `list` of tokens.
+        prefix_tokens: A `list` of tokens that have already been collected, but not applied.
+
+    Returns:
+        A `tuple` where the first item is the collection result and the second is an
+        error `struct` as returned from errors.create().
+    """
     tlen = len(parsed_tokens)
-    submodule_tokens = []
+    submodule_tokens = list(prefix_tokens)
     consumed_count = 0
 
     _module_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.module, count = tlen)
@@ -31,7 +46,7 @@ def collect_unprocessed_submodule(parsed_tokens):
             elif bracket_level < 0:
                 return None, errors.new(
                     "Encountered a curly bracket close without a corresponding open while collecting unprocessed submodule. tokens: %s" %
-                    (prefix_tokens),
+                    (parsed_tokens),
                 )
 
         submodule_tokens.append(token)

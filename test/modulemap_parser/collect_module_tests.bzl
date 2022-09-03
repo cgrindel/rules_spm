@@ -158,8 +158,42 @@ def _collect_module_test(ctx):
 
 collect_module_test = unittest.make(_collect_module_test)
 
+def _parse_submodule_in_module_test(ctx):
+    env = unittest.begin(ctx)
+
+    do_parse_test(
+        env,
+        "module with submodule",
+        text = """
+        module MyModule {
+            module * { export * }
+        }
+        """,
+        expected = [
+            declarations.module(
+                module_id = "MyModule",
+                framework = False,
+                explicit = False,
+                attributes = [],
+                members = [
+                    declarations.module(
+                        module_id = "*",
+                        members = [
+                            declarations.export(wildcard = True),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    return unittest.end(env)
+
+parse_submodule_in_module_test = unittest.make(_parse_submodule_in_module_test)
+
 def collect_module_test_suite():
     return unittest.suite(
         "collect_module_tests",
         collect_module_test,
+        parse_submodule_in_module_test,
     )

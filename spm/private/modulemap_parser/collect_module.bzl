@@ -45,8 +45,8 @@ def _collect_attribute(parsed_tokens):
 
 # MARK: - Module Collection
 
-def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
-    """Collect a module declaration.
+def _process_module_tokens(parsed_tokens, is_submodule = False, prefix_tokens = []):
+    """Process module and submodule tokens
 
     Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
 
@@ -145,3 +145,32 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
         members = members,
     )
     return collection_results.new([decl], consumed_count), None
+
+def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
+    return _process_module_tokens(parsed_tokens, is_submodule, prefix_tokens)
+    # tokens_to_parse = [(parsed_tokens, prefix_tokens)]
+    # collect_results = []
+    # finished_eval = False
+    # for _iteration in range(100):
+    #     collect_result, err = _process_module_tokens(
+    #         parsed_tokens = parsed_tokens,
+    #         is_submodule = is_submodule,
+    #         prefix_tokens = prefix_tokens,
+    #     )
+    #     if err != None:
+    #         return None, err
+    #     collect_results.append(collect_result)
+
+    #     if len(collect_result.declarations) != 1:
+    #         return None, errors.new(
+    #             "Expect a single module declaration but found {decl_count}.".format(
+    #                 decl_count = len(collect_result.declarations),
+    #             ),
+    #         )
+    #     module_decl = collect_result.declarations[0]
+
+    #     for member in module_decl.members:
+    #         if member.decl_type == declarations.types.unprocessed_submodule:
+
+    # # TODO: IMPLEMENT ME!
+    # pass

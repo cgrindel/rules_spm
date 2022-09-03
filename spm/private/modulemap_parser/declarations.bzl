@@ -211,4 +211,5 @@ declarations = struct(
     umbrella_directory = _create_umbrella_directory,
     umbrella_header = _create_umbrella_header,
     unprocessed_submodule = _create_unprocessed_submodule,
+    types = _declaration_types,
 )
