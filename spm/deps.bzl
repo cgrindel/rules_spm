@@ -16,15 +16,28 @@ def spm_rules_dependencies():
         sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
     )
 
-    _RULES_SWIFT_VERSION = "1.1.1"
+    # TODO: REVERT ME!
+
+    # _RULES_SWIFT_VERSION = "1.1.1"
+    # maybe(
+    #     http_archive,
+    #     name = "build_bazel_rules_swift",
+    #     sha256 = "043897b483781cfd6cbd521569bfee339c8fbb2ad0f0bdcd1b3749523a262cf4",
+    #     urls = [
+    #         "https://github.com/bazelbuild/rules_swift/releases/download/{version}/rules_swift.{version}.tar.gz".format(
+    #             version = _RULES_SWIFT_VERSION,
+    #         ),
+    #     ],
+    # )
+
+    _RULES_SWIFT_COMMIT_SHA = "8aca87eba7dc9164c9835b887ff58d1c8ddbf20e"
     maybe(
         http_archive,
         name = "build_bazel_rules_swift",
-        sha256 = "043897b483781cfd6cbd521569bfee339c8fbb2ad0f0bdcd1b3749523a262cf4",
+        sha256 = "1218a25ca17bafbd0ece72889233ce4689460673dc9f676d31c55062149b4e26",
+        strip_prefix = "rules_swift-{}".format(_RULES_SWIFT_COMMIT_SHA),
         urls = [
-            "https://github.com/bazelbuild/rules_swift/releases/download/{version}/rules_swift.{version}.tar.gz".format(
-                version = _RULES_SWIFT_VERSION,
-            ),
+            "http://github.com/bazelbuild/rules_swift/archive/{}.tar.gz".format(_RULES_SWIFT_COMMIT_SHA),
         ],
     )
 
