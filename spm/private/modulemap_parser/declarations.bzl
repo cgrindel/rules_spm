@@ -191,9 +191,10 @@ def _create_link(name, framework = False):
         framework = framework,
     )
 
-def _create_unprocessed_submodule(tokens):
+def _create_unprocessed_submodule(tokens, prefix_tokens):
     return struct(
         tokens = tokens,
+        prefix_tokens = prefix_tokens,
     )
 
 # MARK: - Namespaces

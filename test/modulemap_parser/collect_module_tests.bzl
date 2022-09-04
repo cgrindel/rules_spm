@@ -163,10 +163,12 @@ def _parse_submodule_in_module_test(ctx):
 
     do_parse_test(
         env,
-        "module with submodule",
+        "module with submodules",
         text = """
         module MyModule {
-            module * { export * }
+            module MySubmodule { 
+                module AnotherSubmodule {}
+            }
         }
         """,
         expected = [

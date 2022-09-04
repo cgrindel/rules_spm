@@ -100,9 +100,8 @@ def collect_module_members(parsed_tokens):
             return None, errors.new("Unsupported module member token. token: %s" % (token))
 
         elif tokens.is_a(token, tts.reserved, rws.module):
-            # TODO: Need to pass along the prefix tokens
-            # https://clang.llvm.org/docs/Modules.html#submodule-declaration
-            collect_result, err = collect_unprocessed_submodule(parsed_tokens[idx:])
+            collect_result, err = collect_unprocessed_submodule(parsed_tokens[idx:], prefix_tokens)
+            prefix_tokens = []
 
         else:
             # Store any unrecognized tokens as prefix tokens to be processed later

@@ -17,7 +17,7 @@ def collect_unprocessed_submodule(parsed_tokens, prefix_tokens = []):
         error `struct` as returned from errors.create().
     """
     tlen = len(parsed_tokens)
-    submodule_tokens = list(prefix_tokens)
+    submodule_tokens = []
     consumed_count = 0
 
     _module_token, err = tokens.get_as(parsed_tokens, 0, tts.reserved, rws.module, count = tlen)
@@ -51,5 +51,5 @@ def collect_unprocessed_submodule(parsed_tokens, prefix_tokens = []):
 
         submodule_tokens.append(token)
 
-    decl = declarations.unprocessed_submodule(tokens = submodule_tokens)
+    decl = declarations.unprocessed_submodule(tokens = submodule_tokens, prefix_tokens = prefix_tokens)
     return collection_results.new([decl], consumed_count), None
