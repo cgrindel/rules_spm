@@ -161,33 +161,36 @@ collect_module_test = unittest.make(_collect_module_test)
 def _parse_submodule_in_module_test(ctx):
     env = unittest.begin(ctx)
 
-    do_parse_test(
-        env,
-        "module with submodules",
-        text = """
-        module MyModule {
-            module MySubmodule { 
-                module AnotherSubmodule {}
-            }
-        }
-        """,
-        expected = [
-            declarations.module(
-                module_id = "MyModule",
-                framework = False,
-                explicit = False,
-                attributes = [],
-                members = [
-                    declarations.module(
-                        module_id = "*",
-                        members = [
-                            declarations.export(wildcard = True),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    )
+    # TODO: IMPLEMENT ME!
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    # do_parse_test(
+    #     env,
+    #     "module with submodules",
+    #     text = """
+    #     module MyModule {
+    #         module MySubmodule {
+    #             module AnotherSubmodule {}
+    #         }
+    #     }
+    #     """,
+    #     expected = [
+    #         declarations.module(
+    #             module_id = "MyModule",
+    #             framework = False,
+    #             explicit = False,
+    #             attributes = [],
+    #             members = [
+    #                 declarations.module(
+    #                     module_id = "*",
+    #                     members = [
+    #                         declarations.export(wildcard = True),
+    #                     ],
+    #                 ),
+    #             ],
+    #         ),
+    #     ],
+    # )
 
     return unittest.end(env)
 

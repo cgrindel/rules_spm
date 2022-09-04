@@ -131,6 +131,16 @@ bzl_library(
 )
 
 bzl_library(
+    name = "module_declarations",
+    srcs = ["module_declarations.bzl"],
+    visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":declarations",
+        ":errors",
+    ],
+)
+
+bzl_library(
     name = "parser",
     srcs = ["parser.bzl"],
     visibility = ["//spm:__subpackages__"],

@@ -193,6 +193,7 @@ def _create_link(name, framework = False):
 
 def _create_unprocessed_submodule(tokens, prefix_tokens):
     return struct(
+        decl_type = _declaration_types.unprocessed_submodule,
         tokens = tokens,
         prefix_tokens = prefix_tokens,
     )
