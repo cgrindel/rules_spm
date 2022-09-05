@@ -121,13 +121,15 @@ bzl_library(
     name = "declarations",
     srcs = ["declarations.bzl"],
     visibility = ["//spm:__subpackages__"],
+    deps = [
+        ":errors",
+    ],
 )
 
 bzl_library(
     name = "errors",
     srcs = ["errors.bzl"],
     visibility = ["//spm:__subpackages__"],
-    deps = [],
 )
 
 bzl_library(

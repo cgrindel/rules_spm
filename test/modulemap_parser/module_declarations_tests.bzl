@@ -66,9 +66,39 @@ def _get_member_test(ctx):
 
 get_member_test = unittest.make(_get_member_test)
 
+def _replace_member_test(ctx):
+    env = unittest.begin(ctx)
+
+    root_module = declarations.module("MyLib", members = [
+        declarations.umbrella_directory("MyLib"),
+        declarations.unprocessed_submodule([], []),
+    ])
+    new_member = declarations.inferred_submodule(explicit = True, members = [
+        declarations.export(wildcard = True),
+    ])
+
+    # DEBUG BEGIN
+    print("*** CHUCK START")
+    # DEBUG END
+
+    expected = declarations.module("MyLib", members = [
+        declarations.umbrella_directory("MyLib"),
+        declarations.inferred_submodule(explicit = True, members = [
+            declarations.export(wildcard = True),
+        ]),
+    ])
+    actual, err = module_declarations.replace_member(root_module, [1], new_member)
+    asserts.equals(env, None, err)
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+replace_member_test = unittest.make(_replace_member_test)
+
 def module_declarations_test_suite():
     return unittest.suite(
         "module_declarations_tests",
         is_a_module_test,
         get_member_test,
+        replace_member_test,
     )

@@ -163,6 +163,15 @@ def _link_test(ctx):
 
 link_test = unittest.make(_link_test)
 
+def _copy_module_test(ctx):
+    env = unittest.begin(ctx)
+
+    unittest.fail(env, "IMPLEMENT ME!")
+
+    return unittest.end(env)
+
+copy_module_test = unittest.make(_copy_module_test)
+
 def declarations_test_suite():
     return unittest.suite(
         "declarations_tests",
@@ -174,4 +183,5 @@ def declarations_test_suite():
         umbrella_directory_test,
         export_test,
         link_test,
+        copy_module_test,
     )
