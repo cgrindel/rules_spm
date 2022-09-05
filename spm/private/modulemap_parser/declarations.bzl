@@ -4,6 +4,7 @@
 
 _declaration_types = struct(
     module = "module",
+    inferred_submodule = "inferred_submodule",
     extern_module = "extern_module",
     single_header = "single_header",
     umbrella_header = "umbrella_header",
@@ -34,6 +35,15 @@ def _create_module_decl(module_id, explicit = False, framework = False, attribut
     return struct(
         decl_type = _declaration_types.module,
         module_id = module_id,
+        explicit = explicit,
+        framework = framework,
+        attributes = attributes,
+        members = members,
+    )
+
+def _create_inferred_submodule_decl(explicit = False, framework = False, attributes = [], members = []):
+    return struct(
+        decl_type = _declaration_types.inferred_submodule,
         explicit = explicit,
         framework = framework,
         attributes = attributes,
@@ -207,6 +217,7 @@ declarations = struct(
     export = _create_export,
     extern_module = _create_extern_module_decl,
     header_attribs = _create_header_attributes,
+    inferred_submodule = _create_inferred_submodule_decl,
     link = _create_link,
     module = _create_module_decl,
     single_header = _create_single_header,

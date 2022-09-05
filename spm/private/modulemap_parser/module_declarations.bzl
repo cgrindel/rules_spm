@@ -13,15 +13,30 @@ load(":errors.bzl", "errors")
 #     return collect_result.declarations[0]
 
 def _is_a_module(decl):
-    return decl.decl_type == declarations.types.module
+    return decl.decl_type in [
+        declarations.types.module,
+        declarations.types.inferred_submodule,
+    ]
+
+def _check_root_module_and_path(root_module_decl, path):
+    if root_module_decl == None:
+        return errors.new("The `root_module_decl` was `None`. path: {}".format(path))
+    if not _is_a_module(root_module_decl):
+        return errors.new("The `root_module_decl` is not a module. {}".format(root_module_decl))
+    if path == []:
+        return errors.new("The `path` cannot be empty.")
+    return None
 
 def _get_member(root_module_decl, path):
-    if root_module_decl == None:
-        return None, errors.new("The `root_module_decl` was `None`. path: {}".format(path))
-    if root_module_decl.decl_type != declarations.typs.module:
-        return None, errors.new("The `root_module_decl` is not a module. {}".format(root_module_decl))
-    if path == []:
-        return None, errors.new("The `path` cannot be empty.")
+    # if root_module_decl == None:
+    #     return None, errors.new("The `root_module_decl` was `None`. path: {}".format(path))
+    # if not _is_a_module(root_module_decl):
+    #     return None, errors.new("The `root_module_decl` is not a module. {}".format(root_module_decl))
+    # if path == []:
+    #     return None, errors.new("The `path` cannot be empty.")
+    err = _check_root_module_and_path(root_module_decl, path)
+    if err != None:
+        return None, err
 
     member = None
     cur_module = root_module_decl
@@ -33,11 +48,12 @@ def _get_member(root_module_decl, path):
             ))
         member = cur_module.members[idx]
         cur_module = member if _is_a_module(member) else None
-    return member
+    return member, None
 
 # def _replace_member(root_module_decl, path, member):
-#     if root_module_decl.decl_type != declarations.typs.module:
-#         return None, errors.new("The `root_module_decl` is not a module. {}".format(root_module_decl))
+#     err = _check_root_module_and_path(root_module_decl, path)
+#     if err != None:
+#         return None, err
 
 #     return new_root_module_decl
 
