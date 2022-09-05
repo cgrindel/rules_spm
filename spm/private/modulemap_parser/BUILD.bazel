@@ -65,6 +65,7 @@ bzl_library(
         ":collection_results",
         ":declarations",
         ":errors",
+        ":module_declarations",
         ":tokens",
     ],
 )

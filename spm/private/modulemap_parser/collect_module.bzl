@@ -4,6 +4,7 @@ load(":collect_module_members.bzl", "collect_module_members")
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
+load(":module_declarations.bzl", "module_declarations")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
 # MARK: - Attribute Collection
@@ -146,105 +147,73 @@ def _process_module_tokens(parsed_tokens, prefix_tokens, is_submodule):
     )
     return collection_results.new([decl], consumed_count), None
 
-def collect_module(parsed_tokens, prefix_tokens = []):
-    return _process_module_tokens(parsed_tokens, prefix_tokens, is_submodule = False)
-
-# def _get_module_decl(collect_result):
-#     if len(collect_result.declarations) != 1:
-#         return None, errors.new(
-#             "Expect a single module declaration but found {decl_count}.".format(
-#                 decl_count = len(collect_result.declarations),
-#             ),
-#         )
-#     return collect_result.declarations[0]
-
 # def collect_module(parsed_tokens, prefix_tokens = []):
-#     # top_module_decl = None
-#     top_collect_result = None
-#     module_tokens_to_process = {
-#         []: declarations.unprocessed_submodule(prefix_tokens, parsed_tokens),
-#     }
+#     return _process_module_tokens(parsed_tokens, prefix_tokens, is_submodule = False)
 
-#     def get_decl(path):
-#         if top_collect_result == None:
-#             return None, errors.new(
-#                 "There is no `top_collect_result`. path: {}".format(path),
-#             )
-#         top_module_decl, err = _get_module_decl(top_collect_result)
-#         if err != None:
-#             return None, err
+def collect_module(parsed_tokens, prefix_tokens = []):
+    def _get_single_decl(collect_result):
+        if len(collect_result.declarations) != 1:
+            return None, errors.new(
+                "Expect a single module declaration but found {decl_count}.".format(
+                    decl_count = len(collect_result.declarations),
+                ),
+            )
+        return collect_result.declarations[0], None
 
-#         target = None
-#         cur_module = top_module_decl
-#         for idx in path:
-#             if cur_module == None:
-#                 return None, errors.new("Still searching, but we do not have a `cur_module`. path: {}".format(path))
-#             target = cur_module[idx]
+    def _update_module_decl(top_module_decl, path, collect_result):
+        module_decl, err = _get_single_decl(collect_result)
+        if err != None:
+            return None, err
+        if top_module_decl == None:
+            new_top_module_decl = module_decl
+        else:
+            new_top_module_decl, err = module_declarations.replace_member(
+                root_module = top_module_decl,
+                path = path,
+                new_member = module_decl,
+            )
+            if err != None:
+                return None, err
 
-#         return target
+        return new_top_module_decl, module_decl, None
 
-#     def replace_member_decl(path, member):
-#         # update_paths = []
-#         # for path_idx in range(len(path)):
-#         #     update_paths.append(path[:path_idx])
-#         # update_paths = reversed(update_paths)
+    top_module_decl = None
+    top_collect_result = None
+    module_tokens_to_process = [
+        ([], declarations.unprocessed_submodule(parsed_tokens, prefix_tokens)),
+    ]
 
-#         new_member = member
-#         parent_module = None
-#         for path_idx in range(len(path), 0, -1):
+    for _iteration in range(100):
+        if len(module_tokens_to_process) == 0:
+            break
 
-#         return None
+        cur_idx_path, unprocessed_tokens = module_tokens_to_process.pop(0)
+        collect_result, err = _process_module_tokens(
+            parsed_tokens = unprocessed_tokens.tokens,
+            prefix_tokens = unprocessed_tokens.prefix_tokens,
+            is_submodule = (top_collect_result != None),
+        )
+        if err != None:
+            return None, err
 
-#     def update_module_decl(path, collect_result):
-#         if top_collect_result == None:
-#             if path != []:
-#                 return None, errors.new("""
-# There was no `top_module_decl` and `path` was not empty. path: {}\
-# """.format(path))
-#             top_collect_result = collect_result
+        if top_collect_result == None:
+            top_collect_result = collect_result
 
-#         module_decl, err = _get_module_decl(collect_result)
-#         if err != None:
-#             return None, err
+        top_module_decl, module_decl, err = _update_module_decl(
+            top_module_decl,
+            cur_idx_path,
+            collect_result,
+        )
+        if err != None:
+            return None, err
 
-#         err = replace_member_decl(path, module_decl)
-#         if err:
-#             return None, err
+        for idx, member in enumerate(module_decl.members):
+            if member.decl_type != declarations.types.unprocessed_submodule:
+                continue
+            submodule_idx_path = cur_idx_path + [idx]
+            module_tokens_to_process.append((submodule_idx_path, member))
 
-#         # if len(path) > 0:
-#         #     parent_modules = [([], top_module_decl)]
-#         #     for idx in path[:-1]:
-#         #         parent_modules.append(parent_module_decl.members[idx])
-
-#         #     target_idx = path[-1]
-#         #     new_members = list(parent_module_decl.members)
-#         #     new_members.remove(target_idx)
-#         #     new_members.insert(target_idx, module_decl)
-#         #     parent_module_decl.members = new_members
-
-#         return module_decl, None
-
-#     for _iteration in range(100):
-#         if len(module_tokens_to_process) == 0:
-#             break
-
-#         cur_idx_path, unprocessed_tokens = module_tokens_to_process.pop()
-#         collect_result, err = _process_module_tokens(
-#             parsed_tokens = unprocessed_tokens.tokens,
-#             prefix_tokens = unprocessed_tokens.prefix_tokens,
-#             is_submodule = (top_collect_result != None),
-#         )
-#         if err != None:
-#             return None, err
-
-#         module_decl, err = update_module_decl(cur_idx_path, collect_result)
-#         if err != None:
-#             return None, err
-
-#         for idx, member in enumerate(module_decl.members):
-#             if member.decl_type != declarations.types.unprocessed_submodule:
-#                 continue
-#             submodule_idx_path = cur_idx_path + [idx]
-#             module_tokens_to_process[submodule_idx_path] = member
-
-#     return top_collect_result, None
+    return collection_results.new(
+        declarations = [top_module_decl],
+        count = top_collect_result.count,
+    ), None

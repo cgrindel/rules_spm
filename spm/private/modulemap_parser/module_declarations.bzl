@@ -18,45 +18,45 @@ def _is_a_module(decl):
         declarations.types.inferred_submodule,
     ]
 
-def _check_root_module_and_path(root_module_decl, path):
-    if root_module_decl == None:
-        return errors.new("The `root_module_decl` was `None`. path: {}".format(path))
-    if not _is_a_module(root_module_decl):
-        return errors.new("The `root_module_decl` is not a module. {}".format(root_module_decl))
+def _check_root_module_and_path(root_module, path):
+    if root_module == None:
+        return errors.new("The `root_module` was `None`. path: {}".format(path))
+    if not _is_a_module(root_module):
+        return errors.new("The `root_module` is not a module. {}".format(root_module))
     if path == []:
         return errors.new("The `path` cannot be empty.")
     return None
 
-def _get_member(root_module_decl, path):
-    err = _check_root_module_and_path(root_module_decl, path)
+def _get_member(root_module, path):
+    err = _check_root_module_and_path(root_module, path)
     if err != None:
         return None, err
 
     member = None
-    cur_module = root_module_decl
+    cur_module = root_module
     for idx in path:
         if cur_module == None:
-            return None, errors.new("Invalid path. root_module_decl: {}, path: {}".format(
-                root_module_decl,
+            return None, errors.new("Invalid path. root_module: {}, path: {}".format(
+                root_module,
                 path,
             ))
         member = cur_module.members[idx]
         cur_module = member if _is_a_module(member) else None
     return member, None
 
-def _replace_member(root_module_decl, path, new_member):
+def _replace_member(root_module, path, new_member):
     path_len = len(path)
 
-    err = _check_root_module_and_path(root_module_decl, path)
+    err = _check_root_module_and_path(root_module, path)
     if err != None:
         return None, err
     if new_member == None:
         return None, errors.new("The `new_member` argument was `None`.")
 
     # Collect the parent modules
-    parent_modules = [root_module_decl]
+    parent_modules = [root_module]
     for idx in range(1, path_len, 1):
-        member, err = _get_member(root_module_decl, path[:idx])
+        member, err = _get_member(root_module, path[:idx])
         if err != None:
             return None, err
         if not _is_a_module(member):
