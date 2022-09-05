@@ -72,6 +72,15 @@ def _create_extern_module_decl(module_id, definition_path):
     )
 
 def _create_unprocessed_submodule(tokens, prefix_tokens):
+    """Create an unprocessed submodule declaration.
+
+    Args:
+        parsed_tokens: A `list` of tokens.
+        prefix_tokens: A `list` of tokens that have already been collected, but not applied.
+
+    Returns:
+        A `struct` representing an unprocessed submodule declaration.
+    """
     return struct(
         decl_type = _TYPES.unprocessed_submodule,
         tokens = tokens,
@@ -79,6 +88,18 @@ def _create_unprocessed_submodule(tokens, prefix_tokens):
     )
 
 def _copy_module(module, members):
+    """Copies the provided module or inferred submodule declaration and \
+    replaces its members with the provided members.
+
+    Args:
+        module: A `struct` as returned by `declarations.module()` or
+            `declarations.inferred_submodule()`.
+        members: A `list` of  member declarations.
+
+    Returns:
+        A `tuple` where the the first item is the copied declaration and the
+        second item is an error `struct` as returned from `errors.create()`.
+    """
     if module.decl_type == _TYPES.module:
         return _create_module_decl(
             module_id = module.module_id,
