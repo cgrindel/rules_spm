@@ -75,7 +75,7 @@ def _create_unprocessed_submodule(tokens, prefix_tokens):
     """Create an unprocessed submodule declaration.
 
     Args:
-        parsed_tokens: A `list` of tokens.
+        tokens: A `list` of tokens.
         prefix_tokens: A `list` of tokens that have already been collected, but not applied.
 
     Returns:

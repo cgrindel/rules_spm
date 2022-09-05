@@ -1,3 +1,5 @@
+"""Module for colleccting unprocessed submodule tokens"""
+
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")

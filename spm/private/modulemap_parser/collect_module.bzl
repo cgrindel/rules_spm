@@ -164,6 +164,7 @@ def collect_module(parsed_tokens, prefix_tokens = []):
         error `struct` as returned from errors.create().
     """
 
+    # buildifier: disable=uninitialized
     def _get_single_decl(collect_result):
         if len(collect_result.declarations) != 1:
             return None, errors.new(
@@ -171,8 +172,10 @@ def collect_module(parsed_tokens, prefix_tokens = []):
                     decl_count = len(collect_result.declarations),
                 ),
             )
+
         return collect_result.declarations[0], None
 
+    # buildifier: disable=uninitialized
     def _update_module_decl(top_module_decl, path, collect_result):
         module_decl, err = _get_single_decl(collect_result)
         if err != None:
