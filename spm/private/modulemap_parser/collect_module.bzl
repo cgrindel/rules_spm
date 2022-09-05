@@ -196,6 +196,17 @@ def collect_module(parsed_tokens, prefix_tokens = []):
         ([], declarations.unprocessed_submodule(parsed_tokens, prefix_tokens)),
     ]
 
+    # NOTE: Since recursive processing is not supported in Starlark, we need to
+    # process different levels of submodules in a loop.
+    #
+    # The gist of the algorithm is that a set of tokens will result in a
+    # `declarations.module()` value that may have 0 or more members. If a
+    # module contains a submodule, it will be represented by
+    # `declarations.unprocessed_submodule()` value. When an unprocessed
+    # submodule is found, it is added to the `module_tokens_to_process` `list`.
+    # Processing continues until the `module_tokens_to_process` `list` is empty
+    # or 100 iterations have occurred.
+
     for _iteration in range(100):
         if len(module_tokens_to_process) == 0:
             break
