@@ -182,8 +182,7 @@ bzl_library(
     ],
 )
 
-# TODO: FIX ME!
-# bzlformat_pkg(name = "bzlformat")
+bzlformat_pkg(name = "bzlformat")
 
 filegroup(
     name = "all_files",
