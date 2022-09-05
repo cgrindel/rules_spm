@@ -166,7 +166,43 @@ link_test = unittest.make(_link_test)
 def _copy_module_test(ctx):
     env = unittest.begin(ctx)
 
-    unittest.fail(env, "IMPLEMENT ME!")
+    # Test module
+
+    module = declarations.module(
+        "MyLib",
+        explicit = True,
+        framework = True,
+        members = [declarations.single_header("A.h")],
+    )
+    new_members = [declarations.single_header("Z.h")]
+    expected = declarations.module(
+        "MyLib",
+        explicit = True,
+        framework = True,
+        members = new_members,
+    )
+
+    actual, err = declarations.copy_module(module, members = new_members)
+    asserts.equals(env, None, err)
+    asserts.equals(env, expected, actual)
+
+    # Test inferred submodule
+
+    inferred_submodule = declarations.inferred_submodule(
+        explicit = True,
+        framework = True,
+        members = [declarations.single_header("A.h")],
+    )
+    new_members = [declarations.single_header("Z.h")]
+    expected = declarations.inferred_submodule(
+        explicit = True,
+        framework = True,
+        members = new_members,
+    )
+
+    actual, err = declarations.copy_module(inferred_submodule, members = new_members)
+    asserts.equals(env, None, err)
+    asserts.equals(env, expected, actual)
 
     return unittest.end(env)
 
