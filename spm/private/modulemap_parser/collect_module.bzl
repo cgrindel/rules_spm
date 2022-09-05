@@ -147,10 +147,23 @@ def _process_module_tokens(parsed_tokens, prefix_tokens, is_submodule):
     )
     return collection_results.new([decl], consumed_count), None
 
-# def collect_module(parsed_tokens, prefix_tokens = []):
-#     return _process_module_tokens(parsed_tokens, prefix_tokens, is_submodule = False)
-
 def collect_module(parsed_tokens, prefix_tokens = []):
+    """Collect top-level module declaration.
+
+    Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
+
+    Syntax:
+        explicitopt frameworkopt module module-id attributesopt '{' module-member* '}'
+
+    Args:
+        parsed_tokens: A `list` of tokens.
+        prefix_tokens: A `list` of tokens that have already been collected, but not applied.
+
+    Returns:
+        A `tuple` where the first item is the collection result and the second is an
+        error `struct` as returned from errors.create().
+    """
+
     def _get_single_decl(collect_result):
         if len(collect_result.declarations) != 1:
             return None, errors.new(
