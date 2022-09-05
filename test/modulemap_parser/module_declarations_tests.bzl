@@ -69,6 +69,8 @@ get_member_test = unittest.make(_get_member_test)
 def _replace_member_test(ctx):
     env = unittest.begin(ctx)
 
+    # Test single parent
+
     root_module = declarations.module("MyLib", members = [
         declarations.umbrella_directory("MyLib"),
         declarations.unprocessed_submodule([], []),
@@ -76,18 +78,38 @@ def _replace_member_test(ctx):
     new_member = declarations.inferred_submodule(explicit = True, members = [
         declarations.export(wildcard = True),
     ])
-
-    # DEBUG BEGIN
-    print("*** CHUCK START")
-    # DEBUG END
-
     expected = declarations.module("MyLib", members = [
         declarations.umbrella_directory("MyLib"),
-        declarations.inferred_submodule(explicit = True, members = [
+        new_member,
+    ])
+
+    actual, err = module_declarations.replace_member(root_module, [1], new_member)
+    asserts.equals(env, None, err)
+    asserts.equals(env, expected, actual)
+
+    # Test multiple parent levels
+
+    # module MyLib {
+    #     explicit module A {
+    #       header "A.h"
+    #       export *
+    #     }
+    # }
+    root_module = declarations.module("MyLib", members = [
+        declarations.module("A", explicit = True, members = [
+            declarations.single_header("A.h"),
             declarations.export(wildcard = True),
         ]),
     ])
-    actual, err = module_declarations.replace_member(root_module, [1], new_member)
+    new_member = declarations.single_header("Z.h")
+    expected = declarations.module("MyLib", members = [
+        declarations.module("A", explicit = True, members = [
+            new_member,
+            declarations.export(wildcard = True),
+        ]),
+    ])
+
+    actual, err = module_declarations.replace_member(root_module, [0, 0], new_member)
     asserts.equals(env, None, err)
     asserts.equals(env, expected, actual)
 

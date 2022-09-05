@@ -44,16 +44,18 @@ def _get_member(root_module_decl, path):
         cur_module = member if _is_a_module(member) else None
     return member, None
 
-def _replace_member(root_module_decl, path, member):
+def _replace_member(root_module_decl, path, new_member):
+    path_len = len(path)
+
     err = _check_root_module_and_path(root_module_decl, path)
     if err != None:
         return None, err
-    if member == None:
-        return None, errors.new("The `member` argument was `None`.")
+    if new_member == None:
+        return None, errors.new("The `new_member` argument was `None`.")
 
     # Collect the parent modules
     parent_modules = [root_module_decl]
-    for idx in range(len(path[:-1])):
+    for idx in range(1, path_len, 1):
         member, err = _get_member(root_module_decl, path[:idx])
         if err != None:
             return None, err
@@ -61,38 +63,22 @@ def _replace_member(root_module_decl, path, member):
             return None, errors.new("Expected a module. {}".format(member))
         parent_modules.append(member)
 
-    # DEBUG BEGIN
-    print("*** CHUCK path: ", path)
-    # DEBUG END
-
-    # for cnt in range(1, len(parent_modules) + 1):
-    #     cur_idx = -cnt
-
-    new_member = member
+    cur_new_member = new_member
     for offset in range(-1, -(len(parent_modules) + 1), -1):
         parent_module = parent_modules[offset]
         member_idx = path[offset]
 
         new_members = list(parent_module.members)
 
-        # DEBUG BEGIN
-        print("*** CHUCK offset: ", offset)
-        print("*** CHUCK member_idx: ", member_idx)
-        print("*** CHUCK parent_module: ", parent_module)
-        print("*** CHUCK parent_module.members: ")
-        print("*** CHUCK new_members: ")
-        for idx, item in enumerate(new_members):
-            print("*** CHUCK", idx, ":", item)
-
-        # DEBUG END
         new_members.pop(member_idx)
-        new_members.insert(member_idx, new_member)
-        new_member, err = declarations.copy_module(
+        new_members.insert(member_idx, cur_new_member)
+
+        cur_new_member, err = declarations.copy_module(
             parent_module,
             members = new_members,
         )
 
-    return new_member, None
+    return cur_new_member, None
 
 module_declarations = struct(
     is_a_module = _is_a_module,
