@@ -52,13 +52,14 @@ spm_repositories(
             products = ["libwebp"],
             url = "https://github.com/SDWebImage/libwebp-Xcode.git",
         ),
-        spm_pkg(
-            # Need to specify for the package because the URL basename does not
-            # match the package name in the Package.swift.
-            name = "Firebase",
-            exact_version = "9.5.0",
-            products = ["FirebaseAnalytics"],
-            url = "https://github.com/firebase/firebase-ios-sdk.git",
-        ),
+        # GH147: Finish implementing support for Firebase
+        # spm_pkg(
+        #     # Need to specify for the package because the URL basename does not
+        #     # match the package name in the Package.swift.
+        #     name = "Firebase",
+        #     exact_version = "9.5.0",
+        #     products = ["FirebaseAnalytics"],
+        #     url = "https://github.com/firebase/firebase-ios-sdk.git",
+        # ),
     ],
 )
