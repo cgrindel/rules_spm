@@ -1,9 +1,12 @@
 """Definition for declarations module."""
 
+load(":errors.bzl", "errors")
+
 # MARK: - Module Declarations
 
-_declaration_types = struct(
+_TYPES = struct(
     module = "module",
+    inferred_submodule = "inferred_submodule",
     extern_module = "extern_module",
     single_header = "single_header",
     umbrella_header = "umbrella_header",
@@ -11,6 +14,9 @@ _declaration_types = struct(
     umbrella_directory = "umbrella_directory",
     export = "export",
     link = "link",
+    # An unprocessed_submodule contains the tokens of the submodule. They will
+    # be processed later because Starlark does not allow recursion.
+    unprocessed_submodule = "unprocessed_submodule",
 )
 
 def _create_module_decl(module_id, explicit = False, framework = False, attributes = [], members = []):
@@ -29,8 +35,17 @@ def _create_module_decl(module_id, explicit = False, framework = False, attribut
         A `struct` representing a module declaration.
     """
     return struct(
-        decl_type = _declaration_types.module,
+        decl_type = _TYPES.module,
         module_id = module_id,
+        explicit = explicit,
+        framework = framework,
+        attributes = attributes,
+        members = members,
+    )
+
+def _create_inferred_submodule_decl(explicit = False, framework = False, attributes = [], members = []):
+    return struct(
+        decl_type = _TYPES.inferred_submodule,
         explicit = explicit,
         framework = framework,
         attributes = attributes,
@@ -51,9 +66,57 @@ def _create_extern_module_decl(module_id, definition_path):
         A `struct` representing an extern module declaration.
     """
     return struct(
-        decl_type = _declaration_types.extern_module,
+        decl_type = _TYPES.extern_module,
         module_id = module_id,
         definition_path = definition_path,
+    )
+
+def _create_unprocessed_submodule(tokens, prefix_tokens):
+    """Create an unprocessed submodule declaration.
+
+    Args:
+        tokens: A `list` of tokens.
+        prefix_tokens: A `list` of tokens that have already been collected, but not applied.
+
+    Returns:
+        A `struct` representing an unprocessed submodule declaration.
+    """
+    return struct(
+        decl_type = _TYPES.unprocessed_submodule,
+        tokens = tokens,
+        prefix_tokens = prefix_tokens,
+    )
+
+def _copy_module(module, members):
+    """Copies the provided module or inferred submodule declaration and \
+    replaces its members with the provided members.
+
+    Args:
+        module: A `struct` as returned by `declarations.module()` or
+            `declarations.inferred_submodule()`.
+        members: A `list` of  member declarations.
+
+    Returns:
+        A `tuple` where the the first item is the copied declaration and the
+        second item is an error `struct` as returned from `errors.create()`.
+    """
+    if module.decl_type == _TYPES.module:
+        return _create_module_decl(
+            module_id = module.module_id,
+            explicit = module.explicit,
+            framework = module.framework,
+            attributes = module.attributes,
+            members = members,
+        ), None
+    elif module.decl_type == _TYPES.inferred_submodule:
+        return _create_inferred_submodule_decl(
+            explicit = module.explicit,
+            framework = module.framework,
+            attributes = module.attributes,
+            members = members,
+        ), None
+    return None, errors.new(
+        "Unrecognized declaration type in `module_declarations.copy_module`.",
     )
 
 # MARK: - Module Member Declarations
@@ -91,7 +154,7 @@ def _create_single_header(path, private = False, textual = False, attribs = None
         A `struct` representing a single
     """
     return struct(
-        decl_type = _declaration_types.single_header,
+        decl_type = _TYPES.single_header,
         path = path,
         private = private,
         textual = textual,
@@ -112,7 +175,7 @@ def _create_umbrella_header(path, attribs = None):
         A `struct` representing an umbrella header declaration.
     """
     return struct(
-        decl_type = _declaration_types.umbrella_header,
+        decl_type = _TYPES.umbrella_header,
         path = path,
         attribs = attribs,
     )
@@ -131,7 +194,7 @@ def _create_exclude_header(path, attribs = None):
         A `struct` representing an exclude header declaration.
     """
     return struct(
-        decl_type = _declaration_types.exclude_header,
+        decl_type = _TYPES.exclude_header,
         path = path,
         attribs = attribs,
     )
@@ -148,7 +211,7 @@ def _create_umbrella_directory(path):
         A `struct` representing an umbrella directory declaration.
     """
     return struct(
-        decl_type = _declaration_types.umbrella_directory,
+        decl_type = _TYPES.umbrella_directory,
         path = path,
     )
 
@@ -165,7 +228,7 @@ def _create_export(identifiers = [], wildcard = False):
         A `struct` representing an export declaration.
     """
     return struct(
-        decl_type = _declaration_types.export,
+        decl_type = _TYPES.export,
         identifiers = identifiers,
         wildcard = wildcard,
     )
@@ -183,23 +246,27 @@ def _create_link(name, framework = False):
         A `struct` representing a link declaration.
     """
     return struct(
-        decl_type = _declaration_types.link,
+        decl_type = _TYPES.link,
         name = name,
         framework = framework,
     )
 
 # MARK: - Namespaces
 
-declaration_types = _declaration_types
+declaration_types = _TYPES
 
 declarations = struct(
-    module = _create_module_decl,
+    copy_module = _copy_module,
+    exclude_header = _create_exclude_header,
+    export = _create_export,
     extern_module = _create_extern_module_decl,
     header_attribs = _create_header_attributes,
-    single_header = _create_single_header,
-    umbrella_header = _create_umbrella_header,
-    exclude_header = _create_exclude_header,
-    umbrella_directory = _create_umbrella_directory,
-    export = _create_export,
+    inferred_submodule = _create_inferred_submodule_decl,
     link = _create_link,
+    module = _create_module_decl,
+    single_header = _create_single_header,
+    types = _TYPES,
+    umbrella_directory = _create_umbrella_directory,
+    umbrella_header = _create_umbrella_header,
+    unprocessed_submodule = _create_unprocessed_submodule,
 )

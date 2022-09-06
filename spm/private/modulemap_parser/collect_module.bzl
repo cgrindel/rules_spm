@@ -4,6 +4,7 @@ load(":collect_module_members.bzl", "collect_module_members")
 load(":collection_results.bzl", "collection_results")
 load(":declarations.bzl", "declarations")
 load(":errors.bzl", "errors")
+load(":module_declarations.bzl", "module_declarations")
 load(":tokens.bzl", "tokens", rws = "reserved_words", tts = "token_types")
 
 # MARK: - Attribute Collection
@@ -45,8 +46,8 @@ def _collect_attribute(parsed_tokens):
 
 # MARK: - Module Collection
 
-def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
-    """Collect a module declaration.
+def _process_module_tokens(parsed_tokens, prefix_tokens, is_submodule):
+    """Process module and submodule tokens
 
     Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
 
@@ -55,8 +56,8 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
 
     Args:
         parsed_tokens: A `list` of tokens.
-        is_submodule: A `bool` that designates whether the module is a child of another module.
         prefix_tokens: A `list` of tokens that have already been collected, but not applied.
+        is_submodule: A `bool` that designates whether the module is a child of another module.
 
     Returns:
         A `tuple` where the first item is the collection result and the second is an
@@ -145,3 +146,101 @@ def collect_module(parsed_tokens, is_submodule = False, prefix_tokens = []):
         members = members,
     )
     return collection_results.new([decl], consumed_count), None
+
+def collect_module(parsed_tokens, prefix_tokens = []):
+    """Collect top-level module declaration.
+
+    Spec: https://clang.llvm.org/docs/Modules.html#module-declaration
+
+    Syntax:
+        explicitopt frameworkopt module module-id attributesopt '{' module-member* '}'
+
+    Args:
+        parsed_tokens: A `list` of tokens.
+        prefix_tokens: A `list` of tokens that have already been collected, but not applied.
+
+    Returns:
+        A `tuple` where the first item is the collection result and the second is an
+        error `struct` as returned from errors.create().
+    """
+
+    # buildifier: disable=uninitialized
+    def _get_single_decl(collect_result):
+        if len(collect_result.declarations) != 1:
+            return None, errors.new(
+                "Expect a single module declaration but found {decl_count}.".format(
+                    decl_count = len(collect_result.declarations),
+                ),
+            )
+
+        return collect_result.declarations[0], None
+
+    # buildifier: disable=uninitialized
+    def _update_module_decl(top_module_decl, path, collect_result):
+        module_decl, err = _get_single_decl(collect_result)
+        if err != None:
+            return None, err
+        if top_module_decl == None:
+            new_top_module_decl = module_decl
+        else:
+            new_top_module_decl, err = module_declarations.replace_member(
+                root_module = top_module_decl,
+                path = path,
+                new_member = module_decl,
+            )
+            if err != None:
+                return None, err
+
+        return new_top_module_decl, module_decl, None
+
+    top_module_decl = None
+    top_collect_result = None
+    module_tokens_to_process = [
+        ([], declarations.unprocessed_submodule(parsed_tokens, prefix_tokens)),
+    ]
+
+    # NOTE: Since recursive processing is not supported in Starlark, we need to
+    # process different levels of submodules in a loop.
+    #
+    # The gist of the algorithm is that a set of tokens will result in a
+    # `declarations.module()` value that may have 0 or more members. If a
+    # module contains a submodule, it will be represented by
+    # `declarations.unprocessed_submodule()` value. When an unprocessed
+    # submodule is found, it is added to the `module_tokens_to_process` `list`.
+    # Processing continues until the `module_tokens_to_process` `list` is empty
+    # or 100 iterations have occurred.
+
+    for _iteration in range(100):
+        if len(module_tokens_to_process) == 0:
+            break
+
+        cur_idx_path, unprocessed_tokens = module_tokens_to_process.pop(0)
+        collect_result, err = _process_module_tokens(
+            parsed_tokens = unprocessed_tokens.tokens,
+            prefix_tokens = unprocessed_tokens.prefix_tokens,
+            is_submodule = (top_collect_result != None),
+        )
+        if err != None:
+            return None, err
+
+        if top_collect_result == None:
+            top_collect_result = collect_result
+
+        top_module_decl, module_decl, err = _update_module_decl(
+            top_module_decl,
+            cur_idx_path,
+            collect_result,
+        )
+        if err != None:
+            return None, err
+
+        for idx, member in enumerate(module_decl.members):
+            if member.decl_type != declarations.types.unprocessed_submodule:
+                continue
+            submodule_idx_path = cur_idx_path + [idx]
+            module_tokens_to_process.append((submodule_idx_path, member))
+
+    return collection_results.new(
+        declarations = [top_module_decl],
+        count = top_collect_result.count,
+    ), None
