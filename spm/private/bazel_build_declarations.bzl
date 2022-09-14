@@ -79,7 +79,7 @@ def _swift_library(pkg_name, target, target_deps):
     )
 
     defines_str = build_declarations.bazel_defines_str(target["manifest"])
-        
+
     target_decl = build_declarations.target(
         type = _SWIFT_LIBRARY_TYPE,
         name = target_name,
