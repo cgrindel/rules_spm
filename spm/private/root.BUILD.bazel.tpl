@@ -11,7 +11,7 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "all_srcs",
-    srcs = glob(["**"]),
+    srcs = glob(["**/*.swift"]),
     visibility = ["//visibility:public"],
 )
 
