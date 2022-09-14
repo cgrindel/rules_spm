@@ -163,6 +163,51 @@ def _link_test(ctx):
 
 link_test = unittest.make(_link_test)
 
+def _copy_module_test(ctx):
+    env = unittest.begin(ctx)
+
+    # Test module
+
+    module = declarations.module(
+        "MyLib",
+        explicit = True,
+        framework = True,
+        members = [declarations.single_header("A.h")],
+    )
+    new_members = [declarations.single_header("Z.h")]
+    expected = declarations.module(
+        "MyLib",
+        explicit = True,
+        framework = True,
+        members = new_members,
+    )
+
+    actual, err = declarations.copy_module(module, members = new_members)
+    asserts.equals(env, None, err)
+    asserts.equals(env, expected, actual)
+
+    # Test inferred submodule
+
+    inferred_submodule = declarations.inferred_submodule(
+        explicit = True,
+        framework = True,
+        members = [declarations.single_header("A.h")],
+    )
+    new_members = [declarations.single_header("Z.h")]
+    expected = declarations.inferred_submodule(
+        explicit = True,
+        framework = True,
+        members = new_members,
+    )
+
+    actual, err = declarations.copy_module(inferred_submodule, members = new_members)
+    asserts.equals(env, None, err)
+    asserts.equals(env, expected, actual)
+
+    return unittest.end(env)
+
+copy_module_test = unittest.make(_copy_module_test)
+
 def declarations_test_suite():
     return unittest.suite(
         "declarations_tests",
@@ -174,4 +219,5 @@ def declarations_test_suite():
         umbrella_directory_test,
         export_test,
         link_test,
+        copy_module_test,
     )
