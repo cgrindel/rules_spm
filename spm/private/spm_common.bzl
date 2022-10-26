@@ -32,11 +32,12 @@ def _split_clang_hdrs_key(key):
 # Directory names that may include public header files.
 _PUBLIC_HDR_DIRNAMES = ["include", "public"]
 
-def _is_include_hdr_path(path):
+def _is_include_hdr_path(path, specified_public_path = None):
     """Determines whether the path is a public header.
 
     Args:
         path: A path `string` value.
+        specified_public_path: A `string` for public headers specified in the target's Package.swift
 
     Returns:
         A `bool` indicating whether the path is a public header.
@@ -44,7 +45,12 @@ def _is_include_hdr_path(path):
     _root, ext = paths.split_extension(path)
     if ext != ".h":
         return False
-    for dirname in _PUBLIC_HDR_DIRNAMES:
+
+    if specified_public_path == None:
+        dirs = _PUBLIC_HDR_DIRNAMES
+    else:
+        dirs = _PUBLIC_HDR_DIRNAMES + [specified_public_path]
+    for dirname in dirs:
         if (path.find("/%s/" % dirname) > -1) or path.startswith("%s/" % dirname):
             return True
     return False

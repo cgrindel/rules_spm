@@ -27,6 +27,7 @@ def _spm_swift_binary_impl(ctx):
         module_name = ctx.attr.name
 
     pkg_info = spm_package_info_utils.get(pkgs_info.packages, pkg_name)
+    print(pkg_info)
     binary_info = spm_package_info_utils.get_module_info(pkg_info, module_name)
 
     if binary_info.executable == None:

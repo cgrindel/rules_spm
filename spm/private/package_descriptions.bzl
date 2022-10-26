@@ -60,6 +60,7 @@ def _retrieve_package_dump(repository_ctx, env = {}, working_directory = ""):
         env = env,
         working_directory = working_directory,
     )
+    # print("package dump:", json_str)
     return _parse_json(json_str)
 
 def _retrieve_package_description(repository_ctx, env = {}, working_directory = ""):
@@ -80,6 +81,7 @@ def _retrieve_package_description(repository_ctx, env = {}, working_directory = 
         env = env,
         working_directory = working_directory,
     )
+    # print("package description:", json_str)
     return _parse_json(json_str)
 
 def _get_package_description(repository_ctx, env = {}, working_directory = ""):
@@ -105,11 +107,16 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
         env = env,
         working_directory = working_directory,
     )
+    # print(pkg_dump['name'])
+    # for target in pkg_dump['targets']:
+    #     if target.get('publicHeadersPath'):
+    #         print("PUBLIC HEADERS PATH: ", target['publicHeadersPath'])
 
     # Collect the dump targets by name
     dump_targets_dict = {}
     for dump_target in pkg_dump["targets"]:
         dump_targets_dict[dump_target["name"]] = dump_target
+        dump_targets_dict["publicHeadersPath"] = dump_target.get('publicHeadersPath')
 
     # Merge dump target dependencies into the package description dict. After
     # the merge a target will have a "target_dependencies" key and a
@@ -140,6 +147,7 @@ def _get_package_description(repository_ctx, env = {}, working_directory = ""):
         if dump_target == None:
             continue
         target["dependencies"] = dump_target["dependencies"]
+        target["publicHeadersPath"] = dump_target.get("publicHeadersPath")
 
     return pkg_desc
 
@@ -242,13 +250,13 @@ def _library_targets(pkg_desc):
     return [t for t in targets if _is_library_target(t)]
 
 def _is_system_library_target(target):
-    """Returns True if the specified target is a clang module. Otherwise, False.
+    """Returns True if the specified target is a system library module. Otherwise, False.
 
     Args:
         target: A target from the package description.
 
     Returns:
-        A boolean indicating whether the target is a clang module.
+        A boolean indicating whether the target is a system library module.
     """
     module_type = target["module_type"]
     return module_type == module_types.system_library
@@ -275,6 +283,17 @@ def _is_swift_target(target):
         A boolean indicating whether the target is a swift module.
     """
     return target["module_type"] == module_types.swift
+
+def _is_binary_target(target):
+    """Returns True if the specified target is a binary target. Otherwise, False.
+
+    Args:
+        target: A target from the package description.
+
+    Returns:
+        A boolean indicating whether the target is a binary module.
+    """
+    return target["module_type"] == module_types.binary
 
 def _get_target(pkg_desc, name, fail_if_not_found = True):
     """Returns the target with the specified name from a package description.
@@ -364,7 +383,7 @@ def _gather_deps_for_target(pkg_descs_dict, target_ref):
 
             # Look for the product in a package with the same name.
             ref_pkg_desc = pkg_descs_dict.get(by_name)
-            if ref_pkg_desc != None:
+            if ref_pkg_desc != None and by_name != 'Firebase':
                 product_refs.append(refs.create(ref_types.product, ref_pkg_desc["name"], by_name))
                 continue
 
@@ -529,12 +548,14 @@ target_types = struct(
     executable = "executable",
     library = "library",
     system = "system-target",
+    binary = "binary",
 )
 
 module_types = struct(
     swift = "SwiftTarget",
     clang = "ClangTarget",
     system_library = "SystemLibraryTarget",
+    binary = "BinaryTarget",
 )
 
 package_descriptions = struct(
@@ -551,6 +572,7 @@ package_descriptions = struct(
     is_system_library_target = _is_system_library_target,
     is_clang_target = _is_clang_target,
     is_swift_target = _is_swift_target,
+    is_binary_target = _is_binary_target,
     get_target = _get_target,
     # Dependency Functions
     dependency_name = _dependency_name,

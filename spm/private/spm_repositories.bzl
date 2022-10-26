@@ -301,6 +301,12 @@ def _generate_bazel_pkg(
                 ))
             else:
                 fail("Unrecognized system target type. %s" % (target))
+        elif pds.is_binary_target(target):
+            print('we have a binary target?', target)
+            module_decls.append(_create_spm_swift_binary_decl(
+                repository_ctx,
+                target,
+            ))
         else:
             fail("Unrecognized target type. %s" % (target))
 
@@ -370,7 +376,11 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
     Returns:
         A `list` of path `string` values.
     """
-    src_path = paths.join(pkg_root_path, target["path"])
+    target_path = target['path']
+    if target_path == '.':
+        src_path = pkg_root_path
+    else:
+        src_path = paths.join(pkg_root_path, target_path)
     module_paths = _list_files_under(repository_ctx, src_path)
 
     modulemap_paths = [p for p in module_paths if _is_modulemap_path(p)]
@@ -385,7 +395,11 @@ def _get_clang_hdrs_for_target(repository_ctx, target, pkg_root_path = ""):
             repository_ctx,
             modulemap_paths[0],
         )
-    return [p for p in module_paths if spm_common.is_include_hdr_path(p)]
+
+    public_headers_path = target.get('publicHeadersPath')
+    if public_headers_path == '.' or public_headers_path == './':
+        public_headers_path = src_path
+    return [p for p in module_paths if spm_common.is_include_hdr_path(p, public_headers_path)]
 
 # MARK: - Root BUILD.bazel Generation
 

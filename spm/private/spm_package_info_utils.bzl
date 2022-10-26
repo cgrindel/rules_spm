@@ -25,7 +25,7 @@ def _get_module_info(pkg_info, module_name):
 
     Returns:
         If the module is a Swift module, a `struct` value as created by
-        `providers.swift_module()` is returend. If the module is a clang
+        `providers.swift_module()` is returned. If the module is a clang
         module a `struct` value as created by `providers.clang_module()` is
         returned.
     """
