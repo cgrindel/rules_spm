@@ -599,6 +599,8 @@ spm_repositories = repository_rule(
             default = "spm",
             values = ["spm", "bazel"],
             doc = """\
+Experimental. This functionality is not fully baked. Please do not rely on this.
+
 Specifies how `rules_spm` will build the Swift packages.
 
   `spm`: Build the packages with Swift Package Manager and generate Bazel targets 
