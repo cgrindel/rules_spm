@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: cgrindel/gha_install_swift_on_ubuntu@v1
       with:
-        swift_release_tag: "swift-5.5.2-RELEASE"
+        swift_release_tag: "swift-5.7.1-RELEASE"
         ubuntu_version: "20.04"
     - uses: actions/checkout@v3
     - name: Update local.bazelrc with Linux Flags
