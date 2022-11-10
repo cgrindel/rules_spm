@@ -2,7 +2,7 @@
 # `platforms` API
 
 
-<a id="#platforms.spm_os"></a>
+<a id="platforms.spm_os"></a>
 
 ## platforms.spm_os
 
@@ -24,7 +24,7 @@ Maps the Swift OS value to a suitable SPM OS value.
 A `string` representing the SPM OS value.
 
 
-<a id="#platforms.spm_arch"></a>
+<a id="platforms.spm_arch"></a>
 
 ## platforms.spm_arch
 
@@ -46,7 +46,7 @@ Maps the Bazel architeture value to a suitable SPM architecture value.
 A `string` representing the SPM architecture value.
 
 
-<a id="#platforms.spm_vendor"></a>
+<a id="platforms.spm_vendor"></a>
 
 ## platforms.spm_vendor
 

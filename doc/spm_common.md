@@ -2,7 +2,7 @@
 # `spm_common` API
 
 
-<a id="#spm_common.create_clang_hdrs_key"></a>
+<a id="spm_common.create_clang_hdrs_key"></a>
 
 ## spm_common.create_clang_hdrs_key
 
@@ -25,7 +25,7 @@ Returns a key that is used for clang headers dictionaries.
 A `string` representing the combined items.
 
 
-<a id="#spm_common.split_clang_hdrs_key"></a>
+<a id="spm_common.split_clang_hdrs_key"></a>
 
 ## spm_common.split_clang_hdrs_key
 

@@ -2,7 +2,7 @@
 # `packages` API
 
 
-<a id="#packages.create_name"></a>
+<a id="packages.create_name"></a>
 
 ## packages.create_name
 
@@ -24,7 +24,7 @@ Create a package name (i.e. repository name) from the provided URL.
 A package name `string`.
 
 
-<a id="#packages.create"></a>
+<a id="packages.create"></a>
 
 ## packages.create
 
@@ -58,7 +58,7 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 A `struct` representing a Swift package.
 
 
-<a id="#packages.copy"></a>
+<a id="packages.copy"></a>
 
 ## packages.copy
 
@@ -87,7 +87,7 @@ Create a copy of the provided package replacing any of the argument values that 
 A `struct` representing a Swift package.
 
 
-<a id="#packages.pkg_json"></a>
+<a id="packages.pkg_json"></a>
 
 ## packages.pkg_json
 
@@ -121,7 +121,7 @@ https://docs.swift.org/package-manager/PackageDescription/PackageDescription.htm
 A JSON `string` representing a Swift package.
 
 
-<a id="#packages.from_json"></a>
+<a id="packages.from_json"></a>
 
 ## packages.from_json
 
@@ -145,7 +145,7 @@ If the JSON represents a list of packages, a `list` of package `struct`
   returned. See `packages.create()` for more details on the struct.
 
 
-<a id="#packages.get_pkg"></a>
+<a id="packages.get_pkg"></a>
 
 ## packages.get_pkg
 
@@ -169,7 +169,7 @@ A package declaration `struct` as created by
   `packages.create()`, `packages.pkg_json()` or `spm_pkg()`.
 
 
-<a id="#packages.get_product_refs"></a>
+<a id="packages.get_product_refs"></a>
 
 ## packages.get_product_refs
 

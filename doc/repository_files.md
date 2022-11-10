@@ -2,7 +2,7 @@
 # `repository_files` API
 
 
-<a id="#repository_files.list_files_under"></a>
+<a id="repository_files.list_files_under"></a>
 
 ## repository_files.list_files_under
 
@@ -28,7 +28,7 @@ This function returns paths for all of the files under the specified path.
 A `list` of path `string` values.
 
 
-<a id="#repository_files.list_directories_under"></a>
+<a id="repository_files.list_directories_under"></a>
 
 ## repository_files.list_directories_under
 
@@ -52,7 +52,7 @@ Retrieves the list of directories under the specified path.
 A `list` of path `string` values.
 
 
-<a id="#repository_files.find_and_delete_files"></a>
+<a id="repository_files.find_and_delete_files"></a>
 
 ## repository_files.find_and_delete_files
 
@@ -72,7 +72,7 @@ Finds files with the specified name under the specified path and deletes them.
 | <a id="repository_files.find_and_delete_files-name"></a>name |  A file basename as a <code>string</code>.   |  none |
 
 
-<a id="#repository_files.copy_directory"></a>
+<a id="repository_files.copy_directory"></a>
 
 ## repository_files.copy_directory
 

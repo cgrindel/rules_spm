@@ -2,7 +2,7 @@
 # `clang_files` API
 
 
-<a id="#clang_files.is_hdr"></a>
+<a id="clang_files.is_hdr"></a>
 
 ## clang_files.is_hdr
 
@@ -20,7 +20,7 @@ clang_files.is_hdr(<a href="#clang_files.is_hdr-path">path</a>)
 | <a id="clang_files.is_hdr-path"></a>path |  <p align="center"> - </p>   |  none |
 
 
-<a id="#clang_files.is_include_hdr"></a>
+<a id="clang_files.is_include_hdr"></a>
 
 ## clang_files.is_include_hdr
 
@@ -43,7 +43,7 @@ Determines whether the path is a public header.
 A `bool` indicating whether the path is a public header.
 
 
-<a id="#clang_files.is_public_modulemap"></a>
+<a id="clang_files.is_public_modulemap"></a>
 
 ## clang_files.is_public_modulemap
 
@@ -66,7 +66,7 @@ A `bool` indicating whether the path is a public `module.modulemap`
   file.
 
 
-<a id="#clang_files.collect_files"></a>
+<a id="clang_files.collect_files"></a>
 
 ## clang_files.collect_files
 
@@ -87,7 +87,7 @@ clang_files.collect_files(<a href="#clang_files.collect_files-repository_ctx">re
 | <a id="clang_files.collect_files-remove_prefix"></a>remove_prefix |  <p align="center"> - </p>   |  <code>None</code> |
 
 
-<a id="#clang_files.get_hdr_paths_from_modulemap"></a>
+<a id="clang_files.get_hdr_paths_from_modulemap"></a>
 
 ## clang_files.get_hdr_paths_from_modulemap
 

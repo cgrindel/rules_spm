@@ -12,7 +12,7 @@ On this page:
   * [SPMToolchainInfo](#SPMToolchainInfo)
 
 
-<a id="#SPMPackageInfo"></a>
+<a id="SPMPackageInfo"></a>
 
 ## SPMPackageInfo
 
@@ -34,7 +34,7 @@ Describes the information about an SPM package.
 | <a id="SPMPackageInfo-system_library_modules"></a>system_library_modules |  <code>List</code> of values returned from <code>providers.system_library_module</code>.    |
 
 
-<a id="#SPMPackagesInfo"></a>
+<a id="SPMPackagesInfo"></a>
 
 ## SPMPackagesInfo
 
@@ -52,7 +52,7 @@ Provides information about the dependent SPM packages.
 | <a id="SPMPackagesInfo-packages"></a>packages |  A <code>list</code> of SPMPackageInfo representing the dependent packages.    |
 
 
-<a id="#SPMPlatformInfo"></a>
+<a id="SPMPlatformInfo"></a>
 
 ## SPMPlatformInfo
 
@@ -73,7 +73,7 @@ SPM designations for the architecture, OS and vendor.
 | <a id="SPMPlatformInfo-vendor"></a>vendor |  The vendor designation as understood by SPM.    |
 
 
-<a id="#SPMToolchainInfo"></a>
+<a id="SPMToolchainInfo"></a>
 
 ## SPMToolchainInfo
 

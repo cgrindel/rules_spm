@@ -2,7 +2,7 @@
 # `package_descriptions` API
 
 
-<a id="#package_descriptions.parse_json"></a>
+<a id="package_descriptions.parse_json"></a>
 
 ## package_descriptions.parse_json
 
@@ -24,7 +24,7 @@ Parses the JSON string and returns a dict representing the JSON structure.
 A dict which contains the information from the JSON string.
 
 
-<a id="#package_descriptions.get"></a>
+<a id="package_descriptions.get"></a>
 
 ## package_descriptions.get
 
@@ -50,7 +50,7 @@ A `dict` representing information gathered from an SPM package
   description and it's dump data.
 
 
-<a id="#package_descriptions.is_library_product"></a>
+<a id="package_descriptions.is_library_product"></a>
 
 ## package_descriptions.is_library_product
 
@@ -72,7 +72,7 @@ Returns a boolean indicating whether the specified product dictionary is a libra
 A `bool` indicating whether the product is a library.
 
 
-<a id="#package_descriptions.library_products"></a>
+<a id="package_descriptions.library_products"></a>
 
 ## package_descriptions.library_products
 
@@ -94,7 +94,7 @@ Returns the library products defined in the provided package description.
 A `list` of product `dict` values as defined in a package description.
 
 
-<a id="#package_descriptions.is_library_target"></a>
+<a id="package_descriptions.is_library_target"></a>
 
 ## package_descriptions.is_library_target
 
@@ -116,7 +116,7 @@ Returns True if the specified target is a library target. Otherwise False.
 A boolean indicating whether the target is a library target.
 
 
-<a id="#package_descriptions.is_executable_target"></a>
+<a id="package_descriptions.is_executable_target"></a>
 
 ## package_descriptions.is_executable_target
 
@@ -138,7 +138,7 @@ Returns True if the specified target is an executable target. Otherwise False.
 A boolean indicating whether the target is an executable target.
 
 
-<a id="#package_descriptions.is_system_target"></a>
+<a id="package_descriptions.is_system_target"></a>
 
 ## package_descriptions.is_system_target
 
@@ -160,7 +160,7 @@ Returns True if the specified target is a library target. Otherwise False.
 A boolean indicating whether the target is a library target.
 
 
-<a id="#package_descriptions.library_targets"></a>
+<a id="package_descriptions.library_targets"></a>
 
 ## package_descriptions.library_targets
 
@@ -182,7 +182,7 @@ Returns a list of the library targets in the package.
 A list of the library targets in the package.
 
 
-<a id="#package_descriptions.is_system_library_target"></a>
+<a id="package_descriptions.is_system_library_target"></a>
 
 ## package_descriptions.is_system_library_target
 
@@ -204,7 +204,7 @@ Returns True if the specified target is a clang module. Otherwise, False.
 A boolean indicating whether the target is a clang module.
 
 
-<a id="#package_descriptions.is_clang_target"></a>
+<a id="package_descriptions.is_clang_target"></a>
 
 ## package_descriptions.is_clang_target
 
@@ -226,7 +226,7 @@ Returns True if the specified target is a clang module. Otherwise, False.
 A boolean indicating whether the target is a clang module.
 
 
-<a id="#package_descriptions.is_swift_target"></a>
+<a id="package_descriptions.is_swift_target"></a>
 
 ## package_descriptions.is_swift_target
 
@@ -248,7 +248,7 @@ Returns True if the specified target is a swift module. Otherwise, False.
 A boolean indicating whether the target is a swift module.
 
 
-<a id="#package_descriptions.get_target"></a>
+<a id="package_descriptions.get_target"></a>
 
 ## package_descriptions.get_target
 
@@ -272,7 +272,7 @@ Returns the target with the specified name from a package description.
 A `dict` representing a target as represented in a package description.
 
 
-<a id="#package_descriptions.dependency_name"></a>
+<a id="package_descriptions.dependency_name"></a>
 
 ## package_descriptions.dependency_name
 
@@ -298,7 +298,7 @@ name is returned.
 The name of the package dependency as a `string`.
 
 
-<a id="#package_descriptions.dependency_repository_name"></a>
+<a id="package_descriptions.dependency_repository_name"></a>
 
 ## package_descriptions.dependency_repository_name
 
@@ -326,7 +326,7 @@ Repository Name: async-http-client
 The repository name for the package dependency.
 
 
-<a id="#package_descriptions.transitive_dependencies"></a>
+<a id="package_descriptions.transitive_dependencies"></a>
 
 ## package_descriptions.transitive_dependencies
 
@@ -350,7 +350,7 @@ A `dict` where the keys are target reference values and the
   values are a `list` of target references.
 
 
-<a id="#package_descriptions.is_executable_product"></a>
+<a id="package_descriptions.is_executable_product"></a>
 
 ## package_descriptions.is_executable_product
 
@@ -372,7 +372,7 @@ Returns a boolean indicating whether the specified product dictionary is an exec
 A `bool` indicating whether the product is an executable.
 
 
-<a id="#package_descriptions.get_product"></a>
+<a id="package_descriptions.get_product"></a>
 
 ## package_descriptions.get_product
 

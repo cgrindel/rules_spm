@@ -2,7 +2,7 @@
 # `providers` API
 
 
-<a id="#providers.clang_module"></a>
+<a id="providers.clang_module"></a>
 
 ## providers.clang_module
 
@@ -28,7 +28,7 @@ Creates a value representing the Clang module that is built from a package.
 A struct which provides info about a clang module build by SPM.
 
 
-<a id="#providers.copy_info"></a>
+<a id="providers.copy_info"></a>
 
 ## providers.copy_info
 
@@ -51,7 +51,7 @@ Creates a value describing a copy operation.
 A struct describing a copy operation performed during the SPM build.
 
 
-<a id="#providers.swift_binary"></a>
+<a id="providers.swift_binary"></a>
 
 ## providers.swift_binary
 
@@ -75,7 +75,7 @@ Creates a value representing a Swift binary that is built from a package.
 A struct which provides info about a Swift binary built by SPM.
 
 
-<a id="#providers.swift_module"></a>
+<a id="providers.swift_module"></a>
 
 ## providers.swift_module
 
@@ -104,7 +104,7 @@ Creates a value representing the Swift module that is built from a package.
 A struct which provides info about a Swift module built by SPM.
 
 
-<a id="#providers.system_library_module"></a>
+<a id="providers.system_library_module"></a>
 
 ## providers.system_library_module
 
