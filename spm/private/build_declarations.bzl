@@ -233,6 +233,22 @@ def _bazel_deps_str(pkg_name, target_deps):
         target_labels.append(_target_ref_str(pkg_name, target_ref))
     return _bazel_list_str(target_labels, double_quote_values = True)
 
+def _bazel_defines_str(target_manifest):
+    """Create defines list string suitable for injection into a module template.
+
+    Args:
+        target_manifest: the manifest of a target as output by SPM.
+
+    Returns:
+        A `string` value.
+    """
+    defines = []
+    for s in target_manifest["settings"]:
+        kind = s["kind"]
+        if "define" in kind:
+            defines.extend(kind["define"].values())
+    return _bazel_list_str(defines, double_quote_values = True)
+
 def _quote_str(value):
     return "\"{}\"".format(value)
 
@@ -275,5 +291,6 @@ build_declarations = struct(
     write_build_file = _write_build_file,
     bazel_list_str = _bazel_list_str,
     bazel_deps_str = _bazel_deps_str,
+    bazel_defines_str = _bazel_defines_str,
     quote_str = _quote_str,
 )

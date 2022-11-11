@@ -20,6 +20,9 @@ swift_library(
     deps = [
 {deps}
     ],
+    defines = [
+{defines}
+    ],
     visibility = ["//visibility:public"],
 )
 """
@@ -74,6 +77,9 @@ def _swift_library(pkg_name, target, target_deps):
         _SWIFT_BZL_LOCATION,
         _SWIFT_LIBRARY_TYPE,
     )
+
+    defines_str = build_declarations.bazel_defines_str(target["manifest"])
+
     target_decl = build_declarations.target(
         type = _SWIFT_LIBRARY_TYPE,
         name = target_name,
@@ -82,6 +88,7 @@ def _swift_library(pkg_name, target, target_deps):
             module_name = target_name,
             srcs = srcs_str,
             deps = deps_str,
+            defines = defines_str,
         ),
     )
     return build_declarations.create(

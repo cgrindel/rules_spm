@@ -192,6 +192,28 @@ Create deps list string suitable for injection into a module template.
 A `string` value.
 
 
+<a id="#build_declarations.bazel_defines_str"></a>
+
+## build_declarations.bazel_defines_str
+
+<pre>
+build_declarations.bazel_defines_str(<a href="#build_declarations.bazel_defines_str-target_manifest">target_manifest</a>)
+</pre>
+
+Create defines list string suitable for injection into a module template.
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="build_declarations.bazel_defines_str-target_manifest"></a>target_manifest |  the manifest of a target as output by SPM.   |  none |
+
+**RETURNS**
+
+A `string` value.
+
+
 <a id="#build_declarations.quote_str"></a>
 
 ## build_declarations.quote_str

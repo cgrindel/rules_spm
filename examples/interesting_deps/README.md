@@ -34,3 +34,10 @@ The package contains a clang target. The public header files for the target are 
 directory that is nested under the `include` directory. The header discovery logic for `rules_spm`
 will include all of the header files that reside directly in the `include` directory or in any of
 its subdirectories.
+
+
+## Auth0.swift
+
+The [Auth0.swift](https://github.com/auth0/Auth0.swift/blob/2.3.1/Package.swift#L10) package is
+interesting because it defines `WEB_AUTH_PLATFORM` on targets, depending on the platforms and the
+swift compiler version.
