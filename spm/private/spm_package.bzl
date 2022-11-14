@@ -90,12 +90,6 @@ def _declare_clang_library_target_files(
 
     target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
 
-    # DEBUG BEGIN
-    print("*** CHUCK target: ", target)
-    print("*** CHUCK build_config_path: ", build_config_path)
-    print("*** CHUCK target_build_dirname: ", target_build_dirname)
-    # DEBUG END
-
     # Declare the Mach-O files.
     for src in target["sources"]:
         o_files.append(ctx.actions.declare_file("%s/%s.o" % (target_build_dirname, src)))

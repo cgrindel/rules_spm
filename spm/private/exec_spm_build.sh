@@ -99,9 +99,6 @@ if [[ -n "${sdk_name:-}" ]]; then
   sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
   spm_build_args+=(-Xswiftc "-sdk" -Xswiftc "${sdk_path}")
 
-  # DEBUG BEGIN
-  echo >&2 "*** CHUCK $(basename "${BASH_SOURCE[0]}") sdk_path: ${sdk_path}" 
-  # DEBUG END
 fi
 
 # Execute the SPM build
