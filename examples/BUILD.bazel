@@ -137,6 +137,9 @@ default_test_runner(
 [
     bazel_integration_test(
         name = example + "_test",
+        # Switched to eternal due to the xcmetrics test taking a very long time when
+        # run via CI on macos.
+        timeout = "eternal",
         bazel_version = CURRENT_BAZEL_VERSION,
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,
