@@ -63,25 +63,3 @@ spm_repositories(
         # ),
     ],
 )
-
-# From GH189
-spm_repositories(
-    name = "xcode_metrics_packages",
-    dependencies = [
-        spm_pkg(
-            "https://github.com/apple/swift-argument-parser",
-            exact_version = "0.3.2",
-            products = ["ArgumentParser"],
-        ),
-        spm_pkg(
-            "https://github.com/spotify/XCMetrics",
-            exact_version = "0.0.10",
-            products = [
-                "XCMetricsClient",
-                "XCMetricsPlugins",
-            ],
-        ),
-    ],
-    platforms = [".macOS(.v10_15)"],
-    swift_version = "5.5",
-)
