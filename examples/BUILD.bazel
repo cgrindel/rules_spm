@@ -32,6 +32,7 @@ LINUX_TEST_EXAMPLES = [
 MACOS_TEST_EXAMPLES = [
     "ios_sim",
     "public_hdrs",
+    "xcmetrics",
 ]
 
 NO_SUDO_TEST_EXAMPLES = ALL_OS_TEST_EXAMPLES + MACOS_TEST_EXAMPLES + LINUX_TEST_EXAMPLES
@@ -95,6 +96,10 @@ test_suite(
 
 default_test_runner(
     name = "default_test_runner",
+    bazel_cmds = [
+        "info",
+        "test //... --verbose_failures --sandbox_debug",
+    ],
 )
 
 [
@@ -132,6 +137,9 @@ default_test_runner(
 [
     bazel_integration_test(
         name = example + "_test",
+        # Switched to eternal due to the xcmetrics test taking a very long time when
+        # run via CI on macos.
+        timeout = "eternal",
         bazel_version = CURRENT_BAZEL_VERSION,
         # The test needs to be local due to the operations that rules_spm performs.
         local = True,

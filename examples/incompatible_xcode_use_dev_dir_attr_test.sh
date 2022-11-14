@@ -68,7 +68,7 @@ cd "${workspace_dir}"
 # BEGIN Custom test logic 
 
 # Find Xcode 12.4
-xcode_12_4_locations=("/Applications/Xcode-12.4.app"  "/Applications/Xcode_12.4.app")
+xcode_12_4_locations=("/Applications/Xcode-12.4.app" "/Applications/Xcode_12.4.app" "/Applications/Xcode-12.4.0.app")
 for path in "${xcode_12_4_locations[@]}" ; do
   [[ -d "${path}" ]] && xcode_12_4_location="${path}" && break
 done
