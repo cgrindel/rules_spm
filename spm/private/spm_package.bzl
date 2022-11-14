@@ -112,8 +112,9 @@ def _declare_clang_library_target_files(
 # MARK: - System Library Module Info
 
 def _declare_system_library_target_files(ctx, pkg_name, target):
-    # TODO(chuck): Should this be c99name
-    target_name = target["name"]
+    # Use the 'c99name' as it can differ from the target name. For clang
+    # libraries, this is the output directory.
+    target_name = target["c99name"]
     module_name = target["name"]
 
     target_path = paths.join(pkg_name, target["path"])
