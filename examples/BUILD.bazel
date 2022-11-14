@@ -97,7 +97,7 @@ default_test_runner(
     name = "default_test_runner",
     bazel_cmds = [
         "info",
-        "bazel test //... --verbose_failures --sandbox_debug",
+        "test //... --verbose_failures --sandbox_debug",
     ],
 )
 
