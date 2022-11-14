@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_binary")
 
 swift_binary(
@@ -43,5 +44,12 @@ xcode_config(
     default = ":version12_4_0_12D4e",
     versions = [
         ":version12_4_0_12D4e",
+    ],
+)
+
+build_test(
+    name = "xcode_metrics_package_targets",
+    targets = [
+        "@xcode_metrics_packages//XCMetrics:XCMetricsClient",
     ],
 )
