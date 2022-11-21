@@ -10,7 +10,7 @@ on:
 jobs:
 
   macos_build:
-    runs-on: macos-11.0
+    runs-on: macos-12
     # GH112: Remove the use of a custom Bazel when Keith's patch is merged and 
     # released.
     env:
