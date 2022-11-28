@@ -2,7 +2,7 @@
 # `repository_utils` API
 
 
-<a id="#repository_utils.is_macos"></a>
+<a id="repository_utils.is_macos"></a>
 
 ## repository_utils.is_macos
 
@@ -24,7 +24,7 @@ Determines if the host is running MacOS.
 A `bool` indicating whether the host is running MacOS.
 
 
-<a id="#repository_utils.exec_spm_command"></a>
+<a id="repository_utils.exec_spm_command"></a>
 
 ## repository_utils.exec_spm_command
 

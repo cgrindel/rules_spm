@@ -2,7 +2,7 @@
 # `spm_package_info_utils` API
 
 
-<a id="#spm_package_info_utils.get"></a>
+<a id="spm_package_info_utils.get"></a>
 
 ## spm_package_info_utils.get
 
@@ -25,7 +25,7 @@ Returns the `SPMPackageInfo` with the specified name from the list of `SPMPackag
 An `SPMPackageInfo` value.
 
 
-<a id="#spm_package_info_utils.get_module_info"></a>
+<a id="spm_package_info_utils.get_module_info"></a>
 
 ## spm_package_info_utils.get_module_info
 

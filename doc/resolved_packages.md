@@ -2,7 +2,7 @@
 # `resolved_packages` API
 
 
-<a id="#resolved_packages.state"></a>
+<a id="resolved_packages.state"></a>
 
 ## resolved_packages.state
 
@@ -26,7 +26,7 @@ Create a state `struct`
 A `struct` value.
 
 
-<a id="#resolved_packages.create"></a>
+<a id="resolved_packages.create"></a>
 
 ## resolved_packages.create
 
@@ -50,7 +50,7 @@ Create a resolved package `struct`.
 A `struct` value.
 
 
-<a id="#resolved_packages.read"></a>
+<a id="resolved_packages.read"></a>
 
 ## resolved_packages.read
 
@@ -74,7 +74,7 @@ A `dict` where the key is the package name and the value is a resolved
   package `struct`.
 
 
-<a id="#resolved_packages.parse_json"></a>
+<a id="resolved_packages.parse_json"></a>
 
 ## resolved_packages.parse_json
 

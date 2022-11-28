@@ -2,7 +2,7 @@
 # `build_declarations` API
 
 
-<a id="#build_declarations.target"></a>
+<a id="build_declarations.target"></a>
 
 ## build_declarations.target
 
@@ -26,7 +26,7 @@ Create a target `struct`.
 A `struct` that represents a target declaration in a build file.
 
 
-<a id="#build_declarations.load_statement"></a>
+<a id="build_declarations.load_statement"></a>
 
 ## build_declarations.load_statement
 
@@ -52,7 +52,7 @@ The list of symbols will be sorted and uniquified.
 A `struct` that includes the location and the cleaned up symbols.
 
 
-<a id="#build_declarations.create"></a>
+<a id="build_declarations.create"></a>
 
 ## build_declarations.create
 
@@ -75,7 +75,7 @@ Create a `struct` that represents the parts of a Bazel build file.
 A `struct` representing parts of a Bazel  build file.
 
 
-<a id="#build_declarations.merge"></a>
+<a id="build_declarations.merge"></a>
 
 ## build_declarations.merge
 
@@ -101,7 +101,7 @@ by type and name.
 A merged build file declaration `struct`.
 
 
-<a id="#build_declarations.generate_build_file_content"></a>
+<a id="build_declarations.generate_build_file_content"></a>
 
 ## build_declarations.generate_build_file_content
 
@@ -124,7 +124,7 @@ A `string` containing valid Starlark code that can be used as Bazel
   build file content.
 
 
-<a id="#build_declarations.write_build_file"></a>
+<a id="build_declarations.write_build_file"></a>
 
 ## build_declarations.write_build_file
 
@@ -144,7 +144,7 @@ Write a Bazel build file from a build declaration.
 | <a id="build_declarations.write_build_file-build_decl"></a>build_decl |  A build declaration <code>struct</code> as returned by <code>build_declarations.create</code>.   |  none |
 
 
-<a id="#build_declarations.bazel_list_str"></a>
+<a id="build_declarations.bazel_list_str"></a>
 
 ## build_declarations.bazel_list_str
 
@@ -169,7 +169,7 @@ A `string` value suitable to be inserted between square brackets ([])
   as Starlark list values.
 
 
-<a id="#build_declarations.bazel_deps_str"></a>
+<a id="build_declarations.bazel_deps_str"></a>
 
 ## build_declarations.bazel_deps_str
 
@@ -192,7 +192,7 @@ Create deps list string suitable for injection into a module template.
 A `string` value.
 
 
-<a id="#build_declarations.quote_str"></a>
+<a id="build_declarations.quote_str"></a>
 
 ## build_declarations.quote_str
 

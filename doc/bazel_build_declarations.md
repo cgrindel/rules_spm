@@ -2,7 +2,7 @@
 # `bazel_build_declarations` API
 
 
-<a id="#bazel_build_declarations.swift_library"></a>
+<a id="bazel_build_declarations.swift_library"></a>
 
 ## bazel_build_declarations.swift_library
 
@@ -22,7 +22,7 @@ bazel_build_declarations.swift_library(<a href="#bazel_build_declarations.swift_
 | <a id="bazel_build_declarations.swift_library-target_deps"></a>target_deps |  <p align="center"> - </p>   |  none |
 
 
-<a id="#bazel_build_declarations.swift_binary"></a>
+<a id="bazel_build_declarations.swift_binary"></a>
 
 ## bazel_build_declarations.swift_binary
 
@@ -43,7 +43,7 @@ bazel_build_declarations.swift_binary(<a href="#bazel_build_declarations.swift_b
 | <a id="bazel_build_declarations.swift_binary-target_deps"></a>target_deps |  <p align="center"> - </p>   |  none |
 
 
-<a id="#bazel_build_declarations.clang_library"></a>
+<a id="bazel_build_declarations.clang_library"></a>
 
 ## bazel_build_declarations.clang_library
 

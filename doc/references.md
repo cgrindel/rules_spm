@@ -2,7 +2,7 @@
 # `references` API
 
 
-<a id="#references.create"></a>
+<a id="references.create"></a>
 
 ## references.create
 
@@ -26,7 +26,7 @@ Creates a reference for the specified type.
 A `string` that references an entity in a set of package descriptions.
 
 
-<a id="#references.split"></a>
+<a id="references.split"></a>
 
 ## references.split
 
@@ -49,7 +49,7 @@ A `tuple` where the first item is the reference type, the second is
   the package name, and the third is the item name.
 
 
-<a id="#references.create_target_ref"></a>
+<a id="references.create_target_ref"></a>
 
 ## references.create_target_ref
 
@@ -76,7 +76,7 @@ Example byName ref:
 A target reference `string` value.
 
 
-<a id="#references.create_product_ref"></a>
+<a id="references.create_product_ref"></a>
 
 ## references.create_product_ref
 
@@ -102,7 +102,7 @@ Example product ref:
 A product reference `string` value.
 
 
-<a id="#references.is_target_ref"></a>
+<a id="references.is_target_ref"></a>
 
 ## references.is_target_ref
 
@@ -126,7 +126,7 @@ A `bool` value indicating whether the reference string is a target
   reference.
 
 
-<a id="#references.is_product_ref"></a>
+<a id="references.is_product_ref"></a>
 
 ## references.is_product_ref
 

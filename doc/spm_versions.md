@@ -2,7 +2,7 @@
 # `spm_versions` API
 
 
-<a id="#spm_versions.extract"></a>
+<a id="spm_versions.extract"></a>
 
 ## spm_versions.extract
 
@@ -28,7 +28,7 @@ Output: `5.4.0`
 A `string` representing the semantic version, if found. Otherwise, `None`.
 
 
-<a id="#spm_versions.get"></a>
+<a id="spm_versions.get"></a>
 
 ## spm_versions.get
 

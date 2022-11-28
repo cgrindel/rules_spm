@@ -2,7 +2,7 @@
 # `spm_build_declarations` API
 
 
-<a id="#spm_build_declarations.spm_swift_binary"></a>
+<a id="spm_build_declarations.spm_swift_binary"></a>
 
 ## spm_build_declarations.spm_swift_binary
 
@@ -25,7 +25,7 @@ Returns the spm_swift_library declaration for this Swift target.
 A `string` representing an `spm_swift_binary` declaration.
 
 
-<a id="#spm_build_declarations.spm_swift_library"></a>
+<a id="spm_build_declarations.spm_swift_library"></a>
 
 ## spm_build_declarations.spm_swift_library
 
@@ -50,7 +50,7 @@ Returns the spm_swift_library declaration for this Swift target.
 A `string` representing an `spm_swift_library` declaration.
 
 
-<a id="#spm_build_declarations.spm_clang_library"></a>
+<a id="spm_build_declarations.spm_clang_library"></a>
 
 ## spm_build_declarations.spm_clang_library
 
@@ -75,7 +75,7 @@ Returns the spm_clang_library declaration for this clang target.
 A `string` representing an `spm_clang_library` declaration.
 
 
-<a id="#spm_build_declarations.spm_system_library"></a>
+<a id="spm_build_declarations.spm_system_library"></a>
 
 ## spm_build_declarations.spm_system_library
 
