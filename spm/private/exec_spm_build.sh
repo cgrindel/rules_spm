@@ -98,16 +98,44 @@ if [[ -n "${sdk_name:-}" ]]; then
   # NOTE: This will only succeed when Xcode is installed.
   sdk_path=$(xcrun --sdk "${sdk_name}" --show-sdk-path)
   spm_build_args+=(-Xswiftc "-sdk" -Xswiftc "${sdk_path}")
+
 fi
 
 # Execute the SPM build
 "${worker_exec}" "${swift_exec}" build "${spm_build_args[@]}"
 
+# There are cases where the utility has been asked to copy a file that does
+# not exist. This has been seen with header files for system libraries.
+# Example: https://github.com/cgrindel/rules_spm/issues/189 fails due to
+# /usr/include/zconf.h not being available. So, we check for the existence of
+# the file under the SDK path, if one was provided. Otherwise, we fail.
+resolve_path() {
+  local src="${1}"
+  local resolved_src
+  if [[ -e "${src}" ]]; then
+    # We found the src
+    resolved_src="${src}"
+  elif [[ -n "${sdk_path:-}" && "${src}" =~ ^/ ]]; then
+    # If the src is an absolute path, then look under the SDK path
+    resolved_src="${sdk_path}${src}"
+    if [[ ! -e "${resolved_src}" ]]; then
+      echo >&2 "WARNING(exec_spm_build): Did not find '${src}' or '${resolved_src}'."
+      resolved_src=""
+    fi
+  else
+    echo >&2 "WARNING(exec_spm_build): Did not find '${src}'."
+    resolved_src=""
+  fi
+  echo "${resolved_src}"
+}
+
 # Replace the specified files with the provided ones
 idx=0
 while [ "$idx" -lt "${#args[@]}" ]; do
-  src="${args[idx]}"
+  src="$(resolve_path "${args[idx]}")"
   dest="${args[idx+1]}"
-  cp -f "${src}" "${dest}"
+  if [[ -n "${src}" ]]; then
+    cp -f "${src}" "${dest}"
+  fi
   idx=$((idx+2))
 done

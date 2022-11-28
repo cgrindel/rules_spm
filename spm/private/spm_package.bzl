@@ -79,7 +79,13 @@ def _declare_clang_library_target_files(
     all_outputs = []
     o_files = []
 
-    target_name = target["name"]
+    # It turns out that the c99name ends up being the output directory name,
+    # not the 'name'.  Example:
+    # https://github.com/cgrindel/rules_spm/issues/189 fails due to
+    # '.../system-zlib.build/anchor.c.o' not being found.  It was build under
+    # '.../system_zlib.build/anchor.c.o'. Note the underscore instead of the
+    # hyphen. It turns out that the 'c99name' uses an underscore.
+    target_name = target["c99name"]
     module_name = target["name"]
 
     target_build_dirname = "%s/%s.build" % (build_config_path, target_name)
@@ -100,7 +106,9 @@ def _declare_clang_library_target_files(
 # MARK: - System Library Module Info
 
 def _declare_system_library_target_files(ctx, pkg_name, target):
-    target_name = target["name"]
+    # Use the 'c99name' as it can differ from the target name. For clang
+    # libraries, this is the output directory.
+    target_name = target["c99name"]
     module_name = target["name"]
 
     target_path = paths.join(pkg_name, target["path"])

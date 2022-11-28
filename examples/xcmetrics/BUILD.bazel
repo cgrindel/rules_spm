@@ -1,0 +1,8 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+
+build_test(
+    name = "xcode_metrics_package_targets",
+    targets = [
+        "@xcode_metrics_packages//XCMetrics:XCMetricsClient",
+    ],
+)

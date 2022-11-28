@@ -9,10 +9,11 @@ runs:
       run: |
         bazelisk test //... 
 
-    - name: Build Anything Not Tested
+    - name: Build spm_parser
       shell: bash
       run: |
-        bazelisk build //... 
+        cd tools/spm_parser
+        swift build
 
     - name: Ensure Bazel packages covered by bzlformat_pkg
       shell: bash
