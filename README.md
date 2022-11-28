@@ -10,7 +10,8 @@ Work is currently underway to implement a Gazelle plugin that will resolve exter
 dependencies and generate Bazel build files that will build the external packages using
 [rules_swift](https://github.com/bazelbuild/rules_swift). This will allow applications to be built
 and deployed to any platforms/devices supported by `rules_swift` and `rules_apple`. Information
-about the plugin will be posted to here and [bazelbuild.slack.com](https://bazelbuild.slack.com).
+about the plugin will be posted to here and [bazelbuild.slack.com](https://bazelbuild.slack.com) in
+the coming weeks.
 
 
 [![Build](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml)
