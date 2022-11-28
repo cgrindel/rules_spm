@@ -1,5 +1,19 @@
 # Swift Package Manager Rules for Bazel
 
+## Important Message for iOS Developers
+
+2022-11-28: There are some [known issues](https://github.com/cgrindel/rules_spm/discussions/157)
+with building and deplying applications for iOS devices using `rules_spm`. If you need to deploy to
+an iOS device, we do not recommend using `rules_spm`, at this time.  
+
+Work is currently underway to implement a Gazelle plugin that will resolve external package
+dependencies and generate Bazel build files that will build the external packages using
+[rules_swift](https://github.com/bazelbuild/rules_swift). This will allow applications to be built
+and deployed to any platforms/devices supported by `rules_swift` and `rules_apple`. Information
+about the plugin will be posted to here and [bazelbuild.slack.com](https://bazelbuild.slack.com) in
+the coming weeks.
+
+
 [![Build](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml/badge.svg?event=schedule)](https://github.com/cgrindel/rules_spm/actions/workflows/ci.yml)
 
 This repository contains rules for [Bazel](https://bazel.build/) that can be used to download, build
