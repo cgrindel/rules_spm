@@ -1,5 +1,14 @@
 # Swift Package Manager Rules for Bazel
 
+## `swift_bazel` is replacing `rules_spm`
+
+2023-01-10: The [swift_bazel](https://github.com/cgrindel/swift_bazel) project, the successor for
+`rules_spm`, is now ready for testing. In addition to managing external Swift package
+dependencies, it also provides functionality for generating Bazel build files for your Swift
+project. If you have used `rules_spm` for your projects or if you are just looking for a way to
+manage external Swift packages in your Bazel workspace, I encourage you to check out 
+[swift_bazel](https://github.com/cgrindel/swift_bazel) and provide your feedback.
+
 ## Important Message for iOS Developers
 
 2022-11-28: There are some [known issues](https://github.com/cgrindel/rules_spm/discussions/157)
