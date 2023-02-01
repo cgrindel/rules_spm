@@ -35,7 +35,7 @@ jobs:
         app_id: ${{ secrets.APP_ID }}
         private_key: ${{ secrets.APP_PRIVATE_KEY }}
     - uses: cgrindel/gha_configure_git_user@v1
-    - uses: cgrindel/gha_create_release@v1
+    - uses: cgrindel/gha_create_release@v2
       with:
         release_tag: ${{ github.event.inputs.release_tag }}
         reset_tag: ${{ github.event.inputs.reset_tag }}
