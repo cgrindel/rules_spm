@@ -48,10 +48,10 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "contrib_rules_bazel_integration_test",
-    sha256 = "6263b8d85a125e1877c463bf4d692bebc2b6479c924f64a3d45c81fbfbc495df",
-    strip_prefix = "rules_bazel_integration_test-0.10.3",
+    sha256 = "fcbd780a2eade58287865ec433be26452b0609963f315155b204ad8a84ac36bb",
+    strip_prefix = "rules_bazel_integration_test-0.12.0",
     urls = [
-        "http://github.com/bazel-contrib/rules_bazel_integration_test/archive/v0.10.3.tar.gz",
+        "http://github.com/bazel-contrib/rules_bazel_integration_test/archive/v0.12.0.tar.gz",
     ],
 )
 
