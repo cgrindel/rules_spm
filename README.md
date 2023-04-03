@@ -1,5 +1,12 @@
 # Swift Package Manager Rules for Bazel
 
+## `swift_bazel` is now `rules_swift_package_manager`
+
+2023-04-03: The `swift_bazel` repository was renamed to
+[rules_swift_package_manager](https://github.com/cgrindel/rules_swift_package_manager). The
+successor to `rules_spm` now supersedes the functionality in this repository. As a result, this
+repository is being archived.
+
 ## `swift_bazel` is replacing `rules_spm`
 
 2023-01-10: The [swift_bazel](https://github.com/cgrindel/swift_bazel) project, the successor for
