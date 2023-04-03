@@ -3,9 +3,9 @@ name: Continuous Integration
 on:
   pull_request:
     branches: [ main ]
-  schedule:
-    # Every day at 11:14 UTC.
-    - cron: '14 11 * * *'
+  # schedule:
+  #   # Every day at 11:14 UTC.
+  #   - cron: '14 11 * * *'
 
 jobs:
 
