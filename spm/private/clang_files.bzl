@@ -103,14 +103,12 @@ def _collect_files(
         root_paths,
         public_includes = None,
         remove_prefix = None):
-    paths_list = []
+    path_set = sets.make()
     for root_path in root_paths:
-        paths_list.extend(
-            repository_files.list_files_under(
-                repository_ctx,
-                root_path,
-            ),
-        )
+        files = repository_files.list_files_under(repository_ctx, root_path)
+        for f in files:
+            sets.insert(path_set, f)
+
 
     # hdrs: Public headers
     # srcs: Private headers and source files.
@@ -122,7 +120,7 @@ def _collect_files(
     includes_set = sets.make()
     modulemap = None
     modulemap_orig_path = None
-    for orig_path in paths_list:
+    for orig_path in sets.to_list(path_set):
         path = _remove_prefix(orig_path, remove_prefix)
         _root, ext = paths.split_extension(path)
         if ext == ".h":
